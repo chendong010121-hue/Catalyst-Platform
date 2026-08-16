@@ -29,7 +29,7 @@ class AddCapability:
             output_schema={"sum": "number"},
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Success(parameters["a"] + parameters["b"])
 
 
@@ -53,12 +53,7 @@ def main() -> None:
     provider = DeepSeekModelProvider(
         api_key=api_key, model=os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash")
     )
-    runtime = Runtime(
-        reasoner=LLMReasoner(provider, decision_protocol="native_tools"),
-        capabilities={"add": AddCapability()},
-        policy=StepLimitPolicy(max_steps=8),
-        state_store=MemStore(),
-    )
+    runtime = Runtime(reasoner=LLMReasoner(provider, decision_protocol="native_tools"), capabilities={"add": AddCapability()}, policy=StepLimitPolicy(max_steps=8), state_store=MemStore())
 
     goal = Goal("使用 add capability 计算 20 + 22，然后告诉我结果。")
     final = runtime.start(goal)

@@ -7,6 +7,14 @@ class PolicyContractError(RuntimeError):
     """Policy 返回了契约之外的判定（非 Allow/Deny 或非 Continue/Stop）。"""
 
 
+class RuntimeConfigurationError(RuntimeError):
+    """Runtime 组合配置违反 safety composition contract（fail-closed）。
+
+    例如：timeout-enabled 的下层 executor 必须提供 execution-control 依赖
+    （Runtime-local control plane），否则无法维护 live-execution guard。
+    """
+
+
 class CapabilityContractError(RuntimeError):
     """Capability.invoke 返回了 Success/Failure 之外的值（契约违反）。"""
 
@@ -24,6 +32,40 @@ class CapabilityExecutionError(RuntimeError):
         super().__init__(
             message
             or f"capability {capability_id!r} raised during execution (outcome unknown)"
+        )
+
+
+class ExecutionCancelled(RuntimeError):
+    """Capability 在 cooperative cancellation point 主动退出（body 已 quiesce）。
+
+    它是 internal runtime signal，可携带 process-local provenance marker。
+    只有 Harness 拥有的 CancellationToken.raise_if_cancelled() 才会抛出携带
+    本 token marker 的 ExecutionCancelled（confirmed cooperative cancellation）。
+
+    手动 raise ExecutionCancelled()（无 marker）或携带 foreign marker 是
+    Capability contract violation → outcome unresolved（绝不结算为取消 Failure）。
+    普通 RuntimeError/IOError 即使恰逢 cancel request，也绝不能当 ExecutionCancelled。
+    """
+
+    def __init__(self, marker=None) -> None:
+        self.marker = marker
+        super().__init__()
+
+
+class CapabilityTimeoutUncertainError(RuntimeError):
+    """deadline 到达、cancellation 已请求，但执行未确认 quiesce：outcome unknown。
+
+    worker 可能在后台继续运行。属于 infrastructure uncertainty，绝不能变成
+    agent-visible Observation.Failure("timeout")。Core 保留 durable PendingExecution
+    unresolved，只能由 operator/external verification → Runtime.reconcile 恢复。
+    """
+
+    def __init__(self, session_id: str, execution_id: str) -> None:
+        self.session_id = session_id
+        self.execution_id = execution_id
+        super().__init__(
+            f"execution {execution_id!r} in session {session_id!r} did not confirm "
+            f"quiescence before deadline; outcome unknown"
         )
 
 
@@ -84,6 +126,23 @@ class ReconciliationError(RuntimeError):
 
     不是 Agent execution outcome，不能伪装成 Observation.Failure。
     """
+
+
+class ExecutionStillLiveError(ReconciliationError):
+    """Reconciliation 被拒绝：pending execution 对应的 local worker 仍 live。
+
+    一个仍可能改变现实的 live execution 不能被 reconcile（无论 ConfirmedNotExecuted
+    还是 ConfirmedExecuted），否则外部断言会与后续真实副作用矛盾。必须等 worker 真正
+    quiesce（future done + registry cleanup）后，reconciliation 才可用。
+    """
+
+    def __init__(self, session_id: str, execution_id: str) -> None:
+        self.session_id = session_id
+        self.execution_id = execution_id
+        super().__init__(
+            f"session {session_id!r} execution {execution_id!r} is still live; "
+            f"reconciliation requires quiescence"
+        )
 
 
 class ReasonerContractError(RuntimeError):

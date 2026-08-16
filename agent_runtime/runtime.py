@@ -6,6 +6,7 @@
 - resume(session_id)  → run 的别名，语义相同
 - start(goal)         → create + run；run 失败抛 RuntimeExecutionError（携带 session_id）
 - reconcile(session_id, execution_id, resolution) → load + 结构校验 + 显式 recovery
+- cancel(session_id)  → 对 live execution 请求 cooperative cancellation（signal only，不写 Session）
 
 recovery 顺序（run / resume / reconcile 共用）：
     load → validate_session_snapshot → pending gate → terminal / execution
@@ -15,7 +16,8 @@ recovery 顺序（run / resume / reconcile 共用）：
 - Runtime 只装配：executor = DefaultCapabilityExecutor(capabilities)；core = AgentCore(reasoner, executor, policy, state_store)。
 
 失败边界：
-- Capability 执行失败由 CapabilityExecutor 归一化为 Observation.Failure。
+- Capability 返回 Failure → authoritative Observation.Failure（可 settle）。
+- Capability 抛普通异常 → CapabilityExecutionError → pending unresolved（不伪装成 Failure）。
 - Reasoner / ModelProvider / Policy 契约违反 / Capability 契约违反 / StateStore
   失败均作为 infrastructure failure 向调用方传播，不伪装成 Capability Failure。
 """
@@ -46,8 +48,19 @@ from .contracts import (
     Stop,
 )
 from .core import AgentCore, resolve_step_termination
-from .errors import ReconciliationError, RuntimeExecutionError, UnresolvedExecutionError
+from .errors import (
+    ExecutionStillLiveError,
+    ReconciliationError,
+    RuntimeExecutionError,
+    UnresolvedExecutionError,
+)
+from .execution import (
+    CancelRequestResult,
+    ExecutionControlPlane,
+    ExecutionTimeoutConfig,
+)
 from .snapshot import (
+    observation_equal,
     snapshot_action,
     snapshot_execution_reconciliation,
     snapshot_model_call,
@@ -75,13 +88,31 @@ class Runtime:
         capabilities: Mapping[str, Capability],
         policy: Policy,
         state_store: StateStore,
+        *,
+        timeout_config: ExecutionTimeoutConfig | None = None,
     ) -> None:
         self._reasoner = reasoner
         self._capabilities = capabilities
         self._policy = policy
         self._state_store = state_store
-        executor = DefaultCapabilityExecutor(capabilities)
-        self._core = AgentCore(reasoner, executor, policy, state_store)
+        # Runtime-local execution control plane：由本 Runtime 组合根独有，供 cancel /
+        # reconcile 与 capability executor 共享同一份 active/evidence 状态。它不是跨
+        # Runtime 共享服务，也不是 StateStore namespace 身份。
+        self._control_plane = ExecutionControlPlane()
+        executor = DefaultCapabilityExecutor(
+            capabilities,
+            timeout_config=timeout_config,
+            control_plane=self._control_plane,
+        )
+        self._core = AgentCore(reasoner, executor, policy, self._state_store)
+
+    @property
+    def control_plane(self) -> ExecutionControlPlane:
+        """Runtime-local execution control plane（只读 view，供测试/诊断观察）。
+
+        只暴露观察入口，不提供注入 / 跨 Runtime 共享 API。
+        """
+        return self._control_plane
 
     def create(self, goal: Goal) -> SessionSnapshot:
         """创建新 Session（唯一 id）并持久化初始快照；不调用 AgentCore。"""
@@ -113,6 +144,15 @@ class Runtime:
         """run 的别名，语义相同。"""
         return self.run(session_id)
 
+    def cancel(self, session_id: str) -> CancelRequestResult:
+        """对当前 live execution 发出 cooperative cancellation 请求。
+
+        只修改 runtime-local cancellation signal，不写 SessionStore、不清 pending、
+        不追加 StepRecord。真正 settlement 由 owner execution path 根据 worker outcome
+        决定。没有 active execution 时返回 requested=False（不修改 Session）。
+        """
+        return self._control_plane.active.request_cancel(session_id)
+
     def reconcile(self, session_id: str, execution_id: str, resolution) -> SessionSnapshot:
         """把 unresolved pending execution 显式 reconciliation 为 durable settled step。
 
@@ -131,6 +171,28 @@ class Runtime:
             raise ReconciliationError(
                 f"execution_id mismatch: got {execution_id!r}, expected {pending.execution_id!r}"
             )
+        # live execution guard：pending 对应的 local worker 仍 live 时禁止 reconcile
+        # （无论 ConfirmedNotExecuted / ConfirmedExecuted），否则外部断言会与未来副作用矛盾。
+        active_execution_id = self._control_plane.active.get(session_id)
+        if active_execution_id == pending.execution_id:
+            raise ExecutionStillLiveError(
+                session_id=session_id, execution_id=pending.execution_id
+            )
+        # late evidence guard：本地已知 authoritative late outcome 时，reconciliation 不能与之矛盾
+        late_observation = self._control_plane.evidence.get_authoritative_observation(
+            session_id, pending.execution_id
+        )
+        if late_observation is not None:
+            if not isinstance(resolution, ConfirmedExecuted):
+                raise ReconciliationError(
+                    f"execution {pending.execution_id!r} already produced an authoritative "
+                    f"local outcome; cannot reconcile as not-executed"
+                )
+            canonical = snapshot_observation(resolution.observation)
+            if not observation_equal(canonical, late_observation):
+                raise ReconciliationError(
+                    f"reconciliation observation contradicts the locally known late outcome"
+                )
         if pending.step_index != len(snapshot.history):
             raise ReconciliationError(
                 f"pending.step_index {pending.step_index} != len(history) {len(snapshot.history)}"
@@ -187,6 +249,8 @@ class Runtime:
         # canonical commit boundary：reconcile 的 settled snapshot 也必须先 validate，再 commit
         settled = validate_session_snapshot(settled)
         self._state_store.commit(settled)
+        # evidence cleanup 只在 durable commit 成功之后（commit 失败则 pending+evidence 都保留）
+        self._control_plane.evidence.remove(session_id, execution_id)
         return settled
 
     def start(self, goal: Goal) -> SessionSnapshot:

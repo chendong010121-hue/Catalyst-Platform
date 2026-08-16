@@ -104,7 +104,7 @@ class AddCapability:
             id="add", name="add", description="adds", input_schema=ADD_SCHEMA
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         self.invoke_count += 1
         return Success(parameters["a"] + parameters["b"])
 
@@ -163,7 +163,7 @@ class BadReturnCapability:
     def describe(self):
         return CapabilityDescriptor(id="bad", name="bad", description="", input_schema={})
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return 42  # 非 Success/Failure
 
 
@@ -171,7 +171,7 @@ class BadFailureCapability:
     def describe(self):
         return CapabilityDescriptor(id="bad", name="bad", description="", input_schema={})
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Failure(threading.Lock())  # error 非 str
 
 
@@ -199,7 +199,7 @@ def _pending_store(reasoner, policy=None, exec_id="exec_1"):
 
 def test_a1_step_limit_reconcile_parity():
     store = _pending_store(AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, StepLimitPolicy(1), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, StepLimitPolicy(1), state_store=store)
     snap = rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
     step0 = snap.history[0]
     assert isinstance(step0.termination, Stop)
@@ -218,9 +218,7 @@ def test_a2_token_budget_reconcile_parity():
         ]
     )
     store = _pending_store(LLMReasoner(provider, decision_protocol="native_tools"))
-    rt = Runtime(
-        CountingReasoner(), {"add": AddCapability()}, TokenBudgetPolicy(1), store
-    )
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, TokenBudgetPolicy(1), state_store=store)
     snap = rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
     assert isinstance(snap.history[0].termination, Stop)
     assert snap.history[0].termination.reason == "token budget reached"
@@ -230,7 +228,7 @@ def test_a3_reconcile_runs_should_stop_but_not_check_action():
     store = _pending_store(AddThenCompleteReasoner())
     reasoner = CountingReasoner()
     policy = CountingPolicy()
-    rt = Runtime(reasoner, {"add": AddCapability()}, policy, store)
+    rt = Runtime(reasoner, {"add": AddCapability()}, policy, state_store=store)
     rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
     assert policy.check_calls == 0  # 原始 Action 早已 Allow，不重复 check
     assert policy.stop_calls == 1  # post-step should_stop 必须重跑
@@ -354,7 +352,7 @@ def test_d2_snapshot_observation_failure_error_str():
 
 def test_e_confirmed_executed_non_observation():
     store = _pending_store(AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), state_store=store)
     try:
         rt.reconcile("s", "exec_1", ConfirmedExecuted(123))
     except CapabilityContractError:
@@ -522,7 +520,7 @@ def test_i2_schema_properties_non_str_key_registration():
                 },
             )
 
-        def invoke(self, parameters):
+        def invoke(self, parameters, context):
             return Success(None)
 
     try:

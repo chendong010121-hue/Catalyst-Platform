@@ -323,7 +323,7 @@ def test_d8_registry_key_must_be_string():
         def describe(self):
             return _desc("add")
 
-        def invoke(self, parameters):
+        def invoke(self, parameters, context):
             return Success(None)
 
     try:
@@ -338,7 +338,7 @@ def test_d9_non_portable_descriptor_registration_fails():
         def describe(self):
             return _desc("bad.name")
 
-        def invoke(self, parameters):
+        def invoke(self, parameters, context):
             return Success(None)
 
     try:
@@ -506,7 +506,7 @@ def test_s11_runtime_resume_validates_before_reasoner():
     )
     store = _RawStore(malformed)
     reasoner = CountingReasoner()
-    rt = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), state_store=store)
     try:
         rt.resume("s")
     except SessionConsistencyError:
@@ -525,9 +525,7 @@ def test_s12_runtime_reconcile_validates_before_settlement():
         pending_execution=PendingExecution("exec_1", 0, Action(threading.Lock(), {})),
     )
     store = _RawStore(malformed)
-    rt = Runtime(
-        FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), store
-    )
+    rt = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), state_store=store)
     before = store.snapshot
     try:
         rt.reconcile("s", "exec_1", ConfirmedNotExecuted())

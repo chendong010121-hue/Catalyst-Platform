@@ -26,7 +26,7 @@ class MutatingSchemaCapability:
             id="ms", name="ms", description="mutating schema", input_schema=self._schema
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Success(42)
 
 
@@ -42,12 +42,14 @@ def test_a_capability_mutates_original_schema():
     cap._schema["properties"]["a"]["type"] = "string"
 
     # runtime 仍用注册时的 integer schema
-    obs = executor.execute(Action("ms", {"a": "not an int"}))
+    obs = executor.execute(Action("ms", {"a": "not an int"}), execution_id="e", session_id="s")
     assert isinstance(obs, Failure)
     assert "expected integer" in obs.error
 
     # 合法的 integer 仍通过
-    assert isinstance(executor.execute(Action("ms", {"a": 5})), Success)
+    assert isinstance(
+        executor.execute(Action("ms", {"a": 5}), execution_id="e", session_id="s"), Success
+    )
 
 
 def test_b_caller_mutates_descriptors_return():
@@ -59,7 +61,7 @@ def test_b_caller_mutates_descriptors_return():
     descs[0].input_schema["properties"]["a"]["type"] = "string"
 
     # executor runtime validation 不变
-    obs = executor.execute(Action("ms", {"a": "not an int"}))
+    obs = executor.execute(Action("ms", {"a": "not an int"}), execution_id="e", session_id="s")
     assert isinstance(obs, Failure)
     assert "expected integer" in obs.error
 
@@ -102,12 +104,12 @@ def test_non_finite_float_rejected():
         def describe(self):
             return CapabilityDescriptor(id="nan", name="nan", description="nan")
 
-        def invoke(self, parameters):
+        def invoke(self, parameters, context):
             return Success(float("nan"))
 
     executor = DefaultCapabilityExecutor({"nan": NanCapability()})
     try:
-        executor.execute(Action("nan", {}))
+        executor.execute(Action("nan", {}), execution_id="e", session_id="s")
     except CapabilityContractError:
         return
     raise AssertionError("expected CapabilityContractError for NaN observation")
