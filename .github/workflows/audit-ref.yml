@@ -1,0 +1,66 @@
+name: agent-runtime-audit-ref
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_ref:
+        description: "Exact commit SHA or Git ref to verify"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify-ref:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout requested ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Record tested identity
+        shell: bash
+        run: |
+          mkdir -p audit_artifacts
+          printf '%s\n' "${{ inputs.target_ref }}" > audit_artifacts/requested_ref.txt
+          git rev-parse HEAD | tee audit_artifacts/tested_sha.txt
+          git rev-parse HEAD^{tree} | tee audit_artifacts/tested_tree.txt
+
+      - name: Compile
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m compileall -q agent_runtime examples 2>&1 | tee audit_artifacts/compile.log
+
+      - name: Minimal loop
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m examples.run_minimal_loop 2>&1 | tee audit_artifacts/minimal_loop.log
+
+      - name: Run all offline test modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > audit_artifacts/regression.log
+          while IFS= read -r f; do
+            mod="${f%.py}"
+            mod="${mod//\//.}"
+            echo "=== $mod ===" | tee -a audit_artifacts/regression.log
+            python -m "$mod" 2>&1 | tee -a audit_artifacts/regression.log
+          done < <(find examples -maxdepth 1 -type f -name 'test_*.py' | sort)
+
+      - name: Upload exact-ref evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-runtime-audit-ref-evidence
+          path: audit_artifacts/
+          if-no-files-found: error
