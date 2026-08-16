@@ -72,7 +72,7 @@ class FakeCapability:
             output_schema={"sum": "number"},
         )
 
-    def invoke(self, parameters: Parameters) -> Observation:
+    def invoke(self, parameters: Parameters, context) -> Observation:
         return Success(parameters["a"] + parameters["b"])
 
 

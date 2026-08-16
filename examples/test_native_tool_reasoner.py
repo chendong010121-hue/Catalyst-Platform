@@ -22,6 +22,7 @@ from agent_runtime.contracts import (
 )
 from agent_runtime.llm_reasoner import DecisionParseError, LLMReasoner
 from agent_runtime.runtime import Runtime
+from agent_runtime.execution import RuntimeDomain
 from agent_runtime.snapshot import snapshot_model_call
 
 from .fakes import AllowAllPolicy, FakeCapability, InMemoryStateStore, ScriptedModelProvider
@@ -268,9 +269,7 @@ def test_11_resume_safe():
 
     # 新 Runtime + 新 Reasoner，从持久 history resume
     provider2 = ScriptedModelProvider([ModelResponse(content="done")])
-    rt2 = Runtime(
-        _native(provider2), {"add": FakeCapability()}, AllowAllPolicy(), store
-    )
+    rt2 = Runtime(_native(provider2), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     final = rt2.resume("s-native")
 
     tool = _tool_msgs(provider2)
@@ -295,9 +294,7 @@ def test_e2e_native_offline():
             ModelResponse(content="The result is 42."),
         ]
     )
-    rt = Runtime(
-        _native(provider), {"add": FakeCapability()}, AllowAllPolicy(), InMemoryStateStore()
-    )
+    rt = Runtime(_native(provider), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("compute 20 + 22"))
 
     assert len(final.history) == 2
@@ -383,9 +380,7 @@ def test_assistant_content_lossless():
             ModelResponse(content="done", finish_reason="stop"),
         ]
     )
-    rt = Runtime(
-        _native(provider), {"add": FakeCapability()}, AllowAllPolicy(), InMemoryStateStore()
-    )
+    rt = Runtime(_native(provider), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("compute"))
 
     assert len(final.history) == 2

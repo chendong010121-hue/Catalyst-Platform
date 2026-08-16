@@ -42,6 +42,7 @@ from agent_runtime.errors import ModelProviderError, SessionConsistencyError
 from agent_runtime.llm_reasoner import LLMReasoner
 from agent_runtime.providers.deepseek import DeepSeekModelProvider
 from agent_runtime.runtime import Runtime
+from agent_runtime.execution import RuntimeDomain
 from agent_runtime.snapshot import validate_session_snapshot
 
 from .fakes import AllowAllPolicy, FakeCapability, InMemoryStateStore
@@ -71,7 +72,7 @@ class CountingAddCapability:
     def describe(self):
         return CapabilityDescriptor(id="add", name="add", description="adds")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         self.call_count += 1
         return Success(42)
 
@@ -99,12 +100,7 @@ def test_p1_missing_finish_reason_no_side_effect():
             "usage": {"prompt_tokens": 1, "completion_tokens": 1},
         }
     )
-    rt = Runtime(
-        LLMReasoner(provider, decision_protocol="native_tools"),
-        {"add": cap},
-        AllowAllPolicy(),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(LLMReasoner(provider, decision_protocol="native_tools"), {"add": cap}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     snap = rt.create(Goal("x"))
     try:
         rt.run(snap.session_id)
@@ -211,7 +207,7 @@ class CountingReasoner:
 def test_l1_second_load_malformed_validated():
     store = _SecondLoadMalformedStore()
     reasoner = CountingReasoner()
-    rt = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     try:
         rt.run("s")
     except SessionConsistencyError:

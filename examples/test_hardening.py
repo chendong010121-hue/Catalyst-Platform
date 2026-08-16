@@ -61,7 +61,7 @@ class ThrowingCapability:
             id="boom", name="boom", description="always raises"
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         raise RuntimeError("boom!")
 
 

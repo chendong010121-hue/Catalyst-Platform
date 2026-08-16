@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Mapping
 
 from .contracts import (
@@ -19,6 +20,14 @@ from .errors import (
     CapabilityContractError,
     CapabilityExecutionError,
     CapabilityRegistrationError,
+    CapabilityTimeoutUncertainError,
+    ExecutionCancelled,
+    RuntimeConfigurationError,
+)
+from .execution import (
+    ExecutionControlPlane,
+    ExecutionTimeoutConfig,
+    ThreadedExecutionRunner,
 )
 from .snapshot import snapshot_observation, snapshot_value
 
@@ -212,9 +221,33 @@ def _snapshot_descriptor(descriptor: CapabilityDescriptor) -> CapabilityDescript
 class DefaultCapabilityExecutor:
     """按固定顺序执行：snapshot → resolve → validate → invoke → normalize。"""
 
-    def __init__(self, capabilities: Mapping[str, Capability]) -> None:
+    def __init__(
+        self,
+        capabilities: Mapping[str, Capability],
+        *,
+        execution_runner: ThreadedExecutionRunner | None = None,
+        timeout_config: ExecutionTimeoutConfig | None = None,
+        control_plane: ExecutionControlPlane | None = None,
+        clock=None,
+    ) -> None:
         self._capabilities: dict[str, Capability] = {}
         self._descriptors: dict[str, CapabilityDescriptor] = {}
+        self._timeout_config = timeout_config or ExecutionTimeoutConfig()
+        # 下层直接组合的 fail-closed：timeout 会产生 live background worker，
+        # 因此必须属于一个 execution control domain，否则无法跨组合共享 live guard。
+        if (
+            self._timeout_config.timeout_seconds is not None
+            and control_plane is None
+        ):
+            raise RuntimeConfigurationError(
+                "timeout-enabled DefaultCapabilityExecutor requires an execution "
+                "control plane (control_plane=...); construct through RuntimeDomain + Runtime"
+            )
+        self._control_plane = control_plane
+        self._runner = execution_runner or ThreadedExecutionRunner(
+            control_plane=control_plane,
+            clock=clock if clock is not None else time.monotonic,
+        )
         for key, capability in dict(capabilities).items():
             self._register(key, capability)
 
@@ -258,7 +291,7 @@ class DefaultCapabilityExecutor:
         """
         return tuple(_snapshot_descriptor(d) for d in self._descriptors.values())
 
-    def execute(self, action: Action) -> Observation:
+    def execute(self, action: Action, *, execution_id: str, session_id: str) -> Observation:
         # 1. snapshot / validate Action（根必须是 object）
         parameters = action.parameters
         if not isinstance(parameters, dict):
@@ -276,12 +309,28 @@ class DefaultCapabilityExecutor:
         if err is not None:
             return Failure(f"invalid capability parameters at {err}")
 
-        # 4. invoke with defensive parameter snapshot
-        # capability body 抛异常 = outcome uncertain（可能已产生真实副作用），
-        # 绝不能当作 authoritative Failure 结算；异常作为 infrastructure error 传播，
-        # 让 Core 保留 durable PendingExecution unresolved。
+        # 4. invoke via execution runner（cooperative cancellation / deadline）
+        # capability body 抛普通异常 = outcome uncertain → CapabilityExecutionError（unresolved）。
+        # 明确 cooperative ExecutionCancelled → authoritative Failure("execution cancelled")。
+        # deadline 未确认 quiesce → CapabilityTimeoutUncertainError（unresolved）。
         try:
-            result = capability.invoke(snapshot_value(parameters))
+            result = self._runner.run(
+                capability,
+                snapshot_value(parameters),
+                execution_id=execution_id,
+                session_id=session_id,
+                timeout_seconds=self._timeout_config.timeout_seconds,
+                grace_seconds=self._timeout_config.cancellation_grace_seconds,
+            )
+        except ExecutionCancelled:
+            return Failure("execution cancelled")
+        except CapabilityExecutionError:
+            raise
+        except CapabilityTimeoutUncertainError:
+            raise
+        except CapabilityContractError:
+            # 例如 spurious ExecutionCancelled（无 cancel request）——contract violation，unresolved
+            raise
         except Exception as exc:  # noqa: BLE001
             raise CapabilityExecutionError(capability_id=action.capability_id) from exc
 

@@ -6,6 +6,7 @@ from agent_runtime.contracts import Act, Complete, Goal, Success
 from agent_runtime.errors import RuntimeExecutionError
 from agent_runtime.llm_reasoner import DecisionParseError, LLMReasoner
 from agent_runtime.runtime import Runtime
+from agent_runtime.execution import RuntimeDomain
 
 from .fakes import (
     AllowAllPolicy,
@@ -26,12 +27,7 @@ def _run_42():
             '{"kind": "complete", "reason": "42 obtained"}',
         ]
     )
-    rt = Runtime(
-        reasoner=LLMReasoner(provider),
-        capabilities={"add": FakeCapability()},
-        policy=AllowAllPolicy(),
-        state_store=InMemoryStateStore(),
-    )
+    rt = Runtime(reasoner=LLMReasoner(provider), capabilities={"add": FakeCapability()}, policy=AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("得到数字 42"))
     return final, provider
 
@@ -124,12 +120,7 @@ def test_act_parameters_not_object_raises():
 
 
 def test_model_provider_exception_propagates():
-    rt = Runtime(
-        reasoner=LLMReasoner(RaisingModelProvider()),
-        capabilities={"add": FakeCapability()},
-        policy=AllowAllPolicy(),
-        state_store=InMemoryStateStore(),
-    )
+    rt = Runtime(reasoner=LLMReasoner(RaisingModelProvider()), capabilities={"add": FakeCapability()}, policy=AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     try:
         rt.start(Goal("will blow up"))
     except RuntimeExecutionError as exc:

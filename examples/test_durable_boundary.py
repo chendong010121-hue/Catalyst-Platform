@@ -22,6 +22,7 @@ from agent_runtime.contracts import (
 )
 from agent_runtime.errors import CapabilityContractError
 from agent_runtime.runtime import Runtime
+from agent_runtime.execution import RuntimeDomain
 
 from .fakes import AllowAllPolicy, FakeCapability, InMemoryStateStore
 
@@ -59,7 +60,7 @@ class RecordingCapability:
     def describe(self):
         return CapabilityDescriptor(id="add", name="add", description="records params")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         self.received = dict(parameters)
         return Success(42)
 
@@ -70,7 +71,7 @@ class MutatingCapability:
     def describe(self):
         return CapabilityDescriptor(id="add", name="add", description="mutates params")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         parameters["a"] = 999
         return Success(42)
 
@@ -91,7 +92,7 @@ class UnsnapshotableCapability:
     def describe(self):
         return CapabilityDescriptor(id="bad", name="bad", description="returns lock")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Success(threading.Lock())
 
 
@@ -106,9 +107,7 @@ class BadCapReasoner:
 
 def test_mutating_policy():
     cap = RecordingCapability()
-    rt = Runtime(
-        AddThenCompleteReasoner(), {"add": cap}, MutatingPolicy(), InMemoryStateStore()
-    )
+    rt = Runtime(AddThenCompleteReasoner(), {"add": cap}, MutatingPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("x"))
 
     assert cap.received == {"a": 20, "b": 22}  # Capability 仍收到 a=20
@@ -116,36 +115,21 @@ def test_mutating_policy():
 
 
 def test_mutating_capability():
-    rt = Runtime(
-        AddThenCompleteReasoner(),
-        {"add": MutatingCapability()},
-        AllowAllPolicy(),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(AddThenCompleteReasoner(), {"add": MutatingCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("x"))
 
     assert final.history[0].decision.action.parameters == {"a": 20, "b": 22}
 
 
 def test_mutating_history_reasoner():
-    rt = Runtime(
-        MutatingHistoryReasoner(),
-        {"add": FakeCapability()},
-        AllowAllPolicy(),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(MutatingHistoryReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("x"))
 
     assert final.history[0].decision.action.parameters == {"a": 20, "b": 22}
 
 
 def test_unsnapshotable_observation():
-    rt = Runtime(
-        BadCapReasoner(),
-        {"bad": UnsnapshotableCapability()},
-        AllowAllPolicy(),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(BadCapReasoner(), {"bad": UnsnapshotableCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     snapshot = rt.create(Goal("x"))
     try:
         rt.run(snapshot.session_id)

@@ -26,6 +26,7 @@ from agent_runtime.core import AgentCore
 from agent_runtime.errors import CapabilityContractError, ReconciliationError
 from agent_runtime.llm_reasoner import LLMReasoner
 from agent_runtime.runtime import Runtime
+from agent_runtime.execution import RuntimeDomain
 
 from .fakes import AllowAllPolicy, ScriptedModelProvider
 
@@ -69,7 +70,7 @@ class AddCapability:
             id="add", name="add", description="adds", input_schema=ADD_SCHEMA
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         self.invoke_count += 1
         return Success(parameters["a"] + parameters["b"])
 
@@ -149,7 +150,7 @@ def test_a_pending_contains_model_call():
 
 def test_b_confirmed_executed_success():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     snap = rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
 
     assert snap.pending_execution is None
@@ -161,7 +162,7 @@ def test_b_confirmed_executed_success():
 
 def test_c_confirmed_executed_failure():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     snap = rt.reconcile("s", "exec_1", ConfirmedExecuted(Failure("remote rejected")))
 
     assert isinstance(snap.history[0].observation, Failure)
@@ -170,7 +171,7 @@ def test_c_confirmed_executed_failure():
 
 def test_d_confirmed_not_executed():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     snap = rt.reconcile("s", "exec_1", ConfirmedNotExecuted())
 
     assert snap.pending_execution is None
@@ -183,7 +184,7 @@ def test_d_confirmed_not_executed():
 def test_e_no_pending_rejects():
     store = RecordingStore()
     store.seed(SessionSnapshot("s", Goal("x"), {}, ()))
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     try:
         rt.reconcile("s", "exec_1", ConfirmedNotExecuted())
     except ReconciliationError:
@@ -193,7 +194,7 @@ def test_e_no_pending_rejects():
 
 def test_f_wrong_execution_id_rejects():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     try:
         rt.reconcile("s", "exec_old", ConfirmedNotExecuted())
     except ReconciliationError:
@@ -205,7 +206,7 @@ def test_f_wrong_execution_id_rejects():
 
 def test_h_unsnapshotable_observation():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     try:
         rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(threading.Lock())))
     except CapabilityContractError:
@@ -219,7 +220,7 @@ def test_i_commit_failure():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
     # reconcile commit 也会失败（save #3 失败）
     store.fail_on = {2, 3}
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     try:
         rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
     except RuntimeError:
@@ -234,7 +235,7 @@ def test_j_reconcile_does_not_invoke():
     cap = AddCapability()
     reasoner = CountingReasoner()
     policy = CountingPolicy()
-    rt = Runtime(reasoner, {"add": cap}, policy, store)
+    rt = Runtime(reasoner, {"add": cap}, policy, domain=RuntimeDomain(state_store=store))
     rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
 
     assert reasoner.decide_calls == 0
@@ -246,7 +247,7 @@ def test_j_reconcile_does_not_invoke():
 def test_k_no_auto_resume():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
     reasoner = CountingReasoner()
-    rt = Runtime(reasoner, {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(reasoner, {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
     assert reasoner.decide_calls == 0  # reconcile 后不自动 resume
 
@@ -266,16 +267,11 @@ def test_l_native_round_trip():
         LLMReasoner(provider1, decision_protocol="native_tools"),
         exec_factory=lambda: "exec_xyz",
     )
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     rt.reconcile("s", "exec_xyz", ConfirmedExecuted(Success(42)))
 
     provider2 = ScriptedModelProvider([ModelResponse(content="done", finish_reason="stop")])
-    rt2 = Runtime(
-        LLMReasoner(provider2, decision_protocol="native_tools"),
-        {"add": AddCapability()},
-        AllowAllPolicy(),
-        store,
-    )
+    rt2 = Runtime(LLMReasoner(provider2, decision_protocol="native_tools"), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     final = rt2.resume("s")
 
     req = provider2.requests[0]
@@ -304,16 +300,11 @@ def test_m_native_not_executed_round_trip():
         LLMReasoner(provider1, decision_protocol="native_tools"),
         exec_factory=lambda: "exec_xyz",
     )
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     rt.reconcile("s", "exec_xyz", ConfirmedNotExecuted())
 
     provider2 = ScriptedModelProvider([ModelResponse(content="done", finish_reason="stop")])
-    rt2 = Runtime(
-        LLMReasoner(provider2, decision_protocol="native_tools"),
-        {"add": AddCapability()},
-        AllowAllPolicy(),
-        store,
-    )
+    rt2 = Runtime(LLMReasoner(provider2, decision_protocol="native_tools"), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     rt2.resume("s")
 
     tool = [m for m in provider2.requests[0].messages if m.role == "tool"]
@@ -324,19 +315,19 @@ def test_m_native_not_executed_round_trip():
 
 def test_n_legacy_reconciliation():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
 
     # legacy resume：textual history 包含 resolved observation
     provider = ScriptedModelProvider(['{"kind": "complete", "reason": "done"}'])
-    rt2 = Runtime(LLMReasoner(provider), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt2 = Runtime(LLMReasoner(provider), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     final = rt2.resume("s")
     assert isinstance(final.history[-1].decision, Complete)
 
 
 def test_o_note_durability():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     snap = rt.reconcile(
         "s", "exec_1", ConfirmedExecuted(Success(42), note="confirmed via external system")
     )
@@ -345,7 +336,7 @@ def test_o_note_durability():
 
 def test_p_duplicate_reconcile_rejected():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
     try:
         rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
@@ -356,13 +347,13 @@ def test_p_duplicate_reconcile_rejected():
 
 def test_q_normal_settled_regression():
     store = RecordingStore()
-    rt = Runtime(AddThenCompleteReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(AddThenCompleteReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     final = rt.start(Goal("x"))
     assert final.pending_execution is None
     assert len(final.history) == 2
     # resume terminal
     reasoner = CountingReasoner()
-    rt2 = Runtime(reasoner, {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt2 = Runtime(reasoner, {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     rt2.resume(final.session_id)
     assert reasoner.decide_calls == 0
 
@@ -382,7 +373,7 @@ def test_r_provenance():
         LLMReasoner(provider1, decision_protocol="native_tools"),
         exec_factory=lambda: "exec_xyz",
     )
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     snap = rt.reconcile("s", "exec_xyz", ConfirmedExecuted(Success(42)))
 
     step0 = snap.history[0]

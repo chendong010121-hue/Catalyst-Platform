@@ -30,6 +30,7 @@ from agent_runtime.errors import (
 from agent_runtime.llm_reasoner import LLMReasoner, _render_json
 from agent_runtime.policies import StepLimitPolicy, TokenBudgetPolicy
 from agent_runtime.runtime import Runtime
+from agent_runtime.execution import RuntimeDomain
 
 from .fakes import (
     AllowAllPolicy,
@@ -77,7 +78,7 @@ class BoomCapability:
     def describe(self):
         return CapabilityDescriptor(id="boom", name="boom", description="fails")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Failure("kaput")
 
 
@@ -88,7 +89,7 @@ class ReturnCapability:
     def describe(self):
         return CapabilityDescriptor(id="ret", name="ret", description="returns value")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return self._value
 
 
@@ -99,7 +100,7 @@ class DictResultCapability:
     def describe(self):
         return CapabilityDescriptor(id="dict", name="dict", description="returns dict")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Success(self._data)
 
 
@@ -109,7 +110,7 @@ class MismatchCapability:
     def describe(self):
         return CapabilityDescriptor(id="search", name="search", description="mismatch")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Success(None)
 
 
@@ -138,7 +139,7 @@ class BadStopPolicy:
 
 def test_a_create_returns_persistent_session():
     store = InMemoryStateStore()
-    rt = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     snapshot = rt.create(Goal("得到数字 42"))
     assert snapshot.history == ()
     assert store.load(snapshot.session_id) == snapshot
@@ -146,7 +147,7 @@ def test_a_create_returns_persistent_session():
 
 def test_a_run_failure_session_recoverable():
     store = InMemoryStateStore()
-    rt = Runtime(RaisingReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(RaisingReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     snapshot = rt.create(Goal("得到数字 42"))
     session_id = snapshot.session_id
 
@@ -161,13 +162,13 @@ def test_a_run_failure_session_recoverable():
     assert store.load(session_id).goal.description == "得到数字 42"
 
     # 用同一个 session_id 可以再次恢复并跑通
-    rt2 = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt2 = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     final = rt2.resume(session_id)
     assert isinstance(final.history[-1].decision, Complete)
 
 
 def test_a_start_failure_exposes_session_id():
-    rt = Runtime(RaisingReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), InMemoryStateStore())
+    rt = Runtime(RaisingReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     try:
         rt.start(Goal("x"))
     except RuntimeExecutionError as exc:
@@ -184,12 +185,7 @@ def test_a_start_failure_exposes_session_id():
 def test_b_policy_check_fail_closed():
     for bad in [None, object()]:
         store = InMemoryStateStore()
-        rt = Runtime(
-            AlwaysActReasoner(),
-            {"add": FakeCapability()},
-            BadCheckPolicy(bad),
-            store,
-        )
+        rt = Runtime(AlwaysActReasoner(), {"add": FakeCapability()}, BadCheckPolicy(bad), domain=RuntimeDomain(state_store=store))
         snapshot = rt.create(Goal("x"))
         try:
             rt.run(snapshot.session_id)
@@ -202,12 +198,7 @@ def test_b_policy_check_fail_closed():
 
 
 def test_b_policy_should_stop_fail_closed():
-    rt = Runtime(
-        AlwaysActReasoner(),
-        {"add": FakeCapability()},
-        BadStopPolicy(),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(AlwaysActReasoner(), {"add": FakeCapability()}, BadStopPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     snapshot = rt.create(Goal("x"))
     try:
         rt.run(snapshot.session_id)
@@ -223,12 +214,7 @@ def test_b_policy_should_stop_fail_closed():
 def test_c_capability_invalid_return():
     for bad in [123, None, {"ok": True}]:
         store = InMemoryStateStore()
-        rt = Runtime(
-            FixedActReasoner(Action("ret", {})),
-            {"ret": ReturnCapability(bad)},
-            AllowAllPolicy(),
-            store,
-        )
+        rt = Runtime(FixedActReasoner(Action("ret", {})), {"ret": ReturnCapability(bad)}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
         snapshot = rt.create(Goal("x"))
         try:
             rt.run(snapshot.session_id)
@@ -241,12 +227,7 @@ def test_c_capability_invalid_return():
 
 
 def test_c_capability_exception_still_failure():
-    rt = Runtime(
-        BoomThenCompleteReasoner(),
-        {"boom": BoomCapability()},
-        AllowAllPolicy(),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(BoomThenCompleteReasoner(), {"boom": BoomCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("x"))
     assert isinstance(final.history[0].observation, Failure)
     assert isinstance(final.history[-1].decision, Complete)
@@ -257,12 +238,7 @@ def test_c_capability_exception_still_failure():
 # ---------------------------------------------------------------------------
 
 def test_d_step_limit_policy():
-    rt = Runtime(
-        AlwaysActReasoner(),
-        {"add": FakeCapability()},
-        StepLimitPolicy(3),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(AlwaysActReasoner(), {"add": FakeCapability()}, StepLimitPolicy(3), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("x"))
     assert len(final.history) == 3
     term = final.history[-1].termination
@@ -280,12 +256,7 @@ def test_d_token_budget_policy():
             ),
         ]
     )
-    rt = Runtime(
-        LLMReasoner(provider),
-        {"add": FakeCapability()},
-        TokenBudgetPolicy(15),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(LLMReasoner(provider), {"add": FakeCapability()}, TokenBudgetPolicy(15), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("x"))
     term = final.history[-1].termination
     assert isinstance(term, Stop)
@@ -297,19 +268,12 @@ def test_d_token_budget_policy():
 # ---------------------------------------------------------------------------
 
 def test_e_capability_identity_ok():
-    Runtime(
-        FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), InMemoryStateStore()
-    )
+    Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
 
 
 def test_e_capability_identity_mismatch():
     try:
-        Runtime(
-            FakeReasoner(),
-            {"actual_key": MismatchCapability()},
-            AllowAllPolicy(),
-            InMemoryStateStore(),
-        )
+        Runtime(FakeReasoner(), {"actual_key": MismatchCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     except CapabilityRegistrationError:
         return
     raise AssertionError("expected CapabilityRegistrationError at construction")
@@ -322,12 +286,7 @@ def test_e_capability_identity_mismatch():
 def test_f_history_immutability_parameters():
     params = {"a": 20, "b": 22}
     action = Action("add", params)
-    rt = Runtime(
-        FixedActReasoner(action),
-        {"add": FakeCapability()},
-        AllowAllPolicy(),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(FixedActReasoner(action), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("x"))
     params["a"] = 999  # commit 之后修改原始 dict
     assert final.history[0].decision.action.parameters == {"a": 20, "b": 22}
@@ -335,12 +294,7 @@ def test_f_history_immutability_parameters():
 
 def test_f_history_immutability_observation():
     result = {"value": 42}
-    rt = Runtime(
-        FixedActReasoner(Action("dict", {})),
-        {"dict": DictResultCapability(result)},
-        AllowAllPolicy(),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(FixedActReasoner(Action("dict", {})), {"dict": DictResultCapability(result)}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("x"))
     result["value"] = 100  # commit 之后修改原始 dict
     assert final.history[0].observation.data == {"value": 42}

@@ -25,6 +25,7 @@ from agent_runtime.core import AgentCore
 from agent_runtime.errors import CapabilityContractError, UnresolvedExecutionError
 from agent_runtime.llm_reasoner import LLMReasoner
 from agent_runtime.runtime import Runtime
+from agent_runtime.execution import RuntimeDomain
 
 from .fakes import AllowAllPolicy, FakeCapability, InMemoryStateStore, ScriptedModelProvider
 
@@ -80,7 +81,7 @@ class CountingAddCapability:
             id="add", name="add", description="adds", input_schema=ADD_SCHEMA
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         self.call_count += 1
         if self.events is not None:
             self.events.append("invoke")
@@ -96,7 +97,7 @@ class RaisingAddCapability:
             id="add", name="add", description="raises", input_schema=ADD_SCHEMA
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         self.call_count += 1
         raise RuntimeError("boom")
 
@@ -107,7 +108,7 @@ class ReturnsFailureCapability:
             id="add", name="add", description="returns failure", input_schema=ADD_SCHEMA
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Failure("boom: known rejection")
 
 
@@ -117,7 +118,7 @@ class BadReturnCapability:
             id="add", name="add", description="bad", input_schema=ADD_SCHEMA
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return 123  # 非法返回值 → CapabilityContractError
 
 
@@ -378,12 +379,12 @@ def test_k_execution_id_distinct_from_tool_call_id():
 
 def test_l_resume_normal_settled_unchanged():
     store = InMemoryStateStore()
-    rt = Runtime(AddThenCompleteReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(AddThenCompleteReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     final = rt.start(Goal("x"))
     assert final.pending_execution is None
 
     reasoner = CountingReasoner()
-    rt2 = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt2 = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     final2 = rt2.resume(final.session_id)
     assert reasoner.decide_calls == 0  # terminal 直接返回
     assert final2.pending_execution is None
@@ -412,7 +413,7 @@ def test_n_pending_priority_over_terminal():
     store.commit(snap)
 
     reasoner = CountingReasoner()
-    rt = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
     try:
         rt.resume("s")
     except UnresolvedExecutionError:

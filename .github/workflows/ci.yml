@@ -1,0 +1,41 @@
+name: agent-runtime-ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile
+        run: python -m compileall -q agent_runtime examples
+
+      - name: Minimal loop
+        run: python -m examples.run_minimal_loop
+
+      - name: Run all offline test modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r f; do
+            mod="${f%.py}"
+            mod="${mod//\//.}"
+            echo "=== $mod ==="
+            python -m "$mod"
+          done < <(find examples -maxdepth 1 -type f -name 'test_*.py' | sort)

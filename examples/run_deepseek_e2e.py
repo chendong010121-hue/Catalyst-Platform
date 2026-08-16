@@ -13,6 +13,7 @@ from agent_runtime.llm_reasoner import LLMReasoner
 from agent_runtime.policies import StepLimitPolicy
 from agent_runtime.providers.deepseek import DeepSeekModelProvider
 from agent_runtime.runtime import Runtime
+from agent_runtime.execution import RuntimeDomain
 
 
 class AddCapability:
@@ -30,7 +31,7 @@ class AddCapability:
             output_schema={"sum": "number"},
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Success(parameters["a"] + parameters["b"])
 
 
@@ -54,12 +55,7 @@ def main() -> None:
     provider = DeepSeekModelProvider(
         api_key=api_key, model=os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash")
     )
-    runtime = Runtime(
-        reasoner=LLMReasoner(provider),
-        capabilities={"add": AddCapability()},
-        policy=StepLimitPolicy(max_steps=8),
-        state_store=MemStore(),
-    )
+    runtime = Runtime(reasoner=LLMReasoner(provider), capabilities={"add": AddCapability()}, policy=StepLimitPolicy(max_steps=8), domain=RuntimeDomain(state_store=MemStore()))
 
     goal = Goal("使用提供的 add capability 计算 20 + 22，并在获得结果后完成任务。")
     final = runtime.start(goal)

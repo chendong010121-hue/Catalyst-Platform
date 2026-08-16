@@ -216,8 +216,12 @@ class AgentCore:
             # prepare：在 Capability 可能产生副作用之前，先耐久记录执行意图。
             self._commit_snapshot(self._with_pending(snapshot, pending))
 
-            # execute
-            observation = self._capability_executor.execute(canonical_action)
+            # execute（execution_id 来自 durable PendingExecution identity；session_id 用于 registry）
+            observation = self._capability_executor.execute(
+                canonical_action,
+                execution_id=execution_id,
+                session_id=snapshot.session_id,
+            )
 
             # settle：单次 snapshot commit（history += step，pending=None）
             step = StepRecord(

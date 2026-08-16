@@ -72,8 +72,13 @@ class Capability(Protocol):
         """返回本能力的自描述元数据。"""
         ...
 
-    def invoke(self, parameters: Parameters) -> Observation:
-        """执行本能力并返回观测结果。"""
+    def invoke(self, parameters: Parameters, context) -> Observation:
+        """执行本能力并返回观测结果。
+
+        context 是 runtime-only ExecutionContext（提供 cooperative cancellation /
+        deadline 检查）。只返回 Success/Failure（authoritative outcome）；抛异常代表
+        outcome uncertain，由 Executor/Runner 处理为 infrastructure uncertainty。
+        """
         ...
 
 
@@ -87,8 +92,14 @@ class CapabilityExecutor(Protocol):
         """返回 model-visible capability descriptors（stable order，id 与 lookup identity 一致）。"""
         ...
 
-    def execute(self, action: Action) -> Observation:
-        """执行一个已通过 Policy 的 Action，返回 Observation。"""
+    def execute(self, action: Action, *, execution_id: str, session_id: str) -> Observation:
+        """执行一个已通过 Policy 的 Action，返回 Observation。
+
+        execution_id 来自 durable PendingExecution identity；session_id 用于
+        live cancellation registry。返回 Success/Failure（authoritative）；
+        抛 CapabilityExecutionError / CapabilityTimeoutUncertainError 表示 outcome
+        uncertain（Core 保留 pending unresolved）。
+        """
         ...
 
 

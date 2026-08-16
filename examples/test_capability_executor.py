@@ -22,6 +22,7 @@ from agent_runtime.errors import (
     CapabilityRegistrationError,
 )
 from agent_runtime.runtime import Runtime
+from agent_runtime.execution import RuntimeDomain
 
 from .fakes import AllowAllPolicy, InMemoryStateStore
 
@@ -50,7 +51,7 @@ class CountingCapability:
             id=self._id, name=self._id, description="test", input_schema=self._input_schema
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         self.call_count += 1
         return Success(self._result)
 
@@ -59,7 +60,7 @@ class RaisingCapability:
     def describe(self):
         return CapabilityDescriptor(id="boom", name="boom", description="raises")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         raise RuntimeError("boom")
 
 
@@ -67,7 +68,7 @@ class BadReturnCapability:
     def describe(self):
         return CapabilityDescriptor(id="bad", name="bad", description="bad return")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return 123
 
 
@@ -75,7 +76,7 @@ class MismatchCapability:
     def describe(self):
         return CapabilityDescriptor(id="search", name="search", description="mismatch")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Success(None)
 
 
@@ -86,7 +87,7 @@ class MinLengthCapability:
             input_schema={"type": "string", "minLength": 5},
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Success(None)
 
 
@@ -94,7 +95,7 @@ class MutatingCapability:
     def describe(self):
         return CapabilityDescriptor(id="add", name="add", description="mutates")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         parameters["a"] = 999
         return Success(42)
 
@@ -132,7 +133,7 @@ def test_a_descriptor_identity():
 def test_b_valid_parameters():
     cap = CountingCapability("add", ADD_SCHEMA)
     executor = DefaultCapabilityExecutor({"add": cap})
-    obs = executor.execute(Action("add", {"a": 20, "b": 22}))
+    obs = executor.execute(Action("add", {"a": 20, "b": 22}), execution_id="e", session_id="s")
     assert isinstance(obs, Success)
     assert obs.data == 42
     assert cap.call_count == 1
@@ -141,7 +142,7 @@ def test_b_valid_parameters():
 def test_c_missing_required():
     cap = CountingCapability("add", ADD_SCHEMA)
     executor = DefaultCapabilityExecutor({"add": cap})
-    obs = executor.execute(Action("add", {"a": 20}))
+    obs = executor.execute(Action("add", {"a": 20}), execution_id="e", session_id="s")
     assert isinstance(obs, Failure)
     assert "missing required property" in obs.error
     assert cap.call_count == 0
@@ -150,7 +151,7 @@ def test_c_missing_required():
 def test_d_wrong_type():
     cap = CountingCapability("add", ADD_SCHEMA)
     executor = DefaultCapabilityExecutor({"add": cap})
-    obs = executor.execute(Action("add", {"a": "20", "b": 22}))
+    obs = executor.execute(Action("add", {"a": "20", "b": 22}), execution_id="e", session_id="s")
     assert isinstance(obs, Failure)
     assert "expected integer" in obs.error
     assert cap.call_count == 0
@@ -159,7 +160,7 @@ def test_d_wrong_type():
 def test_e_additional_properties():
     cap = CountingCapability("add", ADD_SCHEMA)
     executor = DefaultCapabilityExecutor({"add": cap})
-    obs = executor.execute(Action("add", {"a": 20, "b": 22, "c": 1}))
+    obs = executor.execute(Action("add", {"a": 20, "b": 22, "c": 1}), execution_id="e", session_id="s")
     assert isinstance(obs, Failure)
     assert "unexpected property" in obs.error
     assert cap.call_count == 0
@@ -173,7 +174,7 @@ def test_f_nested_path_error():
     }
     cap = CountingCapability("n", schema)
     executor = DefaultCapabilityExecutor({"n": cap})
-    obs = executor.execute(Action("n", {"items": [1, "x", 3]}))
+    obs = executor.execute(Action("n", {"items": [1, "x", 3]}), execution_id="e", session_id="s")
     assert isinstance(obs, Failure)
     assert "$.items[1]" in obs.error
     assert cap.call_count == 0
@@ -186,7 +187,7 @@ def test_g_enum():
     }
     cap = CountingCapability("e", schema)
     executor = DefaultCapabilityExecutor({"e": cap})
-    obs = executor.execute(Action("e", {"mode": "c"}))
+    obs = executor.execute(Action("e", {"mode": "c"}), execution_id="e", session_id="s")
     assert isinstance(obs, Failure)
     assert "not one of" in obs.error
     assert cap.call_count == 0
@@ -202,7 +203,7 @@ def test_h_unsupported_schema_keyword():
 
 def test_i_unknown_capability():
     executor = DefaultCapabilityExecutor({})
-    obs = executor.execute(Action("does_not_exist", {}))
+    obs = executor.execute(Action("does_not_exist", {}), execution_id="e", session_id="s")
     assert isinstance(obs, Failure)
     assert "unknown capability" in obs.error
 
@@ -210,7 +211,7 @@ def test_i_unknown_capability():
 def test_j_capability_raises():
     executor = DefaultCapabilityExecutor({"boom": RaisingCapability()})
     try:
-        executor.execute(Action("boom", {}))
+        executor.execute(Action("boom", {}), execution_id="e", session_id="s")
     except CapabilityExecutionError as exc:
         assert exc.capability_id == "boom"
         return
@@ -220,7 +221,7 @@ def test_j_capability_raises():
 def test_k_invalid_return():
     executor = DefaultCapabilityExecutor({"bad": BadReturnCapability()})
     try:
-        executor.execute(Action("bad", {}))
+        executor.execute(Action("bad", {}), execution_id="e", session_id="s")
     except CapabilityContractError:
         return
     raise AssertionError("expected CapabilityContractError for invalid return")
@@ -228,9 +229,7 @@ def test_k_invalid_return():
 
 def test_l_policy_deny_short_circuit():
     cap = CountingCapability("add", ADD_SCHEMA)
-    rt = Runtime(
-        AddThenCompleteReasoner(), {"add": cap}, DenyPolicy(), InMemoryStateStore()
-    )
+    rt = Runtime(AddThenCompleteReasoner(), {"add": cap}, DenyPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("x"))
     assert cap.call_count == 0  # Executor 未被调用
     assert isinstance(final.history[0].policy_verdict, Deny)
@@ -238,12 +237,7 @@ def test_l_policy_deny_short_circuit():
 
 
 def test_m_durable_mutation_regression():
-    rt = Runtime(
-        AddThenCompleteReasoner(),
-        {"add": MutatingCapability()},
-        AllowAllPolicy(),
-        InMemoryStateStore(),
-    )
+    rt = Runtime(AddThenCompleteReasoner(), {"add": MutatingCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=InMemoryStateStore()))
     final = rt.start(Goal("x"))
     assert final.history[0].decision.action.parameters == {"a": 20, "b": 22}
 

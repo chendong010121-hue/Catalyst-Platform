@@ -18,6 +18,7 @@ from agent_runtime.contracts import (
 )
 from agent_runtime.errors import RuntimeExecutionError
 from agent_runtime.runtime import Runtime
+from agent_runtime.execution import RuntimeDomain
 
 from .fakes import AllowAllPolicy, FakeCapability, FakeReasoner, InMemoryStateStore
 
@@ -59,17 +60,12 @@ class RaisingCapability:
     def describe(self):
         return CapabilityDescriptor(id="boom", name="boom", description="fails")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Failure("kaput")
 
 
 def _runtime(reasoner, capabilities=None, policy=None, store=None):
-    return Runtime(
-        reasoner=reasoner,
-        capabilities=capabilities if capabilities is not None else {"add": FakeCapability()},
-        policy=policy if policy is not None else AllowAllPolicy(),
-        state_store=store if store is not None else InMemoryStateStore(),
-    )
+    return Runtime(reasoner=reasoner, capabilities=capabilities if capabilities is not None else {"add": FakeCapability()}, policy=policy if policy is not None else AllowAllPolicy(), domain=RuntimeDomain(state_store=store if store is not None else InMemoryStateStore()))
 
 
 # ---------------------------------------------------------------------------
