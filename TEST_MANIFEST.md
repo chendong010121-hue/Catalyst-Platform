@@ -1,9 +1,10 @@
-# TEST MANIFEST — Cooperative Cancellation & Timeout v0.1 Mainline Alignment
+# TEST MANIFEST — ExecutionCancelled Provenance Race Closure
 
-## Active regression（21 modules，全绿）
+## Active regression（22 modules，全绿）
 
 | Module | 覆盖 |
 |---|---|
+| `test_execution_cancelled_provenance.py` | **PRV-1..7** ExecutionCancelled provenance（raw spurious / post-hoc request race / legitimate token / timeout cooperative / foreign marker / late spurious / late legitimate） |
 | `test_cancellation_timeout_mainline.py` | **CT-MA-1..12** mainline alignment 验收（normal / explicit cancel / cooperative cancel / non-cooperative timeout / same-Runtime live guard / late evidence / reconcile / task-TimeoutError 分类 / 纯 load-commit store / 无 domain 构造 / regression） |
 | `test_cancellation_timeout.py` | T1..T22 cooperative cancellation / timeout / cancel-race / timeout-race / context 不 durable / worker 不写 store |
 | `test_live_execution_quiescence.py` | Q1..Q12 registry 保留、cancel 定位、live guard、identity-safe remove、spurious cancel、timeout 分类 |
@@ -45,6 +46,7 @@ foreach ($m in (Get-ChildItem examples\test_*.py | % BaseName)) { python -m exam
 ## 结果（本轮）
 
 ```text
-FULL REGRESSION: 21 modules PASS，0 failures
-500-STRESS: 500 iterations PASS（27.22s）
+DETERMINISTIC RACE (PRV-2): PASS
+FULL REGRESSION: 22 modules PASS，0 failures
+500-STRESS: 500 iterations PASS（18.86s）
 ```

@@ -38,10 +38,18 @@ class CapabilityExecutionError(RuntimeError):
 class ExecutionCancelled(RuntimeError):
     """Capability 在 cooperative cancellation point 主动退出（body 已 quiesce）。
 
-    仅当 Capability 明确通过 Harness 提供的 cancellation token API
-    （raise_if_cancelled / is_cancel_requested）退出时，才由 token 抛出。
+    它是 internal runtime signal，可携带 process-local provenance marker。
+    只有 Harness 拥有的 CancellationToken.raise_if_cancelled() 才会抛出携带
+    本 token marker 的 ExecutionCancelled（confirmed cooperative cancellation）。
+
+    手动 raise ExecutionCancelled()（无 marker）或携带 foreign marker 是
+    Capability contract violation → outcome unresolved（绝不结算为取消 Failure）。
     普通 RuntimeError/IOError 即使恰逢 cancel request，也绝不能当 ExecutionCancelled。
     """
+
+    def __init__(self, marker=None) -> None:
+        self.marker = marker
+        super().__init__()
 
 
 class CapabilityTimeoutUncertainError(RuntimeError):

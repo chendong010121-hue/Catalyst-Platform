@@ -32,10 +32,20 @@
 | I-owner-only-writes | 只有 owner 线程写 Session；worker 只产出 outcome | AgentCore / Runtime | NO |
 | I-store-purity | StateStore 只 load/commit，不含 execution-domain claim | Protocol | NO（CT-MA-10） |
 | I-no-domain | Runtime 公共契约不含 RuntimeDomain | 构造函数签名 | NO（CT-MA-11） |
+| I-provenance | ExecutionCancelled 只有携带本 token marker 才是 confirmed cancellation；raw/spurious/foreign → unresolved | CancellationToken marker + source.is_proven_cancellation | NO（PRV-1..7） |
 
 ## 并发 / 确定性
 
 `ActiveExecutionRegistry` / `LateCompletionEvidenceRegistry` 各自独立短锁；done callback 固定顺序 `publish evidence → remove active`；无嵌套锁、无持锁 commit/execute。确定性并发测试以 `Event`/线程为 primary proof，`sleep` 仅用于 quiescence 轮询窗口。
+
+## ExecutionCancelled provenance closure（本轮 narrow repair）
+
+- **问题**：旧 runner 在 catch 时用 `source.is_cancel_requested()` 判断 `ExecutionCancelled` 是否合法；若 worker 先 raise spurious `ExecutionCancelled`、owner 后 `request_cancel()`、再观察到 Future 异常，post-hoc request 会 retroactively 合法化该 spurious 异常 → 错误结算为 `Failure("execution cancelled")`。
+- **修复**：`CancellationSource` 持私有 marker（`object()`）；`CancellationToken.raise_if_cancelled()` 抛 `ExecutionCancelled(marker)`；runner 用 `source.is_proven_cancellation(exc)`（marker 精确匹配）取代 `is_cancel_requested()`，immediate 与 late callback 两条路径一致。
+- **语义**：
+  - raw `ExecutionCancelled()` / foreign marker → unproven → `CapabilityContractError` → unresolved。
+  - 本 token `raise_if_cancelled()` → proven → `Failure("execution cancelled")`。
+  - post-hoc `request_cancel()` 不能 retroactively 合法化更早的 unproven exception。
 
 ## 不支持（明确 out-of-scope，v0.x 非 P0）
 

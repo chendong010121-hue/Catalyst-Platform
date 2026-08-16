@@ -1,69 +1,58 @@
-# HANDOFF — Cooperative Cancellation & Timeout v0.1 Mainline Alignment
+# HANDOFF — ExecutionCancelled Provenance Race Closure
 
-> 阶段：把 Runtime 从「RuntimeDomain / cross-Runtime domain 扩张」拉回 v0.x 支持契约 —— 保留 Cooperative Cancellation / Timeout / late-evidence / live-guard 全部语义，移除「多个 Runtime 实例并发协调同一 live Session」这一从未属于 v0.x 支持契约的假设。
-> 依据：`CANCELLATION_TIMEOUT_MAINLINE_REALIGNMENT_SPEC.md`（IMPLEMENTATION AUTHORIZED — LOCAL ONLY）。
+> 阶段：窄修复外部审计发现的 `ExecutionCancelled temporal provenance race`（Triage: FIX NOW）。
+> 依据：`EXECUTION_CANCELLED_PROVENANCE_RACE_CLOSURE_SPEC.md`（IMPLEMENTATION AUTHORIZED — LOCAL ONLY）。
+> 前一阶段（mainline alignment）已发布 candidate `68baaa5`；本阶段在其上做本地修复，尚未 commit/push。
 
 ## 结果
 
 `READY FOR USER GIT/PUSH APPROVAL`（本地实现 + 验证完成；尚未 commit/push）。
 
-工作目录 `E:\试验场地\Agent Hardness` **不是 git 仓库**（`CANONICAL WORKSPACE IS NON-GIT`）。若需 commit/push，必须先由用户批准「把此目录绑定为 Git 仓库」并创建新 stage 分支（见 §29/§30）。
+- WORKSPACE：`E:\试验场地\Agent Harness`
+- BRANCH：`ds/cancellation-timeout-mainline-alignment`
+- PRE-FIX SHA：`68baaa5beb5e362337f75da4ea385a78d512a291`
+- 修复后本地工作树尚未 commit（新 SHA 待用户批准后生成）
 
-## 核心变更（KEEP / REMOVE）
+## 问题与修复
 
-| 项 | 处置 |
+旧 runner 在 catch `ExecutionCancelled` 时用 `source.is_cancel_requested()` 判断是否合法。若 worker 先 raise spurious `ExecutionCancelled`、owner 后 `request_cancel()`、再观察到 Future 异常，post-hoc request 会 retroactively 合法化该 spurious 异常 → 错误结算为 `Failure("execution cancelled")`。
+
+**修复（provenance marker）**：
+
+| 符号 | 变更 |
 |---|---|
-| CancellationToken / CancellationSource / ExecutionCancelled / ExecutionContext / ExecutionDeadline / ExecutionTimeoutConfig | **KEEP** |
-| ActiveExecutionRegistry / LateCompletionEvidenceRegistry | **KEEP**（Runtime-local） |
-| ExecutionControlPlane | **KEEP，但收窄**：由单个 Runtime 组合根拥有，不再是多 Runtime 协调器 |
-| Runtime.cancel / reconcile / run / resume / start / create | **KEEP**（同 Runtime 边界） |
-| live-guard（ExecutionStillLiveError）/ late-evidence guard / post-commit evidence cleanup | **KEEP** |
-| `RuntimeDomain` | **REMOVE**（从 Runtime 公共契约移除） |
-| `RuntimeDomainBindable` / `claim_runtime_domain` / `get_runtime_domain` | **REMOVE** |
-| `RuntimeDomainConflictError` | **REMOVE** |
-| StateStore domain claim 要求 | **REMOVE**（StateStore 回归纯 `load`/`commit`） |
+| `ExecutionCancelled` | 可携带 process-local `marker`（`__init__(marker=None)`） |
+| `CancellationToken` | 持 `_marker`；`raise_if_cancelled()` 抛 `ExecutionCancelled(self._marker)` |
+| `CancellationSource` | 持私有 `_marker = object()`；新增 `is_proven_cancellation(exc)`（marker 精确匹配） |
+| `ThreadedExecutionRunner` | `_reject_spurious_cancelled(source, exc)` 与 late `_on_uncertain_done` 均改用 `is_proven_cancellation` |
 
-## 新组合
-
-```python
-Runtime(reasoner, capabilities, policy, state_store, *, timeout_config=None)
-```
-
-`Runtime` 内部自建一个 Runtime-local `ExecutionControlPlane`，注入 `DefaultCapabilityExecutor` / `ThreadedExecutionRunner`，供 `cancel`/`reconcile` 查询同一份 active/evidence 状态。只读观察入口：`runtime.control_plane`（不提供注入 / 跨 Runtime 共享 API）。
+语义：raw `ExecutionCancelled()` / foreign marker → unproven → `CapabilityContractError` → unresolved；本 token `raise_if_cancelled()` → proven → `Failure("execution cancelled")`。
 
 ## Change Manifest
 
 ```
 FILES CHANGED (production):
-  agent_runtime/execution.py          (移除 RuntimeDomain / RuntimeDomainBindable / claim)
-  agent_runtime/runtime.py            (构造函数改 state_store + 内部 ExecutionControlPlane)
-  agent_runtime/capability_executor.py (guard 理由改为 execution-control 依赖)
-  agent_runtime/errors.py             (移除 RuntimeDomainConflictError)
-  examples/fakes.py                   (InMemoryStateStore 回归纯 load/commit)
+  agent_runtime/errors.py     (ExecutionCancelled 携带 provenance marker)
+  agent_runtime/execution.py  (token/source marker + runner provenance 校验，immediate + late 两条路径)
 
-FILES CHANGED (tests): 18 个 test_*.py + run_deepseek_e2e.py + run_deepseek_native_tool_e2e.py
-FILES ADDED: examples/test_cancellation_timeout_mainline.py (CT-MA-1..12)
+FILES ADDED:
+  examples/test_execution_cancelled_provenance.py  (PRV-1..PRV-7)
 
-FILES REMOVED FROM ACTIVE MAINLINE (retired, history retained on GitHub PR #1):
-  examples/test_runtime_domain_identity.py
-  examples/test_runtime_domain_uniqueness.py
+FILES CHANGED (docs):
+  ARCHITECTURE.md / HANDOFF.md / IMPLEMENTATION_NOTES.md / INTERNAL_AUDIT_REPORT.md / TEST_MANIFEST.md
 
-TESTS REWRITTEN (cross-Runtime -> same-Runtime):
-  test_control_plane_evidence_integrity  A(spy->lower-level runner) / B3 / G2
-  test_late_completion_control_plane     L7/L8/L9
-
-FULL REGRESSION RESULT: 21 modules PASS (20 retained + 1 new CT-MA), 0 failures
-500-STRESS RESULT: 500 iterations PASS (27.22s, 0 intermittent failures)
-INTERNAL P0/P1 COUNT: P0=0 / P1=0
-CURRENT ABSOLUTE WORKSPACE PATH: E:\试验场地\Agent Hardness
+PROVENANCE DESIGN: private per-execution marker；只认本 token raise_if_cancelled 产生的 ExecutionCancelled
+DETERMINISTIC RACE TEST (PRV-2): PASS（monkeypatch execution._futures_wait，exception-before-request 仍 unresolved）
+LATE CALLBACK PARITY (PRV-6/PRV-7): PASS（late spurious -> uncertain；late proven -> authoritative）
+FULL REGRESSION: 22 modules PASS（21 retained + 1 PRV），0 failures
+500-STRESS: 500 iterations PASS（18.86s，0 intermittent failures）
+INTERNAL AUDIT: P0=0 / P1=0
 ```
 
 ## 尚未授权（STOP 边界）
 
 ```text
-commit / push / merge / close-reopen PR / force-push / rebase / reset
-git init / remote rebinding
-修改 agent-runtime-git 或任何临时 clone
+commit / push / merge / PR mutation / rebase / force-push
 ```
 
-PR #1 保持 `OPEN / FROZEN / NOT MERGED`（head `2d546c07`）。外部审计新发现仍 PARKED（canonical domain authenticity / binding immutability / control-plane identity immutability），本轮**未实现**。
+candidate `68baaa5` 仍为失败外审 target；本地修复后的新 SHA 需用户批准后 commit/push 生成。

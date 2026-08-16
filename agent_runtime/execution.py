@@ -78,31 +78,45 @@ class ExecutionDeadline:
 # ---------------------------------------------------------------------------
 
 class CancellationToken:
-    """Capability 的只读 view。"""
+    """Capability 的只读 view。
 
-    def __init__(self, event: threading.Event) -> None:
+    携带本 execution 的 process-local provenance marker；raise_if_cancelled()
+    抛出携带该 marker 的 ExecutionCancelled，供 runner 校验取消的 provenance。
+    """
+
+    def __init__(self, event: threading.Event, marker: object) -> None:
         self._event = event
+        self._marker = marker
 
     def is_cancel_requested(self) -> bool:
         return self._event.is_set()
 
     def raise_if_cancelled(self) -> None:
         if self._event.is_set():
-            raise ExecutionCancelled()
+            raise ExecutionCancelled(self._marker)
 
 
 class CancellationSource:
-    """Harness 侧：可 request_cancel 的写侧；与 token 分离。"""
+    """Harness 侧：可 request_cancel 的写侧；与 token 分离。
+
+    每个 source 持有一个私有 marker；只有本 source 的 token 抛出的
+    ExecutionCancelled 携带该 marker，才被视为 confirmed cooperative cancellation。
+    """
 
     def __init__(self) -> None:
         self._event = threading.Event()
-        self.token = CancellationToken(self._event)
+        self._marker = object()
+        self.token = CancellationToken(self._event, self._marker)
 
     def request_cancel(self) -> None:
         self._event.set()
 
     def is_cancel_requested(self) -> bool:
         return self._event.is_set()
+
+    def is_proven_cancellation(self, exc) -> bool:
+        """exc 是否由本 source 的 token 产生（provenance marker 精确匹配）。"""
+        return isinstance(exc, ExecutionCancelled) and exc.marker is self._marker
 
 
 # ---------------------------------------------------------------------------
@@ -318,15 +332,17 @@ class ThreadedExecutionRunner:
         )
 
     @staticmethod
-    def _reject_spurious_cancelled(source: CancellationSource) -> None:
-        """ExecutionCancelled 只有在对应 CancellationSource 已 request 时才合法。
+    def _reject_spurious_cancelled(source: CancellationSource, exc: ExecutionCancelled) -> None:
+        """ExecutionCancelled 只有携带本 source 的 provenance marker 才合法。
 
         否则 capability 伪造了 infrastructure cancellation signal → contract violation
-        （unresolved，不是取消结算）。
+        （unresolved，不是取消结算）。post-hoc request_cancel 不能 retroactively
+        合法化更早产生的 unproven exception。
         """
-        if not source.is_cancel_requested():
+        if not source.is_proven_cancellation(exc):
             raise CapabilityContractError(
-                "capability raised ExecutionCancelled without a cancellation request"
+                "capability raised unproven ExecutionCancelled "
+                "(not produced by this token's raise_if_cancelled)"
             ) from None
 
     def _on_uncertain_done(self, session_id: str, execution_id: str, source: CancellationSource, future) -> None:
@@ -338,14 +354,15 @@ class ThreadedExecutionRunner:
 
         late outcome 分类（与 normal cooperative cancellation 语义一致）：
         - 返回 Success/Failure           → authoritative observation
-        - 抛 ExecutionCancelled（已 request）→ authoritative Failure("execution cancelled")
+        - 抛 proven ExecutionCancelled（本 token raise_if_cancelled）→ authoritative Failure("execution cancelled")
+        - 抛 unproven/spurious ExecutionCancelled → uncertain（与 immediate path 语义一致）
         - 抛普通异常 / invalid return    → uncertain（quiescent 但 outcome 未知）
         """
         if self._evidence is not None:
             try:
                 result = future.result()
-            except ExecutionCancelled:
-                if source.is_cancel_requested():
+            except ExecutionCancelled as exc:
+                if source.is_proven_cancellation(exc):
                     self._evidence.record_observation(
                         session_id, execution_id, Failure("execution cancelled")
                     )
@@ -389,8 +406,8 @@ class ThreadedExecutionRunner:
             # 无 deadline：内联执行，cooperative cancel 通过 token 生效；结束即 quiescent
             try:
                 result = _invoke(capability, parameters, context)
-            except ExecutionCancelled:
-                self._reject_spurious_cancelled(source)
+            except ExecutionCancelled as exc:
+                self._reject_spurious_cancelled(source, exc)
                 raise
             finally:
                 if self._registry is not None:
@@ -415,8 +432,8 @@ class ThreadedExecutionRunner:
             # execution 已 quiescent：拿到 authoritative result（成功/异常/confirmed cancel）
             try:
                 result = future.result()
-            except ExecutionCancelled:
-                self._reject_spurious_cancelled(source)
+            except ExecutionCancelled as exc:
+                self._reject_spurious_cancelled(source, exc)
                 raise
             finally:
                 if self._registry is not None:
