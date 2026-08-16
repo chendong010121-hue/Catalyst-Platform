@@ -48,12 +48,7 @@ def _decide(json_str):
 
 
 def _runtime(provider, capabilities, policy):
-    return Runtime(
-        reasoner=LLMReasoner(provider),
-        capabilities=capabilities,
-        policy=policy,
-        state_store=InMemoryStateStore(),
-    )
+    return Runtime(reasoner=LLMReasoner(provider), capabilities=capabilities, policy=policy, state_store=InMemoryStateStore())
 
 
 # ---------------------------------------------------------------------------
@@ -74,7 +69,7 @@ class BoomCapability:
     def describe(self):
         return CapabilityDescriptor(id="boom", name="boom", description="fails")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Failure("RuntimeError: kaput")
 
 
@@ -285,12 +280,7 @@ def test_i_complete_reason_invalid():
 
 def test_j_provider_one_attempt():
     provider = RaisingOnceProvider()
-    rt = Runtime(
-        reasoner=LLMReasoner(provider),
-        capabilities={"add": FakeCapability()},
-        policy=AllowAllPolicy(),
-        state_store=InMemoryStateStore(),
-    )
+    rt = Runtime(reasoner=LLMReasoner(provider), capabilities={"add": FakeCapability()}, policy=AllowAllPolicy(), state_store=InMemoryStateStore())
     try:
         rt.start(Goal("x"))
     except RuntimeExecutionError as exc:

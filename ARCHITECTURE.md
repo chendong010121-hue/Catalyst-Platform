@@ -1,7 +1,7 @@
-# Agent Runtime — 架构（v1.2 · Execution Certainty & Session Identity）
+# Agent Runtime — 架构（v1.9 · Cooperative Cancellation & Timeout v0.1 Mainline Alignment）
 
-> 版本：v1.2 —— 反映当前真实实现，不是设计文档。
-> 状态：Runtime（create/run/resume/start/reconcile）/ AgentCore / LLMReasoner（legacy_json + native_tools）/ DeepSeekModelProvider / CapabilityExecutor / 生产安全 Policy 已存在并可运行；Capability 执行结果确定性、Session 身份一致性、native tool fact 一致性、recovered budget 安全已 fail-closed 收口。
+> 版本：v1.9 —— 反映当前真实实现，不是设计文档。
+> 状态：Runtime（create/run/resume/start/reconcile/cancel）/ AgentCore / LLMReasoner / DeepSeekModelProvider / CapabilityExecutor（ExecutionRunner）/ 生产安全 Policy 已存在并可运行；Cooperative Cancellation & Timeout v0.1 已完成 mainline realignment（移除 RuntimeDomain / cross-Runtime domain 扩张，保留同 Runtime 执行所有权边界内的 cancellation/timeout/late-evidence/live-guard 语义）。本地实现 + 全量回归 + 500 stress + 内审完成，状态 READY FOR USER GIT/PUSH APPROVAL。
 > 原则：只收敛与加固，不扩张。不引入第三方框架、事件总线、动态插件、多 Agent、Cordis。
 
 ---
@@ -12,7 +12,7 @@
                       目标 / 任务
                           │
                  ┌────────▼────────────────┐
-                 │        Runtime          │  组合根 · 生命周期(create/run/start/resume/reconcile)
+                 │        Runtime          │  组合根 · 生命周期(create/run/start/resume/reconcile/cancel)
                  └────────┬────────────────┘
                           │ 装配并驱动
                  ┌────────▼────────────────┐
@@ -99,6 +99,7 @@ resume(session_id)  -> SessionSnapshot   # run 的别名
 start(goal)         -> SessionSnapshot   # create + run（run 失败抛 RuntimeExecutionError，含 session_id）
 reconcile(session_id, execution_id, resolution)
                     -> SessionSnapshot   # load + 结构校验 + 显式恢复 unresolved；resolution 携带 observation/note（见 §4）
+cancel(session_id)  -> CancelRequestResult  # 对 live execution 请求 cooperative cancellation（signal only，不写 Session）
 ```
 
 recovery 顺序（run / resume / reconcile 共用）：
@@ -110,9 +111,23 @@ load → validate_session_snapshot → pending gate → terminal / execution
 组合：
 
 ```python
-executor = DefaultCapabilityExecutor(capabilities)
-core = AgentCore(reasoner=reasoner, capability_executor=executor, policy=policy, state_store=state_store)
+# Runtime 直接组合 StateStore；内部自建 Runtime-local ExecutionControlPlane
+runtime = Runtime(
+    reasoner=reasoner,
+    capabilities=capabilities,
+    policy=policy,
+    state_store=state_store,
+    timeout_config=ExecutionTimeoutConfig(...),   # 可选
+)
 ```
+
+**Execution ownership boundary（同 Runtime 边界）**：`ExecutionControlPlane` 是 Runtime-local 执行控制服务，由单个 Runtime 组合根创建并拥有（`Runtime.__init__` 内部创建 `ExecutionControlPlane()`，注入 `DefaultCapabilityExecutor` / `ThreadedExecutionRunner`，供 `Runtime.cancel` / `Runtime.reconcile` 查询同一份 active/evidence 状态）。它不是 StateStore namespace 身份、不是多 Runtime 协调器、不是分布式所有权服务、不是 process-wide singleton。`Runtime` 直接接受 `state_store`（纯 `load`/`commit` 契约），不再要求 domain claim / mixin。
+
+> **Architecture statement（v0.1 mainline）**
+> - Cooperative Cancellation & Timeout v0.1 is supported within one Runtime execution ownership boundary.
+> - ExecutionControlPlane is Runtime-local.
+> - Multiple Runtime instances concurrently coordinating the same live Session are not supported in v0.x.
+> - RuntimeDomain / Store-domain claim is not part of the current Runtime contract.
 
 关键语义：
 
@@ -148,13 +163,16 @@ invalid return / unsnapshotable     → CapabilityContractError → pending unre
 
 `exception != proof of non-execution`。这是 Timeout/Cancellation 的基础语义：不自动 retry / auto reconcile，只能 operator/external verification → `Runtime.reconcile`。
 
+**执行 concurrency/cancellation（见 §2.11）**：`DefaultCapabilityExecutor` 持有 `ExecutionRunner`（默认 `ThreadedExecutionRunner`）与 `ActiveExecutionRegistry`，把 `execution_id`/`session_id` 传入执行；`invoke` 通过 `ExecutionContext` 获得 cooperative cancellation/deadline 检查。
+
 不负责 reasoning、policy、session lifecycle、retry、approval、sandbox、model calls。
 
 ### 2.6 Capability —— Agent-facing 可执行能力
 
 > **Agent-facing executable capability：Reasoner 可以选择，CapabilityExecutor 可以执行，并得到 Observation 的能力。**
 
-- 实现 `describe()` + `invoke(params) -> Observation`；`invoke` 返回值**必须是** `Success` 或 `Failure`，否则 `CapabilityContractError`。
+- 实现 `describe()` + `invoke(parameters, context) -> Observation`；`invoke` 返回值**必须是** `Success` 或 `Failure`，否则 `CapabilityContractError`。
+- `context` 是 runtime-only `ExecutionContext`：提供 `is_cancel_requested()` / `raise_if_cancelled()` / `remaining_seconds()`，供 cooperative cancellation/deadline 检查；它**不是** agent-visible tool argument，也**不**进入 `CapabilityDescriptor` schema。
 - **`CapabilityDescriptor.input_schema` 是单一声明源：同时用于 Reasoner model-visible 描述 + Executor runtime validation。**
 - **portable capability ID contract**：`descriptor.id` 必须是 `^[A-Za-z0-9_-]{1,64}$`。它直接成为 native tool `function.name`（DeepSeek/OpenAI-style 均兼容），禁止 dotted/domain/带空格/超长 id；Provider 层不做 name rewrite / alias。
 - identity 不变量：`mapping key == descriptor.id`（CapabilityExecutor 构造时校验，key 必须是 non-empty str）。
@@ -227,6 +245,46 @@ ModelCallRecord      usage None|ModelUsage / finish_reason None|str /
 所有 model 序列字段（`Message.tool_calls` / `ModelResponse.tool_calls` / `ModelCallRecord.tool_calls` / `ModelRequest.messages` / `ModelRequest.tools`）在 `__post_init__` 里 `tuple` 规范化，`frozen` 值对象不再 alias 外部 mutable list。
 
 `snapshot_model_call / snapshot_message / snapshot_model_tool_call` 逐字段 canonicalize 并 fail-closed；runtime object / 非 str 字段无法进入 durable history。DeepSeek 只负责把官方响应映射为已校验的值对象，不重复实现这些不变量。
+
+### 2.11 Cooperative Cancellation & Timeout
+
+> **Cancellation 是请求，不是事实；Timeout 是 deadline，不是结果。**
+
+执行路径：`durable prepare → active execution register → ExecutionContext → worker/invoke → authoritative result / confirmed cancellation / unresolved → owner-only settlement`。
+
+```text
+RUNNING
+  ├─ returns Observation            → SETTLED（Success/Failure）
+  ├─ raises ExecutionCancelled（cooperative）→ SETTLED Failure("execution cancelled")
+  ├─ raises ordinary exception      → UNRESOLVED（CapabilityExecutionError）
+  └─ deadline reached
+       ├─ request cancellation
+       └─ wait grace period
+            ├─ cooperative ExecutionCancelled → SETTLED Failure("execution cancelled")
+            ├─ returns authoritative Observation → SETTLED with that Observation
+            └─ still running / unknown          → UNRESOLVED（CapabilityTimeoutUncertainError）
+```
+
+- **cooperative，非 preemptive**：不支持杀线程/强杀 frame。`request_cancel` 只是 signal；只有 Capability 主动检查 token 并 `raise_if_cancelled()` 抛出 `ExecutionCancelled` 才算确认 quiesce。
+- **timeout ≠ Failure**：timeout 只是 cancellation request source。deadline 后若拿到 authoritative Success/Failure 仍以之为准；不能因"曾经超时"覆盖为 Failure。
+- **non-cooperative timeout**：grace 后未确认 quiesce → `CapabilityTimeoutUncertainError`（outcome unknown），Core 保留 durable `PendingExecution` unresolved。worker 可能在后台继续运行；其晚到结果被记录为 runtime-local late evidence（不 auto-settle），future 完成触发 publish evidence + identity-safe cleanup。
+- **live execution registry lifetime**：`ActiveExecutionRegistry` 中存在某 entry 表示"该 execution 仍可能改变现实"（不是"owner 仍在 wait"）。timeout uncertain 时 worker 明确可能仍 live → **entry 保留**；只有 `future.done() == True` 后才移除（正常结果/异常/confirmed cancel 在 owner 观察到 future 完成时立即移除；uncertain 时 attach done callback 做 identity-safe cleanup）。
+- **reconciliation vs live execution guard**：`Runtime.reconcile` 在 load+validate+pending 检查后，若 `registry.get(session_id) == pending.execution_id`，抛 `ExecutionStillLiveError`（无论 ConfirmedNotExecuted / ConfirmedExecuted）。因为外部断言可能在某一瞬间正确，而仍 live 的 worker 未来仍可改变现实；只有 worker 真正 quiesce（registry 清理）后才允许 reconcile。
+- **late completion evidence**：timeout uncertain 后 worker 完成时，done callback 以固定顺序 `publish evidence → remove active`（Invariant I2，杜绝 active=None 且 evidence=None 的 visibility hole）；分类：返回 Success/Failure → authoritative；抛 ExecutionCancelled（已 request）→ authoritative `Failure("execution cancelled")`（与 normal cooperative cancellation 一致）；抛普通异常 / invalid return → uncertain。`Runtime.reconcile` 若本地有 authoritative late outcome：`ConfirmedNotExecuted` 被拒、矛盾 `ConfirmedExecuted` 被拒、匹配 `ConfirmedExecuted` 允许；late 异常（uncertain）仍允许外部 reconcile。
+- **Runtime-local execution control plane**：`ExecutionControlPlane`（含 `ActiveExecutionRegistry` + `LateCompletionEvidenceRegistry`）由单个 Runtime 组合根拥有，供 `Runtime.cancel`/`Runtime.reconcile` 与 `CapabilityExecutor`/`ThreadedExecutionRunner` 查询同一份 active/evidence 状态。`Runtime` 直接接受 `state_store`（纯 load/commit），不再有 `RuntimeDomain` / domain claim。下层 `DefaultCapabilityExecutor` 若 timeout enabled 且无 control plane → `RuntimeConfigurationError`。
+- **Observation equality（JsonValue-aware）**：`observation_equal` 用 `json_value_equal` 比较 Success.data，禁止 Python `==`（否则 `Success(True)==Success(1)` 会被误判相等）；用于 late evidence 校验与 recovery reconciliation 一致性。
+- **evidence ownership isolation**：`LateCompletionEvidenceRegistry` 的 record/read 双向 `snapshot_observation` 防御快照，caller 不能 mutate registry 内部事实。
+- **evidence cleanup lifecycle**：`Runtime.reconcile` 只在 `StateStore.commit` 成功后才 `evidence.remove(exact identity)`；commit 失败则 pending + evidence 都保留。
+- **submit-failure cleanup**：`pool.submit` 在 Future 存在前抛异常 → 移除 false-live registry entry（worker 未启动），pending 保留，operator 可 reconcile `ConfirmedNotExecuted`。
+- **ExecutionCancelled provenance**：`ExecutionCancelled` 只有在对应该 `CancellationSource.is_cancel_requested() == True` 时才解释为 confirmed cooperative cancellation（settle Failure("execution cancelled")）。无 cancel request 的 spurious `ExecutionCancelled` → `CapabilityContractError` → unresolved。
+- **timeout classification**：用 `concurrent.futures.wait([future], timeout=...)` 区分"wait deadline 到期"（future not in done）与"task 自身抛 TimeoutError"（future done + result() 抛）。只有前者才是 Harness deadline → request cancel；后者是 capability 普通异常 → `CapabilityExecutionError`。
+- **deadline 用 monotonic clock**（`time.monotonic`），不做 wall-clock duration correctness；monotonic timestamp 不持久化。
+- **runtime-only control plane**：`CancellationToken` / `CancellationSource` / `ExecutionContext` / `ActiveExecutionRegistry` / threading.Event 都不 durable，绝不进入 `SessionSnapshot` / `PendingExecution` / `StepRecord` / `snapshot_value`。process crash 后 active token/registry/manual cancel 请求丢失，但 durable `PendingExecution` 仍 fail-closed。
+- **single-writer**：只有 AgentCore/Runtime owner thread 写 Session；worker 只返回 Observation/异常。`Runtime.cancel()` 只改 runtime-local cancellation source，不算第二个 Session writer。
+- **explicit cancel API**：`Runtime.cancel(session_id) -> CancelRequestResult`（requested + execution_id）；无 active 时 `requested=False`，不修改 durable Session。registry 用 `session_id + execution_id` 做 identity 匹配，防止旧 cleanup 误删新 registration；同 session 重复 active register fail-closed。
+- **`ExecutionTimeoutConfig(timeout_seconds=None, cancellation_grace_seconds=0.5)`**：timeout 是 runtime execution policy/config，不是 agent-visible tool argument；`None` 表示无 deadline（cooperative cancel 仍可用）。配置不持久化，resume 用当前 Runtime config（属 composition continuity Known Debt）。
+
+Capability author 规范：只在语义安全的 cancellation point 检查 token；不要在不可回滚的原子 side effect 中间随便 cancel；长循环定期检查；可中断 I/O 用自身 timeout + `min(remaining_seconds, own_timeout)`；无法确认真实外部状态时不要改抛 `Failure`。
 
 ---
 
@@ -350,6 +408,9 @@ Settled reconciled → StepRecord(reconciliation=ExecutionReconciliation(...))
 - Policy contract violation → `PolicyContractError`
 - Capability contract violation → `CapabilityContractError`
 - Capability execution uncertainty（invoke 抛异常，副作用可能已发生）→ `CapabilityExecutionError`（不伪装成 Observation.Failure）
+- Capability cooperative cancellation（token 触发，body 已 quiesce）→ `ExecutionCancelled`（internal signal → settle Failure("execution cancelled")）
+- deadline 后未确认 quiesce → `CapabilityTimeoutUncertainError`（不伪装成 Observation.Failure("timeout")）
+- pending execution 对应的 local worker 仍 live 时 reconcile → `ExecutionStillLiveError`（ReconciliationError 子类）
 - Capability registration error（含 unsupported schema / 非 portable id / 非 str key）→ `CapabilityRegistrationError`
 - Session recovery structural violation → `SessionConsistencyError`（不伪装成 Observation.Failure / Blocked）
 - StateStore failure
@@ -397,8 +458,8 @@ Settled reconciled → StepRecord(reconciliation=ExecutionReconciliation(...))
 ## 8. 当前未实现 / Non-goals
 
 - streaming / multimodal / retry engine / context compaction。
-- approval / sandbox / timeout policy / metrics / middleware / pre-post hooks。
-- parallel capability calls / cancellation。
+- approval / sandbox / metrics / middleware / pre-post hooks。
+- parallel capability calls。
 - State projection / Event Sourcing / Session event system。
 - HTTP / CLI / 动态插件发现 / DI 框架 / 多 Agent / workflow engine。
 - 建筑规范 / Rhino 等任何领域能力。
@@ -412,3 +473,7 @@ Settled reconciled → StepRecord(reconciliation=ExecutionReconciliation(...))
 - **failed model-attempt usage 不持久化**：provider 返回 usage 但 Reasoner parse 失败（malformed JSON arguments / protocol mismatch / policy failure / terminal commit failure）时，usage 不进 Session history。因此 `TokenBudgetPolicy` 是"persisted successful-decision model calls"的 post-step budget，**不是**完整的 provider-attempt billing ledger。未实现 `ModelAttemptRecord` / usage journal。
 - **native Reasoner 未消费 State projection**：legacy 请求包含 State，native 请求目前只包含 Goal/Tools/structured history，不含 State。State 当前基本为 `{}`，故行为一致；一旦 State projection 实现，两协议将语义分叉（本轮不实现）。
 - **runtime composition continuity 不持久化**：Session 不保存 Reasoner 实现/版本、decision_protocol、Policy 配置、Capability set/version、provider 配置。因此 v0.x `resume` 假设"恢复 Session 的 Runtime composition 与创建时语义兼容"（否则 legacy↔native 历史解释、预算语义、能力契约可能错位）。未实现 composition hash / version / manifest / migration。
+- **thread 无法强杀**：cooperative cancellation 依赖 Capability 主动检查 token；non-cooperative worker 会继续运行并占用 worker slot，真正强隔离需 process worker / sandbox / remote executor。
+- **cancellation control plane 不 durable**：active token / registry / manual cancel 请求在进程 crash 后丢失（durable `PendingExecution` 仍 fail-closed）。
+- **无自动 late-result reconciliation**：timeout unresolved 后 worker 晚到的 Success/Failure 被记录为 runtime-local late evidence（用于 reconciliation 一致性校验），不 auto-settle；future 完成触发 publish evidence + identity-safe cleanup。需显式 `Runtime.reconcile`（且在 registry 清理后）。
+- **无 process isolation**：v0.1 只有 thread-based worker，无 OS 信号编排 / 分布式取消。

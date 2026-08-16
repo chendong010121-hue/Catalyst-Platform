@@ -26,12 +26,7 @@ def _run_42():
             '{"kind": "complete", "reason": "42 obtained"}',
         ]
     )
-    rt = Runtime(
-        reasoner=LLMReasoner(provider),
-        capabilities={"add": FakeCapability()},
-        policy=AllowAllPolicy(),
-        state_store=InMemoryStateStore(),
-    )
+    rt = Runtime(reasoner=LLMReasoner(provider), capabilities={"add": FakeCapability()}, policy=AllowAllPolicy(), state_store=InMemoryStateStore())
     final = rt.start(Goal("得到数字 42"))
     return final, provider
 
@@ -124,12 +119,7 @@ def test_act_parameters_not_object_raises():
 
 
 def test_model_provider_exception_propagates():
-    rt = Runtime(
-        reasoner=LLMReasoner(RaisingModelProvider()),
-        capabilities={"add": FakeCapability()},
-        policy=AllowAllPolicy(),
-        state_store=InMemoryStateStore(),
-    )
+    rt = Runtime(reasoner=LLMReasoner(RaisingModelProvider()), capabilities={"add": FakeCapability()}, policy=AllowAllPolicy(), state_store=InMemoryStateStore())
     try:
         rt.start(Goal("will blow up"))
     except RuntimeExecutionError as exc:

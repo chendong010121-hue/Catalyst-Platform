@@ -87,7 +87,7 @@ class AddCapability:
             id="add", name="add", description="adds", input_schema=ADD_SCHEMA
         )
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         self.call_count += 1
         return Success(parameters["a"] + parameters["b"])
 
@@ -99,7 +99,7 @@ class SideEffectThenRaiseCapability:
     def describe(self):
         return CapabilityDescriptor(id="add", name="add", description="side effect")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         self.effects += 1  # 真实副作用已发生
         raise RuntimeError("connection dropped after commit may have happened")
 
@@ -108,7 +108,7 @@ class ReturnsFailureCapability:
     def describe(self):
         return CapabilityDescriptor(id="add", name="add", description="returns failure")
 
-    def invoke(self, parameters):
+    def invoke(self, parameters, context):
         return Failure("known rejection")
 
 
@@ -154,7 +154,7 @@ class CountingReasoner:
 def test_e1_side_effect_then_raise():
     cap = SideEffectThenRaiseCapability()
     store = InMemoryStateStore()
-    rt = Runtime(ActOnceReasoner(), {"add": cap}, AllowAllPolicy(), store)
+    rt = Runtime(ActOnceReasoner(), {"add": cap}, AllowAllPolicy(), state_store=store)
     snap = rt.create(Goal("x"))
     sid = snap.session_id
 
@@ -182,9 +182,7 @@ def test_e1_side_effect_then_raise():
 
 def test_e2_explicit_failure_settles():
     store = InMemoryStateStore()
-    rt = Runtime(
-        ActThenCompleteReasoner(), {"add": ReturnsFailureCapability()}, AllowAllPolicy(), store
-    )
+    rt = Runtime(ActThenCompleteReasoner(), {"add": ReturnsFailureCapability()}, AllowAllPolicy(), state_store=store)
     final = rt.start(Goal("x"))
     assert final.pending_execution is None
     assert isinstance(final.history[0].observation, Failure)
@@ -192,7 +190,7 @@ def test_e2_explicit_failure_settles():
 
 
 def test_e3_unknown_capability_settles():
-    rt = Runtime(ActUnknownReasoner(), {}, AllowAllPolicy(), InMemoryStateStore())
+    rt = Runtime(ActUnknownReasoner(), {}, AllowAllPolicy(), state_store=InMemoryStateStore())
     final = rt.start(Goal("x"))
     assert final.pending_execution is None
     assert isinstance(final.history[0].observation, Failure)
@@ -201,7 +199,7 @@ def test_e3_unknown_capability_settles():
 
 def test_e4_schema_invalid_settles():
     cap = AddCapability()
-    rt = Runtime(InvalidArgsReasoner(), {"add": cap}, AllowAllPolicy(), InMemoryStateStore())
+    rt = Runtime(InvalidArgsReasoner(), {"add": cap}, AllowAllPolicy(), state_store=InMemoryStateStore())
     final = rt.start(Goal("x"))
     assert final.pending_execution is None
     assert isinstance(final.history[0].observation, Failure)
@@ -240,7 +238,7 @@ class _FirstValidSecondWrongStore:
 def test_i1_runtime_run_mismatch():
     store = _WrongIdentityStore()
     reasoner = CountingReasoner()
-    rt = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), state_store=store)
     try:
         rt.run("A")
     except SessionConsistencyError:
@@ -253,7 +251,7 @@ def test_i1_runtime_run_mismatch():
 def test_i2_core_second_load_mismatch():
     store = _FirstValidSecondWrongStore()
     reasoner = CountingReasoner()
-    rt = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), state_store=store)
     try:
         rt.run("A")
     except SessionConsistencyError:
@@ -265,7 +263,7 @@ def test_i2_core_second_load_mismatch():
 
 def test_i3_reconcile_mismatch():
     store = _WrongIdentityStore()
-    rt = Runtime(CountingReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(CountingReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), state_store=store)
     try:
         rt.reconcile("A", "exec_1", ConfirmedNotExecuted())
     except SessionConsistencyError:
@@ -494,7 +492,7 @@ def test_u2_corrupt_bool_usage():
 
 def test_u3_corrupt_usage_never_reaches_policy():
     store = _RawStore(_corrupt_usage_snapshot("input_tokens", -100))
-    rt = Runtime(CountingReasoner(), {"add": FakeCapability()}, TokenBudgetPolicy(1), store)
+    rt = Runtime(CountingReasoner(), {"add": FakeCapability()}, TokenBudgetPolicy(1), state_store=store)
     try:
         rt.resume("s")
     except SessionConsistencyError:
@@ -509,7 +507,7 @@ def test_u3_corrupt_usage_never_reaches_policy():
 
 def test_c1_invalid_goal_create():
     store = _RecordingRawStore()
-    rt = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), state_store=store)
     try:
         rt.create("not a Goal")
     except SessionConsistencyError:
@@ -521,7 +519,7 @@ def test_c1_invalid_goal_create():
 
 def test_c2_corrupt_goal_create():
     store = _RecordingRawStore()
-    rt = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), state_store=store)
     goal = Goal("x")
     object.__setattr__(goal, "description", 123)
     try:
@@ -535,7 +533,7 @@ def test_c2_corrupt_goal_create():
 
 def test_c3_valid_create():
     store = _RecordingRawStore()
-    rt = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), store)
+    rt = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), state_store=store)
     snap = rt.create(Goal("x"))
     assert store.commits == 1  # commit 恰好一次
     assert snap.session_id  # 非空

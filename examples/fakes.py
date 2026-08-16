@@ -72,7 +72,7 @@ class FakeCapability:
             output_schema={"sum": "number"},
         )
 
-    def invoke(self, parameters: Parameters) -> Observation:
+    def invoke(self, parameters: Parameters, context) -> Observation:
         return Success(parameters["a"] + parameters["b"])
 
 
@@ -91,6 +91,7 @@ class InMemoryStateStore:
 
     commit 时防御性深拷贝（validate_session_snapshot），load 时再次深拷贝，
     因此调用方改动已加载的快照不会污染存储，也不会反过来被存储污染。
+    只实现 StateStore 契约（load/commit），不含任何 execution-domain claim。
     """
 
     def __init__(self) -> None:

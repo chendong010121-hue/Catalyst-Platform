@@ -168,6 +168,19 @@ def json_value_equal(a, b) -> bool:
     return False
 
 
+def observation_equal(a, b) -> bool:
+    """Observation 的 JsonValue-aware equality（Success/Failure）。
+
+    禁止用 Python `==` 作为 execution fact identity，因为 Success(True) == Success(1)
+    在 Python 里为 True（bool==int）。这里对 data 用 json_value_equal。
+    """
+    if isinstance(a, Success) and isinstance(b, Success):
+        return json_value_equal(a.data, b.data)
+    if isinstance(a, Failure) and isinstance(b, Failure):
+        return a.error == b.error
+    return False
+
+
 def action_model_call_mismatch(action, model_call):
     """校验 native tool facts 与 Action 一致；不一致返回错误描述，否则 None。"""
     if model_call is None:
@@ -457,8 +470,8 @@ def _validate_step(step, position, session_id, settled_execution_ids):
                 f"{step.reconciliation.execution_id!r} != step.execution_id {step.execution_id!r}",
                 session_id=session_id,
             )
-        # 同一 execution 只允许一种 canonical durable outcome
-        if step.observation != step.reconciliation.observation:
+        # 同一 execution 只允许一种 canonical durable outcome（JsonValue-aware equality）
+        if not observation_equal(step.observation, step.reconciliation.observation):
             raise SessionConsistencyError(
                 f"history[{position}]: reconciliation.observation != step.observation",
                 session_id=session_id,
