@@ -13,6 +13,7 @@ from __future__ import annotations
 import threading
 
 from agent_runtime.capability_executor import DefaultCapabilityExecutor
+from agent_runtime.execution import RuntimeDomainBindable
 from agent_runtime.contracts import (
     Action,
     Act,
@@ -155,7 +156,7 @@ def test_p7_valid_envelope_regression():
 # L：Core authoritative load/commit boundary
 # ---------------------------------------------------------------------------
 
-class _RawStore:
+class _RawStore(RuntimeDomainBindable):
     """只按原样保存/返回，不做任何 validate/copy。"""
 
     def __init__(self, snapshot):
@@ -168,7 +169,7 @@ class _RawStore:
         self.snapshot = snapshot
 
 
-class _SecondLoadMalformedStore:
+class _SecondLoadMalformedStore(RuntimeDomainBindable):
     """load #1 valid，load #2 malformed。"""
 
     def __init__(self):

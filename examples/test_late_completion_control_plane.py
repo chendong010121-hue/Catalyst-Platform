@@ -38,10 +38,11 @@ from agent_runtime.errors import (
 from agent_runtime.execution import (
     ExecutionControlPlane,
     ExecutionTimeoutConfig,
+    RuntimeDomain,
+    RuntimeDomainBindable,
     ThreadedExecutionRunner,
 )
 from agent_runtime.runtime import Runtime
-from agent_runtime.execution import RuntimeDomain
 
 from .fakes import AllowAllPolicy, InMemoryStateStore
 
@@ -90,7 +91,7 @@ class AddCapability:
         return Success(42)
 
 
-class ThreadRecordingStore:
+class ThreadRecordingStore(RuntimeDomainBindable):
     def __init__(self):
         self.snapshot = None
         self.commit_threads = []
@@ -228,9 +229,10 @@ def test_l6_late_ordinary_exception_allows_external_reconciliation():
 def test_l7_l8_l9_cross_runtime_shared_control_plane():
     cp = ExecutionControlPlane()
     store = InMemoryStateStore()
+    domain = RuntimeDomain(state_store=store, execution_control_plane=cp)
     cap = BlockThenReturnCapability(Success(42))
 
-    rtA = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), timeout_config=ExecutionTimeoutConfig(timeout_seconds=0.05, cancellation_grace_seconds=0.1), domain=RuntimeDomain(state_store=store, execution_control_plane=cp))
+    rtA = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), timeout_config=ExecutionTimeoutConfig(timeout_seconds=0.05, cancellation_grace_seconds=0.1), domain=domain)
     snap = rtA.create(Goal("x"))
     sid = snap.session_id
     try:
@@ -240,8 +242,8 @@ def test_l7_l8_l9_cross_runtime_shared_control_plane():
     else:
         raise AssertionError("expected CapabilityTimeoutUncertainError")
 
-    # Runtime B：同一 store + 同一 control plane
-    rtB = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store, execution_control_plane=cp))
+    # Runtime B：同一 domain（同一 store + 同一 control plane）
+    rtB = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), domain=domain)
 
     # L7：B 仍能看到 live execution → reconcile 拒绝
     try:

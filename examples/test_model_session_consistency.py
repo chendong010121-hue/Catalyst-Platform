@@ -15,6 +15,7 @@ from __future__ import annotations
 import threading
 
 from agent_runtime.capability_executor import DefaultCapabilityExecutor
+from agent_runtime.execution import RuntimeDomainBindable
 from agent_runtime.contracts import (
     Action,
     Act,
@@ -353,7 +354,7 @@ def test_d9_non_portable_descriptor_registration_fails():
 # S：Session load/recovery structural consistency
 # ---------------------------------------------------------------------------
 
-class _RawStore:
+class _RawStore(RuntimeDomainBindable):
     """不校验、不拷贝的存储替身，用于模拟 future/损坏 persistent backend。"""
 
     def __init__(self, snapshot):

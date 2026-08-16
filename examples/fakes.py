@@ -33,6 +33,7 @@ from agent_runtime.contracts import (
     Success,
     Termination,
 )
+from agent_runtime.execution import RuntimeDomainBindable
 from agent_runtime.snapshot import validate_session_snapshot
 
 
@@ -86,14 +87,16 @@ class AllowAllPolicy:
         return Continue()
 
 
-class InMemoryStateStore:
+class InMemoryStateStore(RuntimeDomainBindable):
     """最小内存快照存储；commit/load 均做 ownership isolation。
 
     commit 时防御性深拷贝（validate_session_snapshot），load 时再次深拷贝，
     因此调用方改动已加载的快照不会污染存储，也不会反过来被存储污染。
+    同时支持 process-local RuntimeDomain claim（一个 namespace 只允许一个 domain）。
     """
 
     def __init__(self) -> None:
+        super().__init__()
         self._snapshots: dict[str, SessionSnapshot] = {}
 
     def load(self, session_id: str) -> SessionSnapshot:

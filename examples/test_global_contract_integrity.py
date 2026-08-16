@@ -21,6 +21,7 @@ from agent_runtime.capability_executor import (
     _validate_schema_supported,
     _SchemaError,
 )
+from agent_runtime.execution import RuntimeDomainBindable
 from agent_runtime.contracts import (
     Action,
     Act,
@@ -74,7 +75,7 @@ ADD_SCHEMA = {
 }
 
 
-class RecordingStore:
+class RecordingStore(RuntimeDomainBindable):
     def __init__(self, fail_on=None):
         self._snapshots = {}
         self.save_count = 0

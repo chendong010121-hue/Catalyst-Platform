@@ -147,7 +147,8 @@ def test_a_create_returns_persistent_session():
 
 def test_a_run_failure_session_recoverable():
     store = InMemoryStateStore()
-    rt = Runtime(RaisingReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    domain = RuntimeDomain(state_store=store)
+    rt = Runtime(RaisingReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=domain)
     snapshot = rt.create(Goal("得到数字 42"))
     session_id = snapshot.session_id
 
@@ -162,7 +163,7 @@ def test_a_run_failure_session_recoverable():
     assert store.load(session_id).goal.description == "得到数字 42"
 
     # 用同一个 session_id 可以再次恢复并跑通
-    rt2 = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    rt2 = Runtime(FakeReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=domain)
     final = rt2.resume(session_id)
     assert isinstance(final.history[-1].decision, Complete)
 

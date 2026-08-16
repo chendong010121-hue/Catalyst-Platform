@@ -1,7 +1,7 @@
-# Agent Runtime — 架构（v1.7 · RuntimeDomain Identity）
+# Agent Runtime — 架构（v1.8 · RuntimeDomain Uniqueness）
 
-> 版本：v1.7 —— 反映当前真实实现，不是设计文档。
-> 状态：Runtime（create/run/resume/start/reconcile/cancel）/ AgentCore / LLMReasoner / DeepSeekModelProvider / CapabilityExecutor（ExecutionRunner）/ 生产安全 Policy 已存在并可运行；Cooperative Cancellation & Timeout v0.1 已收口至 READY FOR EXTERNAL AUDIT（RuntimeDomain 将 StateStore 与 ExecutionControlPlane 结构绑定为单一 session domain identity）。
+> 版本：v1.8 —— 反映当前真实实现，不是设计文档。
+> 状态：Runtime（create/run/resume/start/reconcile/cancel）/ AgentCore / LLMReasoner / DeepSeekModelProvider / CapabilityExecutor（ExecutionRunner）/ 生产安全 Policy 已存在并可运行；Cooperative Cancellation & Timeout v0.1 已收口至 READY FOR USER PUSH APPROVAL（RuntimeDomain 唯一性：同一 persistence namespace 的第二个独立 domain fail closed）。
 > 原则：只收敛与加固，不扩张。不引入第三方框架、事件总线、动态插件、多 Agent、Cordis。
 
 ---
@@ -117,7 +117,7 @@ runtime_a = Runtime(reasoner=reasoner, capabilities=capabilities, policy=policy,
 runtime_b = Runtime(reasoner=reasoner, capabilities=capabilities, policy=policy, domain=domain)
 ```
 
-**Domain identity（I-DOMAIN）**：`RuntimeDomain` 是 StateStore + ExecutionControlPlane 的单一组合身份。`Runtime` 只能由 `domain` 构造（**不**接受独立的 `state_store` / `control_plane`），因此同一 session namespace 上所有能 run/resume/cancel/reconcile 的 Runtime 共享同一 control plane（live worker / late evidence 跨 Runtime 可见）。同一 StateStore 只应创建一个 RuntimeDomain 并由 host 共享。
+**Domain identity（I-DOMAIN / I-UNIQUE-DOMAIN）**：`RuntimeDomain` 是 StateStore + ExecutionControlPlane 的单一组合身份。`Runtime` 只能由 `domain` 构造（**不**接受独立的 `state_store` / `control_plane`）。`RuntimeDomain` 在构造时对 persistence namespace 做 process-local claim：同一 StateStore 的第二个独立 `RuntimeDomain`（无论默认或显式 CP、无论 CP 等价与否）在 claim 处抛 `RuntimeDomainConflictError`，因此同一 session namespace 只存在一个 active domain → 一个 ExecutionControlPlane（live worker / late evidence 跨 Runtime 可见）。claim 是 execution-safety composition metadata，thread-safe、不 durable、不 agent-visible。StateStore 需实现 `RuntimeDomainBindable`（claim/get）。
 
 关键语义：
 

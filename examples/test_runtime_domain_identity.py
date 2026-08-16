@@ -258,12 +258,15 @@ def test_di8_no_second_execution_via_identity_mismatch():
 # AU：Internal Auditor 自创 adversarial cases
 # ---------------------------------------------------------------------------
 
-def test_au1_two_domains_have_distinct_control_planes():
+def test_au1_second_domain_over_same_store_rejected():
+    from agent_runtime.errors import RuntimeDomainConflictError
     store = InMemoryStateStore()
     d1 = RuntimeDomain(state_store=store)
-    d2 = RuntimeDomain(state_store=store)
-    assert d1.execution_control_plane is not d2.execution_control_plane
-    # 因此同一 store 必须只建一个 domain 并共享（host composition rule）
+    try:
+        RuntimeDomain(state_store=store)
+    except RuntimeDomainConflictError:
+        return
+    raise AssertionError("second independent RuntimeDomain over same store must fail closed")
 
 
 def test_au2_lower_level_executor_timeout_requires_control_plane():
@@ -354,7 +357,7 @@ def main() -> None:
         ("DI-6 no alternate constructor bypass", test_di6_no_alternate_constructor_bypass),
         ("DI-7 runtime store/cp exactly domain", test_di7_runtime_store_and_cp_are_exactly_domain),
         ("DI-8 no second execution via mismatch", test_di8_no_second_execution_via_identity_mismatch),
-        ("AU-1 two domains distinct cp", test_au1_two_domains_have_distinct_control_planes),
+        ("AU-1 second domain over same store rejected", test_au1_second_domain_over_same_store_rejected),
         ("AU-2 lower-level executor guard", test_au2_lower_level_executor_timeout_requires_control_plane),
         ("AU-3 timeout-disabled can cancel", test_au3_timeout_disabled_runtime_can_cancel),
         ("AU-4 reconcile after cleanup no pending", test_au4_reconcile_after_cleanup_is_no_pending_not_stale),

@@ -38,9 +38,10 @@ from agent_runtime.execution import (
     ExecutionControlPlane,
     ExecutionTimeoutConfig,
     LateCompletionEvidenceRegistry,
+    RuntimeDomain,
+    RuntimeDomainBindable,
 )
 from agent_runtime.runtime import Runtime
-from agent_runtime.execution import RuntimeDomain
 from agent_runtime.snapshot import observation_equal
 
 from .fakes import AllowAllPolicy, InMemoryStateStore
@@ -106,8 +107,9 @@ def _timeout_config():
     return ExecutionTimeoutConfig(timeout_seconds=0.05, cancellation_grace_seconds=0.1)
 
 
-def _make_late(cap, cp, store, timeout=0.05, grace=0.1):
-    rt = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), timeout_config=ExecutionTimeoutConfig(timeout_seconds=timeout, cancellation_grace_seconds=grace), domain=RuntimeDomain(state_store=store, execution_control_plane=cp))
+def _make_late(cap, cp, store, timeout=0.05, grace=0.1, domain=None):
+    domain = domain or RuntimeDomain(state_store=store, execution_control_plane=cp)
+    rt = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), timeout_config=ExecutionTimeoutConfig(timeout_seconds=timeout, cancellation_grace_seconds=grace), domain=domain)
     snap = rt.create(Goal("x"))
     sid = snap.session_id
     try:
@@ -199,9 +201,10 @@ def test_b2_timeout_disabled_control_plane_optional():
 def test_b3_shared_control_plane_cross_runtime():
     cp = ExecutionControlPlane()
     store = InMemoryStateStore()
+    domain = RuntimeDomain(state_store=store, execution_control_plane=cp)
     cap = BlockThenReturnCapability(Success(42))
 
-    rtA = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), timeout_config=_timeout_config(), domain=RuntimeDomain(state_store=store, execution_control_plane=cp))
+    rtA = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), timeout_config=_timeout_config(), domain=domain)
     snap = rtA.create(Goal("x"))
     sid = snap.session_id
     try:
@@ -209,7 +212,7 @@ def test_b3_shared_control_plane_cross_runtime():
     except CapabilityTimeoutUncertainError as exc:
         exec_id = exc.execution_id
 
-    rtB = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store, execution_control_plane=cp))
+    rtB = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), domain=domain)
     # B 仍能看到 live execution
     from agent_runtime.errors import ExecutionStillLiveError
     try:
@@ -331,7 +334,7 @@ def test_e_read_side_isolation():
 # F：evidence cleanup lifecycle
 # ---------------------------------------------------------------------------
 
-class _FailingStore:
+class _FailingStore(RuntimeDomainBindable):
     def __init__(self):
         self.snapshot = None
         self.fail_commit = False
@@ -396,10 +399,11 @@ def test_g1_uncertain_evidence_removed_after_reconcile():
 def test_g2_cross_runtime_late_evidence_visibility():
     cp = ExecutionControlPlane()
     store = InMemoryStateStore()
+    domain = RuntimeDomain(state_store=store, execution_control_plane=cp)
     cap = BlockThenReturnCapability(Success(42))
-    rtA, sid, exec_id = _make_late(cap, cp, store)  # rtA 产生 late Success evidence
+    rtA, sid, exec_id = _make_late(cap, cp, store, domain=domain)  # rtA 产生 late Success evidence
 
-    rtB = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store, execution_control_plane=cp))
+    rtB = Runtime(ActThenCompleteReasoner(), {"add": cap}, AllowAllPolicy(), domain=domain)
     try:
         rtB.reconcile(sid, exec_id, ConfirmedNotExecuted())
     except ReconciliationError:

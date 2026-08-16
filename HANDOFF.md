@@ -1,6 +1,6 @@
-# HANDOFF — RuntimeDomain Identity Closure
+# HANDOFF — RuntimeDomain Uniqueness Final Closure
 
-> 阶段：把 StateStore 与 ExecutionControlPlane 提升为同一个 composition identity（`RuntimeDomain`），关闭 `One Safety Domain` P0。依据 `审核\FULL_ASSET_AUDIT_2026-08-16_RUNTIME_DOMAIN_IDENTITY.md` 与 `审核\RUNTIME_DOMAIN_IDENTITY_CLOSURE_EXECUTION_SPEC.md`。
+> 阶段：把 uniqueness authority 放到 persistence namespace 边界，关闭 `One Persistence Namespace → One RuntimeDomain → One Execution Safety Domain` P0。依据 `审核\RUNTIME_DOMAIN_UNIQUENESS_FINAL_CLOSURE.md`。
 
 ---
 
@@ -8,10 +8,10 @@
 
 ```text
 Internal verdict:
-READY FOR EXTERNAL AUDIT
+READY FOR USER PUSH APPROVAL
 ```
 
-（不自行写 CLOSED；最终阶段关闭由外部审核决定。）
+（本地实现 + 验证完成；尚未 commit/push。工作目录 `E:\试验场地\Agent Hardness` **不是 git 仓库**，故无法从此处直接 push。若需 push 到 `ds/runtime-domain-identity-closure`，需用户提供/确认 git 目标与授权。）
 
 ---
 
@@ -19,62 +19,56 @@ READY FOR EXTERNAL AUDIT
 
 | 项 | 内容 |
 |---|---|
-| RuntimeDomain | 新增 `RuntimeDomain(state_store, execution_control_plane=None)`，绑定持久化 namespace + execution safety namespace |
-| Runtime 构造 | `Runtime(reasoner, capabilities, policy, domain, *, timeout_config=None)` —— 不再接受独立 `state_store`/`control_plane` |
-| lower-level guard | `DefaultCapabilityExecutor` timeout enabled 且无 control plane → `RuntimeConfigurationError` |
-| 不变式 I1–I8 | 见 IMPLEMENTATION_NOTES.md（全部源码级 enforced，无 caller-must-remember） |
+| 唯一性 authority | `RuntimeDomain.__init__` 调用 `state_store.claim_runtime_domain(self)`；同一 namespace 的第二个独立 domain → `RuntimeDomainConflictError` |
+| Store 边界 | 新增 `RuntimeDomainBindable`（process-local、thread-safe、lazy init、monotonic，无 release） |
+| 显式 CP 不得绕过 | `RuntimeDomain(S, cp1)` + `RuntimeDomain(S, cp2)`（cp1 is not cp2，即使等价）→ 第二个 fail closed |
+| 下层 guard 保持 | `DefaultCapabilityExecutor` timeout + 无 cp → `RuntimeConfigurationError` |
 
 ## 关闭的 P0
 
 ```text
-DI-RED-1（timeout-disabled B + same store → false reconcile）
-DI-RED-2（explicit wrong cp → false reconcile）
+d1 = RuntimeDomain(S)
+d2 = RuntimeDomain(S)   # 旧：d1.cp is not d2.cp；新：RuntimeDomainConflictError
 ```
 
-修复前外部审计已稳定复现 `effects=2` 重复副作用；修复后：
-- `Runtime(state_store=..., control_plane=...)` → TypeError（独立配对 API 不存在）
-- timeout-disabled Runtime（同 domain）仍见 live worker / late evidence
-- cross-runtime cancel 路由同一 execution
+第二个独立 domain 在构造处 fail closed，杜绝"同一 persistence namespace → 两个 ExecutionControlPlane → 两个互相不可见的 safety island"。
 
-## Verified
+## Verified（本地）
 
 ```text
 compileall                          PASS
-post-fix full regression            PASS  22 modules（audit_artifacts/post_fix_full_regression.txt）
+post-fix full regression            PASS  23 modules（audit_artifacts/post_fix_full_regression.txt）
 stress / interleaving               PASS  500 iters, 0 failures（audit_artifacts/stress_output.txt）
-new domain identity tests           PASS  test_runtime_domain_identity 16/16（DI-1..DI-8 + AU-1..AU-8）
-previous evidence integrity tests   PASS  test_control_plane_evidence_integrity 19/19
+uniqueness tests                    PASS  test_runtime_domain_uniqueness 11/11（UD-1..UD-10 + UD-CONCURRENT）
+domain identity tests               PASS  test_runtime_domain_identity 16/16（DI/AU，AU-1 更新）
 ```
 
 ## Internal audit
 
-详见 `INTERNAL_AUDIT_REPORT.md`：
-
-```text
-P0 = 0
-P1 = 0
-Internal verdict = READY FOR EXTERNAL AUDIT
-```
+详见 `INTERNAL_AUDIT_REPORT.md`：P0=0, P1=0，本地 verdict `READY FOR USER PUSH APPROVAL`。
 
 ## Remaining known debt（P2）
 
 ```text
 thread 无法强杀；non-cooperative worker 可能持续占用 worker slot
-control plane / late evidence 不 durable，crash 后丢失
+control plane / late evidence / domain claim 不 durable，crash 后丢失（claim monotonic，无 release）
 无 process isolation / 分布式取消 / 分布式 lease / CAS
-无 automatic late-result reconciliation（late result 仅作 evidence，不 auto-settle）
-同一 StateStore 只应创建一个 RuntimeDomain 并由 host 共享（runtime API 已禁止独立 store/cp 配对）
+无 automatic late-result reconciliation
 既有 Known Debt：failed model-attempt usage ledger / native State omission /
 无生产 durable Store / reconciliation Observation 复制 / snapshot-first
 ```
 
-## 交付物
+## 待办（需用户确认）
+
+工作目录非 git 仓库；按 `RUNTIME_DOMAIN_UNIQUENESS_FINAL_CLOSURE.md` §23 的绑定工作流要求，commit/push 前必须由用户确认。请用户提供目标 GitHub 仓库/分支（`ds/runtime-domain-identity-closure`）与明确的 commit/push 授权；在此之前**不 commit、不 push、不 merge**。
+
+## 交付物（本地）
 
 ```text
 1. 源码（agent_runtime/ + examples/）
-2. ARCHITECTURE.md（v1.7）
+2. ARCHITECTURE.md（v1.8）
 3. HANDOFF.md（本文件）
-4. IMPLEMENTATION_NOTES.md（I1–I8 + composition boundary + locking review）
+4. IMPLEMENTATION_NOTES.md
 5. INTERNAL_AUDIT_REPORT.md
 6. TEST_MANIFEST.md
 7. audit_artifacts/baseline_identity.txt

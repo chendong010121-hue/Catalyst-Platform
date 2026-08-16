@@ -1,31 +1,46 @@
-# IMPLEMENTATION NOTES — RuntimeDomain Identity Closure
+# IMPLEMENTATION NOTES — RuntimeDomain Uniqueness Final Closure
 
-> 本轮把 StateStore 与 ExecutionControlPlane 提升为同一个 composition identity（RuntimeDomain），并固化 I1–I8 invariant。
+> 本轮把 uniqueness authority 放在 persistence namespace 边界：同一 StateStore 只允许一个 RuntimeDomain identity（→ 一个 ExecutionControlPlane）。
 
 ## Composition boundary decision（spec §4）
 
 - A. RuntimeDomain identity = 一个 session namespace 的持久化 namespace（StateStore）+ execution safety namespace（ExecutionControlPlane）的绑定对象。
-- B. Runtime **不再**接受独立的 `state_store` / `control_plane`；只能由 `domain` 构造（`Runtime(reasoner, capabilities, policy, domain, *, timeout_config=None)`）。
+- B. Runtime **不再**接受独立的 `state_store` / `control_plane`；只能由 `domain` 构造。
 - C. 所有 session 操作（create/run/resume/reconcile/cancel）都经由 domain 的 store + control plane。
-- D. timeout-disabled Runtime 也必须由同一 domain 构造，因此它访问同一 control plane（live/evidence 可见），不能绕过。
-- E. 下层 `DefaultCapabilityExecutor` / `ThreadedExecutionRunner`：timeout enabled 且无 control plane → `RuntimeConfigurationError`（Contract A：lower-level timeout composition supported but must belong to a control domain）。
+- D. timeout-disabled Runtime 也必须由同一 domain 构造，因此访问同一 control plane。
+- E. 下层 `DefaultCapabilityExecutor` timeout enabled 且无 control plane → `RuntimeConfigurationError`。
+
+## Uniqueness authority（本轮新增）
+
+`RuntimeDomain.__init__` 调用 `state_store.claim_runtime_domain(self)`：
+
+```text
+no current claim + identity A   → claim succeeds
+existing claim A + identity A   → idempotent（same object）
+existing claim A + identity B   → RuntimeDomainConflictError（fail closed）
+```
+
+- claim 是 process-local、thread-safe、monotonic（本 closure 无 release/close，避免 release 竞态）。
+- claim 是 execution-safety composition metadata：不写 SessionSnapshot、不 agent-visible、不 durable。
+- StateStore 需实现 `RuntimeDomainBindable`（lazy-init，无需 super().__init__）；不支持则 `RuntimeConfigurationError`。
 
 ## Invariants
 
-| # | invariant | enforcement location | bypassable? |
+| # | invariant | enforcement | bypassable? |
 |---|---|---|---|
-| I1 Domain Identity | 同一 session namespace → 同一 RuntimeDomain | `Runtime.__init__` 只收 `domain`；`RuntimeDomain` 绑定 store+cp | NO（结构上无独立 store+cp 参数） |
-| I2 Active Visibility | live execution → domain 内每个 Runtime 见同一 active fact | `RuntimeDomain.execution_control_plane.active`（共享） | NO |
-| I3 Late Evidence Visibility | authoritative late result → domain 内每个 Runtime 见同一 evidence | `RuntimeDomain.execution_control_plane.evidence`（共享） | NO |
-| I4 No Safety Island | 不能静默创建 private registry/evidence/cp | Runtime 不创建 private cp；timeout executor 无 cp → error | NO |
-| I5 Timeout-independent Safety | timeout-disabled Runtime 仍遵守 live/evidence/reconcile guard | 同一 domain 的 control plane 共享（reconcile 查 domain cp） | NO |
-| I6 Wrong Identity Fails Closed | domain/store/cp 不匹配 → 失败 | 无独立配对 API（TypeError）+ 下层 timeout 无 cp → error | NO |
-| I7 Owner-only Durable Writes | 不引入 background settle / callback store write | done callback 只写 registry/evidence；owner 才 commit | NO |
-| I8 Evidence Semantics Preserved | late Success/Failure authoritative / late requested cancel → Failure / 普通异常 uncertain / JsonValue equality / 防御快照 / post-commit cleanup | 沿用上一轮 `execution.py` / `runtime.py` / `snapshot.py` | NO |
+| I-UNIQUE-DOMAIN | 同一 persistence namespace → 恰好一个 RuntimeDomain identity → 一个 ExecutionControlPlane | `RuntimeDomainBindable.claim_runtime_domain`（store 边界）+ `Runtime` 只收 domain | NO（第二个独立 claim 在构造时抛 RuntimeDomainConflictError） |
+| I2 Active Visibility | live execution → domain 内每个 Runtime 见同一 active fact | 共享 `ExecutionControlPlane.active` | NO |
+| I3 Late Evidence Visibility | authoritative late result → 同一 evidence | 共享 `ExecutionControlPlane.evidence` | NO |
+| I4 No Safety Island | 不能静默创建 private registry/evidence/cp | 唯一 domain claim + 下层 executor guard | NO |
+| I5 Timeout-independent Safety | timeout-disabled Runtime 仍遵守 guard | 同 domain 共享 cp | NO |
+| I6 Wrong Identity Fails Closed | store/cp 不匹配 → 失败 | 无独立配对 API + claim 冲突 | NO |
+| I7 Owner-only Durable Writes | 不引入 background settle | callback 只写 registry/evidence | NO |
+| I8 Evidence Semantics Preserved | 沿用 | 上一轮 | NO |
 
 ## Locking review
 
-active / evidence 各自独立短锁；done callback 先 publish evidence 再 remove active（无 visibility hole）；不持锁 commit / execute / provider call；无嵌套锁、无死锁路径。
+`RuntimeDomainBindable` 用实例级 lock（lazy init 用类级 `_init_lock` 双检）。active/evidence 各自独立短锁；done callback 先 publish evidence 再 remove active；无嵌套锁、无持锁 commit/execute。
+
 
 ## Late outcome classification（保持不变）
 

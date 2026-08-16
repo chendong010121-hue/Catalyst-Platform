@@ -1,4 +1,27 @@
-# TEST MANIFEST — RuntimeDomain Identity Closure
+# TEST MANIFEST — RuntimeDomain Uniqueness Final Closure
+
+## UD-1..UD-10 + UD-CONCURRENT（`examples/test_runtime_domain_uniqueness.py`）
+
+| ID | threat / invariant | fixed expected | deterministic |
+|---|---|---|---|
+| UD-1 | 第二个默认 RuntimeDomain 同一 store | RuntimeDomainConflictError | YES |
+| UD-2 | 第二个显式不同 CP | RuntimeDomainConflictError | YES |
+| UD-3 | 等价但 distinct CP | RuntimeDomainConflictError（identity 非 value） | YES |
+| UD-4 | 同一 domain 多 Runtime 复用 | 正常构造 | YES |
+| UD-5 | timeout-disabled 不能绕过 live guard | ExecutionStillLiveError | YES |
+| UD-6 | timeout-disabled 见 late evidence | reject ConfirmedNotExecuted | YES |
+| UD-7 | cross-runtime cancel | 同一 execution_id | YES |
+| UD-8 | duplicate side effect 关闭 | calls==1 | YES |
+| UD-9 | failed second claim 不改 first domain | cp/claim 不变 | YES |
+| UD-10 | failed second claim 不改 session data | store 数据不变 | YES |
+| UD-CONCURRENT | 并发 claim | exactly one wins | YES（Barrier） |
+
+## DI-1..DI-8 + AU-1..AU-8（`examples/test_runtime_domain_identity.py`，上一轮）
+AU-1 已按 uniqueness 更新为「第二个 domain 被拒」。
+
+## 上一轮 suite 保持
+`test_control_plane_evidence_integrity`(19)、`test_late_completion_control_plane`、`test_live_execution_quiescence`、`test_cancellation_timeout` 等。
+
 
 ## DI-1..DI-8（`examples/test_runtime_domain_identity.py`）
 
@@ -17,7 +40,7 @@
 
 | ID | threat | verdict |
 |---|---|---|
-| AU-1 | 两个 domain 有 distinct cp（host 必须共享单 domain） | PASS |
+| AU-1 | 第二个独立 RuntimeDomain 同一 store 被拒（uniqueness） | PASS |
 | AU-2 | lower-level executor timeout 无 cp → error（I4） | PASS |
 | AU-3 | timeout-disabled Runtime 仍可 cancel（I5） | PASS |
 | AU-4 | reconcile 后 evidence 清理，二次 reconcile 是 no-pending 非 stale | PASS |

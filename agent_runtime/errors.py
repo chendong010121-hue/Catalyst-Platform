@@ -15,6 +15,14 @@ class RuntimeConfigurationError(RuntimeError):
     """
 
 
+class RuntimeDomainConflictError(RuntimeConfigurationError):
+    """同一持久化/session namespace 被第二个独立 RuntimeDomain 声称（fail-closed）。
+
+    一个 persistence namespace 只允许一个 RuntimeDomain identity → 一个
+    ExecutionControlPlane；第二个独立 claim 必须在任何 session 操作前失败。
+    """
+
+
 class CapabilityContractError(RuntimeError):
     """Capability.invoke 返回了 Success/Failure 之外的值（契约违反）。"""
 

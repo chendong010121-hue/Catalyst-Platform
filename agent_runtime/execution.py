@@ -21,6 +21,8 @@ from .errors import (
     CapabilityContractError,
     CapabilityTimeoutUncertainError,
     ExecutionCancelled,
+    RuntimeConfigurationError,
+    RuntimeDomainConflictError,
 )
 from .contracts import Failure
 from .snapshot import snapshot_observation
@@ -260,6 +262,45 @@ class ExecutionControlPlane:
         self.evidence = evidence_registry if evidence_registry is not None else LateCompletionEvidenceRegistry()
 
 
+class RuntimeDomainBindable:
+    """StateStore 可选的 process-local RuntimeDomain claim（thread-safe、lazy init）。
+
+    一个 persistence namespace 只允许一个 RuntimeDomain identity（→ 一个
+    ExecutionControlPlane）。claim 是 execution-safety composition metadata，
+    不是 SessionSnapshot fact、不 agent-visible、不 durable。
+
+    子类无需调用 super().__init__()：claim 状态在首次访问时惰性、线程安全地初始化。
+    """
+
+    _init_lock = threading.Lock()
+
+    def _claim_lock(self):
+        lock = getattr(self, "_domain_lock", None)
+        if lock is None:
+            with RuntimeDomainBindable._init_lock:
+                lock = getattr(self, "_domain_lock", None)
+                if lock is None:
+                    lock = threading.Lock()
+                    self._domain_lock = lock
+                    self._runtime_domain = None
+        return lock
+
+    def claim_runtime_domain(self, domain) -> None:
+        lock = self._claim_lock()
+        with lock:
+            if self._runtime_domain is None:
+                self._runtime_domain = domain
+            elif self._runtime_domain is not domain:
+                raise RuntimeDomainConflictError(
+                    "persistence namespace already claimed by a different RuntimeDomain"
+                )
+
+    def get_runtime_domain(self):
+        lock = self._claim_lock()
+        with lock:
+            return self._runtime_domain
+
+
 class RuntimeDomain:
     """一个 session namespace 的组合身份：把 StateStore 与 ExecutionControlPlane 绑定。
 
@@ -267,6 +308,8 @@ class RuntimeDomain:
     同一个 RuntimeDomain 构造，从而在 composition 层面保证 StateStore 与
     ExecutionControlPlane 一一绑定，杜绝"同一 store + 两套 control plane"形成
     invisible safety island。
+
+    构造即 claim 持久化 namespace；同一 namespace 的第二个独立 RuntimeDomain → fail closed。
     """
 
     def __init__(self, state_store, execution_control_plane=None) -> None:
@@ -276,6 +319,14 @@ class RuntimeDomain:
             if execution_control_plane is not None
             else ExecutionControlPlane()
         )
+        claim = getattr(state_store, "claim_runtime_domain", None)
+        if not callable(claim):
+            raise RuntimeConfigurationError(
+                "StateStore does not support RuntimeDomain claim; "
+                "use a RuntimeDomainBindable store"
+            )
+        # 唯一性：第二个独立 RuntimeDomain 对同一 namespace 的 claim 在此抛 RuntimeDomainConflictError
+        claim(self)
 
 
 # ---------------------------------------------------------------------------

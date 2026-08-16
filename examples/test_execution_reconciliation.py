@@ -5,6 +5,7 @@ from __future__ import annotations
 import threading
 
 from agent_runtime.capability_executor import DefaultCapabilityExecutor
+from agent_runtime.execution import RuntimeDomainBindable
 from agent_runtime.contracts import (
     Action,
     Act,
@@ -39,7 +40,7 @@ ADD_SCHEMA = {
 }
 
 
-class RecordingStore:
+class RecordingStore(RuntimeDomainBindable):
     def __init__(self, fail_on=None):
         self._snapshots = {}
         self.save_count = 0
@@ -267,11 +268,12 @@ def test_l_native_round_trip():
         LLMReasoner(provider1, decision_protocol="native_tools"),
         exec_factory=lambda: "exec_xyz",
     )
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    domain = RuntimeDomain(state_store=store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=domain)
     rt.reconcile("s", "exec_xyz", ConfirmedExecuted(Success(42)))
 
     provider2 = ScriptedModelProvider([ModelResponse(content="done", finish_reason="stop")])
-    rt2 = Runtime(LLMReasoner(provider2, decision_protocol="native_tools"), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    rt2 = Runtime(LLMReasoner(provider2, decision_protocol="native_tools"), {"add": AddCapability()}, AllowAllPolicy(), domain=domain)
     final = rt2.resume("s")
 
     req = provider2.requests[0]
@@ -300,11 +302,12 @@ def test_m_native_not_executed_round_trip():
         LLMReasoner(provider1, decision_protocol="native_tools"),
         exec_factory=lambda: "exec_xyz",
     )
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    domain = RuntimeDomain(state_store=store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=domain)
     rt.reconcile("s", "exec_xyz", ConfirmedNotExecuted())
 
     provider2 = ScriptedModelProvider([ModelResponse(content="done", finish_reason="stop")])
-    rt2 = Runtime(LLMReasoner(provider2, decision_protocol="native_tools"), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    rt2 = Runtime(LLMReasoner(provider2, decision_protocol="native_tools"), {"add": AddCapability()}, AllowAllPolicy(), domain=domain)
     rt2.resume("s")
 
     tool = [m for m in provider2.requests[0].messages if m.role == "tool"]
@@ -315,12 +318,13 @@ def test_m_native_not_executed_round_trip():
 
 def test_n_legacy_reconciliation():
     store = _make_pending(RecordingStore(fail_on={2}), AddThenCompleteReasoner())
-    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    domain = RuntimeDomain(state_store=store)
+    rt = Runtime(CountingReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=domain)
     rt.reconcile("s", "exec_1", ConfirmedExecuted(Success(42)))
 
     # legacy resume：textual history 包含 resolved observation
     provider = ScriptedModelProvider(['{"kind": "complete", "reason": "done"}'])
-    rt2 = Runtime(LLMReasoner(provider), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    rt2 = Runtime(LLMReasoner(provider), {"add": AddCapability()}, AllowAllPolicy(), domain=domain)
     final = rt2.resume("s")
     assert isinstance(final.history[-1].decision, Complete)
 
@@ -347,13 +351,14 @@ def test_p_duplicate_reconcile_rejected():
 
 def test_q_normal_settled_regression():
     store = RecordingStore()
-    rt = Runtime(AddThenCompleteReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    domain = RuntimeDomain(state_store=store)
+    rt = Runtime(AddThenCompleteReasoner(), {"add": AddCapability()}, AllowAllPolicy(), domain=domain)
     final = rt.start(Goal("x"))
     assert final.pending_execution is None
     assert len(final.history) == 2
     # resume terminal
     reasoner = CountingReasoner()
-    rt2 = Runtime(reasoner, {"add": AddCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    rt2 = Runtime(reasoner, {"add": AddCapability()}, AllowAllPolicy(), domain=domain)
     rt2.resume(final.session_id)
     assert reasoner.decide_calls == 0
 

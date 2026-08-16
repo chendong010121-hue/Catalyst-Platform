@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from agent_runtime.capability_executor import DefaultCapabilityExecutor
+from agent_runtime.execution import RuntimeDomainBindable
 from agent_runtime.contracts import (
     Action,
     Act,
@@ -42,7 +43,7 @@ ADD_SCHEMA = {
 }
 
 
-class RecordingStateStore:
+class RecordingStateStore(RuntimeDomainBindable):
     def __init__(self, fail_on=None):
         self._snapshots = {}
         self.save_count = 0
@@ -379,12 +380,13 @@ def test_k_execution_id_distinct_from_tool_call_id():
 
 def test_l_resume_normal_settled_unchanged():
     store = InMemoryStateStore()
-    rt = Runtime(AddThenCompleteReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    domain = RuntimeDomain(state_store=store)
+    rt = Runtime(AddThenCompleteReasoner(), {"add": FakeCapability()}, AllowAllPolicy(), domain=domain)
     final = rt.start(Goal("x"))
     assert final.pending_execution is None
 
     reasoner = CountingReasoner()
-    rt2 = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), domain=RuntimeDomain(state_store=store))
+    rt2 = Runtime(reasoner, {"add": FakeCapability()}, AllowAllPolicy(), domain=domain)
     final2 = rt2.resume(final.session_id)
     assert reasoner.decide_calls == 0  # terminal 直接返回
     assert final2.pending_execution is None

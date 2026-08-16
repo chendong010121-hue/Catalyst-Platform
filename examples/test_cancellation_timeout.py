@@ -19,6 +19,7 @@ import threading
 import time
 
 from agent_runtime.capability_executor import DefaultCapabilityExecutor
+from agent_runtime.execution import RuntimeDomainBindable
 from agent_runtime.contracts import (
     Action,
     Act,
@@ -607,7 +608,7 @@ class ThreadRecordingCapability:
         return Success(42)
 
 
-class ThreadRecordingStore:
+class ThreadRecordingStore(RuntimeDomainBindable):
     def __init__(self):
         self.snapshot = None
         self.commit_threads = []

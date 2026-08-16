@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 from agent_runtime.capability_executor import DefaultCapabilityExecutor
+from agent_runtime.execution import RuntimeDomainBindable
 from agent_runtime.contracts import (
     Action,
     Act,
@@ -53,7 +54,7 @@ ADD_SCHEMA = {
 }
 
 
-class _RawStore:
+class _RawStore(RuntimeDomainBindable):
     """只按原样保存/返回，不做任何 validate/copy。"""
 
     def __init__(self, snapshot=None):
@@ -66,7 +67,7 @@ class _RawStore:
         self.snapshot = snapshot
 
 
-class _RecordingRawStore:
+class _RecordingRawStore(RuntimeDomainBindable):
     def __init__(self):
         self.commits = 0
         self.snapshot = None
@@ -211,7 +212,7 @@ def test_e4_schema_invalid_settles():
 # I：Session identity
 # ---------------------------------------------------------------------------
 
-class _WrongIdentityStore:
+class _WrongIdentityStore(RuntimeDomainBindable):
     def __init__(self):
         self._b = SessionSnapshot("B", Goal("x"), {}, ())
 
@@ -222,7 +223,7 @@ class _WrongIdentityStore:
         pass
 
 
-class _FirstValidSecondWrongStore:
+class _FirstValidSecondWrongStore(RuntimeDomainBindable):
     def __init__(self):
         self.load_count = 0
         self._a = SessionSnapshot("A", Goal("x"), {}, ())

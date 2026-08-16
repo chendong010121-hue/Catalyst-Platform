@@ -9,6 +9,7 @@ from __future__ import annotations
 import os
 
 from agent_runtime.contracts import CapabilityDescriptor, Goal, Success
+from agent_runtime.execution import RuntimeDomainBindable
 from agent_runtime.llm_reasoner import LLMReasoner
 from agent_runtime.policies import StepLimitPolicy
 from agent_runtime.providers.deepseek import DeepSeekModelProvider
@@ -35,7 +36,7 @@ class AddCapability:
         return Success(parameters["a"] + parameters["b"])
 
 
-class MemStore:
+class MemStore(RuntimeDomainBindable):
     def __init__(self):
         self._snapshots = {}
 
