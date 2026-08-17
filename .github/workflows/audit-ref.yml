@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          python -m compileall -q agent_runtime examples 2>&1 | tee audit_artifacts/compile.log
+          python -m compileall -q agent_runtime platform_standard examples tests 2>&1 | tee audit_artifacts/compile.log
 
       - name: Minimal loop
         shell: bash
@@ -56,6 +56,12 @@ jobs:
             echo "=== $mod ===" | tee -a audit_artifacts/regression.log
             python -m "$mod" 2>&1 | tee -a audit_artifacts/regression.log
           done < <(find examples -maxdepth 1 -type f -name 'test_*.py' | sort)
+
+      - name: Run Platform Standard tests (PS-1..PS-14 + AR-1..AR-7)
+        shell: bash
+        run: |
+          set -o pipefail
+          python tests/test_platform_standard_core.py 2>&1 | tee audit_artifacts/platform_standard.log
 
       - name: Upload exact-ref evidence
         if: always()
