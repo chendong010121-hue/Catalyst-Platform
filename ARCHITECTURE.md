@@ -198,6 +198,22 @@ not:
 | repeated cross-domain / cross-enterprise / cross-runtime semantic gap | Platform Standard review candidate |
 | current Runtime cannot satisfy required execution semantics | Runtime upgrade/replacement candidate |
 | Runtime must learn enterprise/domain semantics to support a feature | architecture boundary failure candidate |
+| cross-capability sequencing / parallel execution structure / conditional routing / long-running process structure | Workflow / Orchestration Layer |
+
+Workflow / Orchestration relationship:
+
+```text
+Domain
+→ may provide domain workflow patterns（行业流程模式）
+
+Enterprise
+→ may configure organization-specific process semantics（组织流程语义）
+
+Workflow / Orchestration
+→ expresses / runs cross-capability process structure（跨能力流程结构）
+```
+
+Workflow / Orchestration is a future layer responsibility; no Workflow Engine is implemented in the current stage.
 
 ---
 
@@ -326,6 +342,26 @@ Deprecation of superseded form
 ```
 
 > **The Standard grows from evidence, not from trying to predict every future requirement in advance.**
+
+Extension maturation clarification:
+
+```text
+Repeated usage alone DOES NOT justify Platform Core promotion.
+
+An Extension may remain long-term — even permanently — as:
+  Domain Extension
+  Enterprise Extension
+  Adapter / Vendor Extension
+  Experimental Extension
+and may mature and version independently.
+
+Only a repeated cross-boundary common semantic gap — appearing across
+multiple Domains, Enterprises and/or Runtime/Adapter implementations,
+and beginning to affect interoperability / replaceability / asset
+portability — enters the Platform Standard RFC Candidate path.
+
+Core Promotion is optional, not inevitable.
+```
 
 ---
 
@@ -499,30 +535,33 @@ one vendor-specific limitation forces a new Platform Core concept
 
 ---
 
-# 14. Source of truth
+# 14. Source authority by question
+
+There is **no single globally highest Source of Truth**. Authority depends on the question:
 
 ```text
-ARCHITECTURE.md
-= system purpose + layer meaning + ownership + boundaries + replacement rules + evolution rules
-
-PLATFORM_STANDARD_CORE_V0.1.md
-= normative engineering contract for that Standard version
-
-Stage Spec
-= implementation authorization for one stage
-
-GitHub main
-= accepted implementation reality
-
-HANDOFF
-= current delivery / review state
-
-Tests / verification evidence
-= evidence that an implementation satisfies the relevant contract
-
-Research documents
-= evidence / ideas / architectural candidates only
+current accepted implementation reality      -> GitHub main
+system purpose / layer meaning / boundaries  -> ARCHITECTURE.md
+Platform Standard v0.1 normative contract    -> PLATFORM_STANDARD_CORE_V0.1.md
+current implementation authorization         -> Stage Spec
+current delivery / review state              -> HANDOFF
+verification result                          -> Tests / CI evidence
+research / ideas / candidates                -> research documents
 ```
+
+Conflict semantics:
+
+```text
+Architecture / spec 与 implementation 冲突
+≠ implementation 自动重新定义 Architecture
+
+冲突按问题类别产生并处理：
+  Architecture Conformance Finding   （架构与实现不符）
+  Contract Conformance Finding       （实现不满足契约）
+  Stage Authorization Violation      （超出当前授权）
+```
+
+冲突处理责任按 Section 5 responsibility model 路由；不自动修改任何文件。
 
 > A stale status in another document does **not** authorize changing that file in this stage. Inconsistencies are reported as follow-up findings only.
 
