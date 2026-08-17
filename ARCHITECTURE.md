@@ -1,8 +1,8 @@
 # Agent Runtime + Platform Standard — System Architecture
 ## v2.2 FINAL · Minimal Platform Transition
 
-> **Accepted Runtime baseline:** `main @ 9b88c26eef8faf2569cce8ffcb1cb3407e27b980`  
-> **Current stage:** Platform Standard Core v0.1 — **IMPLEMENTED / LOCAL VERIFIED / CI VERIFIED / PR #4 UNDER EXTERNAL REVIEW / NOT YET ACCEPTED INTO MAIN**  
+> **Accepted Runtime baseline:** `main @ 08932e1555743b5b5ff86639091ad3634654308c`  
+> **Current stage:** Platform Standard Core v0.1 — **IMPLEMENTED / VERIFIED / MERGED / ACCEPTED / CLOSED**（PR #4 merged into main；post-merge CI PASS）  
 > **Role of this file:** define architecture and boundaries. It does **not** authorize future features.
 
 ---
@@ -333,11 +333,15 @@ Then stop and review.
 
 Do not automatically proceed into enterprise governance or domain modeling.
 
-### v0.1 implementation status (PR #4 — NOT YET ACCEPTED INTO MAIN)
+### v0.1 implementation status (MERGED / ACCEPTED)
 
 ```text
-Platform Standard Core v0.1           IMPLEMENTED / LOCAL VERIFIED / CI VERIFIED
-status                                PR #4 UNDER EXTERNAL REVIEW — NOT YET ACCEPTED INTO MAIN
+Platform Standard Core v0.1           IMPLEMENTED / VERIFIED / MERGED / ACCEPTED / CLOSED
+old Runtime baseline                 main @ 9b88c26eef8faf2569cce8ffcb1cb3407e27b980
+PR #4 candidate SHA                  dd2424f283641e77f3a78b34a24427d5568eca7b
+merge SHA / new accepted main SHA   08932e1555743b5b5ff86639091ad3634654308c
+new main tree SHA                    150ee3b250abcbf8cf64b4d6f48fae30133fc67f
+post-merge CI run                    32029892510 (success: compile/minimal loop/22 regressions/PS/AR)
 new package                           platform_standard/  (models, extensions, validation, registry, runtime_adapter)
 reference vertical slice              examples/run_platform_standard_vertical_slice.py  (compose_report)  PASS
 reference implementation              examples/platform_standard_reference.py
@@ -345,7 +349,7 @@ acceptance tests                      tests/test_platform_standard_core.py  PS-1
 second capability (count_words)       added with NO Core schema / Validator / Runtime / AgentCore change  PASS
 same-ID multi-version routing         Adapter-local wrapper (V1 vs V2)  PASS
 Adapter seam                          RuntimeAdapter -> DirectedReasoner -> Runtime.start(goal) (existing Agent Loop)
-AgentCore unchanged                   verified (agent_runtime/** zero diff on main @ 9b88c26)
+AgentCore unchanged                   verified (agent_runtime/** zero diff)
 existing regression                   22/22 examples test modules PASS
 ```
 
