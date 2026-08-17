@@ -15,10 +15,11 @@ from enterprise_extensions.identity import (
     EnterpriseIdentity,
     EnterpriseIdentityError,
     attribute_trace,
+    execute_with_enterprise_identity,
     parse_enterprise_identity,
 )
 from examples.platform_standard_reference import make_stack
-from platform_standard.models import Invocation
+from platform_standard.models import Invocation, TraceEvent
 from platform_standard.validation import PlatformValidator
 
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -46,15 +47,10 @@ def _invocation_with_identity(identity_payload, *, extra_extensions=None):
 
 
 def _run_identity_case(identity: EnterpriseIdentity):
-    """Full reference path: validate -> parse -> execute -> attribute trace."""
+    """Full reference path via the unified handler."""
     registry, adapter = make_stack()
-    validator = PlatformValidator()
     invocation = _invocation_with_identity(identity.to_extension()["enterprise.identity"]["payload"])
-    validator.validate_invocation(invocation)
-    parsed = parse_enterprise_identity(invocation)
-    assert parsed == identity
-    result = adapter.execute(invocation)
-    events = attribute_trace(adapter.trace_events(), parsed)
+    result, events = execute_with_enterprise_identity(adapter, invocation)
     return result, events
 
 
@@ -112,10 +108,26 @@ def test_ee4_invalid_optional_project_id_rejected():
 
 def test_ee5_identity_preserved_through_reference_path():
     identity = EnterpriseIdentity("org_alpha", "user_001", "project_a")
-    result, _events = _run_identity_case(identity)
+    registry, adapter = make_stack()
+    invocation = _invocation_with_identity(identity.to_extension()["enterprise.identity"]["payload"])
+    # original identity parsed from the Invocation BEFORE execution
+    original = parse_enterprise_identity(invocation)
+    result, events = execute_with_enterprise_identity(adapter, invocation)
+    # 1. Invocation identity not lost / not changed
+    assert parse_enterprise_identity(invocation) == original == identity
+    # 2. Result returned normally
     assert result.status == "success"
-    # identity parsed back equals the original; the same payload survives
     assert result.output["report_text"].startswith("# T")
+    # 3. returned attributed Trace contains the same identity
+    assert events
+    for event in events:
+        ext = event.extensions["enterprise.identity"]
+        assert ext["version"] == "0.1"
+        assert ext["payload"] == {
+            "organization_id": "org_alpha",
+            "user_id": "user_001",
+            "project_id": "project_a",
+        }
 
 
 def test_ee6_identity_visible_in_trace_attribution():
@@ -184,8 +196,10 @@ def test_ee10_unknown_optional_extension_preserves_core_behavior():
     validator.validate_invocation(invocation)  # Core accepts optional unknown
     assert parse_enterprise_identity(invocation) is None  # no identity -> no error
     registry, adapter = make_stack()
-    result = adapter.execute(invocation)
+    result, events = execute_with_enterprise_identity(adapter, invocation)
     assert result.status == "success"
+    # no identity -> no attribution injected
+    assert all("enterprise.identity" not in e.extensions for e in events)
     # unknown extension preserved unchanged
     assert invocation.extensions["enterprise.unknown_future_extension"]["payload"]["some_future_meaning"] is True
 
@@ -214,6 +228,74 @@ def test_ee12_ps_ar_regression_passes():
 
 
 # ---------------------------------------------------------------------------
+# ER-1 .. ER-5 audit-repair regressions
+# ---------------------------------------------------------------------------
+
+def test_er1_supported_identity_version_accepted():
+    identity = parse_enterprise_identity(
+        _invocation_with_identity({"organization_id": "org_alpha", "user_id": "user_001"})
+    )
+    assert identity == EnterpriseIdentity("org_alpha", "user_001")
+
+
+def test_er2_unsupported_identity_version_rejected():
+    for version in ("0.2", "999"):
+        invocation = Invocation(
+            id="inv_v", capability_id="compose_report", capability_version="1.0.0",
+            input={"title": "T", "sections": []}, context={"extensions": {}},
+            extensions={"enterprise.identity": {"version": version, "required": False,
+                                                "payload": {"organization_id": "o", "user_id": "u"}}},
+            trace_id="tr_v",
+        )
+        try:
+            parse_enterprise_identity(invocation)
+        except EnterpriseIdentityError:
+            pass
+        else:
+            raise AssertionError(f"version {version!r} must be rejected (only '0.1' supported)")
+
+
+def test_er3_reference_handler_preserves_identity_end_to_end():
+    identity = EnterpriseIdentity("org_beta", "user_927", "project_z")
+    registry, adapter = make_stack()
+    invocation = _invocation_with_identity(identity.to_extension()["enterprise.identity"]["payload"])
+    result, events = execute_with_enterprise_identity(adapter, invocation)
+    assert result.status == "success"
+    assert parse_enterprise_identity(invocation) == identity
+    assert events
+    for event in events:
+        ext = event.extensions["enterprise.identity"]
+        assert ext["payload"]["organization_id"] == "org_beta"
+        assert ext["payload"]["user_id"] == "user_927"
+
+
+def test_er4_identical_trace_identity_accepted():
+    identity = EnterpriseIdentity("org_alpha", "user_001")
+    base = TraceEvent(id="e1", trace_id="t", event_type="invocation.completed", timestamp="x", subject_id="s")
+    attributed = attribute_trace((base,), identity)
+    assert len(attributed) == 1
+    assert attributed[0].extensions["enterprise.identity"]["payload"]["organization_id"] == "org_alpha"
+    # identical pre-existing identity -> preserved unchanged, no error
+    pre = TraceEvent(id="e2", trace_id="t", event_type="invocation.started", timestamp="x", subject_id="s",
+                     extensions=dict(identity.to_extension()))
+    attributed2 = attribute_trace((pre,), identity)
+    assert attributed2[0] is pre
+
+
+def test_er5_conflicting_trace_identity_rejected():
+    identity = EnterpriseIdentity("org_alpha", "user_001")
+    other = EnterpriseIdentity("org_beta", "user_927")
+    pre = TraceEvent(id="e3", trace_id="t", event_type="invocation.started", timestamp="x", subject_id="s",
+                     extensions=dict(other.to_extension()))
+    try:
+        attribute_trace((pre,), identity)
+    except EnterpriseIdentityError:
+        pass
+    else:
+        raise AssertionError("conflicting trace identity must fail closed")
+
+
+# ---------------------------------------------------------------------------
 # runner
 # ---------------------------------------------------------------------------
 
@@ -231,6 +313,11 @@ def main() -> None:
         ("EE-10 unknown optional extension preserved", test_ee10_unknown_optional_extension_preserves_core_behavior),
         ("EE-11 no agent_runtime import in enterprise layer", test_ee11_enterprise_layer_does_not_import_agent_runtime),
         ("EE-12 PS+AR regression PASS", test_ee12_ps_ar_regression_passes),
+        ("ER-1 supported identity version accepted", test_er1_supported_identity_version_accepted),
+        ("ER-2 unsupported identity version rejected", test_er2_unsupported_identity_version_rejected),
+        ("ER-3 reference handler preserves identity end-to-end", test_er3_reference_handler_preserves_identity_end_to_end),
+        ("ER-4 identical trace identity accepted", test_er4_identical_trace_identity_accepted),
+        ("ER-5 conflicting trace identity rejected", test_er5_conflicting_trace_identity_rejected),
     ]
     failed = []
     for name, fn in tests:
@@ -247,7 +334,7 @@ def main() -> None:
     if failed:
         print(f"\n{len(failed)} test(s) failed: {failed}")
         raise SystemExit(1)
-    print("\nALL ENTERPRISE EXTENSION PILOT TESTS PASSED (EE-1..EE-12)")
+    print("\nALL ENTERPRISE EXTENSION PILOT TESTS PASSED (EE-1..EE-12 + ER-1..ER-5)")
 
 
 if __name__ == "__main__":

@@ -53,12 +53,42 @@ EE-1..EE-12:  12/12 PASS
   EE-2 missing org rejected             EE-8 Org B executes correctly（org_beta/user_927/project_z）
   EE-3 missing user rejected            EE-9 switching identity no Core schema change
   EE-4 invalid project_id rejected      EE-10 unknown optional extension preserved
-  EE-5 identity preserved               EE-11 enterprise layer no agent_runtime import（+git zero diff 复核）
+  EE-5 identity preserved（end-to-end）  EE-11 enterprise layer no agent_runtime import（+git zero diff 复核）
   EE-6 trace attribution visible        EE-12 PS-1..PS-14 + AR-1..AR-7 regression PASS
+ER-1..ER-5:  5/5  PASS（External Audit small repair regression）
 PS-1..PS-14: 14/14 PASS
 AR-1..AR-7:  7/7  PASS
 existing Runtime regression: 22/22 examples test modules PASS
 reference enterprise identity slice: PASS（Org A + Org B）
+```
+
+## Repair（External Audit — REQUEST SMALL REPAIR，已修复）
+
+```text
+REPAIR 1  version validation
+  parse_enterprise_identity 只解释 version == "0.1"；其他 version（"0.2"/"999"/缺失）→ EnterpriseIdentityError
+  regression: ER-1（0.1 accepted）/ ER-2（unsupported rejected）—— 不改 Platform Core Validator
+
+REPAIR 2  unified reference path
+  新增 execute_with_enterprise_identity(...)（enterprise_extensions 层轻量 orchestration seam）：
+  validate_invocation → parse identity → generic RuntimeAdapter.execute → retrieve trace → attribute
+  run slice 与 EE/ER tests 统一走此 path；非新 Platform object / 非 Enterprise Runtime / 非 Workflow
+
+REPAIR 3  conflict-safe attribution
+  attribute_trace：无 identity → attach；相同 identity → preserve；冲突 identity → EnterpriseIdentityError（fail closed，绝不静默覆盖）
+  regression: ER-4 / ER-5
+
+EE-5 修正  端到端 preservation 证明：
+  1) Invocation identity 未丢失/未改变（handler 前后 parse 一致）
+  2) Result 正常返回
+  3) returned attributed Trace 含相同 identity
+```
+
+## PARK（记录，不实现）
+
+```text
+Supported Required Extension Negotiation
+  （required=true Extension 的协商支持 —— 当前 Stage 继续使用 required=false，PARK 留待后续）
 ```
 
 ## 没有实现什么（明确 out of scope）

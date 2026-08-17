@@ -9,6 +9,7 @@ from .identity import (
     EnterpriseIdentity,
     EnterpriseIdentityError,
     attribute_trace,
+    execute_with_enterprise_identity,
     parse_enterprise_identity,
 )
 
@@ -17,5 +18,6 @@ __all__ = [
     "EnterpriseIdentity",
     "EnterpriseIdentityError",
     "attribute_trace",
+    "execute_with_enterprise_identity",
     "parse_enterprise_identity",
 ]
