@@ -92,5 +92,5 @@ PREPARED / NOT YET IMPLEMENTED
 
 按 Merge Authorization：PR #4 MERGED、post-merge main CI PASS（compile / minimal loop / 22 regressions / PS-1..14 / AR-1..7 全 PASS）后，新 main 已声明为 ACCEPTED BASELINE。本阶段 CLOSED。
 
-> 注意：ARCHITECTURE.md / HANDOFF.md 的本次状态更新为**未 commit 的本地修改**——按 Git Governance，独立 commit 需新的 publication approval，先报告后申请。
+> 注意：ARCHITECTURE.md / HANDOFF.md 的本次状态更新已 commit 并发布于 `docs/platform-standard-v0.1-closure` / PR #5，当前尚未 merge；进入 accepted main 前仍属于 candidate documentation。
 
