@@ -1,7 +1,7 @@
 # PLATFORM_STANDARD_CORE_V0.1.md
 ## FINAL · Minimal Executable Contract
 
-**Status:** ENGINEERING SPEC — **IMPLEMENTED / VERIFIED (v0.1 delivered)**  
+**Status:** ENGINEERING SPEC — **IMPLEMENTED / LOCAL VERIFIED / CI VERIFIED / PR #4 UNDER EXTERNAL REVIEW / NOT YET ACCEPTED INTO MAIN**  
 **Runtime baseline:** `main @ 9b88c26eef8faf2569cce8ffcb1cb3407e27b980`  
 **Principle:** **enterprise-extensible, not enterprise-complete**
 
@@ -598,7 +598,17 @@ acceptance results
   PS-13 second Capability (count_words) portable, no Core/Runtime/AgentCore change PASS
   PS-14 uncertain Runtime outcome -> unresolved PASS
 
+audit-repair results
+  AR-1  GitHub CI covers Platform Standard (compile + tests run)    PASS
+  AR-2  same capability ID, V1 vs V2 -> correct implementation      PASS
+  AR-3  generic RuntimeAdapter contains no artifact semantics       PASS
+  AR-4  platform_standard/** has no examples.* dependency           PASS
+  AR-5  extensions=None rejected                                    PASS
+  AR-6  context without valid extensions rejected                   PASS
+  AR-7  NaN / Infinity rejected as non-JSON                         PASS
+
 runtime integrity
   AgentCore / Runtime / CapabilityExecutor / contracts : UNCHANGED (zero diff)
   existing regression: 22/22 examples test modules PASS
+  status: PR #4 UNDER EXTERNAL REVIEW — NOT YET ACCEPTED INTO MAIN
 ```

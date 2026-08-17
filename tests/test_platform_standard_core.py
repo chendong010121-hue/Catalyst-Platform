@@ -11,15 +11,20 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agent_runtime.contracts import CapabilityDescriptor as RuntimeCapabilityDescriptor
+from agent_runtime.contracts import (
+    CapabilityDescriptor as RuntimeCapabilityDescriptor,
+    Success,
+)
 
 from examples.platform_standard_reference import (
     ComposeReportCapability,
     CountWordsCapability,
+    compose_report_artifact_mapper,
     compose_report_descriptor,
     count_words_descriptor,
     make_report_invocation,
     make_stack,
+    reference_runtime_factory,
 )
 from platform_standard.extensions import Extension
 from platform_standard.models import (
@@ -256,6 +261,8 @@ def test_ps13_second_capability_portable():
             ("compose_report", "1.0.0"): ComposeReportCapability(),
             ("count_words", "1.0.0"): CountWordsCapability(),
         },
+        runtime_factory=reference_runtime_factory,
+        artifact_mappers={("compose_report", "1.0.0"): compose_report_artifact_mapper},
     )
     validator = PlatformValidator()
 
@@ -300,7 +307,11 @@ def test_ps14_uncertain_runtime_outcome_maps_to_unresolved():
             execution={"side_effect": "possible"},
         )
     )
-    adapter = RuntimeAdapter(registry, {("boom", "1.0.0"): RaisingCapability()})
+    adapter = RuntimeAdapter(
+        registry,
+        {("boom", "1.0.0"): RaisingCapability()},
+        runtime_factory=reference_runtime_factory,
+    )
     inv = Invocation(
         id="inv_b", capability_id="boom", capability_version="1.0.0",
         input={}, context={"extensions": {}}, trace_id="tr_b",
@@ -316,6 +327,134 @@ def test_ps14_uncertain_runtime_outcome_maps_to_unresolved():
     event_types = [e.event_type for e in adapter.trace_events()]
     assert "invocation.started" in event_types
     assert "invocation.unresolved" in event_types
+
+
+# ---------------------------------------------------------------------------
+# AR-1 .. AR-7 audit-repair regressions
+# ---------------------------------------------------------------------------
+
+def _repo_root():
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def test_ar1_ci_covers_platform_standard():
+    ci_path = os.path.join(_repo_root(), ".github", "workflows", "ci.yml")
+    content = open(ci_path, encoding="utf-8").read()
+    assert "platform_standard" in content
+    assert "tests/test_platform_standard_core.py" in content
+
+
+class SameCapabilityV1:
+    def describe(self):
+        return RuntimeCapabilityDescriptor(
+            id="same_capability", name="Same", description="version one",
+            input_schema={"type": "object"}, output_schema={},
+        )
+
+    def invoke(self, parameters, context):
+        return Success({"impl": "V1"})
+
+
+class SameCapabilityV2:
+    def describe(self):
+        return RuntimeCapabilityDescriptor(
+            id="same_capability", name="Same", description="version two",
+            input_schema={"type": "object"}, output_schema={},
+        )
+
+    def invoke(self, parameters, context):
+        return Success({"impl": "V2"})
+
+
+def _same_capability_descriptor(version):
+    return CapabilityDescriptor(
+        id="same_capability", name="Same", description=f"version {version}",
+        capability_version=version,
+        input_schema={"type": "object"}, output_schema={"type": "object"},
+        execution={"side_effect": "none"},
+    )
+
+
+def test_ar2_same_id_multi_version_routing():
+    registry = InMemoryDescriptorRegistry()
+    registry.register(_same_capability_descriptor("1.0.0"))
+    registry.register(_same_capability_descriptor("2.0.0"))
+    adapter = RuntimeAdapter(
+        registry,
+        bindings={
+            ("same_capability", "1.0.0"): SameCapabilityV1(),
+            ("same_capability", "2.0.0"): SameCapabilityV2(),
+        },
+        runtime_factory=reference_runtime_factory,
+    )
+    r1 = adapter.execute(
+        Invocation(id="inv_v1", capability_id="same_capability", capability_version="1.0.0",
+                   input={}, context={"extensions": {}}, trace_id="tr_v1")
+    )
+    r2 = adapter.execute(
+        Invocation(id="inv_v2", capability_id="same_capability", capability_version="2.0.0",
+                   input={}, context={"extensions": {}}, trace_id="tr_v2")
+    )
+    assert r1.status == "success" and r1.output == {"impl": "V1"}
+    assert r2.status == "success" and r2.output == {"impl": "V2"}
+
+
+def test_ar3_generic_adapter_no_artifact_semantics():
+    path = os.path.join(_repo_root(), "platform_standard", "runtime_adapter.py")
+    content = open(path, encoding="utf-8").read()
+    assert "report" not in content  # generic Adapter must not know business artifact types
+
+
+def test_ar4_no_examples_dependency_in_platform_standard():
+    pkg = os.path.join(_repo_root(), "platform_standard")
+    for name in os.listdir(pkg):
+        if not name.endswith(".py"):
+            continue
+        content = open(os.path.join(pkg, name), encoding="utf-8").read()
+        assert "from examples" not in content and "import examples" not in content, name
+
+
+def test_ar5_extensions_none_rejected():
+    d = CapabilityDescriptor(
+        id="x", name="N", description="d", capability_version="1.0.0",
+        input_schema={}, output_schema={}, execution={"side_effect": "none"},
+        extensions=None,
+    )
+    _assert_raises_validation_error(lambda: PlatformValidator().validate_capability(d))
+
+
+def test_ar6_context_without_valid_extensions_rejected():
+    v = PlatformValidator()
+    # missing context.extensions
+    _assert_raises_validation_error(
+        lambda: v.validate_invocation(
+            Invocation(id="i", capability_id="c", capability_version="1.0.0",
+                       input={}, context={}, trace_id="t")
+        )
+    )
+    # context.extensions is not a map
+    _assert_raises_validation_error(
+        lambda: v.validate_invocation(
+            Invocation(id="i", capability_id="c", capability_version="1.0.0",
+                       input={}, context={"extensions": "x"}, trace_id="t")
+        )
+    )
+
+
+def test_ar7_nan_infinity_rejected():
+    v = PlatformValidator()
+    _assert_raises_validation_error(
+        lambda: v.validate_invocation(
+            Invocation(id="i", capability_id="c", capability_version="1.0.0",
+                       input={"x": float("nan")}, context={"extensions": {}}, trace_id="t")
+        )
+    )
+    _assert_raises_validation_error(
+        lambda: v.validate_invocation(
+            Invocation(id="i", capability_id="c", capability_version="1.0.0",
+                       input={"x": float("inf")}, context={"extensions": {}}, trace_id="t")
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -338,6 +477,13 @@ def main() -> None:
         ("PS-12 vertical slice passes", test_ps12_vertical_slice_passes),
         ("PS-13 second Capability portable", test_ps13_second_capability_portable),
         ("PS-14 uncertain outcome -> unresolved", test_ps14_uncertain_runtime_outcome_maps_to_unresolved),
+        ("AR-1 CI covers Platform Standard", test_ar1_ci_covers_platform_standard),
+        ("AR-2 same-ID multi-version routing", test_ar2_same_id_multi_version_routing),
+        ("AR-3 generic Adapter no artifact semantics", test_ar3_generic_adapter_no_artifact_semantics),
+        ("AR-4 no examples dependency", test_ar4_no_examples_dependency_in_platform_standard),
+        ("AR-5 extensions=None rejected", test_ar5_extensions_none_rejected),
+        ("AR-6 context without valid extensions rejected", test_ar6_context_without_valid_extensions_rejected),
+        ("AR-7 NaN/Infinity rejected", test_ar7_nan_infinity_rejected),
     ]
     failed = []
     for name, fn in tests:
@@ -354,7 +500,7 @@ def main() -> None:
     if failed:
         print(f"\n{len(failed)} test(s) failed: {failed}")
         raise SystemExit(1)
-    print("\nALL PLATFORM STANDARD CORE v0.1 TESTS PASSED (PS-1..PS-14)")
+    print("\nALL PLATFORM STANDARD CORE v0.1 TESTS PASSED (PS-1..PS-14 + AR-1..AR-7)")
 
 
 if __name__ == "__main__":

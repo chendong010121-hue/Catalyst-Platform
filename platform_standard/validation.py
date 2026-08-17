@@ -18,6 +18,7 @@ validation during execution.
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from .extensions import (
@@ -34,8 +35,13 @@ class ValidationError(Exception):
 
 
 def _is_json_compatible(value) -> bool:
-    if value is None or isinstance(value, (str, int, float, bool)):
+    if value is None or isinstance(value, (str, bool)):
         return True
+    if isinstance(value, int):
+        return True
+    if isinstance(value, float):
+        # NaN / Infinity / -Infinity are NOT standard JSON numbers.
+        return math.isfinite(value)
     if isinstance(value, list):
         return all(_is_json_compatible(v) for v in value)
     if isinstance(value, dict):
@@ -61,7 +67,9 @@ def _check_envelope(obj, errors: list[str]) -> None:
     _require_nonempty_str(obj, "kind", errors)
     _require_nonempty_str(obj, "id", errors)
     extensions = getattr(obj, "extensions", None)
-    if extensions is not None:
+    if not isinstance(extensions, dict):
+        errors.append("extensions must be a map")
+    else:
         errors.extend(validate_extensions(extensions))
 
 
@@ -96,7 +104,11 @@ class PlatformValidator:
             errors.append("invocation.context must be a map")
         else:
             ctx_ext = invocation.context.get("extensions")
-            if ctx_ext is not None:
+            if ctx_ext is None:
+                errors.append("invocation.context.extensions is required")
+            elif not isinstance(ctx_ext, dict):
+                errors.append("invocation.context.extensions must be a map")
+            else:
                 errors.extend(validate_extensions(ctx_ext))
         _require_nonempty_str(invocation, "trace_id", errors)
         self._raise_if(errors)

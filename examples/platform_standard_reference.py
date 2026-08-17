@@ -8,12 +8,19 @@ slice; it is NOT a plugin framework or production registry.
 
 from __future__ import annotations
 
+import uuid
+
 from agent_runtime.contracts import (
     CapabilityDescriptor as RuntimeCapabilityDescriptor,
     Success,
 )
 
-from platform_standard.models import CapabilityDescriptor, Invocation
+from platform_standard.models import (
+    ArtifactRef,
+    CapabilityDescriptor,
+    Invocation,
+    Producer,
+)
 from platform_standard.registry import InMemoryDescriptorRegistry
 from platform_standard.runtime_adapter import RuntimeAdapter
 
@@ -120,6 +127,41 @@ def make_report_invocation(input_: dict, *, invocation_id: str = "inv_001", trac
     )
 
 
+def reference_runtime_factory(capabilities, reasoner):
+    """Reference-only Runtime composition.
+
+    Policy / StateStore are chosen HERE (reference vertical-slice config), not
+    inside the generic RuntimeAdapter.
+    """
+    from agent_runtime.runtime import Runtime
+    from examples.fakes import AllowAllPolicy, InMemoryStateStore
+
+    return Runtime(reasoner, capabilities, AllowAllPolicy(), InMemoryStateStore())
+
+
+def compose_report_artifact_mapper(output, invocation):
+    """Adapter-local artifact mapping for compose_report.
+
+    Business semantics (artifact_type="report") live in this reference mapper,
+    NOT in the generic RuntimeAdapter.
+    """
+    uri = output.get("artifact_uri") if isinstance(output, dict) else None
+    if isinstance(uri, str) and uri:
+        return (
+            ArtifactRef(
+                id=f"artifact_{uuid.uuid4().hex[:12]}",
+                artifact_type="report",
+                artifact_version="1",
+                uri=uri,
+                producer=Producer(
+                    capability_id=invocation.capability_id,
+                    invocation_id=invocation.id,
+                ),
+            ),
+        )
+    return ()
+
+
 def make_stack():
     """Assemble the reference stack: registry + bindings + adapter."""
     registry = InMemoryDescriptorRegistry()
@@ -127,6 +169,8 @@ def make_stack():
     adapter = RuntimeAdapter(
         registry,
         bindings={("compose_report", "1.0.0"): ComposeReportCapability()},
+        runtime_factory=reference_runtime_factory,
+        artifact_mappers={("compose_report", "1.0.0"): compose_report_artifact_mapper},
     )
     return registry, adapter
 
