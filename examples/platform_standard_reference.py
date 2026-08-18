@@ -42,7 +42,9 @@ class ComposeReportCapability:
                 "required": ["title"],
                 "additionalProperties": False,
             },
-            output_schema={"report": "string"},
+            # Direct-binding reference path: Runtime-local declared public
+            # output contract matches the Platform Capability contract.
+            output_schema={"type": "object"},
         )
 
     def invoke(self, parameters, context) -> Success:
@@ -72,7 +74,8 @@ class CountWordsCapability:
                 "required": ["text"],
                 "additionalProperties": False,
             },
-            output_schema={"word_count": "integer"},
+            # Same current direct-binding rule as compose_report.
+            output_schema={"type": "object"},
         )
 
     def invoke(self, parameters, context) -> Success:
