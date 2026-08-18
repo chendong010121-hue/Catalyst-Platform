@@ -43,10 +43,6 @@ from platform_standard.runtime_adapter import RuntimeAdapter
 from platform_standard.validation import PlatformValidator, ValidationError
 
 
-# ---------------------------------------------------------------------------
-# helpers
-# ---------------------------------------------------------------------------
-
 def _assert_raises_validation_error(fn):
     try:
         fn()
@@ -55,10 +51,6 @@ def _assert_raises_validation_error(fn):
     raise AssertionError("expected ValidationError")
 
 
-# ---------------------------------------------------------------------------
-# PS-1 / PS-2 Capability contract
-# ---------------------------------------------------------------------------
-
 def test_ps1_valid_capability_accepted():
     PlatformValidator().validate_capability(compose_report_descriptor())
     PlatformValidator().validate_capability(count_words_descriptor())
@@ -66,7 +58,6 @@ def test_ps1_valid_capability_accepted():
 
 def test_ps2_malformed_capability_rejected():
     v = PlatformValidator()
-    # empty name -> reject
     _assert_raises_validation_error(
         lambda: v.validate_capability(
             CapabilityDescriptor(
@@ -75,7 +66,6 @@ def test_ps2_malformed_capability_rejected():
             )
         )
     )
-    # missing execution.side_effect -> reject
     _assert_raises_validation_error(
         lambda: v.validate_capability(
             CapabilityDescriptor(
@@ -84,7 +74,6 @@ def test_ps2_malformed_capability_rejected():
             )
         )
     )
-    # invalid side_effect -> reject
     _assert_raises_validation_error(
         lambda: v.validate_capability(
             CapabilityDescriptor(
@@ -93,7 +82,6 @@ def test_ps2_malformed_capability_rejected():
             )
         )
     )
-    # missing id -> reject
     _assert_raises_validation_error(
         lambda: v.validate_capability(
             CapabilityDescriptor(
@@ -103,10 +91,6 @@ def test_ps2_malformed_capability_rejected():
         )
     )
 
-
-# ---------------------------------------------------------------------------
-# PS-3 / PS-4 / PS-5 Invocation + Extension
-# ---------------------------------------------------------------------------
 
 def test_ps3_valid_invocation_accepted():
     inv = Invocation(
@@ -131,13 +115,9 @@ def test_ps5_unknown_optional_extension_preserved():
         id="inv_3", capability_id="compose_report", capability_version="1.0.0",
         input={}, context={"extensions": {}}, trace_id="tr_3", extensions=ext,
     )
-    PlatformValidator().validate_invocation(inv)  # no error
-    assert inv.extensions == ext  # preserved unchanged
+    PlatformValidator().validate_invocation(inv)
+    assert inv.extensions == ext
 
-
-# ---------------------------------------------------------------------------
-# PS-6 / PS-7 / PS-8 Result contract
-# ---------------------------------------------------------------------------
 
 def test_ps6_success_result_validates():
     r = Result(id="r1", invocation_id="inv_1", status="success", output={"ok": True}, artifacts=(), error=None)
@@ -158,7 +138,6 @@ def test_ps8_unresolved_result_implies_no_safe_retry():
     data = r.to_dict()
     assert "safe_to_retry" not in data
     assert "did_not_execute" not in data
-    # unresolved must not be success with null error
     _assert_raises_validation_error(
         lambda: PlatformValidator().validate_result(
             Result(id="r2", invocation_id="inv_1", status="unresolved", output=None, artifacts=(), error=None)
@@ -166,17 +145,12 @@ def test_ps8_unresolved_result_implies_no_safe_retry():
     )
 
 
-# ---------------------------------------------------------------------------
-# PS-9 ArtifactRef / PS-10 Trace Event
-# ---------------------------------------------------------------------------
-
 def test_ps9_artifact_ref_validates():
     a = ArtifactRef(
         id="a1", artifact_type="report", artifact_version="1", uri="file:///outputs/report.md",
         producer=Producer(capability_id="compose_report", invocation_id="inv_1"),
     )
     PlatformValidator().validate_artifact_ref(a)
-    # missing producer -> reject
     _assert_raises_validation_error(
         lambda: PlatformValidator().validate_artifact_ref(
             ArtifactRef(id="a2", artifact_type="report", artifact_version="1", uri="u", producer=Producer())
@@ -197,10 +171,6 @@ def test_ps10_trace_event_validates():
     )
 
 
-# ---------------------------------------------------------------------------
-# PS-11 registry duplicate
-# ---------------------------------------------------------------------------
-
 def test_ps11_duplicate_descriptor_rejected():
     reg = InMemoryDescriptorRegistry()
     reg.register(compose_report_descriptor())
@@ -213,10 +183,6 @@ def test_ps11_duplicate_descriptor_rejected():
     assert len(reg.list()) == 1
 
 
-# ---------------------------------------------------------------------------
-# PS-12 vertical slice
-# ---------------------------------------------------------------------------
-
 def test_ps12_vertical_slice_passes():
     registry, adapter = make_stack()
     validator = PlatformValidator()
@@ -225,7 +191,6 @@ def test_ps12_vertical_slice_passes():
         invocation_id="inv_vs", trace_id="tr_vs",
     )
     result = adapter.execute(invocation)
-
     assert result.status == "success"
     assert result.output["report_text"].startswith("# T")
     assert len(result.artifacts) == 1
@@ -234,8 +199,6 @@ def test_ps12_vertical_slice_passes():
     assert artifact.uri.startswith("file:///outputs/report_T.md")
     assert artifact.producer.capability_id == "compose_report"
     assert artifact.producer.invocation_id == "inv_vs"
-
-    # all Standard objects validate
     validator.validate_result(result)
     validator.validate_artifact_ref(artifact)
     event_types = [e.event_type for e in adapter.trace_events()]
@@ -246,10 +209,6 @@ def test_ps12_vertical_slice_passes():
         validator.validate_trace_event(e)
     assert registry.get("compose_report", "1.0.0") is not None
 
-
-# ---------------------------------------------------------------------------
-# PS-13 second Capability portability (no Core/Runtime/AgentCore change)
-# ---------------------------------------------------------------------------
 
 def test_ps13_second_capability_portable():
     registry = InMemoryDescriptorRegistry()
@@ -265,7 +224,6 @@ def test_ps13_second_capability_portable():
         artifact_mappers={("compose_report", "1.0.0"): compose_report_artifact_mapper},
     )
     validator = PlatformValidator()
-
     inv = Invocation(
         id="inv_cw", capability_id="count_words", capability_version="1.0.0",
         input={"text": "alpha beta gamma"}, context={"extensions": {}}, trace_id="tr_cw",
@@ -273,17 +231,12 @@ def test_ps13_second_capability_portable():
     result = adapter.execute(inv)
     assert result.status == "success"
     assert result.output == {"word_count": 3}
-    assert result.artifacts == ()  # a capability MAY return zero artifacts
+    assert result.artifacts == ()
     validator.validate_result(result)
-    # first capability still works on the same stack
     first = adapter.execute(make_report_invocation({"title": "X", "sections": []}, invocation_id="inv_r", trace_id="tr_r"))
     assert first.status == "success"
     assert len(first.artifacts) == 1
 
-
-# ---------------------------------------------------------------------------
-# PS-14 uncertain Runtime outcome -> unresolved
-# ---------------------------------------------------------------------------
 
 class RaisingCapability:
     """Raises after a possible side effect: execution certainty is not closed."""
@@ -291,7 +244,7 @@ class RaisingCapability:
     def describe(self):
         return RuntimeCapabilityDescriptor(
             id="boom", name="Boom", description="raises after possible side effect",
-            input_schema={"type": "object"}, output_schema={},
+            input_schema={"type": "object"}, output_schema={"type": "object"},
         )
 
     def invoke(self, parameters, context):
@@ -329,10 +282,6 @@ def test_ps14_uncertain_runtime_outcome_maps_to_unresolved():
     assert "invocation.unresolved" in event_types
 
 
-# ---------------------------------------------------------------------------
-# AR-1 .. AR-7 audit-repair regressions
-# ---------------------------------------------------------------------------
-
 def _repo_root():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -348,7 +297,7 @@ class SameCapabilityV1:
     def describe(self):
         return RuntimeCapabilityDescriptor(
             id="same_capability", name="Same", description="version one",
-            input_schema={"type": "object"}, output_schema={},
+            input_schema={"type": "object"}, output_schema={"type": "object"},
         )
 
     def invoke(self, parameters, context):
@@ -359,7 +308,7 @@ class SameCapabilityV2:
     def describe(self):
         return RuntimeCapabilityDescriptor(
             id="same_capability", name="Same", description="version two",
-            input_schema={"type": "object"}, output_schema={},
+            input_schema={"type": "object"}, output_schema={"type": "object"},
         )
 
     def invoke(self, parameters, context):
@@ -402,7 +351,7 @@ def test_ar2_same_id_multi_version_routing():
 def test_ar3_generic_adapter_no_artifact_semantics():
     path = os.path.join(_repo_root(), "platform_standard", "runtime_adapter.py")
     content = open(path, encoding="utf-8").read()
-    assert "report" not in content  # generic Adapter must not know business artifact types
+    assert "report" not in content
 
 
 def test_ar4_no_examples_dependency_in_platform_standard():
@@ -425,14 +374,12 @@ def test_ar5_extensions_none_rejected():
 
 def test_ar6_context_without_valid_extensions_rejected():
     v = PlatformValidator()
-    # missing context.extensions
     _assert_raises_validation_error(
         lambda: v.validate_invocation(
             Invocation(id="i", capability_id="c", capability_version="1.0.0",
                        input={}, context={}, trace_id="t")
         )
     )
-    # context.extensions is not a map
     _assert_raises_validation_error(
         lambda: v.validate_invocation(
             Invocation(id="i", capability_id="c", capability_version="1.0.0",
@@ -456,10 +403,6 @@ def test_ar7_nan_infinity_rejected():
         )
     )
 
-
-# ---------------------------------------------------------------------------
-# runner
-# ---------------------------------------------------------------------------
 
 def main() -> None:
     tests = [
@@ -496,7 +439,6 @@ def main() -> None:
         except Exception as exc:  # noqa: BLE001
             failed.append(name)
             print(f"ERROR : {name} -> {type(exc).__name__}: {exc}")
-
     if failed:
         print(f"\n{len(failed)} test(s) failed: {failed}")
         raise SystemExit(1)
