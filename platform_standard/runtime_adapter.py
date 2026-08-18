@@ -31,6 +31,7 @@ auto-replay unresolved execution. It carries NO business/domain semantics.
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import time
 import uuid
@@ -96,17 +97,21 @@ def _normalize_schema(value: Any) -> Any:
     return value
 
 
-def _assert_direct_binding_conforms(
+def _checked_direct_binding_descriptor(
     platform_descriptor: CapabilityDescriptor,
     impl: Any,
     capability_id: str,
     capability_version: str,
-) -> None:
-    """Fail closed if a direct binding contradicts the Platform public IO contract.
+) -> RuntimeCapabilityDescriptor:
+    """Return a frozen checked Runtime descriptor or fail closed.
 
     Current v0.1 evidence rule: direct bindings use structural schema
     equivalence. A future mapping Adapter may use different implementation
     schemas if it provides explicit transformation/conformance evidence.
+
+    The checked descriptor is deep-copied and reused by the Runtime wrapper so
+    the implementation cannot pass preflight with one descriptor and expose a
+    different descriptor during Runtime registration.
     """
     try:
         runtime_descriptor = impl.describe()
@@ -133,16 +138,24 @@ def _assert_direct_binding_conforms(
                 f"Capability {label}: direct-binding schemas are not structurally equivalent"
             )
 
+    return copy.deepcopy(runtime_descriptor)
+
 
 class _RuntimeCapabilityBinding:
     """Adapter-local wrapper: binds one (capability_id, version) to a unique Runtime key."""
 
-    def __init__(self, impl, internal_key: str) -> None:
+    def __init__(
+        self,
+        impl: Any,
+        internal_key: str,
+        checked_descriptor: RuntimeCapabilityDescriptor,
+    ) -> None:
         self._impl = impl
         self._internal_key = internal_key
+        self._checked_descriptor = checked_descriptor
 
     def describe(self) -> RuntimeCapabilityDescriptor:
-        d = self._impl.describe()
+        d = self._checked_descriptor
         return RuntimeCapabilityDescriptor(
             id=self._internal_key,
             name=d.name,
@@ -194,16 +207,40 @@ class RuntimeAdapter:
         capabilities: dict[str, Any] = {}
         for (capability_id, capability_version), impl in self._bindings.items():
             descriptor = self._registry.get(capability_id, capability_version)
+            checked_descriptor = None
             if descriptor is not None:
-                _assert_direct_binding_conforms(
+                checked_descriptor = _checked_direct_binding_descriptor(
                     descriptor,
                     impl,
                     capability_id,
                     capability_version,
                 )
+            else:
+                # Preserve existing behavior for a binding whose Standard
+                # descriptor is not registered yet: execute() will return
+                # capability_not_found. Runtime registration still needs one
+                # stable descriptor snapshot.
+                try:
+                    runtime_descriptor = impl.describe()
+                except Exception as exc:  # noqa: BLE001
+                    raise AdapterConfigurationError(
+                        f"binding {capability_id!r} v{capability_version!r} cannot be inspected: "
+                        "implementation.describe() failed"
+                    ) from exc
+                if not isinstance(runtime_descriptor, RuntimeCapabilityDescriptor):
+                    raise AdapterConfigurationError(
+                        f"binding {capability_id!r} v{capability_version!r} returned invalid "
+                        f"Runtime CapabilityDescriptor: {type(runtime_descriptor).__name__}"
+                    )
+                checked_descriptor = copy.deepcopy(runtime_descriptor)
+
             key = _internal_key(capability_id, capability_version)
             self._key_for[(capability_id, capability_version)] = key
-            capabilities[key] = _RuntimeCapabilityBinding(impl, key)
+            capabilities[key] = _RuntimeCapabilityBinding(
+                impl,
+                key,
+                checked_descriptor,
+            )
         self._runtime = runtime_factory(capabilities, self._reasoner)
         self._trace_events: list[TraceEvent] = []
 
