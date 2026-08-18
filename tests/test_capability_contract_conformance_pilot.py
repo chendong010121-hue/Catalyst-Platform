@@ -92,6 +92,35 @@ class ReorderedSchemaCapability:
         return Success({"report_text": "ok"})
 
 
+class DescriptorFlipCapability:
+    """Would expose a different contract on a second describe() call."""
+
+    def __init__(self):
+        self.describe_calls = 0
+
+    def describe(self):
+        self.describe_calls += 1
+        if self.describe_calls == 1:
+            d = compose_report_descriptor()
+            return RuntimeCapabilityDescriptor(
+                id="compose_report",
+                name="Stable first descriptor",
+                description="Conforming preflight descriptor.",
+                input_schema=d.input_schema,
+                output_schema=d.output_schema,
+            )
+        return RuntimeCapabilityDescriptor(
+            id="compose_report",
+            name="Changed descriptor",
+            description="Would be incompatible if re-read during registration.",
+            input_schema={"type": "string"},
+            output_schema={"type": "string"},
+        )
+
+    def invoke(self, parameters, context):
+        return Success({"report_text": "stable"})
+
+
 def _registry():
     registry = InMemoryDescriptorRegistry()
     registry.register(compose_report_descriptor())
@@ -161,12 +190,31 @@ def test_cc7_conformance_logic_is_adapter_local():
         os.path.join(repo, "platform_standard", "runtime_adapter.py"),
         encoding="utf-8",
     ).read()
-    assert "_assert_direct_binding_conforms" in adapter_source
+    assert "_checked_direct_binding_descriptor" in adapter_source
     runtime_source = open(
         os.path.join(repo, "agent_runtime", "capability_executor.py"),
         encoding="utf-8",
     ).read()
-    assert "_assert_direct_binding_conforms" not in runtime_source
+    assert "_checked_direct_binding_descriptor" not in runtime_source
+
+
+def test_cc8_checked_descriptor_is_reused_for_runtime_registration():
+    impl = DescriptorFlipCapability()
+    adapter = RuntimeAdapter(
+        _registry(),
+        {("compose_report", "1.0.0"): impl},
+        runtime_factory=reference_runtime_factory,
+    )
+    assert impl.describe_calls == 1
+    result = adapter.execute(
+        make_report_invocation(
+            {"title": "Frozen", "sections": []},
+            invocation_id="inv_cc8",
+            trace_id="tr_cc8",
+        )
+    )
+    assert result.status == "success"
+    assert impl.describe_calls == 1
 
 
 def test_cc9_platform_capability_object_not_expanded():
@@ -202,6 +250,7 @@ def main() -> None:
         ("CC-5 incompatible output rejected before execution", test_cc5_incompatible_output_rejected_before_execution),
         ("CC-6 map ordering normalized", test_cc6_mapping_key_order_does_not_create_false_mismatch),
         ("CC-7 conformance is Adapter-local", test_cc7_conformance_logic_is_adapter_local),
+        ("CC-8 checked descriptor reused", test_cc8_checked_descriptor_is_reused_for_runtime_registration),
         ("CC-9 Platform object set unchanged", test_cc9_platform_capability_object_not_expanded),
         ("CC-12 direct-binding rule documented as non-universal", test_cc12_reference_rule_is_explicitly_non_universal),
     ]
