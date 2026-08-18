@@ -9,6 +9,12 @@ simple internal binding:
 
     (capability_id, capability_version) -> existing Runtime Capability implementation
 
+For the current direct-binding reference path, the Adapter also performs a
+minimal preflight conformance check: the bound Runtime implementation must
+declare input/output schemas structurally equivalent to the registered
+Platform Capability contract. This is intentionally a reference direct-binding
+rule, not a universal requirement for future mapping Adapters.
+
 Version routing stays in the Adapter: each (capability_id, capability_version)
 gets a unique internal Runtime key through an adapter-local wrapper, so two
 versions of the same capability_id never collapse into one implementation.
@@ -25,6 +31,7 @@ auto-replay unresolved execution. It carries NO business/domain semantics.
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import time
 import uuid
@@ -43,13 +50,13 @@ from agent_runtime.contracts import (
 from agent_runtime.errors import RuntimeExecutionError
 from agent_runtime.runtime import Runtime
 
-from .models import ArtifactRef, Invocation, Result, TraceEvent
+from .models import ArtifactRef, CapabilityDescriptor, Invocation, Result, TraceEvent
 from .registry import InMemoryDescriptorRegistry
 from .validation import PlatformValidator
 
 
 class AdapterConfigurationError(Exception):
-    """RuntimeAdapter is missing a required composition input."""
+    """RuntimeAdapter composition/binding configuration is invalid."""
 
 
 class DirectedReasoner:
@@ -74,15 +81,81 @@ def _internal_key(capability_id: str, capability_version: str) -> str:
     return f"cap_{digest[:12]}"
 
 
+def _normalize_schema(value: Any) -> Any:
+    """Normalize ordinary map ordering for deterministic direct-binding compare.
+
+    This is deliberately NOT a JSON-Schema implication/subtyping engine. Lists
+    remain ordered; only mapping key order is normalized recursively.
+    """
+    if isinstance(value, Mapping):
+        return tuple(
+            (key, _normalize_schema(value[key]))
+            for key in sorted(value)
+        )
+    if isinstance(value, list):
+        return tuple(_normalize_schema(item) for item in value)
+    return value
+
+
+def _checked_direct_binding_descriptor(
+    platform_descriptor: CapabilityDescriptor,
+    impl: Any,
+    capability_id: str,
+    capability_version: str,
+) -> RuntimeCapabilityDescriptor:
+    """Return a frozen checked Runtime descriptor or fail closed.
+
+    Current v0.1 evidence rule: direct bindings use structural schema
+    equivalence. A future mapping Adapter may use different implementation
+    schemas if it provides explicit transformation/conformance evidence.
+
+    The checked descriptor is deep-copied and reused by the Runtime wrapper so
+    the implementation cannot pass preflight with one descriptor and expose a
+    different descriptor during Runtime registration.
+    """
+    try:
+        runtime_descriptor = impl.describe()
+    except Exception as exc:  # noqa: BLE001
+        raise AdapterConfigurationError(
+            f"binding {capability_id!r} v{capability_version!r} cannot be inspected: "
+            "implementation.describe() failed"
+        ) from exc
+
+    if not isinstance(runtime_descriptor, RuntimeCapabilityDescriptor):
+        raise AdapterConfigurationError(
+            f"binding {capability_id!r} v{capability_version!r} returned invalid "
+            f"Runtime CapabilityDescriptor: {type(runtime_descriptor).__name__}"
+        )
+
+    checks = (
+        ("input_schema", platform_descriptor.input_schema, runtime_descriptor.input_schema),
+        ("output_schema", platform_descriptor.output_schema, runtime_descriptor.output_schema),
+    )
+    for label, platform_schema, runtime_schema in checks:
+        if _normalize_schema(platform_schema) != _normalize_schema(runtime_schema):
+            raise AdapterConfigurationError(
+                f"binding {capability_id!r} v{capability_version!r} violates Platform "
+                f"Capability {label}: direct-binding schemas are not structurally equivalent"
+            )
+
+    return copy.deepcopy(runtime_descriptor)
+
+
 class _RuntimeCapabilityBinding:
     """Adapter-local wrapper: binds one (capability_id, version) to a unique Runtime key."""
 
-    def __init__(self, impl, internal_key: str) -> None:
+    def __init__(
+        self,
+        impl: Any,
+        internal_key: str,
+        checked_descriptor: RuntimeCapabilityDescriptor,
+    ) -> None:
         self._impl = impl
         self._internal_key = internal_key
+        self._checked_descriptor = checked_descriptor
 
     def describe(self) -> RuntimeCapabilityDescriptor:
-        d = self._impl.describe()
+        d = self._checked_descriptor
         return RuntimeCapabilityDescriptor(
             id=self._internal_key,
             name=d.name,
@@ -133,9 +206,41 @@ class RuntimeAdapter:
         self._key_for: dict[tuple[str, str], str] = {}
         capabilities: dict[str, Any] = {}
         for (capability_id, capability_version), impl in self._bindings.items():
+            descriptor = self._registry.get(capability_id, capability_version)
+            checked_descriptor = None
+            if descriptor is not None:
+                checked_descriptor = _checked_direct_binding_descriptor(
+                    descriptor,
+                    impl,
+                    capability_id,
+                    capability_version,
+                )
+            else:
+                # Preserve existing behavior for a binding whose Standard
+                # descriptor is not registered yet: execute() will return
+                # capability_not_found. Runtime registration still needs one
+                # stable descriptor snapshot.
+                try:
+                    runtime_descriptor = impl.describe()
+                except Exception as exc:  # noqa: BLE001
+                    raise AdapterConfigurationError(
+                        f"binding {capability_id!r} v{capability_version!r} cannot be inspected: "
+                        "implementation.describe() failed"
+                    ) from exc
+                if not isinstance(runtime_descriptor, RuntimeCapabilityDescriptor):
+                    raise AdapterConfigurationError(
+                        f"binding {capability_id!r} v{capability_version!r} returned invalid "
+                        f"Runtime CapabilityDescriptor: {type(runtime_descriptor).__name__}"
+                    )
+                checked_descriptor = copy.deepcopy(runtime_descriptor)
+
             key = _internal_key(capability_id, capability_version)
             self._key_for[(capability_id, capability_version)] = key
-            capabilities[key] = _RuntimeCapabilityBinding(impl, key)
+            capabilities[key] = _RuntimeCapabilityBinding(
+                impl,
+                key,
+                checked_descriptor,
+            )
         self._runtime = runtime_factory(capabilities, self._reasoner)
         self._trace_events: list[TraceEvent] = []
 

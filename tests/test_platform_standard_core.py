@@ -291,7 +291,7 @@ class RaisingCapability:
     def describe(self):
         return RuntimeCapabilityDescriptor(
             id="boom", name="Boom", description="raises after possible side effect",
-            input_schema={"type": "object"}, output_schema={},
+            input_schema={"type": "object"}, output_schema={"type": "object"},
         )
 
     def invoke(self, parameters, context):
@@ -348,7 +348,7 @@ class SameCapabilityV1:
     def describe(self):
         return RuntimeCapabilityDescriptor(
             id="same_capability", name="Same", description="version one",
-            input_schema={"type": "object"}, output_schema={},
+            input_schema={"type": "object"}, output_schema={"type": "object"},
         )
 
     def invoke(self, parameters, context):
@@ -359,7 +359,7 @@ class SameCapabilityV2:
     def describe(self):
         return RuntimeCapabilityDescriptor(
             id="same_capability", name="Same", description="version two",
-            input_schema={"type": "object"}, output_schema={},
+            input_schema={"type": "object"}, output_schema={"type": "object"},
         )
 
     def invoke(self, parameters, context):
