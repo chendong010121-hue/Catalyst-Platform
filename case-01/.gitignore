@@ -1,0 +1,6 @@
+# Case 01 protected local inputs
+**/artifacts/sources/**
+**/__pycache__/**
+*.pyc
+*.sqlite
+*.db
