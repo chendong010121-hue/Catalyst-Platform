@@ -1,34 +1,9 @@
 {
-  "builder": "case-scoped-minimum-builder-v0.1",
+  "builder": "case-scoped-minimum-builder-v0.2",
   "candidate_id": "brea-v0.1",
   "candidate_version": "v0.1-candidate",
-  "target_directory": "../candidate/brea-v0.1",
+  "target_directory": "candidate/brea-v0.1",
   "governed_definition_path": "../01-b-governed-agent-definition/builder/BUILDER_CONSUMABLE_DEFINITION_V0.1.md",
   "corpus_manifest_path": "../01-b-governed-agent-definition/evidence/LOCAL_CORPUS_REFERENCE_MANIFEST_V0.1.md",
-  "allowed_asset_manifest": ["A-02", "A-04", "A-11", "A-12", "A-13a"],
-  "functions": [
-    {"fn": "FN-01", "name": "Question & Context Intake", "governance": "DECLARED FUNCTION BOUNDARY"},
-    {"fn": "FN-02", "name": "Professional Fact Normalization", "governance": "GOVERNED SEAM - SEAM-01"},
-    {"fn": "FN-03", "name": "Regulation Applicability Resolution", "governance": "GOVERNED SEAM - SEAM-02"},
-    {"fn": "FN-04", "name": "Evidence Locating & Extraction", "governance": "GOVERNED SEAM - SEAM-03"},
-    {"fn": "FN-05", "name": "Evidence Binding & Numeric Safety", "governance": "GOVERNED SEAM - SEAM-03"},
-    {"fn": "FN-06", "name": "Uncertainty & Fail-Closed Decision", "governance": "DECLARED FUNCTION BOUNDARY"},
-    {"fn": "FN-07", "name": "Result Composition & Attribution", "governance": "DECLARED FUNCTION BOUNDARY"},
-    {"fn": "FN-08", "name": "Artifact & Provenance Preservation", "governance": "GOVERNED SEAM - SEAM-03"},
-    {"fn": "FN-09", "name": "Corpus Access & Parsing", "governance": "PRIVATE IMPLEMENTATION"},
-    {"fn": "FN-10", "name": "Provider & Execution Plumbing", "governance": "PRIVATE / DEFERRED"},
-    {"fn": "FN-11", "name": "Local Runner / Service Shell", "governance": "PRIVATE / DEFERRED"}
-  ],
-  "seams": [
-    {"seam": "SEAM-01", "owner": "Domain", "functions": ["FN-02"], "module": "brea.facts"},
-    {"seam": "SEAM-02", "owner": "Domain", "functions": ["FN-03"], "module": "brea.applicability"},
-    {"seam": "SEAM-03", "owner": "Domain + Agent", "functions": ["FN-04", "FN-05", "FN-08"], "module": "brea.evidence"}
-  ],
-  "obligations": ["OBL-01", "OBL-02", "OBL-03", "OBL-04", "OBL-05", "OBL-06"],
-  "private_implementation_freedom": [
-    "retrieval algorithm", "chunking / ranking", "parser", "internal storage / cache",
-    "database", "provider", "prompt wording", "internal orchestration", "module layout",
-    "CLI / local service shape", "serialization HOW"
-  ],
-  "notes": "Minimum Case-scoped Builder for CASE 01-C. Architecture comes from the accepted definition; generated artifacts are recorded in BUILDER_OUTPUT_MANIFEST_V0.1.json. No architecture invention; no raw corpus copy; no Catalyst root / Platform / Runtime changes."
+  "notes": "Execution parameters only. Architecture (identity/purpose/FN-01..11/SEAM-01..03/OBL-01..06/allowed assets/corpus reference/private freedom) is parsed and validated from the accepted governed definition (C-01); the request must not duplicate architecture fields."
 }

@@ -1,0 +1,12 @@
+﻿== CASE 01-C Builder proof tests (BT-01..BT-10) ==
+PASS test_bt01_accepted_sha_passes
+PASS test_bt02_wrong_sha_fails_closed
+PASS test_bt03_fn_set_parsed
+PASS test_bt04_seam_set_parsed
+PASS test_bt05_obligations_parsed
+PASS test_bt06_request_cannot_override_architecture
+PASS test_bt07_generated_candidate_matches_definition
+PASS test_bt08_obligation_refs_exist
+PASS test_bt09_non_empty_target_fails_closed
+PASS test_bt10_raw_corpus_not_copied
+== RESULT: PASS ==

@@ -1,32 +1,52 @@
-# BUILDER FORMATION TRACE — V0.1 (CASE 01-C)
+# BUILDER FORMATION TRACE — V0.1 (CASE 01-C) — REPAIRED (C-01..C-05, 2026-08-21)
 
-> "Agent builds Governed Agent" 的第一次实操验证（TRACK B · GAP-01/GAP-05 case closure）。§12/§14/§25。
+> "Agent builds Governed Agent" 的定义驱动验证（TRACK B · GAP-01/GAP-05 case closure）。§12/§14/§25 + 修复契约。
 
-## 1. Builder 输入（FE-01）
+## 1. Builder 输入（FE-01；C-01/C-02）
 
 ```text
 BUILDER_CONSUMABLE_DEFINITION_V0.1.md
-SHA256 6c6e4707a3f8b719d6ab9c08cb9e43f337b4cb422bce0d2c22e4b842a9059bb4
-（01-B 闭包修复后已接受版本；逐字节同步；未重写/未解释）
+accepted SHA 6c6e4707a3f8b719d6ab9c08cb9e43f337b4cb422bce0d2c22e4b842a9059bb4
+actual  SHA 6c6e4707a3f8b719d6ab9c08cb9e43f337b4cb422bce0d2c22e4b842a9059bb4  （= accepted；sha_enforced）
 ```
 
-## 2. 逻辑输入 → 输出
+## 2. 定义驱动投影（C-01）
 
-- 输入：governed_definition（上述 SHA）· target_directory=candidate/brea-v0.1 · candidate_id=brea-v0.1 · candidate_version=v0.1-candidate · allowed_asset_manifest（A-02/A-04/A-11/A-12/A-13a）· corpus_manifest_path（LOCAL_CORPUS_REFERENCE_MANIFEST_V0.1.md）· functions/seams/obligations（BUILDER_REQUEST_V0.1.json）。
-- 输出：生成候选工作区（19 文件）· function mapping · obligation→test mapping · seam mapping · private declaration · BUILDER_OUTPUT_MANIFEST_V0.1.json · BUILDER_RUN_REPORT_V0.1.md · build evidence（本证据集）。
+```text
+ACCEPTED GOVERNED DEFINITION
+→ definition_parser.parse_definition（identity/purpose/FN-01..11/SEAM-01..03/OBL-01..06/allowed assets/corpus reference/private freedom）
+→ dp.validate_architecture（FN/SEAM/OBL 集合 + purpose + corpus + freedom 校验）
+→ BUILDER_REQUEST（仅执行参数；架构字段被拒——request_architecture_duplication=REJECTED）
+→ templates 投影 → candidate/brea-v0.1
+→ validate_generated_candidate（候选 FN/SEAM/OBL 映射 vs 解析定义；PASS）
+→ validate_obligation_refs（义务→真实测试引用；PASS）
+```
 
-## 3. Clean-Target 证明（§14 / BC-03）
+## 3. Clean-Target 与生成（§14 / BT-09）
 
-首次运行目标不存在 → 生成；修复后重建均从空目标生成；非空目标拒绝（无自动删除）。生成后 import 探针 PASS。
+修复重跑：删除 Builder 生成目标（修复程序允许）→ 空目标生成 19 文件 → import 探针 PASS。非空目标拒绝（BT-09）。
 
-## 4. 有界修复（C5 / §14）
+## 4. Builder 测试（BT-01..BT-10，全部 PASS）
 
-BUILDER_RUN_REPORT_V0.1.md 记录 R-01..R-05（MECHANICAL ×4 + INTERPRETATION ×1）。**无 ARCHITECTURE 缺陷**；已接受定义未变。
+BT-01 接受 SHA ✓ · BT-02 篡改 SHA fail closed ✓ · BT-03 FN 集 ✓ · BT-04 SEAM 集 ✓ · BT-05 OBL 集 ✓ ·
+BT-06 请求不得覆盖架构 ✓ · BT-07 生成候选映射匹配 ✓ · BT-08 义务引用存在 ✓ · BT-09 非空目标 fail closed ✓ · BT-10 未复制语料 ✓
 
-## 5. Builder 成功标准（BC-01..10）
+## 5. 修复闭合（C-01..C-05）
 
-BC-01 消费已接受定义 ✓ · BC-02 无手动架构再发明（映射来自定义）✓ · BC-03 清洁目标生成 ✓ · BC-04 函数映射齐 ✓ · BC-05 接缝所有权保留 ✓ · BC-06 私有自由保留 ✓ · BC-07 未复制语料 ✓ · BC-08 未改 Catalyst 根/Platform/Runtime ✓ · BC-09 清单+报告 ✓ · BC-10 形成 PASS（15/15 测试）✓
+```text
+C-01 定义控制架构投影      CLOSED（解析 + 校验 + 请求去架构化 + 候选映射核对）
+C-02 SHA 强制执行          CLOSED（生成前 fail closed；BT-02 负测试）
+C-03 义务映射真实引用      CLOSED（OBLIGATION_MAPPING 真实测试引用 + BT-08 校验）
+C-04 断链证据引用          CLOSED（原始日志保留 01c_selfcheck_original.txt；修复重跑真实日志 01c_repair_selfcheck.txt）
+C-05 缺口状态对账          CLOSED（GAP-01/05 → CASE-CLOSED for Case 01，待外部再审计）
+```
+
+## 6. Builder 成功标准（BC-01..10）
+
+BC-01 语义消费已接受定义 ✓（解析+校验）· BC-02 无手动架构再发明 ✓ · BC-03 清洁目标生成 ✓ · BC-04 函数映射齐（来自定义）✓ ·
+BC-05 接缝所有权保留 ✓ · BC-06 私有自由保留 ✓ · BC-07 未复制语料 ✓ · BC-08 未改 Catalyst 根/Platform/Runtime ✓ ·
+BC-09 清单+报告 ✓ · BC-10 形成 PASS（候选 15/15；三案重跑通过）✓
 
 ## 结论
 
-**GAP-01 / GAP-05 → CASE-CLOSED（for Case 01）**。机制是 Case-scoped，非通用 Builder Platform；泛化待 01-D 后证据。
+**GAP-01 / GAP-05 → CASE-CLOSED — for Case 01 only**（定义驱动证明；待外部闭包再审计）。机制 Case-scoped，非通用 Builder Platform。

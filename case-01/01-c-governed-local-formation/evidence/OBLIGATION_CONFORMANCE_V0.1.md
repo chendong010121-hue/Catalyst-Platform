@@ -15,3 +15,16 @@
 
 - 源码字面量扫描（`builder` 之外由候选自身 ST-06 承担数值可追溯）；无"义务短语+数值"字面量于候选源码（ST-06/自检日志）。
 - 语料哈希失配 fail closed（ST-07 PASS）。
+
+## 义务 → 测试映射（C-03，与 BUILDER_OUTPUT_MANIFEST_V0.1.json 一致）
+
+| OBL | 真实测试/证据引用（Builder 校验存在，BT-08 PASS） |
+|---|---|
+| OBL-01 | tests/test_cases.py::test_t_c01_direct_clause；tests/test_cases.py::test_t_c02_conditional_table |
+| OBL-02 | tests/test_seams.py::test_seam02_applicability；tests/test_cases.py::test_t_c02_conditional_table |
+| OBL-03 | tests/test_structural.py::test_st06_numeric_traceability；test_t_c01_direct_clause；test_t_c02_conditional_table |
+| OBL-04 | tests/test_cases.py::test_t_c03_fail_closed |
+| OBL-05 | test_t_c01_direct_clause；test_t_c02_conditional_table；tests/test_seams.py::test_seam03_evidence |
+| OBL-06 | tests/test_structural.py::test_st05_enterprise_orthogonality；test_t_c02_conditional_table |
+
+（修复前 manifest 曾引用不存在的 test_obl_01..06 —— C-03 已修复；本表与 manifest 对账一致。）

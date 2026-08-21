@@ -17,3 +17,14 @@
 ## 阻塞性未知
 
 **BLOCKING：NONE**。01-C 全部 CG/AC/BC 判定 PASS；无迫使 01-D 猜测的架构未知。
+
+## 修复期发现（2026-08-21，C-01..C-05）
+
+| ID | 观察 | 处置 |
+|---|---|---|
+| RF-01 | 外部审查 C-01：Builder 未语义消费定义（仅复制模板+手动请求） | RESOLVED —— 定义驱动解析/校验/候选映射核对（BT-01..10 PASS） |
+| RF-02 | C-02：SHA 仅记录未强制执行 | RESOLVED —— 生成前 fail closed + BT-02 负测试 |
+| RF-03 | C-03：义务映射指向不存在的 test_obl_* | RESOLVED —— 真实测试引用 + BT-08 校验 + 对账 OBLIGATION_CONFORMANCE |
+| RF-04 | C-04：FE-09 引用未提交的 01c_selfcheck.log | RESOLVED —— 原始日志保留（01c_selfcheck_original.txt）+ 修复重跑真实日志（01c_repair_selfcheck.txt） |
+| RF-05 | C-05：GAP-01/05 CASE-CLOSED 过早 | RESOLVED —— 修复证明后标 CASE-CLOSED for Case 01（待外部再审计） |
+| RF-06 | 解析器把 §4 续行"DEFERRED：OBL-07..10"计入义务集 | RESOLVED —— 只取首行义务声明；BT-05/BT-07 通过 |
