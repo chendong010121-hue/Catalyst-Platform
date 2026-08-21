@@ -1,0 +1,17 @@
+﻿# D0 Blind-Test Source Boundary Declaration (frozen BEFORE blind snapshot)
+
+D0 freeze time: 2026-08-21 (before UNDERSTANDING_SNAPSHOT_V0.1)
+Legacy workspace: E:\试验场地\规范查询agent2.0 (READ ONLY)
+
+Forbidden answer sources — DECLARED NOT READ before blind snapshot freeze:
+- CASE 01-A assessment outputs / responsibility decomposition / asset classification (catalyst-local-lab/case-01/01-a-legacy-assessment/**)
+- CASE 01-B Governed Agent Definition / Builder-consumable Definition (case-01/01-b-governed-agent-definition/**)
+- CASE 01-C Candidate definition / evidence as an answer source (case-01/01-c-governed-local-formation/**)
+- this conversation's newly-restated product requirements
+- any manually prepared Product Requirement Recovery document
+
+Blind intake used ONLY:
+- Legacy Agent 2.0 workspace files (E:\试验场地\规范查询agent2.0) incl. README/AGENTS/docs/code/config/tests/scripts/manifests + local git history
+- this D0 Stage Spec (output schema + governance method only; does not seed legacy product requirements)
+
+Signature: DeepSeek (D0 execution), verified by blind-snapshot freeze hashes.
