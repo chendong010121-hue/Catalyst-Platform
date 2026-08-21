@@ -77,8 +77,32 @@ def parse_obligations(section: str) -> set[str]:
     return set()
 
 
-def parse_allowed_assets(section: str) -> set[str]:
-    return {token for token in _ASSET_TOKEN.findall(section)}
+def parse_legacy_assets(section: str) -> dict[str, set[str]]:
+    """§7: split SELECTED (before 'DEFER') vs DEFERRED (after 'DEFER') asset groups.
+
+    Governance semantics: selected != deferred; deferred assets must never be
+    represented as build-authorized.
+    """
+    selected: set[str] = set()
+    deferred: set[str] = set()
+    in_deferred = False
+    for line in section.splitlines():
+        if "DEFER" in line:
+            in_deferred = True
+            index = line.find("DEFER")
+            deferred |= set(_ASSET_TOKEN.findall(line[index + 5:]))
+            continue
+        if in_deferred:
+            deferred |= set(_ASSET_TOKEN.findall(line))
+        else:
+            selected |= set(_ASSET_TOKEN.findall(line))
+    return {"selected_assets": selected, "deferred_assets": deferred}
+
+
+def parse_private_freedom(section: str) -> list[str]:
+    """§11: extract the actual private implementation freedom entries (Option A)."""
+    text = section.strip()
+    return [entry.strip() for entry in text.split("/") if entry.strip()]
 
 
 def parse_purpose(section: str) -> str:
@@ -91,15 +115,18 @@ def parse_purpose(section: str) -> str:
 
 def parse_definition(text: str) -> dict:
     sections = _sections(text)
+    assets = parse_legacy_assets(sections.get("7", ""))
+    private_freedom = parse_private_freedom(sections.get("11", ""))
     return {
         "identity": parse_identity(sections.get("1", "")),
         "purpose": parse_purpose(sections.get("2", "")),
         "functions": parse_functions(sections.get("5", "")),
         "seams": parse_seams(sections.get("10", "")),
         "obligations": parse_obligations(sections.get("4", "")),
-        "allowed_assets": parse_allowed_assets(sections.get("7", "")),
+        "selected_assets": assets["selected_assets"],
+        "deferred_assets": assets["deferred_assets"],
         "corpus_manifest_referenced": "LOCAL_CORPUS_REFERENCE_MANIFEST_V0.1.md" in sections.get("8", ""),
-        "private_freedom_present": bool(sections.get("11", "").strip()),
+        "private_freedom": private_freedom,
     }
 
 
@@ -119,8 +146,21 @@ def validate_architecture(parsed: dict) -> None:
         raise ValueError("definition identity incomplete")
     if not parsed["corpus_manifest_referenced"]:
         raise ValueError("definition does not reference the corpus manifest")
-    if not parsed["private_freedom_present"]:
-        raise ValueError("definition lacks private implementation freedom")
+    # §7 governance semantics: selected != deferred; disjoint; exact accepted sets.
+    expected_selected = {"A-02", "A-04", "A-11", "A-12", "A-13a"}
+    expected_deferred = {"A-01", "A-03", "A-05"}
+    if parsed["selected_assets"] != expected_selected:
+        raise ValueError(
+            f"definition selected-asset set mismatch: {sorted(parsed['selected_assets'] ^ expected_selected)}"
+        )
+    if parsed["deferred_assets"] != expected_deferred:
+        raise ValueError(
+            f"definition deferred-asset set mismatch: {sorted(parsed['deferred_assets'] ^ expected_deferred)}"
+        )
+    if parsed["selected_assets"] & parsed["deferred_assets"]:
+        raise ValueError("selected/deferred asset overlap detected")
+    if not parsed["private_freedom"]:
+        raise ValueError("definition private implementation freedom extraction empty")
     for seam, info in parsed["seams"].items():
         if not info["functions"]:
             raise ValueError(f"{seam} has no function membership")

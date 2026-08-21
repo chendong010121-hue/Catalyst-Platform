@@ -13,6 +13,6 @@
 - import probe: PASS
 - repairs closed: C-01 (definition-driven projection), C-02 (SHA enforced), C-03 (obligation mapping real refs), C-04 (evidence log), C-05 (gap status reconciled)
 - prior formation-run bounded repairs: R-01..R-05 (see earlier report; architecture unchanged)
-- generated_at: 2026-08-21T15:35:29+00:00
+- generated_at: 2026-08-21T15:49:10+00:00
 
 See BUILDER_OUTPUT_MANIFEST_V0.1.json for the full mapping.

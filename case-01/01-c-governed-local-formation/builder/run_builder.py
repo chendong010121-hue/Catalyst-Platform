@@ -240,9 +240,10 @@ def main(argv: list[str] | None = None) -> int:
                 "seams": {seam: {"owner": info["owner"], "functions": info["functions"]}
                           for seam, info in parsed["seams"].items()},
                 "obligations": sorted(parsed["obligations"]),
-                "allowed_assets": sorted(parsed["allowed_assets"]),
+                "selected_legacy_adaptation_assets": sorted(parsed["selected_assets"]),
+                "deferred_legacy_assets": sorted(parsed["deferred_assets"]),
                 "corpus_manifest_referenced": parsed["corpus_manifest_referenced"],
-                "private_freedom_present": parsed["private_freedom_present"],
+                "private_freedom": parsed["private_freedom"],
             },
             "request": request,
             "target_directory": str(target),

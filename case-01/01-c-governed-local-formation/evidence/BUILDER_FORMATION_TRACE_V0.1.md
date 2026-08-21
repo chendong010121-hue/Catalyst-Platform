@@ -49,4 +49,10 @@ BC-09 清单+报告 ✓ · BC-10 形成 PASS（候选 15/15；三案重跑通过
 
 ## 结论
 
-**GAP-01 / GAP-05 → CASE-CLOSED — for Case 01 only**（定义驱动证明；待外部闭包再审计）。机制 Case-scoped，非通用 Builder Platform。
+**GAP-01 / GAP-05 → CONDITIONALLY CASE-CLOSED — for Case 01 only**（定义驱动证明 + 最终语义解析器修复；经最终外部闭包审计后 → CASE-CLOSED）。机制 Case-scoped，非通用 Builder Platform。
+
+## 7. Final semantic parser repair（2026-08-21，契约 CASE_01_C_FINAL_SEMANTIC_PARSER_REPAIR_V0.1.md）
+
+- §7 legacy 资产语义分裂：`parse_legacy_assets` 输出 `selected_assets={A-02,A-04,A-11,A-12,A-13a}` 与 `deferred_assets={A-01,A-03,A-05}`（BT-11/12/13；disjoint；deferred 永不作为 build-authorized）。
+- 私有实现自由：Option A 解析实际条目（BT-14；12 项）。
+- Builder 清单记录 `selected_legacy_adaptation_assets` / `deferred_legacy_assets` / `private_freedom`；FN/SEAM/OBL 映射未变（F5 校验）；候选行为实质不变（15/15 + 三案重跑）。

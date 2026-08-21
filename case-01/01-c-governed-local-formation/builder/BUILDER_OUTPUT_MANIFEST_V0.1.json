@@ -51,18 +51,33 @@
       "OBL-05",
       "OBL-06"
     ],
-    "allowed_assets": [
-      "A-01",
+    "selected_legacy_adaptation_assets": [
       "A-02",
-      "A-03",
       "A-04",
-      "A-05",
       "A-11",
       "A-12",
       "A-13a"
     ],
+    "deferred_legacy_assets": [
+      "A-01",
+      "A-03",
+      "A-05"
+    ],
     "corpus_manifest_referenced": true,
-    "private_freedom_present": true
+    "private_freedom": [
+      "检索算法",
+      "分块",
+      "排序",
+      "provider 选择",
+      "提示词措辞",
+      "内部数据结构",
+      "缓存",
+      "数据库",
+      "模块布局",
+      "内部编排",
+      "服务形态",
+      "语料解析实现。"
+    ]
   },
   "request": {
     "builder": "case-scoped-minimum-builder-v0.2",
@@ -207,5 +222,5 @@
     "import_probe": "PASS",
     "clean_target": true
   },
-  "generated_at": "2026-08-21T15:35:29+00:00"
+  "generated_at": "2026-08-21T15:49:10+00:00"
 }

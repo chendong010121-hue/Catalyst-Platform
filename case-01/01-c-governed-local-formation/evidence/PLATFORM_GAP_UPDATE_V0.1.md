@@ -4,14 +4,14 @@
 
 ## GAP-01 — Builder-consumable Governed Agent definition
 
-- 01-C 修复后状态：**CASE-CLOSED — for Case 01 only**（定义驱动证明；待外部闭包再审计确认）
-- 证据：`BUILDER_CONSUMABLE_DEFINITION_V0.1.md`（SHA `6c6e4707…`）被 Builder **解析并校验**（identity/purpose/FN-01..11/SEAM-01..03/OBL-01..06/assets/corpus/freedom），
-  生成 19 文件 + 映射清单；`builder/test_builder.py` BT-01..10 PASS；`BUILDER_OUTPUT_MANIFEST_V0.1.json` validation 矩阵全 PASS。
+- 01-C 修复后状态：**CONDITIONALLY CASE-CLOSED — for Case 01 only**（最终语义解析器修复完成；经最终外部闭包审计后 → CASE-CLOSED，§8）
+- 证据：`BUILDER_CONSUMABLE_DEFINITION_V0.1.md`（SHA `6c6e4707…`）被 Builder **解析并校验**（identity/purpose/FN-01..11/SEAM-01..03/OBL-01..06/**selected/deferred legacy assets**/corpus/freedom），
+  生成 19 文件 + 映射清单；`builder/test_builder.py` BT-01..14 PASS；`BUILDER_OUTPUT_MANIFEST_V0.1.json` validation 矩阵全 PASS。
 - 泛化：LOCAL ONLY → CASE CANDIDATE（不视为 Catalyst Platform 能力）。
 
 ## GAP-05 — Minimum local Builder capability
 
-- 01-C 修复后状态：**CASE-CLOSED — for Case 01 only**（定义驱动证明；待外部闭包再审计确认）
+- 01-C 修复后状态：**CONDITIONALLY CASE-CLOSED — for Case 01 only**（同上；经最终外部闭包审计后 → CASE-CLOSED）
 - 证据：`builder/`（definition_parser + run_builder + tests + 协议/请求/清单/报告）；BUILDER_FORMATION_TRACE（BC-01..10 PASS）。
 - 泛化：LOCAL ONLY → CASE CANDIDATE（非通用 Builder Platform）。
 

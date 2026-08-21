@@ -110,6 +110,27 @@ def test_bt10_raw_corpus_not_copied() -> None:
             assert "不应小于 50m" not in text.replace(" ", "").replace("\n", "")
 
 
+def test_bt11_selected_assets_exact() -> None:
+    parsed = _parsed()
+    assert parsed["selected_assets"] == {"A-02", "A-04", "A-11", "A-12", "A-13a"}
+
+
+def test_bt12_deferred_assets_exact() -> None:
+    parsed = _parsed()
+    assert parsed["deferred_assets"] == {"A-01", "A-03", "A-05"}
+
+
+def test_bt13_selected_deferred_disjoint() -> None:
+    parsed = _parsed()
+    assert not (parsed["selected_assets"] & parsed["deferred_assets"])
+
+
+def test_bt14_private_freedom_extracted() -> None:
+    parsed = _parsed()
+    assert isinstance(parsed["private_freedom"], list) and len(parsed["private_freedom"]) >= 10
+    assert any("检索算法" in entry for entry in parsed["private_freedom"])
+
+
 def run_all() -> int:
     failures = 0
     tests = (
@@ -123,6 +144,10 @@ def run_all() -> int:
         test_bt08_obligation_refs_exist,
         test_bt09_non_empty_target_fails_closed,
         test_bt10_raw_corpus_not_copied,
+        test_bt11_selected_assets_exact,
+        test_bt12_deferred_assets_exact,
+        test_bt13_selected_deferred_disjoint,
+        test_bt14_private_freedom_extracted,
     )
     for test in tests:
         try:

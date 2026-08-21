@@ -28,3 +28,11 @@
 | RF-04 | C-04：FE-09 引用未提交的 01c_selfcheck.log | RESOLVED —— 原始日志保留（01c_selfcheck_original.txt）+ 修复重跑真实日志（01c_repair_selfcheck.txt） |
 | RF-05 | C-05：GAP-01/05 CASE-CLOSED 过早 | RESOLVED —— 修复证明后标 CASE-CLOSED for Case 01（待外部再审计） |
 | RF-06 | 解析器把 §4 续行"DEFERRED：OBL-07..10"计入义务集 | RESOLVED —— 只取首行义务声明；BT-05/BT-07 通过 |
+
+## 最终语义解析器修复（2026-08-21，契约 CASE_01_C_FINAL_SEMANTIC_PARSER_REPAIR_V0.1.md）
+
+| ID | 观察 | 处置 |
+|---|---|---|
+| RF-07 | §7 legacy 资产语义缺陷：DEFERRED（A-01/A-03/A-05）被当作 allowed（单字段含两组） | RESOLVED —— `parse_legacy_assets` 分裂为 selected/deferred 两组精确集合（BT-11/12/13；disjoint）；Builder 清单记录 selected_legacy_adaptation_assets 与 deferred_legacy_assets；deferred 永不 build-authorized |
+| RF-08 | 私有自由度仅"present"布尔，未语义提取 | RESOLVED —— Option A：解析实际条目（12 项；BT-14）；清单记录 private_freedom 列表 |
+| RF-09 | GAP-01/05 状态标注需按 §8 限定 | RESOLVED —— CONDITIONALLY CASE-CLOSED（最终外部闭包审计后 → CASE-CLOSED） |
