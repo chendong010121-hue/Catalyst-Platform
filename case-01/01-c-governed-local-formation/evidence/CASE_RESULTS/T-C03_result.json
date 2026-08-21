@@ -1,0 +1,28 @@
+{
+  "request_id": "T-C03",
+  "status": "insufficient_context",
+  "conclusion": "无法可靠回答：判定所需专业事实缺失（建筑业态分类、城市类别（规划人口分级）、建筑面积、项目所在地（省份/城市））。在补齐前不能给出结论或数值。",
+  "evidence_items": [],
+  "artifacts": [],
+  "uncertainty": {
+    "level": "explicit",
+    "description": "缺失事实列表见结论"
+  },
+  "implementation_metadata": {
+    "engine": "brea-deterministic-v0.1",
+    "deterministic": true,
+    "model_used": "none",
+    "corpus": {
+      "CORPUS-01": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+      "GB55037-2022": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+      "CORPUS-02": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+      "DBJ33T1021-2023": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7"
+    },
+    "enterprise_context_attribution": {
+      "organization_id": "org-hangzhou-001",
+      "user_id": "user-pilot-001",
+      "project_id": null
+    },
+    "generated_at": "2026-08-21T15:11:26+00:00"
+  }
+}

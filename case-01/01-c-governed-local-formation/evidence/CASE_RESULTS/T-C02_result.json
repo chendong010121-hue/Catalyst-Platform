@@ -1,0 +1,54 @@
+{
+  "request_id": "T-C02",
+  "status": "accepted_with_evidence",
+  "conclusion": "按 DBJ33/T1021-2023 表5.0.1（规划人口大于50万的城市 → 指标级别 ⅢI）与表5.0.4（大型商业（建筑面积>10000m²）），机动车配建指标不应小于 1.1 车位/100m² 建筑面积。",
+  "evidence_items": [
+    {
+      "source_identity": "DBJ33/T1021-2023",
+      "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+      "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+      "locator": "第5.0.1条+表5.0.1（OCR 副本 [page 26]，本地副本行 894-903）",
+      "evidence_type": "table_value",
+      "evidence_content": "表5.0.1\n配建指标级别及适用范围\n指标级别\n适用范围\nI\n规划人口不大于20万人的城市\nⅡ\n规划人口大于20万人、不大于50万人的城市\nⅢI\n规划人口大于50万的城市",
+      "claim_relation": "supports"
+    },
+    {
+      "source_identity": "DBJ33/T1021-2023",
+      "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+      "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+      "locator": "表5.0.4（OCR 副本 [page 27]，本地副本行 986-1037），行：大型商业（建筑面积>10000m²）",
+      "evidence_type": "table_value",
+      "evidence_content": "大型商业（建筑面积>10000m²）\n0. 8\n1. 1\n1.1\n1.0\n1.8",
+      "claim_relation": "supports"
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "T-C02_bundle",
+      "title": "DBJ33/T1021-2023 表5.0.1+表5.0.4 逐字证据束",
+      "path": "..\\..\\evidence\\CASE_RESULTS\\T-C02_bundle.md",
+      "kind": "verbatim_evidence_bundle"
+    }
+  ],
+  "uncertainty": {
+    "level": "low",
+    "description": "数值来自表5.0.4 原文（OCR 单元格数值按原文归一化）。指标级别按表5.0.1 由城市类别事实确定；若城市类别事实有误，结论随之失效。"
+  },
+  "implementation_metadata": {
+    "engine": "brea-deterministic-v0.1",
+    "deterministic": true,
+    "model_used": "none",
+    "corpus": {
+      "CORPUS-01": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+      "GB55037-2022": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+      "CORPUS-02": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+      "DBJ33T1021-2023": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7"
+    },
+    "enterprise_context_attribution": {
+      "organization_id": "org-hangzhou-001",
+      "user_id": "user-pilot-001",
+      "project_id": "proj-commercial-001"
+    },
+    "generated_at": "2026-08-21T15:11:26+00:00"
+  }
+}

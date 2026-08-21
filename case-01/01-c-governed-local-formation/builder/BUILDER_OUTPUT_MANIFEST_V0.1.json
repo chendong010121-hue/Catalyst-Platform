@@ -1,0 +1,356 @@
+{
+  "candidate_id": "brea-v0.1",
+  "candidate_version": "v0.1-candidate",
+  "builder_input": {
+    "definition_path": "E:\\试验场地\\Agent Harness\\case-01\\01-b-governed-agent-definition\\builder\\BUILDER_CONSUMABLE_DEFINITION_V0.1.md",
+    "definition_sha256": "6c6e4707a3f8b719d6ab9c08cb9e43f337b4cb422bce0d2c22e4b842a9059bb4"
+  },
+  "corpus_manifest_path": "E:\\试验场地\\Agent Harness\\case-01\\01-b-governed-agent-definition\\evidence\\LOCAL_CORPUS_REFERENCE_MANIFEST_V0.1.md",
+  "request": {
+    "builder": "case-scoped-minimum-builder-v0.1",
+    "candidate_id": "brea-v0.1",
+    "candidate_version": "v0.1-candidate",
+    "target_directory": "../candidate/brea-v0.1",
+    "governed_definition_path": "../01-b-governed-agent-definition/builder/BUILDER_CONSUMABLE_DEFINITION_V0.1.md",
+    "corpus_manifest_path": "../01-b-governed-agent-definition/evidence/LOCAL_CORPUS_REFERENCE_MANIFEST_V0.1.md",
+    "allowed_asset_manifest": [
+      "A-02",
+      "A-04",
+      "A-11",
+      "A-12",
+      "A-13a"
+    ],
+    "functions": [
+      {
+        "fn": "FN-01",
+        "name": "Question & Context Intake",
+        "governance": "DECLARED FUNCTION BOUNDARY"
+      },
+      {
+        "fn": "FN-02",
+        "name": "Professional Fact Normalization",
+        "governance": "GOVERNED SEAM - SEAM-01"
+      },
+      {
+        "fn": "FN-03",
+        "name": "Regulation Applicability Resolution",
+        "governance": "GOVERNED SEAM - SEAM-02"
+      },
+      {
+        "fn": "FN-04",
+        "name": "Evidence Locating & Extraction",
+        "governance": "GOVERNED SEAM - SEAM-03"
+      },
+      {
+        "fn": "FN-05",
+        "name": "Evidence Binding & Numeric Safety",
+        "governance": "GOVERNED SEAM - SEAM-03"
+      },
+      {
+        "fn": "FN-06",
+        "name": "Uncertainty & Fail-Closed Decision",
+        "governance": "DECLARED FUNCTION BOUNDARY"
+      },
+      {
+        "fn": "FN-07",
+        "name": "Result Composition & Attribution",
+        "governance": "DECLARED FUNCTION BOUNDARY"
+      },
+      {
+        "fn": "FN-08",
+        "name": "Artifact & Provenance Preservation",
+        "governance": "GOVERNED SEAM - SEAM-03"
+      },
+      {
+        "fn": "FN-09",
+        "name": "Corpus Access & Parsing",
+        "governance": "PRIVATE IMPLEMENTATION"
+      },
+      {
+        "fn": "FN-10",
+        "name": "Provider & Execution Plumbing",
+        "governance": "PRIVATE / DEFERRED"
+      },
+      {
+        "fn": "FN-11",
+        "name": "Local Runner / Service Shell",
+        "governance": "PRIVATE / DEFERRED"
+      }
+    ],
+    "seams": [
+      {
+        "seam": "SEAM-01",
+        "owner": "Domain",
+        "functions": [
+          "FN-02"
+        ],
+        "module": "brea.facts"
+      },
+      {
+        "seam": "SEAM-02",
+        "owner": "Domain",
+        "functions": [
+          "FN-03"
+        ],
+        "module": "brea.applicability"
+      },
+      {
+        "seam": "SEAM-03",
+        "owner": "Domain + Agent",
+        "functions": [
+          "FN-04",
+          "FN-05",
+          "FN-08"
+        ],
+        "module": "brea.evidence"
+      }
+    ],
+    "obligations": [
+      "OBL-01",
+      "OBL-02",
+      "OBL-03",
+      "OBL-04",
+      "OBL-05",
+      "OBL-06"
+    ],
+    "private_implementation_freedom": [
+      "retrieval algorithm",
+      "chunking / ranking",
+      "parser",
+      "internal storage / cache",
+      "database",
+      "provider",
+      "prompt wording",
+      "internal orchestration",
+      "module layout",
+      "CLI / local service shape",
+      "serialization HOW"
+    ],
+    "notes": "Minimum Case-scoped Builder for CASE 01-C. Architecture comes from the accepted definition; generated artifacts are recorded in BUILDER_OUTPUT_MANIFEST_V0.1.json. No architecture invention; no raw corpus copy; no Catalyst root / Platform / Runtime changes."
+  },
+  "target_directory": "E:\\试验场地\\Agent Harness\\case-01\\01-c-governed-local-formation\\candidate\\brea-v0.1",
+  "generated_files": [
+    {
+      "path": "brea/__init__.py",
+      "sha256": "0f51a29aff69b4658fb2e186fb8bd75f44edb70bc4dfa5f5a35b2daba908db27",
+      "source_template": "templates/brea/__init__.py"
+    },
+    {
+      "path": "brea/applicability.py",
+      "sha256": "8dc26da64544e4ac5bf7d3fb7eed62a54ca04c61e83e30fd74bde3aa3086ca5e",
+      "source_template": "templates/brea/applicability.py"
+    },
+    {
+      "path": "brea/contracts.py",
+      "sha256": "365d078b2e4535725f281323e9f8b8c8abdfa20c5db63b9e4d520272cd5d2799",
+      "source_template": "templates/brea/contracts.py"
+    },
+    {
+      "path": "brea/corpus.py",
+      "sha256": "115c9fef1a2c0566d033a4e297062c3445ff20ac2e1147b3a168e7e53f1ca244",
+      "source_template": "templates/brea/corpus.py"
+    },
+    {
+      "path": "brea/evidence.py",
+      "sha256": "da16ee7b4d6844bb28d2dd4f79112afc2f7e7f0c816d476217238037ae6bc8a2",
+      "source_template": "templates/brea/evidence.py"
+    },
+    {
+      "path": "brea/facts.py",
+      "sha256": "2d4fa36de03e2c99a2741377f14e00eb2bed7c67a2fb01ec736e04b4c1f1ae00",
+      "source_template": "templates/brea/facts.py"
+    },
+    {
+      "path": "brea/identity.py",
+      "sha256": "a1bc3658d89f885b71698acd9513dd6c91ada17dcbf678a29ea0c89c4fee71fc",
+      "source_template": "templates/brea/identity.py"
+    },
+    {
+      "path": "brea/result.py",
+      "sha256": "b9432816038b7fc6ff1ed65112dd07b46c0ba5dc4f77ea828840938133a84d66",
+      "source_template": "templates/brea/result.py"
+    },
+    {
+      "path": "brea/runner.py",
+      "sha256": "a14f7c329a7a568b38e0987d3ec09e421eb30e2195cbd87b0b31acc0862b5f0b",
+      "source_template": "templates/brea/runner.py"
+    },
+    {
+      "path": "brea/uncertainty.py",
+      "sha256": "35af56e82a3013d339a409fc404e9433b354d0239e72e9b0d2cdca2c56d423e2",
+      "source_template": "templates/brea/uncertainty.py"
+    },
+    {
+      "path": "README.md",
+      "sha256": "306a199f245245c11a200414faa44586dfe60c0bd3bcc3f51ecb76d1a34732be",
+      "source_template": "templates/README.md"
+    },
+    {
+      "path": "tests/__init__.py",
+      "sha256": "77a0acbb84c2926cea9986b3aed49e5bd4b514e84d52be5b9d340f7e2c2aa965",
+      "source_template": "templates/tests/__init__.py"
+    },
+    {
+      "path": "tests/fixtures/requests/T-C01.json",
+      "sha256": "a3201df11cef2b5c3cc521fb7adea68d6e944db2820bdab36391ec8e7b7cc8da",
+      "source_template": "templates/tests/fixtures/requests/T-C01.json"
+    },
+    {
+      "path": "tests/fixtures/requests/T-C02.json",
+      "sha256": "0c7f7e24e75a651525a28224eb900f4fd799670eab8a6e2221ef803f63979d77",
+      "source_template": "templates/tests/fixtures/requests/T-C02.json"
+    },
+    {
+      "path": "tests/fixtures/requests/T-C03.json",
+      "sha256": "16f6c33560c6cecd04e256b70c4ffa19438205bfa112ea4f366f17541a106ccb",
+      "source_template": "templates/tests/fixtures/requests/T-C03.json"
+    },
+    {
+      "path": "tests/run_all.py",
+      "sha256": "6d924314452c77c514e7f57360e06e6f0d083e8565814a1b74465055c7551aa8",
+      "source_template": "templates/tests/run_all.py"
+    },
+    {
+      "path": "tests/test_cases.py",
+      "sha256": "1c830a5afd1d4907b9026f67aa5b9a32bcf2e0de194c4bc6cd54e753eff72bfe",
+      "source_template": "templates/tests/test_cases.py"
+    },
+    {
+      "path": "tests/test_seams.py",
+      "sha256": "20379aaa71dd1448ff2770fc49f4b52f47ca0b8eac5099198ded7e0f7385874b",
+      "source_template": "templates/tests/test_seams.py"
+    },
+    {
+      "path": "tests/test_structural.py",
+      "sha256": "9459db6d1ca8a2d0cbec5f34c60fbb773566357c1dafe361bb5eedca9b48245d",
+      "source_template": "templates/tests/test_structural.py"
+    }
+  ],
+  "function_mapping": [
+    {
+      "fn": "FN-01",
+      "name": "Question & Context Intake",
+      "governance": "DECLARED FUNCTION BOUNDARY"
+    },
+    {
+      "fn": "FN-02",
+      "name": "Professional Fact Normalization",
+      "governance": "GOVERNED SEAM - SEAM-01"
+    },
+    {
+      "fn": "FN-03",
+      "name": "Regulation Applicability Resolution",
+      "governance": "GOVERNED SEAM - SEAM-02"
+    },
+    {
+      "fn": "FN-04",
+      "name": "Evidence Locating & Extraction",
+      "governance": "GOVERNED SEAM - SEAM-03"
+    },
+    {
+      "fn": "FN-05",
+      "name": "Evidence Binding & Numeric Safety",
+      "governance": "GOVERNED SEAM - SEAM-03"
+    },
+    {
+      "fn": "FN-06",
+      "name": "Uncertainty & Fail-Closed Decision",
+      "governance": "DECLARED FUNCTION BOUNDARY"
+    },
+    {
+      "fn": "FN-07",
+      "name": "Result Composition & Attribution",
+      "governance": "DECLARED FUNCTION BOUNDARY"
+    },
+    {
+      "fn": "FN-08",
+      "name": "Artifact & Provenance Preservation",
+      "governance": "GOVERNED SEAM - SEAM-03"
+    },
+    {
+      "fn": "FN-09",
+      "name": "Corpus Access & Parsing",
+      "governance": "PRIVATE IMPLEMENTATION"
+    },
+    {
+      "fn": "FN-10",
+      "name": "Provider & Execution Plumbing",
+      "governance": "PRIVATE / DEFERRED"
+    },
+    {
+      "fn": "FN-11",
+      "name": "Local Runner / Service Shell",
+      "governance": "PRIVATE / DEFERRED"
+    }
+  ],
+  "seam_mapping": [
+    {
+      "seam": "SEAM-01",
+      "owner": "Domain",
+      "functions": [
+        "FN-02"
+      ],
+      "module": "brea.facts"
+    },
+    {
+      "seam": "SEAM-02",
+      "owner": "Domain",
+      "functions": [
+        "FN-03"
+      ],
+      "module": "brea.applicability"
+    },
+    {
+      "seam": "SEAM-03",
+      "owner": "Domain + Agent",
+      "functions": [
+        "FN-04",
+        "FN-05",
+        "FN-08"
+      ],
+      "module": "brea.evidence"
+    }
+  ],
+  "obligation_mapping": [
+    {
+      "obligation": "OBL-01",
+      "test": "tests/test_cases.py::test_obl_01"
+    },
+    {
+      "obligation": "OBL-02",
+      "test": "tests/test_cases.py::test_obl_02"
+    },
+    {
+      "obligation": "OBL-03",
+      "test": "tests/test_cases.py::test_obl_03"
+    },
+    {
+      "obligation": "OBL-04",
+      "test": "tests/test_cases.py::test_obl_04"
+    },
+    {
+      "obligation": "OBL-05",
+      "test": "tests/test_cases.py::test_obl_05"
+    },
+    {
+      "obligation": "OBL-06",
+      "test": "tests/test_cases.py::test_obl_06"
+    }
+  ],
+  "private_implementation_declaration": [
+    "retrieval algorithm",
+    "chunking / ranking",
+    "parser",
+    "internal storage / cache",
+    "database",
+    "provider",
+    "prompt wording",
+    "internal orchestration",
+    "module layout",
+    "CLI / local service shape",
+    "serialization HOW"
+  ],
+  "import_probe_ok": true,
+  "clean_target": true,
+  "generated_at": "2026-08-21T15:11:14+00:00"
+}

@@ -1,0 +1,45 @@
+{
+  "request_id": "T-C01",
+  "status": "accepted_with_evidence",
+  "conclusion": "甲类物品运输车的汽车库、修车库、停车场与人员密集场所之间的防火间距不应小于 50m（GB 55037-2022 第3.1.3条）。",
+  "evidence_items": [
+    {
+      "source_identity": "GB 55037-2022",
+      "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+      "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+      "locator": "第3.1.3条（第3章 建筑总平面布局 · 3.1 一般规定）；OCR 副本 [page 13]，本地副本行 451-454",
+      "evidence_type": "normative_clause",
+      "evidence_content": "甲、乙类物品运输车的汽车库、修车库、停车场与人员密集\n场所的防火间距不应小于50m,与其他民用建筑的防火间距不应\n小于 25m;甲类物品运输车的汽车库、修车库、停车场与明火或散\n发火花地点的防火间距不应小于30m",
+      "claim_relation": "supports"
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "T-C01_bundle",
+      "title": "GB 55037-2022 第3.1.3条 逐字证据束",
+      "path": "..\\..\\evidence\\CASE_RESULTS\\T-C01_bundle.md",
+      "kind": "verbatim_evidence_bundle"
+    }
+  ],
+  "uncertainty": {
+    "level": "low",
+    "description": "条文直接适用。同一第3.1.3条还规定：与其他民用建筑不应小于 25m；与明火或散发火花地点不应小于 30m。结论仅针对'人员密集场所'情形。"
+  },
+  "implementation_metadata": {
+    "engine": "brea-deterministic-v0.1",
+    "deterministic": true,
+    "model_used": "none",
+    "corpus": {
+      "CORPUS-01": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+      "GB55037-2022": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+      "CORPUS-02": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+      "DBJ33T1021-2023": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7"
+    },
+    "enterprise_context_attribution": {
+      "organization_id": "org-hangzhou-001",
+      "user_id": "user-pilot-001",
+      "project_id": null
+    },
+    "generated_at": "2026-08-21T15:11:26+00:00"
+  }
+}

@@ -1,0 +1,15 @@
+﻿Catalyst Integrity Check — CASE 01-C (V0.1)
+Checked: 2026-08-21 (C13, before publication)
+================================================================
+git -C <CATALYST_REPO> rev-parse HEAD
+0ad14083fa137f5653b0b29e3574b7968723dc9e   (branch: case-01; main baseline remains 5874be1130e8867082880fcd63f659fc909d9efd)
+
+git -C <CATALYST_REPO> status --porcelain --untracked-files=all
+60 untracked (all under case-01/ authorized paths) — path-boundary check PASS; no .pyc/__pycache__; no raw corpus files
+
+git -C <CATALYST_REPO> diff --stat
+(EMPTY) (no tracked modifications)
+================================================================
+Required: no Catalyst root / Platform Core / Runtime / main changes; raw corpus not committed.
+Result: PASS — all new files are under case-01/01-b-governed-agent-definition/builder/ and
+case-01/01-c-governed-local-formation/ (authorized CASE 01-C paths only).
