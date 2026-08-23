@@ -1,0 +1,43 @@
+record_type: case_stage_authorization
+record_version: "0.1"
+case_id: CASE-01
+stage_id: E2-AB
+stage_name: Professional Coverage Selection + Method P-01..P-06 + Candidate Freeze
+decision: granted
+decision_authority: user
+decision_source: current_conversation
+stage_contract_ref: CASE_01_E_E2_LOCAL_PROFESSIONAL_COVERAGE_EXPANSION_V0.1_STAGE_SPEC.md
+stage_contract_commit: 5ffa49722ec9065f2a3fd2c2406c3fc7b10e9c66
+accepted_method_ref: case-01/methods/CATALYST_GOVERNED_AGENT_CONSTRUCTION_METHOD_V0.1_ACCEPTED.md
+accepted_method_commit: a5e7b0b9384f8108d5af22bfe9fea317d8e60cee
+target_branch: case-01
+scope:
+  professional_coverage_selection: true
+  method_p01_to_p06_evidence: true
+  case_local_source_admission_if_required: true
+  form_brea_v0_3_candidate: true
+  candidate_construction_self_checks: true
+  candidate_freeze: true
+  evaluation_contract_without_specific_benchmark_cases: true
+publication_limit:
+  candidate_freeze_commits: 1
+  pushes: 1
+protected_boundaries:
+  admitted_brea_v0_1_mutation: false
+  brea_v0_2_reference_mutation: false
+  platform_core_mutation: false
+  runtime_mutation: false
+  runtime_adapter_mutation: false
+  enterprise_extension_mutation: false
+  catalyst_main_mutation: false
+  raw_corpus_upstream: false
+  e2_c_specific_benchmark_creation: false
+candidate_target:
+  agent_id: case-01.brea
+  candidate_version: 0.3-candidate
+  admitted: false
+  bound: false
+next_gate:
+  e2_c_decision: not_granted
+  v0_3_admission_decision: not_granted
+  e3_decision: not_granted
