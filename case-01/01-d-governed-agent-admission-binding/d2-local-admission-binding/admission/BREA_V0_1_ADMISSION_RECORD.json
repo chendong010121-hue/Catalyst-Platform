@@ -1,0 +1,67 @@
+{
+  "record_kind": "CASE_LOCAL_AGENT_ADMISSION_RECORD",
+  "record_version": "0.1",
+  "admission_ref": "admission-case-01-brea-v0.1-001",
+  "agent_id": "case-01.brea",
+  "agent_version": "0.1-candidate",
+  "professional_purpose_ref": "candidate brea/identity.py PROFESSIONAL_PURPOSE (FORMATION-PROVEN)",
+  "governed_definition_ref": "E:\\试验场地\\Agent Harness\\case-01\\01-b-governed-agent-definition\\builder\\BUILDER_CONSUMABLE_DEFINITION_V0.1.md",
+  "governed_definition_sha256": "6c6e4707a3f8b719d6ab9c08cb9e43f337b4cb422bce0d2c22e4b842a9059bb4",
+  "formation_evidence_refs": [
+    "case-01/01-c-governed-local-formation/evidence/FORMATION_EVIDENCE_INDEX_V0.1.md",
+    "case-01/01-c-governed-local-formation/evidence/FUNCTION_CONFORMANCE_V0.1.md",
+    "case-01/01-c-governed-local-formation/evidence/GOVERNED_SEAM_CONFORMANCE_V0.1.md",
+    "case-01/01-c-governed-local-formation/evidence/OBLIGATION_CONFORMANCE_V0.1.md",
+    "case-01/01-c-governed-local-formation/evidence/BUILDER_FORMATION_TRACE_V0.1.md",
+    "case-01/01-c-governed-local-formation/evidence/LEGACY_ADAPTATION_TRACE_V0.1.md",
+    "case-01/01-c-governed-local-formation/evidence/CASE_RESULTS/01c_final_repair_selfcheck.txt",
+    "case-01/01-c-governed-local-formation/evidence/CASE_RESULTS/T-C01_result.json",
+    "case-01/01-c-governed-local-formation/evidence/CASE_RESULTS/T-C02_result.json",
+    "case-01/01-c-governed-local-formation/evidence/CASE_RESULTS/T-C03_result.json"
+  ],
+  "obligations_ref": "case-01/01-c-governed-local-formation/evidence/OBLIGATION_CONFORMANCE_V0.1.md (OBL-01..06)",
+  "governed_seams_ref": "case-01/01-c-governed-local-formation/evidence/GOVERNED_SEAM_CONFORMANCE_V0.1.md (SEAM-01..03)",
+  "implementation_fingerprint_ref": "scripts/implementation_fingerprint.json",
+  "enterprise_context_ref": {
+    "organization_id": "org-hangzhou-001",
+    "user_id": "user-pilot-001",
+    "project_id": null
+  },
+  "corpus_boundary_ref": "case-01/01-b-governed-agent-definition/evidence/LOCAL_CORPUS_REFERENCE_MANIFEST_V0.1.md",
+  "owner_ref": "User / CASE 01 Product-Release Authority",
+  "acceptance_authority_ref": "User / CASE 01 Acceptance Authority",
+  "d2_authorization_ref": "D2_AUTHORIZATION_RECORD_V0.1.yaml (granted)",
+  "admission_status": "ADMITTED",
+  "admission_decision_reason": "all mandatory admission gates G-A01..G-A07 PASS",
+  "gate_results": {
+    "G-A01": {
+      "status": "PASS",
+      "detail": "definition SHA 6c6e4707a3f8b719d6ab9c08cb9e43f337b4cb422bce0d2c22e4b842a9059bb4 == accepted 6c6e4707a3f8b719d6ab9c08cb9e43f337b4cb422bce0d2c22e4b842a9059bb4: True"
+    },
+    "G-A02": {
+      "status": "PASS",
+      "detail": "01-C formation closure evidence present (index/function/seam/obligation/trace + 15/15 selfcheck + T-C01/02/03 results)"
+    },
+    "G-A03": {
+      "status": "PASS",
+      "detail": "fingerprint recomputed: candidate_tree_sha256=cbdd6b4d13df0f2b4408ab6a50a9b882fd4aa35cb2ddeeb668e98d6634599193 builder_output_manifest_sha256=394ef4da3658776b34a4ad2c2d3fbd803b3ff332f7b7f6669c82a5917f00e3de (19 declared files unchanged)"
+    },
+    "G-A04": {
+      "status": "PASS",
+      "detail": "corpus boundary intact: local reference only, no raw corpus inside repo"
+    },
+    "G-A05": {
+      "status": "PASS",
+      "detail": "owner (User / CASE 01 Product-Release Authority) + explicit D2 authorization record present"
+    },
+    "G-A06": {
+      "status": "PASS",
+      "detail": "candidate regression PASS (evidence/D2_CANDIDATE_REGRESSION_RESULTS.log)"
+    },
+    "G-A07": {
+      "status": "PASS",
+      "detail": "no unauthorized mutation: Platform/Runtime/Adapter/enterprise_extensions/Candidate unchanged; main unchanged"
+    }
+  },
+  "decided_at": "2026-08-23T11:56:52+00:00"
+}

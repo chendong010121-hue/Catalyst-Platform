@@ -1,0 +1,378 @@
+== PLATFORM-BOUND CASE RESULTS — CASE 01-D / D2 ==
+generated_at: 2026-08-23T11:56:52+00:00
+
+-- T-C01 --
+{
+  "case": "T-C01",
+  "invocation_id": "inv_d2_T-C01",
+  "trace_id": "trace_d2_T-C01",
+  "result_id": "result_4078e104a132",
+  "result_invocation_id": "inv_d2_T-C01",
+  "result_status": "success",
+  "output_status": "accepted_with_evidence",
+  "conclusion": "甲类物品运输车的汽车库、修车库、停车场与人员密集场所之间的防火间距不应小于 50m（GB 55037-2022 第3.1.3条）。",
+  "evidence_items": [
+    {
+      "source_identity": "GB 55037-2022",
+      "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+      "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+      "locator": "第3.1.3条（第3章 建筑总平面布局 · 3.1 一般规定）；OCR 副本 [page 13]，本地副本行 451-454",
+      "evidence_type": "normative_clause",
+      "evidence_content": "甲、乙类物品运输车的汽车库、修车库、停车场与人员密集\n场所的防火间距不应小于50m,与其他民用建筑的防火间距不应\n小于 25m;甲类物品运输车的汽车库、修车库、停车场与明火或散\n发火花地点的防火间距不应小于30m",
+      "claim_relation": "supports"
+    }
+  ],
+  "artifacts": [
+    {
+      "standard_version": "0.1",
+      "kind": "artifact_ref",
+      "id": "brea-ev-inv_d2_T-C01-0",
+      "extensions": {},
+      "artifact_type": "regulation_evidence",
+      "artifact_version": "1",
+      "uri": "case-evidence://GB 55037-2022#第3.1.3条（第3章 建筑总平面布局 · 3.1 一般规定）；OCR 副本 [page 13]，本地副本行 451-454",
+      "producer": {
+        "capability_id": "case-01.brea.execute",
+        "invocation_id": "inv_d2_T-C01"
+      }
+    }
+  ],
+  "trace_events": [
+    {
+      "standard_version": "0.1",
+      "kind": "trace_event",
+      "id": "event_0f8f5d155967",
+      "extensions": {
+        "governance.agent": {
+          "version": "0.1",
+          "required": false,
+          "payload": {
+            "agent_id": "case-01.brea",
+            "agent_version": "0.1-candidate",
+            "admission_ref": "admission-case-01-brea-v0.1-001",
+            "binding_ref": "binding-case-01-brea-v0.1-001"
+          }
+        }
+      },
+      "trace_id": "trace_d2_T-C01",
+      "event_type": "invocation.started",
+      "timestamp": "2026-08-23T11:56:53Z",
+      "subject_id": "inv_d2_T-C01"
+    },
+    {
+      "standard_version": "0.1",
+      "kind": "trace_event",
+      "id": "event_b040051f5214",
+      "extensions": {
+        "governance.agent": {
+          "version": "0.1",
+          "required": false,
+          "payload": {
+            "agent_id": "case-01.brea",
+            "agent_version": "0.1-candidate",
+            "admission_ref": "admission-case-01-brea-v0.1-001",
+            "binding_ref": "binding-case-01-brea-v0.1-001"
+          }
+        }
+      },
+      "trace_id": "trace_d2_T-C01",
+      "event_type": "invocation.completed",
+      "timestamp": "2026-08-23T11:56:53Z",
+      "subject_id": "inv_d2_T-C01"
+    },
+    {
+      "standard_version": "0.1",
+      "kind": "trace_event",
+      "id": "event_bbe79d15ce58",
+      "extensions": {
+        "governance.agent": {
+          "version": "0.1",
+          "required": false,
+          "payload": {
+            "agent_id": "case-01.brea",
+            "agent_version": "0.1-candidate",
+            "admission_ref": "admission-case-01-brea-v0.1-001",
+            "binding_ref": "binding-case-01-brea-v0.1-001"
+          }
+        }
+      },
+      "trace_id": "trace_d2_T-C01",
+      "event_type": "artifact.created",
+      "timestamp": "2026-08-23T11:56:53Z",
+      "subject_id": "brea-ev-inv_d2_T-C01-0"
+    }
+  ],
+  "provenance": {
+    "verification": "PASS",
+    "checks": {
+      "result_invocation_id_matches": true,
+      "execution_capability_matches_binding": true,
+      "trace_trace_id_matches": true,
+      "trace_subject_matches": true,
+      "trace_governance_attribution_exact": true,
+      "artifact_producer_links": true,
+      "payload_resolves_to_admission": true,
+      "payload_resolves_to_binding": true
+    },
+    "resolved_to": {
+      "agent_id": "case-01.brea",
+      "agent_version": "0.1-candidate",
+      "admission_ref": "admission-case-01-brea-v0.1-001",
+      "binding_ref": "binding-case-01-brea-v0.1-001"
+    },
+    "execution_routing_identity": {
+      "capability_id": "case-01.brea.execute",
+      "capability_version": "0.1"
+    }
+  }
+}
+-- T-C02 --
+{
+  "case": "T-C02",
+  "invocation_id": "inv_d2_T-C02",
+  "trace_id": "trace_d2_T-C02",
+  "result_id": "result_adc035661ffb",
+  "result_invocation_id": "inv_d2_T-C02",
+  "result_status": "success",
+  "output_status": "accepted_with_evidence",
+  "conclusion": "按 DBJ33/T1021-2023 表5.0.1（规划人口大于50万的城市 → 指标级别 ⅢI）与表5.0.4（大型商业（建筑面积>10000m²）），机动车配建指标不应小于 1.1 车位/100m² 建筑面积。",
+  "evidence_items": [
+    {
+      "source_identity": "DBJ33/T1021-2023",
+      "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+      "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+      "locator": "第5.0.1条+表5.0.1（OCR 副本 [page 26]，本地副本行 894-903）",
+      "evidence_type": "table_value",
+      "evidence_content": "表5.0.1\n配建指标级别及适用范围\n指标级别\n适用范围\nI\n规划人口不大于20万人的城市\nⅡ\n规划人口大于20万人、不大于50万人的城市\nⅢI\n规划人口大于50万的城市",
+      "claim_relation": "supports"
+    },
+    {
+      "source_identity": "DBJ33/T1021-2023",
+      "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+      "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+      "locator": "表5.0.4（OCR 副本 [page 27]，本地副本行 986-1037），行：大型商业（建筑面积>10000m²）",
+      "evidence_type": "table_value",
+      "evidence_content": "大型商业（建筑面积>10000m²）\n0. 8\n1. 1\n1.1\n1.0\n1.8",
+      "claim_relation": "supports"
+    }
+  ],
+  "artifacts": [
+    {
+      "standard_version": "0.1",
+      "kind": "artifact_ref",
+      "id": "brea-ev-inv_d2_T-C02-0",
+      "extensions": {},
+      "artifact_type": "regulation_evidence",
+      "artifact_version": "1",
+      "uri": "case-evidence://DBJ33/T1021-2023#第5.0.1条+表5.0.1（OCR 副本 [page 26]，本地副本行 894-903）",
+      "producer": {
+        "capability_id": "case-01.brea.execute",
+        "invocation_id": "inv_d2_T-C02"
+      }
+    },
+    {
+      "standard_version": "0.1",
+      "kind": "artifact_ref",
+      "id": "brea-ev-inv_d2_T-C02-1",
+      "extensions": {},
+      "artifact_type": "regulation_evidence",
+      "artifact_version": "1",
+      "uri": "case-evidence://DBJ33/T1021-2023#表5.0.4（OCR 副本 [page 27]，本地副本行 986-1037），行：大型商业（建筑面积>10000m²）",
+      "producer": {
+        "capability_id": "case-01.brea.execute",
+        "invocation_id": "inv_d2_T-C02"
+      }
+    }
+  ],
+  "trace_events": [
+    {
+      "standard_version": "0.1",
+      "kind": "trace_event",
+      "id": "event_500fe6d1ce2f",
+      "extensions": {
+        "governance.agent": {
+          "version": "0.1",
+          "required": false,
+          "payload": {
+            "agent_id": "case-01.brea",
+            "agent_version": "0.1-candidate",
+            "admission_ref": "admission-case-01-brea-v0.1-001",
+            "binding_ref": "binding-case-01-brea-v0.1-001"
+          }
+        }
+      },
+      "trace_id": "trace_d2_T-C02",
+      "event_type": "invocation.started",
+      "timestamp": "2026-08-23T11:56:53Z",
+      "subject_id": "inv_d2_T-C02"
+    },
+    {
+      "standard_version": "0.1",
+      "kind": "trace_event",
+      "id": "event_5db4a6158531",
+      "extensions": {
+        "governance.agent": {
+          "version": "0.1",
+          "required": false,
+          "payload": {
+            "agent_id": "case-01.brea",
+            "agent_version": "0.1-candidate",
+            "admission_ref": "admission-case-01-brea-v0.1-001",
+            "binding_ref": "binding-case-01-brea-v0.1-001"
+          }
+        }
+      },
+      "trace_id": "trace_d2_T-C02",
+      "event_type": "invocation.completed",
+      "timestamp": "2026-08-23T11:56:53Z",
+      "subject_id": "inv_d2_T-C02"
+    },
+    {
+      "standard_version": "0.1",
+      "kind": "trace_event",
+      "id": "event_38f056eed7ba",
+      "extensions": {
+        "governance.agent": {
+          "version": "0.1",
+          "required": false,
+          "payload": {
+            "agent_id": "case-01.brea",
+            "agent_version": "0.1-candidate",
+            "admission_ref": "admission-case-01-brea-v0.1-001",
+            "binding_ref": "binding-case-01-brea-v0.1-001"
+          }
+        }
+      },
+      "trace_id": "trace_d2_T-C02",
+      "event_type": "artifact.created",
+      "timestamp": "2026-08-23T11:56:53Z",
+      "subject_id": "brea-ev-inv_d2_T-C02-0"
+    },
+    {
+      "standard_version": "0.1",
+      "kind": "trace_event",
+      "id": "event_bdf61d1135a3",
+      "extensions": {
+        "governance.agent": {
+          "version": "0.1",
+          "required": false,
+          "payload": {
+            "agent_id": "case-01.brea",
+            "agent_version": "0.1-candidate",
+            "admission_ref": "admission-case-01-brea-v0.1-001",
+            "binding_ref": "binding-case-01-brea-v0.1-001"
+          }
+        }
+      },
+      "trace_id": "trace_d2_T-C02",
+      "event_type": "artifact.created",
+      "timestamp": "2026-08-23T11:56:53Z",
+      "subject_id": "brea-ev-inv_d2_T-C02-1"
+    }
+  ],
+  "provenance": {
+    "verification": "PASS",
+    "checks": {
+      "result_invocation_id_matches": true,
+      "execution_capability_matches_binding": true,
+      "trace_trace_id_matches": true,
+      "trace_subject_matches": true,
+      "trace_governance_attribution_exact": true,
+      "artifact_producer_links": true,
+      "payload_resolves_to_admission": true,
+      "payload_resolves_to_binding": true
+    },
+    "resolved_to": {
+      "agent_id": "case-01.brea",
+      "agent_version": "0.1-candidate",
+      "admission_ref": "admission-case-01-brea-v0.1-001",
+      "binding_ref": "binding-case-01-brea-v0.1-001"
+    },
+    "execution_routing_identity": {
+      "capability_id": "case-01.brea.execute",
+      "capability_version": "0.1"
+    }
+  }
+}
+-- T-C03 --
+{
+  "case": "T-C03",
+  "invocation_id": "inv_d2_T-C03",
+  "trace_id": "trace_d2_T-C03",
+  "result_id": "result_f7586723e992",
+  "result_invocation_id": "inv_d2_T-C03",
+  "result_status": "success",
+  "output_status": "insufficient_context",
+  "conclusion": "无法可靠回答：判定所需专业事实缺失（建筑业态分类、城市类别（规划人口分级）、建筑面积、项目所在地（省份/城市））。在补齐前不能给出结论或数值。",
+  "evidence_items": [],
+  "artifacts": [],
+  "trace_events": [
+    {
+      "standard_version": "0.1",
+      "kind": "trace_event",
+      "id": "event_317d067a9907",
+      "extensions": {
+        "governance.agent": {
+          "version": "0.1",
+          "required": false,
+          "payload": {
+            "agent_id": "case-01.brea",
+            "agent_version": "0.1-candidate",
+            "admission_ref": "admission-case-01-brea-v0.1-001",
+            "binding_ref": "binding-case-01-brea-v0.1-001"
+          }
+        }
+      },
+      "trace_id": "trace_d2_T-C03",
+      "event_type": "invocation.started",
+      "timestamp": "2026-08-23T11:56:53Z",
+      "subject_id": "inv_d2_T-C03"
+    },
+    {
+      "standard_version": "0.1",
+      "kind": "trace_event",
+      "id": "event_346f8eb3d315",
+      "extensions": {
+        "governance.agent": {
+          "version": "0.1",
+          "required": false,
+          "payload": {
+            "agent_id": "case-01.brea",
+            "agent_version": "0.1-candidate",
+            "admission_ref": "admission-case-01-brea-v0.1-001",
+            "binding_ref": "binding-case-01-brea-v0.1-001"
+          }
+        }
+      },
+      "trace_id": "trace_d2_T-C03",
+      "event_type": "invocation.completed",
+      "timestamp": "2026-08-23T11:56:53Z",
+      "subject_id": "inv_d2_T-C03"
+    }
+  ],
+  "provenance": {
+    "verification": "PASS",
+    "checks": {
+      "result_invocation_id_matches": true,
+      "execution_capability_matches_binding": true,
+      "trace_trace_id_matches": true,
+      "trace_subject_matches": true,
+      "trace_governance_attribution_exact": true,
+      "artifact_producer_links": true,
+      "payload_resolves_to_admission": true,
+      "payload_resolves_to_binding": true
+    },
+    "resolved_to": {
+      "agent_id": "case-01.brea",
+      "agent_version": "0.1-candidate",
+      "admission_ref": "admission-case-01-brea-v0.1-001",
+      "binding_ref": "binding-case-01-brea-v0.1-001"
+    },
+    "execution_routing_identity": {
+      "capability_id": "case-01.brea.execute",
+      "capability_version": "0.1"
+    }
+  }
+}
+
+== PLATFORM-BOUND RESULT: PASS ==

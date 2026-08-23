@@ -1,0 +1,37 @@
+== D2 TEST RESULTS — CASE 01-D / D2 ==
+generated_at: 2026-08-23T11:56:53+00:00
+
+[PASS] D2-T01 — valid gates -> Admission Record ADMITTED
+    all_pass=True admission_status=ADMITTED
+[PASS] D2-T02 — wrong Governed Definition SHA -> REJECTED
+    G-A01=FAIL admission_status=REJECTED
+[PASS] D2-T03 — missing required Formation Evidence -> REJECTED
+    G-A02=FAIL admission_status=REJECTED
+[PASS] D2-T04 — implementation fingerprint mismatch -> binding rejected
+    validate_binding raised on candidate_tree_sha256 mismatch
+[PASS] D2-T05 — unknown Agent version -> no binding / fail closed
+    validate_against_records raised on unknown agent_version
+[PASS] D2-T06 — missing governance.agent on governed execution -> fail closed
+    parse_governance_agent raised
+[PASS] D2-T07 — governance.agent payload mismatches Admission/Binding -> fail closed
+    validate_against_records raised on agent_id mismatch
+[PASS] D2-T08 — governance.agent in Invocation.context.extensions -> fail closed (ambiguous authority)
+    parse_governance_agent raised on context.extensions presence
+[PASS] D2-T09 — agent_id != execution_capability_id and semantic mapping is explicit
+    agent=case-01.brea != execution_capability=case-01.brea.execute; binding documents both (True)
+[PASS] D2-T10 — wrong execution capability binding -> fail closed
+    validate_binding raised on wrong execution_capability_id
+[PASS] D2-T11 — conflicting TraceEvent governance.agent attribution -> fail closed
+    attribute_trace raised on conflicting trace attribution
+[PASS] D2-T12 — result/trace/artifact provenance cannot be linked -> fail closed
+    verify_provenance raised on unlinked invocation_id
+[PASS] D2-T13 — enterprise.identity conflicts admitted enterprise context -> fail closed
+    execute_governed raised on enterprise.identity conflict
+[PASS] D2-T14 — Platform-bound T-C01 direct clause -> professional behavior preserved + exact Agent attribution
+    result_status=success output_status=accepted_with_evidence conclusion_ok=True provenance=PASS
+[PASS] D2-T15 — Platform-bound T-C02 conditional table -> professional behavior preserved + exact Agent attribution
+    result_status=success output_status=accepted_with_evidence evidence_items=2 provenance=PASS
+[PASS] D2-T16 — Platform-bound T-C03 insufficient-context fail closed -> professional fail-closed preserved + exact Agent attribution
+    result_status=success output_status=insufficient_context evidence_items=0 provenance=PASS
+
+== D2 RESULT: 16/16 PASS ==

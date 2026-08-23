@@ -1,0 +1,267 @@
+{
+  "provenance_chain": {
+    "version": "0.1",
+    "admission_record": {
+      "ref": "admission/BREA_V0_1_ADMISSION_RECORD.json",
+      "admission_ref": "admission-case-01-brea-v0.1-001",
+      "agent_id": "case-01.brea",
+      "agent_version": "0.1-candidate",
+      "admission_status": "ADMITTED"
+    },
+    "binding_record": {
+      "ref": "binding/BREA_V0_1_EXECUTION_BINDING.json",
+      "binding_id": "binding-case-01-brea-v0.1-001",
+      "agent_id": "case-01.brea",
+      "agent_version": "0.1-candidate",
+      "admission_ref": "admission-case-01-brea-v0.1-001",
+      "binding_status": "BOUND"
+    },
+    "invocation_governance_agent": {
+      "canonical_location": "Invocation.extensions['governance.agent']",
+      "payload": {
+        "agent_id": "case-01.brea",
+        "agent_version": "0.1-candidate",
+        "admission_ref": "admission-case-01-brea-v0.1-001",
+        "binding_ref": "binding-case-01-brea-v0.1-001"
+      }
+    },
+    "execution_routing_identity": {
+      "capability_id": "case-01.brea.execute",
+      "capability_version": "0.1"
+    },
+    "implementation_fingerprint": {
+      "candidate_tree_sha256": "cbdd6b4d13df0f2b4408ab6a50a9b882fd4aa35cb2ddeeb668e98d6634599193",
+      "builder_output_manifest_sha256": "394ef4da3658776b34a4ad2c2d3fbd803b3ff332f7b7f6669c82a5917f00e3de",
+      "declared_file_count": 19
+    },
+    "platform_path": "PlatformValidator -> InMemoryDescriptorRegistry -> RuntimeAdapter -> Runtime (unchanged)",
+    "case_executions": [
+      {
+        "case": "T-C01",
+        "invocation_id": "inv_d2_T-C01",
+        "trace_id": "trace_d2_T-C01",
+        "result_id": "result_4078e104a132",
+        "result_invocation_id": "inv_d2_T-C01",
+        "artifacts": [
+          {
+            "id": "brea-ev-inv_d2_T-C01-0",
+            "producer": {
+              "capability_id": "case-01.brea.execute",
+              "invocation_id": "inv_d2_T-C01"
+            }
+          }
+        ],
+        "trace_events": [
+          {
+            "id": "event_0f8f5d155967",
+            "trace_id": "trace_d2_T-C01",
+            "subject_id": "inv_d2_T-C01",
+            "event_type": "invocation.started",
+            "governance_agent": {
+              "version": "0.1",
+              "required": false,
+              "payload": {
+                "agent_id": "case-01.brea",
+                "agent_version": "0.1-candidate",
+                "admission_ref": "admission-case-01-brea-v0.1-001",
+                "binding_ref": "binding-case-01-brea-v0.1-001"
+              }
+            }
+          },
+          {
+            "id": "event_b040051f5214",
+            "trace_id": "trace_d2_T-C01",
+            "subject_id": "inv_d2_T-C01",
+            "event_type": "invocation.completed",
+            "governance_agent": {
+              "version": "0.1",
+              "required": false,
+              "payload": {
+                "agent_id": "case-01.brea",
+                "agent_version": "0.1-candidate",
+                "admission_ref": "admission-case-01-brea-v0.1-001",
+                "binding_ref": "binding-case-01-brea-v0.1-001"
+              }
+            }
+          },
+          {
+            "id": "event_bbe79d15ce58",
+            "trace_id": "trace_d2_T-C01",
+            "subject_id": "brea-ev-inv_d2_T-C01-0",
+            "event_type": "artifact.created",
+            "governance_agent": {
+              "version": "0.1",
+              "required": false,
+              "payload": {
+                "agent_id": "case-01.brea",
+                "agent_version": "0.1-candidate",
+                "admission_ref": "admission-case-01-brea-v0.1-001",
+                "binding_ref": "binding-case-01-brea-v0.1-001"
+              }
+            }
+          }
+        ],
+        "resolved_to": {
+          "agent_id": "case-01.brea",
+          "agent_version": "0.1-candidate",
+          "admission_ref": "admission-case-01-brea-v0.1-001",
+          "binding_ref": "binding-case-01-brea-v0.1-001"
+        }
+      },
+      {
+        "case": "T-C02",
+        "invocation_id": "inv_d2_T-C02",
+        "trace_id": "trace_d2_T-C02",
+        "result_id": "result_adc035661ffb",
+        "result_invocation_id": "inv_d2_T-C02",
+        "artifacts": [
+          {
+            "id": "brea-ev-inv_d2_T-C02-0",
+            "producer": {
+              "capability_id": "case-01.brea.execute",
+              "invocation_id": "inv_d2_T-C02"
+            }
+          },
+          {
+            "id": "brea-ev-inv_d2_T-C02-1",
+            "producer": {
+              "capability_id": "case-01.brea.execute",
+              "invocation_id": "inv_d2_T-C02"
+            }
+          }
+        ],
+        "trace_events": [
+          {
+            "id": "event_500fe6d1ce2f",
+            "trace_id": "trace_d2_T-C02",
+            "subject_id": "inv_d2_T-C02",
+            "event_type": "invocation.started",
+            "governance_agent": {
+              "version": "0.1",
+              "required": false,
+              "payload": {
+                "agent_id": "case-01.brea",
+                "agent_version": "0.1-candidate",
+                "admission_ref": "admission-case-01-brea-v0.1-001",
+                "binding_ref": "binding-case-01-brea-v0.1-001"
+              }
+            }
+          },
+          {
+            "id": "event_5db4a6158531",
+            "trace_id": "trace_d2_T-C02",
+            "subject_id": "inv_d2_T-C02",
+            "event_type": "invocation.completed",
+            "governance_agent": {
+              "version": "0.1",
+              "required": false,
+              "payload": {
+                "agent_id": "case-01.brea",
+                "agent_version": "0.1-candidate",
+                "admission_ref": "admission-case-01-brea-v0.1-001",
+                "binding_ref": "binding-case-01-brea-v0.1-001"
+              }
+            }
+          },
+          {
+            "id": "event_38f056eed7ba",
+            "trace_id": "trace_d2_T-C02",
+            "subject_id": "brea-ev-inv_d2_T-C02-0",
+            "event_type": "artifact.created",
+            "governance_agent": {
+              "version": "0.1",
+              "required": false,
+              "payload": {
+                "agent_id": "case-01.brea",
+                "agent_version": "0.1-candidate",
+                "admission_ref": "admission-case-01-brea-v0.1-001",
+                "binding_ref": "binding-case-01-brea-v0.1-001"
+              }
+            }
+          },
+          {
+            "id": "event_bdf61d1135a3",
+            "trace_id": "trace_d2_T-C02",
+            "subject_id": "brea-ev-inv_d2_T-C02-1",
+            "event_type": "artifact.created",
+            "governance_agent": {
+              "version": "0.1",
+              "required": false,
+              "payload": {
+                "agent_id": "case-01.brea",
+                "agent_version": "0.1-candidate",
+                "admission_ref": "admission-case-01-brea-v0.1-001",
+                "binding_ref": "binding-case-01-brea-v0.1-001"
+              }
+            }
+          }
+        ],
+        "resolved_to": {
+          "agent_id": "case-01.brea",
+          "agent_version": "0.1-candidate",
+          "admission_ref": "admission-case-01-brea-v0.1-001",
+          "binding_ref": "binding-case-01-brea-v0.1-001"
+        }
+      },
+      {
+        "case": "T-C03",
+        "invocation_id": "inv_d2_T-C03",
+        "trace_id": "trace_d2_T-C03",
+        "result_id": "result_f7586723e992",
+        "result_invocation_id": "inv_d2_T-C03",
+        "artifacts": [],
+        "trace_events": [
+          {
+            "id": "event_317d067a9907",
+            "trace_id": "trace_d2_T-C03",
+            "subject_id": "inv_d2_T-C03",
+            "event_type": "invocation.started",
+            "governance_agent": {
+              "version": "0.1",
+              "required": false,
+              "payload": {
+                "agent_id": "case-01.brea",
+                "agent_version": "0.1-candidate",
+                "admission_ref": "admission-case-01-brea-v0.1-001",
+                "binding_ref": "binding-case-01-brea-v0.1-001"
+              }
+            }
+          },
+          {
+            "id": "event_346f8eb3d315",
+            "trace_id": "trace_d2_T-C03",
+            "subject_id": "inv_d2_T-C03",
+            "event_type": "invocation.completed",
+            "governance_agent": {
+              "version": "0.1",
+              "required": false,
+              "payload": {
+                "agent_id": "case-01.brea",
+                "agent_version": "0.1-candidate",
+                "admission_ref": "admission-case-01-brea-v0.1-001",
+                "binding_ref": "binding-case-01-brea-v0.1-001"
+              }
+            }
+          }
+        ],
+        "resolved_to": {
+          "agent_id": "case-01.brea",
+          "agent_version": "0.1-candidate",
+          "admission_ref": "admission-case-01-brea-v0.1-001",
+          "binding_ref": "binding-case-01-brea-v0.1-001"
+        }
+      }
+    ]
+  },
+  "verification": {
+    "result": "PASS",
+    "checks": {
+      "admission_resolves_agent": true,
+      "binding_resolves_admission": true,
+      "governance_payload_resolves": true,
+      "fingerprint_matches_binding": true,
+      "all_cases_linked": true,
+      "artifacts_producer_linked": true
+    }
+  }
+}

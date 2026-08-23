@@ -1,0 +1,33 @@
+== CANDIDATE REGRESSION — CASE 01-D / D2 ==
+candidate: case-01/01-c-governed-local-formation/candidate/brea-v0.1 (read-only)
+generated_at: 2026-08-23T11:56:52+00:00
+
+-- 15/15 self-check (tests.run_all) --
+== BREA v0.1-candidate self-check ==
+-- test_structural --
+PASS test_st01_all_functions_mapped
+PASS test_st02_seams_explicit
+PASS test_st03_no_provider_semantic_authority
+PASS test_st04_prompt_non_authority
+PASS test_st05_enterprise_orthogonality
+PASS test_st06_numeric_traceability
+PASS test_st07_corpus_sha_fail_closed
+PASS test_st08_answer_writes_nothing_without_out_dir
+-- test_seams --
+PASS test_seam01_facts
+PASS test_seam02_applicability
+PASS test_seam03_evidence
+PASS test_corpus_fail_closed
+-- test_cases --
+PASS test_t_c01_direct_clause
+PASS test_t_c02_conditional_table
+PASS test_t_c03_fail_closed
+== RESULT: PASS ==
+-- T-C01 --
+status=accepted_with_evidence conclusion=甲类物品运输车的汽车库、修车库、停车场与人员密集场所之间的防火间距不应小于 50m（GB 55037-2022 第3.1.3条）。
+-- T-C02 --
+status=accepted_with_evidence conclusion=按 DBJ33/T1021-2023 表5.0.1（规划人口大于50万的城市 → 指标级别 ⅢI）与表5.0.4（大型商业（建筑面积>10000m²）），机动车配建指标不应小于 1.1 车位/100m² 建筑面积。
+-- T-C03 --
+status=insufficient_context conclusion=无法可靠回答：判定所需专业事实缺失（建筑业态分类、城市类别（规划人口分级）、建筑面积、项目所在地（省份/城市））。在补齐前不能给出结论或数值。
+
+== CANDIDATE REGRESSION RESULT: PASS ==

@@ -1,0 +1,26 @@
+{
+  "binding_id": "binding-case-01-brea-v0.1-001",
+  "binding_version": "0.1",
+  "agent_id": "case-01.brea",
+  "agent_version": "0.1-candidate",
+  "admission_ref": "admission-case-01-brea-v0.1-001",
+  "admission_status_checked": "ADMITTED",
+  "implementation_fingerprint": {
+    "candidate_tree_sha256": "cbdd6b4d13df0f2b4408ab6a50a9b882fd4aa35cb2ddeeb668e98d6634599193",
+    "builder_output_manifest_sha256": "394ef4da3658776b34a4ad2c2d3fbd803b3ff332f7b7f6669c82a5917f00e3de"
+  },
+  "execution_capability_id": "case-01.brea.execute",
+  "execution_capability_version": "0.1",
+  "execution_entry_ref": "brea/runner.py::answer (read-only BREA Candidate runner) via BREAExecutionCapability.invoke",
+  "platform_standard_version": "0.1",
+  "binding_status": "BOUND",
+  "created_under_authorization_ref": "D2_AUTHORIZATION_RECORD_V0.1.yaml (granted)",
+  "binding_validation": {
+    "agent_identity_matches_admission": true,
+    "admission_status_admitted": true,
+    "fingerprint_matches_admitted": true,
+    "execution_capability_identity": "case-01.brea.execute@0.1",
+    "execution_entry_resolves_to_readonly_candidate": true
+  },
+  "created_at": "2026-08-23T11:56:52+00:00"
+}
