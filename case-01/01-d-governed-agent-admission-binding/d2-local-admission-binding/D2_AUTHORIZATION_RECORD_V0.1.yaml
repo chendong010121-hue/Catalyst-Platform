@@ -1,0 +1,30 @@
+record_type: case_stage_authorization
+record_version: "0.1"
+case_id: CASE-01
+stage_id: D2
+stage_name: Local Admission & Binding Proof
+decision: granted
+decision_authority: user
+decision_source: current_conversation
+stage_contract_ref: CASE_01_D_D2_LOCAL_ADMISSION_AND_BINDING_V0.1_STAGE_SPEC.md
+stage_contract_commit: 27b67cf9cad4a6f5036437aa63750cda8d9aaf1b
+authorization_model_ref: D2_AUTHORIZATION_MODEL_V0.2.md
+authorization_model_commit: 484603ef86df1e055036aeb6599312d24fb578b7
+target_branch: case-01
+scope:
+  local_admission_proof: true
+  local_execution_binding_proof: true
+  attribution_and_provenance_evidence: true
+publication_limit:
+  implementation_evidence_commits: 1
+  pushes: 1
+protected_boundaries:
+  catalyst_main_mutation: false
+  platform_core_mutation: false
+  runtime_mutation: false
+  runtime_adapter_mutation: false
+  enterprise_extension_mutation: false
+  brea_candidate_mutation: false
+  raw_corpus_upstream: false
+next_stage:
+  case_01_e_decision: not_granted
