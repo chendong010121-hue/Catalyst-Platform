@@ -1,0 +1,39 @@
+record_type: case_stage_authorization
+record_version: "0.1"
+case_id: CASE-01
+stage_id: E1
+stage_name: Local Evidence Query Generalization
+decision: granted
+decision_authority: user
+decision_source: current_conversation
+stage_contract_ref: CASE_01_E_E1_LOCAL_EVIDENCE_QUERY_GENERALIZATION_V0.1_STAGE_SPEC.md
+stage_contract_commit: 5a50f01465f278f42bf95df0a062bc4a5295253b
+professional_change_request_ref: E1_PROFESSIONAL_CHANGE_REQUEST_V0.1.md
+professional_change_request_commit: 9ca6bbdd76ae20633a210403f6a99e0248ed6e01
+target_branch: case-01
+scope:
+  governed_change_impact_review: true
+  builder_assisted_candidate_n_plus_1: true
+  form_brea_v0_2_candidate: true
+  local_evidence_query_generalization: true
+  generalized_local_query_benchmark: true
+  professional_evidence_generation: true
+publication_limit:
+  implementation_evidence_commits: 1
+  pushes: 1
+protected_boundaries:
+  admitted_brea_v0_1_mutation: false
+  catalyst_main_mutation: false
+  platform_core_mutation: false
+  runtime_mutation: false
+  runtime_adapter_mutation: false
+  enterprise_extension_mutation: false
+  raw_corpus_upstream: false
+candidate_target:
+  agent_id: case-01.brea
+  candidate_version: 0.2-candidate
+  admitted: false
+  bound: false
+next_stage:
+  e2_decision: not_granted
+  v0_2_admission_decision: not_granted
