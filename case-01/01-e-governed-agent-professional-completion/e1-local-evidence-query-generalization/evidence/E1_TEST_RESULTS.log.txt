@@ -1,0 +1,51 @@
+== E1 TEST RESULTS — CASE 01-E / E1 ==
+generated_at: 2026-08-23T13:43:31+00:00
+
+[PASS] E1-S-01 — FN-01..11 decomposition preserved
+    FN set: ['FN-01', 'FN-02', 'FN-03', 'FN-04', 'FN-05', 'FN-06', 'FN-07', 'FN-08', 'FN-09', 'FN-10', 'FN-11']
+[PASS] E1-S-02 — SEAM-01..03 preserved
+    SEAM set: ['SEAM-01', 'SEAM-02', 'SEAM-03']
+[PASS] E1-S-03 — OBL-01..06 preserved
+    OBL: ['OBL-01', 'OBL-02', 'OBL-03', 'OBL-04', 'OBL-05', 'OBL-06']
+[PASS] E1-S-04 — no provider / no prompt authority
+    provider.py absent; no prompt files
+[PASS] E1-A-01 — no benchmark question literals in runtime code
+    forbidden-literal hits: none
+[PASS] E1-A-02 — no per-benchmark clause-id branches
+    no branch condition references benchmark clause ids
+[PASS] E1-A-03 — reusable locator/retrieval path exists
+    classify_query + topic_search present in brea/query.py
+[PASS] B-E1-01 — explicit_clause_lookup
+    status=evidence_retrieved (want evidence_retrieved) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-02 — explicit_clause_lookup_alternate_wording
+    status=evidence_retrieved (want evidence_retrieved) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-03 — explicit_clause_lookup_different_clause
+    status=evidence_retrieved (want evidence_retrieved) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-04 — nonexistent_clause_fail_closed
+    status=no_reliable_evidence (want no_reliable_evidence) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-05 — local_topic_search_gb
+    status=evidence_retrieved (want evidence_retrieved) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-06 — local_topic_search_dbj
+    status=evidence_retrieved (want evidence_retrieved) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-07 — explicit_table_region_query
+    status=evidence_retrieved (want evidence_retrieved) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-08 — table_row_insufficient_facts
+    status=insufficient_context (want insufficient_context) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-09 — corpus_does_not_support
+    status=no_reliable_evidence (want no_reliable_evidence) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-10 — normative_numeric_without_applicability
+    status=insufficient_context (want insufficient_context) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-11 — existing_professional_regression_t_c01
+    status=accepted_with_evidence (want accepted_with_evidence) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-12 — existing_professional_regression_t_c02
+    status=accepted_with_evidence (want accepted_with_evidence) source_ok=True locator_ok=True numeric_ok=True
+[PASS] B-E1-13 — existing_professional_regression_t_c03
+    status=insufficient_context (want insufficient_context) source_ok=True locator_ok=True numeric_ok=True
+[PASS] E1-R-T-C01 — historical T-C01 preserved in v0.2
+    status=accepted_with_evidence evidence_items=1
+[PASS] E1-R-T-C02 — historical T-C02 preserved in v0.2
+    status=accepted_with_evidence evidence_items=2
+[PASS] E1-R-T-C03 — historical T-C03 preserved in v0.2
+    status=insufficient_context evidence_items=0
+
+== E1 RESULT: 23/23 PASS ==

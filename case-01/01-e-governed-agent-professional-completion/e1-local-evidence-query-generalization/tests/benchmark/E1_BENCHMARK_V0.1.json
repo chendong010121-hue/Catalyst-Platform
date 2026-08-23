@@ -1,0 +1,137 @@
+{
+  "benchmark": "E1_BENCHMARK",
+  "version": "0.1",
+  "note": "Benchmark set designed AFTER the generalized query mechanism (spec §14: benchmark is NOT the implementation source list). No expected answer text is encoded; each entry records expected behavior class, source/locator constraints, applicability requirement and numeric-safety expectation. B-E1-11/12/13 are regressions of the admitted professional cases.",
+  "entries": [
+    {
+      "id": "B-E1-01",
+      "question": "GB55037-2022 第2.1.1条怎么规定？",
+      "expected_behavior": "explicit_clause_lookup",
+      "expected_status": "evidence_retrieved",
+      "expected_source": "GB55037-2022",
+      "expected_locator_constraint": "contains 2.1.1",
+      "applicability_required": false,
+      "numeric_safety_expectation": "conclusion contains no new normative numeric claim; clause text verbatim in evidence"
+    },
+    {
+      "id": "B-E1-02",
+      "question": "查一下 GB 55037 的 2.1.1 条原文。",
+      "expected_behavior": "explicit_clause_lookup_alternate_wording",
+      "expected_status": "evidence_retrieved",
+      "expected_source": "GB55037-2022",
+      "expected_locator_constraint": "contains 2.1.1",
+      "applicability_required": false,
+      "numeric_safety_expectation": "same clause result as B-E1-01"
+    },
+    {
+      "id": "B-E1-03",
+      "question": "DBJ33/T1021-2023 第4.1.2条怎么规定？",
+      "expected_behavior": "explicit_clause_lookup_different_clause",
+      "expected_status": "evidence_retrieved",
+      "expected_source": "DBJ33T1021-2023",
+      "expected_locator_constraint": "contains 4.1.2",
+      "applicability_required": false,
+      "numeric_safety_expectation": "verbatim clause evidence; no invented content"
+    },
+    {
+      "id": "B-E1-04",
+      "question": "GB55037-2022 第99.9.9条怎么规定？",
+      "expected_behavior": "nonexistent_clause_fail_closed",
+      "expected_status": "no_reliable_evidence",
+      "expected_source": "GB55037-2022",
+      "expected_locator_constraint": "none",
+      "applicability_required": false,
+      "numeric_safety_expectation": "no invented clause; no numeric conclusion"
+    },
+    {
+      "id": "B-E1-05",
+      "question": "GB55037 里哪里提到人员密集场所？",
+      "expected_behavior": "local_topic_search_gb",
+      "expected_status": "evidence_retrieved",
+      "expected_source": "GB55037-2022",
+      "expected_locator_constraint": ">=1 evidence item with topic_excerpt",
+      "applicability_required": false,
+      "numeric_safety_expectation": "evidence excerpts only; no normative conclusion from retrieval"
+    },
+    {
+      "id": "B-E1-06",
+      "question": "DBJ33/T1021-2023 里关于机动车出入口的规定有哪些？",
+      "expected_behavior": "local_topic_search_dbj",
+      "expected_status": "evidence_retrieved",
+      "expected_source": "DBJ33/T1021-2023",
+      "expected_locator_constraint": ">=1 evidence item with topic_excerpt",
+      "applicability_required": false,
+      "numeric_safety_expectation": "evidence excerpts only; no normative conclusion from retrieval"
+    },
+    {
+      "id": "B-E1-07",
+      "question": "DBJ33/T1021-2023 表5.0.2 的内容？",
+      "expected_behavior": "explicit_table_region_query",
+      "expected_status": "evidence_retrieved",
+      "expected_source": "DBJ33/T1021-2023",
+      "expected_locator_constraint": "evidence_type table_value",
+      "applicability_required": false,
+      "numeric_safety_expectation": "verbatim table region; no row-value binding claim"
+    },
+    {
+      "id": "B-E1-08",
+      "question": "DBJ33/T1021-2023 表5.0.4 中大型商业（建筑面积>10000m²）的机动车配建指标应为多少？",
+      "expected_behavior": "table_row_insufficient_facts",
+      "expected_status": "insufficient_context",
+      "expected_source": "DBJ33/T1021-2023",
+      "expected_locator_constraint": "no evidence items",
+      "applicability_required": true,
+      "numeric_safety_expectation": "no digits in conclusion; row-value binding requires professional facts"
+    },
+    {
+      "id": "B-E1-09",
+      "question": "GB55037-2022 里关于防雷设计的规定？",
+      "expected_behavior": "corpus_does_not_support",
+      "expected_status": "no_reliable_evidence",
+      "expected_source": "GB55037-2022",
+      "expected_locator_constraint": "none",
+      "applicability_required": false,
+      "numeric_safety_expectation": "no fabricated evidence; no numeric conclusion"
+    },
+    {
+      "id": "B-E1-10",
+      "question": "某项目的机动车配建停车位指标应为多少？",
+      "expected_behavior": "normative_numeric_without_applicability",
+      "expected_status": "insufficient_context",
+      "expected_source": null,
+      "expected_locator_constraint": "none",
+      "applicability_required": true,
+      "numeric_safety_expectation": "no unsupported numeric conclusion; professional facts missing"
+    },
+    {
+      "id": "B-E1-11",
+      "question": "fixture:T-C01",
+      "expected_behavior": "existing_professional_regression_t_c01",
+      "expected_status": "accepted_with_evidence",
+      "expected_source": "GB55037-2022",
+      "expected_locator_constraint": "clause 3.1.3 verbatim; value in evidence",
+      "applicability_required": true,
+      "numeric_safety_expectation": "50m claim traceable to verbatim clause evidence"
+    },
+    {
+      "id": "B-E1-12",
+      "question": "fixture:T-C02",
+      "expected_behavior": "existing_professional_regression_t_c02",
+      "expected_status": "accepted_with_evidence",
+      "expected_source": "DBJ33T1021-2023",
+      "expected_locator_constraint": "表5.0.1 + 表5.0.4 evidence; value in evidence",
+      "applicability_required": true,
+      "numeric_safety_expectation": "1.1 车位/100m² claim traceable to verbatim table evidence"
+    },
+    {
+      "id": "B-E1-13",
+      "question": "fixture:T-C03",
+      "expected_behavior": "existing_professional_regression_t_c03",
+      "expected_status": "insufficient_context",
+      "expected_source": null,
+      "expected_locator_constraint": "no evidence items",
+      "applicability_required": true,
+      "numeric_safety_expectation": "no digits in conclusion; explicit fail closed"
+    }
+  ]
+}

@@ -1,0 +1,313 @@
+{
+  "benchmark": "E1_BENCHMARK",
+  "version": "0.1",
+  "entries": [
+    {
+      "id": "B-E1-01",
+      "question": "GB55037-2022 第2.1.1条怎么规定？",
+      "expected_status": "evidence_retrieved",
+      "actual_status": "evidence_retrieved",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "已定位 GB 55037-2022 第2.1.1条原文（证据检索结果，未做项目适用性判定）。",
+      "evidence_items": [
+        {
+          "source_identity": "GB 55037-2022",
+          "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+          "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+          "locator": "第2.1.1条；OCR 副本 [page 7]，本地副本行 246-246",
+          "evidence_type": "normative_clause",
+          "evidence_content": "建筑的防火性能和设防标准应与建筑的高度（埋深)、层\n数、规模、类别、使用性质、功能用途、火灾危险性等相适应。",
+          "claim_relation": "supports"
+        }
+      ],
+      "query_mode": "QMODE-01"
+    },
+    {
+      "id": "B-E1-02",
+      "question": "查一下 GB 55037 的 2.1.1 条原文。",
+      "expected_status": "evidence_retrieved",
+      "actual_status": "evidence_retrieved",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "已定位 GB 55037-2022 第2.1.1条原文（证据检索结果，未做项目适用性判定）。",
+      "evidence_items": [
+        {
+          "source_identity": "GB 55037-2022",
+          "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+          "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+          "locator": "第2.1.1条；OCR 副本 [page 7]，本地副本行 246-246",
+          "evidence_type": "normative_clause",
+          "evidence_content": "建筑的防火性能和设防标准应与建筑的高度（埋深)、层\n数、规模、类别、使用性质、功能用途、火灾危险性等相适应。",
+          "claim_relation": "supports"
+        }
+      ],
+      "query_mode": "QMODE-01"
+    },
+    {
+      "id": "B-E1-03",
+      "question": "DBJ33/T1021-2023 第4.1.2条怎么规定？",
+      "expected_status": "evidence_retrieved",
+      "actual_status": "evidence_retrieved",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "已定位 DBJ33/T1021-2023 第4.1.2条原文（证据检索结果，未做项目适用性判定）。",
+      "evidence_items": [
+        {
+          "source_identity": "DBJ33/T1021-2023",
+          "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+          "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+          "locator": "第4.1.2条；OCR 副本 [page 13]，本地副本行 358-385",
+          "evidence_type": "normative_clause",
+          "evidence_content": "基地机动车出人口距交叉口的距离应从交叉口道路红线\n转弯弧线的端点起，到基地机动车出入口边线计算。基地机动车\n出人口距交叉口的距离应符合表4.1.2的规定，或将基地机动车\n出人口设置在距交叉口的最远端。\n表4.1.2基地机动车出入口距交叉口的距离（m)\n距交叉口的距离\n基地机动车出人口开设位置\n位于交叉\n位于交叉口出口道\n口进口道\n无中央分隔带\n有中央分隔带\n主干路\n≥100\n≥100\n≥80\n次干路\n≥80\n≥80\n≥70\n与主、次干路相交的交叉口\n≥50\n≥50\n≥50\n支路\n与支路相交的交叉口\n≥40\n≥40\n≥40",
+          "claim_relation": "supports"
+        }
+      ],
+      "query_mode": "QMODE-01"
+    },
+    {
+      "id": "B-E1-04",
+      "question": "GB55037-2022 第99.9.9条怎么规定？",
+      "expected_status": "no_reliable_evidence",
+      "actual_status": "no_reliable_evidence",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "本地已接纳规范库中不存在条款 99.9.9（GB 55037-2022），不能编造条文。",
+      "evidence_items": [],
+      "query_mode": "QMODE-02"
+    },
+    {
+      "id": "B-E1-05",
+      "question": "GB55037 里哪里提到人员密集场所？",
+      "expected_status": "evidence_retrieved",
+      "actual_status": "evidence_retrieved",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "在 GB 55037-2022 中检索到 3 处相关条文（证据检索结果，未做适用性判定，不据此给出规范数值结论）。",
+      "evidence_items": [
+        {
+          "source_identity": "GB 55037-2022",
+          "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+          "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+          "locator": "第3.1.3条（OCR 副本 [page 13]，本地副本行 451-453）",
+          "evidence_type": "topic_excerpt",
+          "evidence_content": "甲、乙类物品运输车的汽车库、修车库、停车场与人员密集\n场所的防火间距不应小于50m,与其他民用建筑的防火间距不应\n小于 25m;甲类物品运输车的汽车库、修车库、停车场与明火或散\n发火花地点的防火间距不应小于30m",
+          "claim_relation": "related"
+        },
+        {
+          "source_identity": "GB 55037-2022",
+          "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+          "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+          "locator": "第3.2.1条（OCR 副本 [page 13]，本地副本行 456-457）",
+          "evidence_type": "topic_excerpt",
+          "evidence_content": "甲类厂房与人员密集场所的防火间距不应小于50m,与明\n火或散发火花地点的防火间距不应小于30m。",
+          "claim_relation": "related"
+        },
+        {
+          "source_identity": "GB 55037-2022",
+          "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+          "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+          "locator": "第3.2.2条（OCR 副本 [page 13]，本地副本行 459-459）",
+          "evidence_type": "topic_excerpt",
+          "evidence_content": "甲类仓库与高层民用建筑和设置人员密集场所的民用建筑\n的防火间距不应小于50m,甲类仓库之间的防火间距不应小于20m。",
+          "claim_relation": "related"
+        }
+      ],
+      "query_mode": "QMODE-03"
+    },
+    {
+      "id": "B-E1-06",
+      "question": "DBJ33/T1021-2023 里关于机动车出入口的规定有哪些？",
+      "expected_status": "evidence_retrieved",
+      "actual_status": "evidence_retrieved",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "在 DBJ33/T1021-2023 中检索到 3 处相关条文（证据检索结果，未做适用性判定，不据此给出规范数值结论）。",
+      "evidence_items": [
+        {
+          "source_identity": "DBJ33/T1021-2023",
+          "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+          "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+          "locator": "第4.1.1条（OCR 副本 [page 13]，本地副本行 352-356）",
+          "evidence_type": "topic_excerpt",
+          "evidence_content": "基地机动车出入口开设应符合规划条件的规定。机动车\n出人口宜开设在基地周边相对低等级道路上；机动车出入口不\n应开设在城市快速路主线上，也不宜开设在主干路上；当受条\n件限制，机动车出入口必须开设在主干路上时，应结合基地周\n边道路交通设施条件，对机动车出人口的交通组织方式进行论\n证确定。",
+          "claim_relation": "related"
+        },
+        {
+          "source_identity": "DBJ33/T1021-2023",
+          "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+          "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+          "locator": "第4.1.11条（OCR 副本 [page 15]，本地副本行 467-477）",
+          "evidence_type": "topic_excerpt",
+          "evidence_content": "基地机动车出入口宜分设在基地周边不同的城市道路\n上，出人口数量应符合表4.1.11 规定。基地跨越城市道路时,\n宜以城市道路为界，分块计算出入口数量。\ng\n\n\n表4.1.11基地机动车出入口数量\n机动车停车位当量数\n机动车出人口数量\n不大于100个\n宜设1个",
+          "claim_relation": "related"
+        },
+        {
+          "source_identity": "DBJ33/T1021-2023",
+          "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+          "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+          "locator": "第4.1.13条（OCR 副本 [page 16]，本地副本行 490-493）",
+          "evidence_type": "topic_excerpt",
+          "evidence_content": "基地人行出人口与机动车出入口可合并设置或分开设\n置，并应设置相应的交通安全设施。\n4.2\n基地总平面布置",
+          "claim_relation": "related"
+        }
+      ],
+      "query_mode": "QMODE-03"
+    },
+    {
+      "id": "B-E1-07",
+      "question": "DBJ33/T1021-2023 表5.0.2 的内容？",
+      "expected_status": "evidence_retrieved",
+      "actual_status": "evidence_retrieved",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "已定位 DBJ33/T1021-2023 表5.0.2住宅停车位指标 表格区域（证据检索结果，未做行值绑定/适用性判定）。",
+      "evidence_items": [
+        {
+          "source_identity": "DBJ33/T1021-2023",
+          "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+          "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+          "locator": "表5.0.2住宅停车位指标（OCR 副本 [page 26]，本地副本行 906-946）",
+          "evidence_type": "table_value",
+          "evidence_content": "表5.0.2住宅停车位指标\n机动车\n非机\n项目\nI\nⅡ\nⅡ\n动车\n户建筑面积>200m²\n2.2\n2.2\n2.2\n1.0\n140 m²<户建筑面积≤200m²\n1.6\n1.6\n1.6\n1.2\n住宅\n90 m²<户建筑面积≤140m²\n1.3\n1.\n3\n1.3\n1.5\n(车位/户)\n60 m²<户建筑面积≤90m²\n1.0\n1.0\n1.0\n1.8\n户建筑面积≤60m²\n0.7\n0.7\n0.7\n2.0\n小区物管等配套附属用房（车位/100m²建筑面积)\n0.3\n0.4\n0.4\n2.0",
+          "claim_relation": "supports"
+        }
+      ],
+      "query_mode": "QMODE-04"
+    },
+    {
+      "id": "B-E1-08",
+      "question": "DBJ33/T1021-2023 表5.0.4 中大型商业（建筑面积>10000m²）的机动车配建指标应为多少？",
+      "expected_status": "insufficient_context",
+      "actual_status": "insufficient_context",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "无法可靠回答：表格行值绑定所需专业事实缺失（建筑业态分类、城市类别（规划人口分级）、建筑面积、项目所在地（省份/城市））。补齐前不能给出表格数值结论。",
+      "evidence_items": [],
+      "query_mode": "QMODE-04"
+    },
+    {
+      "id": "B-E1-09",
+      "question": "GB55037-2022 里关于防雷设计的规定？",
+      "expected_status": "no_reliable_evidence",
+      "actual_status": "no_reliable_evidence",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "在 GB 55037-2022 中未检索到与问题主题相关的可靠证据，不能编造。",
+      "evidence_items": [],
+      "query_mode": "QMODE-03"
+    },
+    {
+      "id": "B-E1-10",
+      "question": "某项目的机动车配建停车位指标应为多少？",
+      "expected_status": "insufficient_context",
+      "actual_status": "insufficient_context",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "无法可靠回答：判定所需专业事实缺失（建筑业态分类、城市类别（规划人口分级）、建筑面积、项目所在地（省份/城市））。在补齐前不能给出结论或数值。",
+      "evidence_items": [],
+      "query_mode": "QMODE-05"
+    },
+    {
+      "id": "B-E1-11",
+      "question": "fixture:T-C01",
+      "expected_status": "accepted_with_evidence",
+      "actual_status": "accepted_with_evidence",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "甲类物品运输车的汽车库、修车库、停车场与人员密集场所之间的防火间距不应小于 50m（GB 55037-2022 第3.1.3条）。",
+      "evidence_items": [
+        {
+          "source_identity": "GB 55037-2022",
+          "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+          "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+          "locator": "第3.1.3条（第3章 建筑总平面布局 · 3.1 一般规定）；OCR 副本 [page 13]，本地副本行 451-453",
+          "evidence_type": "normative_clause",
+          "evidence_content": "甲、乙类物品运输车的汽车库、修车库、停车场与人员密集\n场所的防火间距不应小于50m,与其他民用建筑的防火间距不应\n小于 25m;甲类物品运输车的汽车库、修车库、停车场与明火或散\n发火花地点的防火间距不应小于30m",
+          "claim_relation": "supports"
+        }
+      ],
+      "query_mode": "QMODE-05"
+    },
+    {
+      "id": "B-E1-12",
+      "question": "fixture:T-C02",
+      "expected_status": "accepted_with_evidence",
+      "actual_status": "accepted_with_evidence",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "按 DBJ33/T1021-2023 表5.0.1（规划人口大于50万的城市 → 指标级别 ⅢI）与表5.0.4（大型商业（建筑面积>10000m²）），机动车配建指标不应小于 1.1 车位/100m² 建筑面积。",
+      "evidence_items": [
+        {
+          "source_identity": "DBJ33/T1021-2023",
+          "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+          "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+          "locator": "第5.0.1条+表5.0.1（OCR 副本 [page 26]，本地副本行 894-903）",
+          "evidence_type": "table_value",
+          "evidence_content": "表5.0.1\n配建指标级别及适用范围\n指标级别\n适用范围\nI\n规划人口不大于20万人的城市\nⅡ\n规划人口大于20万人、不大于50万人的城市\nⅢI\n规划人口大于50万的城市",
+          "claim_relation": "supports"
+        },
+        {
+          "source_identity": "DBJ33/T1021-2023",
+          "source_title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+          "source_version_or_date": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+          "locator": "表5.0.4（OCR 副本 [page 27]，本地副本行 986-1037），行：大型商业（建筑面积>10000m²）",
+          "evidence_type": "table_value",
+          "evidence_content": "大型商业（建筑面积>10000m²）\n0. 8\n1. 1\n1.1\n1.0\n1.8",
+          "claim_relation": "supports"
+        }
+      ],
+      "query_mode": "QMODE-05"
+    },
+    {
+      "id": "B-E1-13",
+      "question": "fixture:T-C03",
+      "expected_status": "insufficient_context",
+      "actual_status": "insufficient_context",
+      "status_ok": true,
+      "source_ok": true,
+      "locator_ok": true,
+      "numeric_ok": true,
+      "passed": true,
+      "conclusion": "无法可靠回答：判定所需专业事实缺失（建筑业态分类、城市类别（规划人口分级）、建筑面积、项目所在地（省份/城市））。在补齐前不能给出结论或数值。",
+      "evidence_items": [],
+      "query_mode": "QMODE-05"
+    }
+  ]
+}
