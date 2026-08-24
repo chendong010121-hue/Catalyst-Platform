@@ -1,0 +1,100 @@
+authorization_id: CASE_02_B_SELECTIVE_CAPABILITY_HARVESTING_V0.1
+status: AUTHORIZED
+case_branch: case-02
+expected_base_commit: 03bdd1c9a3ada126ec3b0866d55f7058e4cf95c9
+stage_spec:
+  path: case-02/01-b-selective-capability-harvesting/CASE_02_B_SELECTIVE_CAPABILITY_HARVESTING_RECONSTRUCTION_V0.1_STAGE_SPEC.md
+  version: V0.2
+purpose: >-
+  Test selective capability harvesting and knowledge-asset-to-mechanism reconstruction
+  using only frozen WAKU-A01 asset knowledge, while proving that the reconstructed
+  result remains semantically UNBOUND and does not inherit Waku, Domain, Enterprise,
+  BREA, Runtime, or Platform authority.
+
+selected_asset:
+  catalog: case-02/01-a-waku-understanding/CASE_02_WAKU_ASSET_CATALOG_V0.1.json
+  asset_id: WAKU-A01
+  asset_name: Retrieval-gated memory query selection
+  catalog_mutation_allowed: false
+
+required_identity:
+  reconstruction_type: CATALYST_NATIVE_CASE_LOCAL
+  semantic_binding: UNBOUND
+  artifact_status: UNBOUND_CASE_LOCAL_MECHANISM
+  domain_binding: NONE
+  enterprise_binding: NONE
+  target_agent_binding: NONE
+
+allowed_reads:
+  - case-02/01-b-selective-capability-harvesting/CASE_02_B_SELECTIVE_CAPABILITY_HARVESTING_RECONSTRUCTION_V0.1_STAGE_SPEC.md
+  - case-02/01-b-selective-capability-harvesting/CASE_02_B_AUTHORIZATION_RECORD_V0.1.yaml
+  - case-02/01-a-waku-understanding/CASE_02_WAKU_ASSET_CATALOG_V0.1.json
+  - files created inside the authorized Case 02-B output path during this execution
+
+forbidden_reads:
+  - ShenSeanChen/waku-agent repository
+  - E:\试验场地\agent-lab\waku-agent
+  - Waku source code, README, docs, tests, local state, traces, database, or dashboard
+  - case-02/01-a-waku-understanding/01_WAKU_UNDERSTANDING.md
+  - case-02/01-a-waku-understanding/02_WAKU_MECHANISM_DECONSTRUCTION.md
+  - case-02/01-a-waku-understanding/03_CASE_02_A_REVIEW.md
+  - case-02/01-a-waku-understanding/04_CASE_02_A_REDISCOVERY_EVIDENCE_REPAIR.md
+  - case-01 content
+
+required_proofs:
+  R-01: relevant turn -> RETRIEVE, exact query handoff, store searched once, observable trace
+  R-02: irrelevant turn -> SKIP, store not searched, observable trace
+  R-03: decision provider failure -> fail-open retrieval using original turn text, explicit fallback trace
+  R-04: reconstructed mechanism owns no durable memory write, ranking, prompt assembly, Agent loop, Domain semantics, or Enterprise semantics
+  R-05: lineage records WAKU-A01, catalog id, source agent/commit, Catalyst-native reconstruction, semantic binding UNBOUND
+  R-06: no Waku personal-assistant semantics and no Case 01/building-regulation semantics are inherited
+
+implementation_constraints:
+  - newly written Case-local implementation only
+  - deterministic scripted/fake decision provider preferred
+  - tiny explicit memory-store seam allowed
+  - in-memory fake store allowed
+  - live LLM not required
+  - no line-by-line Waku translation or copied Waku implementation
+  - no second harvested asset
+  - no cross-Case adoption
+  - no Domain or Enterprise binding
+  - no Adapter or Waku registration
+
+protected_boundaries:
+  - Waku source
+  - frozen Case 02-A asset catalog
+  - Case 02-A evidence
+  - Platform Core
+  - Runtime
+  - RuntimeAdapter
+  - main
+  - case-01
+
+allowed_outputs:
+  - case-02/01-b-selective-capability-harvesting/reconstruction/retrieval_gate/**
+  - case-02/01-b-selective-capability-harvesting/CASE_02_B_RESULTS.json
+  - case-02/01-b-selective-capability-harvesting/CASE_02_B_REVIEW.md
+
+forbidden_outputs:
+  - generic asset registry
+  - plugin/component framework
+  - generic memory standard
+  - shared cross-Case implementation store
+  - Case 01 adoption artifact
+  - Platform promotion artifact
+
+execution_discipline:
+  commits_after_authorization: 1
+  push_branch: case-02
+  stop_after_push: true
+
+success_condition: >-
+  R-01 through R-06 pass using the frozen asset record as the only Waku-derived
+  knowledge input, producing one Catalyst-native UNBOUND_CASE_LOCAL_MECHANISM with
+  no semantic inheritance and no protected-boundary changes.
+
+failure_condition: >-
+  STOP if reconstruction requires Waku reread/copying, Domain or Enterprise meaning,
+  Case 01 semantics, Platform/Runtime changes, catalog mutation, a live LLM solely
+  to pass, or expansion to another asset.
