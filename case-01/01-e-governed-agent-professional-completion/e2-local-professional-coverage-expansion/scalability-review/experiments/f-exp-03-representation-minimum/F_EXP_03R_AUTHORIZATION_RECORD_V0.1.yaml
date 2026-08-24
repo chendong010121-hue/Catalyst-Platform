@@ -1,0 +1,44 @@
+record_type: case_experiment_repair_authorization
+record_version: "0.1"
+case_id: CASE-01
+parent_stage: CASE-01-E/E2
+parent_experiment: F-EXP-03
+repair_id: F-EXP-03R
+decision: granted
+decision_authority: user
+decision_source: current_conversation
+strategic_priority: product_first
+baseline_experiment_commit: 00ae01df7cdc8909d0289fa7a63e65b551ef9802
+repair_contract_ref: F_EXP_03R_TARGETED_REPAIR_V0.1.md
+repair_contract_commit: 6d0342928c022c2d6256e762488d52efc297b345
+target_branch: case-01
+scope:
+  repair_a_prime_generic_semantic_derivation: true
+  repair_shared_semantic_interface: true
+  remove_project_specific_gold_from_b_min: true
+  validate_table_numeric_values: true
+  repair_test_oracle_bias: true
+  reuse_existing_case_surface_only: true
+  rerun_existing_f_exp_03: true
+publication_limit:
+  targeted_repair_commits: 1
+  pushes: 1
+protected_boundaries:
+  add_new_case_family: false
+  brea_v0_1_mutation: false
+  brea_v0_2_mutation: false
+  brea_v0_3_mutation: false
+  new_brea_candidate_formation: false
+  raw_corpus_upstream: false
+  f_exp_01_execution: false
+  e2_c_benchmark_creation: false
+  platform_core_mutation: false
+  runtime_mutation: false
+  runtime_adapter_mutation: false
+  enterprise_extension_mutation: false
+  main_mutation: false
+next_gate:
+  external_experiment_review_required: true
+  next_candidate_decision: not_granted
+  f_exp_01_decision: not_granted
+  e2_c_decision: not_granted
