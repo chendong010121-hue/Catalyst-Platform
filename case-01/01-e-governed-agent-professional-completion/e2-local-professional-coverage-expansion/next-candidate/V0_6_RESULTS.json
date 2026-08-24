@@ -1,0 +1,47 @@
+{
+  "record_type": "brea_v0_6_knowledge_lifecycle_decoupling_results",
+  "candidate": "case-01.brea@0.6-candidate",
+  "lineage_parent": "case-01.brea@0.5-candidate",
+  "baseline_commit": "1f8560a1d644163ec10bd097dfcb287d233ca4e9",
+  "stage_contract_commit": "e1c50c543ec118e60a3eff49c139a9efa87eb5fd",
+  "knowledge_revision": {
+    "revision_id": "KR-001",
+    "sha256": "d53964a478ec6305092bdb1f1ae9630d1affb5cef8aa9eb1ffd9c6bc2feb9808",
+    "scope": "Only the GB55037-2022 and DBJ33T1021-2023 knowledge already used by v0.5.",
+    "hangzhou_included": false
+  },
+  "tests": {
+    "K-01": {"status": "PASS", "observation": "Explicit KR-001 binding is required and accepted."},
+    "K-02": {"status": "PASS", "observation": "v0.6 production code has no fixed historical manifest dependency."},
+    "K-03": {"status": "PASS", "observation": "v0.6 has no candidate-local professional_data.json ownership."},
+    "K-04": {"status": "PASS", "observation": "Missing and invalid binding fail closed with no reliable evidence."},
+    "K-05": {"status": "PASS", "observation": "Result metadata and trace record KR-001 and its SHA-256."},
+    "K-06": {"status": "PASS", "observation": "v0.5 professional regression remains passing."},
+    "K-07": {"status": "PASS", "observation": "E1 generalized local query and T-C01/T-C02/T-C03 regressions pass."},
+    "K-08": {"status": "PASS", "observation": "Identity, lineage, implementation fingerprint, and protected boundaries verified."},
+    "K-09": {"status": "PASS", "observation": "Platform-bound RuntimeAdapter compatibility passes without platform/runtime changes."}
+  },
+  "retained_regression": {
+    "professional_path": "PASS",
+    "E1_generalized_local_query": "PASS",
+    "T-C01": "PASS",
+    "T-C02": "PASS",
+    "T-C03": "PASS",
+    "FN-01..FN-11": "PRESERVED",
+    "SEAM-01..SEAM-03": "PRESERVED",
+    "OBL-01..OBL-06": "PRESERVED"
+  },
+  "source_references": {
+    "CORPUS-01": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+    "CORPUS-02": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7"
+  },
+  "candidate_tree_sha256": "0f92a171a7a3e204d650ac7b456e04bd224c13b6b3ed7cd2630f8d9589a13319",
+  "candidate_file_count": 26,
+  "implementation_fingerprint": "70cdf812addfbdf5c86dd990cd28a8880f73a84fcb66fcfe9c8194a20c63f6a2",
+  "freeze_status": "FROZEN",
+  "admission": "NOT ADMITTED",
+  "binding": "NOT BOUND",
+  "external_review": "REQUIRED",
+  "e2_c": "NOT AUTHORIZED",
+  "protected_boundaries": "PASS"
+}

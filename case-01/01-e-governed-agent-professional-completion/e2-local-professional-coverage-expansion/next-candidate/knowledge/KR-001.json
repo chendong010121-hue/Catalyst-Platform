@@ -1,0 +1,149 @@
+{
+  "knowledge_revision_id": "KR-001",
+  "schema_version": "0.1",
+  "sources": [
+    {
+      "source_id": "CORPUS-01",
+      "file_name": "GB55037-2022.md",
+      "local_reference": "E:\\试验场地\\catalyst-local-lab\\building-regulation-evidence-v0.1\\artifacts\\sources\\GB55037-2022.md",
+      "sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+      "authority": "not recorded in v0.5 source metadata",
+      "title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+      "version": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+      "effective_status": "v0.5 local pilot admitted; status not recorded separately",
+      "admission": "LOCAL PILOT ADMITTED",
+      "read_mode": "READ ONLY",
+      "upstream": "FORBIDDEN"
+    },
+    {
+      "source_id": "CORPUS-02",
+      "file_name": "DBJ33T1021-2023.md",
+      "local_reference": "E:\\试验场地\\catalyst-local-lab\\building-regulation-evidence-v0.1\\artifacts\\sources\\DBJ33T1021-2023.md",
+      "sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+      "authority": "not recorded in v0.5 source metadata",
+      "title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+      "version": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）",
+      "effective_status": "2024-03-01 effective; v0.5 local pilot admitted",
+      "admission": "LOCAL PILOT ADMITTED",
+      "read_mode": "READ ONLY",
+      "upstream": "FORBIDDEN"
+    }
+  ],
+  "standards": {
+    "GB55037-2022": {
+      "aliases": ["GB55037-2022", "GB 55037-2022", "GB55037", "GB 55037", "防火通用规范", "建筑防火通用规范"],
+      "source_identity": "GB 55037-2022",
+      "title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+      "version": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）"
+    },
+    "DBJ33T1021-2023": {
+      "aliases": ["DBJ33T1021-2023", "DBJ33/T1021-2023", "DBJ33T1021", "DBJ33/T1021", "停车场（库）设置规则和配建指标标准", "配建指标标准", "城市建筑工程停车场"],
+      "source_identity": "DBJ33/T1021-2023",
+      "title": "《城市建筑工程停车场（库）设置规则和配建指标标准》",
+      "version": "2023-09-28 发布，2024-03-01 施行（废止 DB33/1021-2013）"
+    }
+  },
+  "routes": [
+    {
+      "name": "distance",
+      "intent_terms": ["防火间距"],
+      "intent_match": "any",
+      "standard_id": "GB55037-2022",
+      "kind": "direct_clause",
+      "unit_type": "direct_clause",
+      "locator": "3.1.3",
+      "required_facts": ["vehicle_goods_category", "adjacent_building_nature"],
+      "scope_terms": {
+        "vehicle_goods_category": ["甲类物品运输车", "甲类"],
+        "adjacent_building_nature": ["人员密集场所", "其他民用建筑", "明火或散发火花地点"]
+      },
+      "condition_facts": ["vehicle_goods_category", "adjacent_building_nature"],
+      "subject": "fire separation distance"
+    },
+    {
+      "name": "parking_table",
+      "intent_terms": ["停车位", "配建", "机动车停车"],
+      "intent_match": "any",
+      "standard_id": "DBJ33T1021-2023",
+      "kind": "table_rule",
+      "unit_type": "table_rule",
+      "locator": "5.0.4",
+      "table_caption": "表5.0.4商业场所停车位指标",
+      "jurisdiction_rule": {"fact": "jurisdiction", "terms": ["浙江"]},
+      "level_resolution": {"fact": "city_class", "caption": "表5.0.1"},
+      "conclusion_subject": "机动车配建停车位指标",
+      "conclusion_unit": "车位/100m² 建筑面积",
+      "scope_terms": {
+        "building_category": ["大型商业", "商业综合体"],
+        "city_class": ["规划人口大于50万的城市", "规划人口大于20万人"]
+      },
+      "required_facts": ["jurisdiction", "building_category", "floor_area_m2", "city_class"],
+      "condition_facts": ["jurisdiction", "building_category", "floor_area_m2", "city_class"],
+      "subject": "motor vehicle parking provision"
+    },
+    {
+      "name": "fire_compartment",
+      "intent_terms": ["防火分区", "最大允许建筑面积"],
+      "standard_id": "GB55037-2022",
+      "kind": "conditional_rule",
+      "unit_type": "conditional_rule",
+      "locator": "4.3.16",
+      "required_facts": ["building_category", "building_form", "fire_resistance_rating", "auto_extinguishing_system"],
+      "scope_terms": {
+        "building_category": ["公共建筑"]
+      },
+      "condition_facts": ["building_form", "fire_resistance_rating"],
+      "modifier_condition_facts": ["auto_extinguishing_system"],
+      "exception_terms": {
+        "building_category": ["特殊要求的建筑", "木结构建筑", "附建于民用建筑中的汽车库"]
+      },
+      "subject": "fire compartment maximum area"
+    }
+  ],
+  "fact_descriptors": {
+    "building_category": {
+      "value_terms": {
+        "公共建筑": ["公共建筑"],
+        "住宅": ["住宅"],
+        "特殊要求的建筑": ["特殊要求的建筑"],
+        "木结构建筑": ["木结构建筑"],
+        "附建于民用建筑中的汽车库": ["附建于民用建筑中的汽车库"]
+      }
+    },
+    "building_form": {
+      "value_terms": {
+        "高层建筑": ["高层建筑", "高层"],
+        "单、多层建筑": ["单、多层建筑", "单多层", "多层建筑"],
+        "地下设备用房": ["地下设备房", "地下设备用房", "地下设备"],
+        "地下其他区域": ["地下其他区域"]
+      }
+    },
+    "fire_resistance_rating": {
+      "value_terms": {
+        "一级": ["一、二级耐火等级", "一级"],
+        "二级": ["一、二级耐火等级", "二级"],
+        "三级": ["三级耐火等级", "三级"],
+        "四级": ["四级耐火等级", "四级"]
+      }
+    },
+    "auto_extinguishing_system": {
+      "value_terms": {
+        "全部设置自动灭火系统": ["全部设置自动灭火系统"],
+        "局部设置自动灭火系统": ["局部设置自动灭火系统"],
+        "无": ["未设置自动灭火系统", "无"]
+      }
+    },
+    "vehicle_goods_category": {
+      "value_terms": {
+        "甲类物品运输车（汽油运输车）": ["甲类物品运输车", "甲类"]
+      }
+    },
+    "adjacent_building_nature": {
+      "value_terms": {
+        "人员密集场所": ["人员密集场所"],
+        "其他民用建筑": ["其他民用建筑"],
+        "明火或散发火花地点": ["明火或散发火花地点"]
+      }
+    }
+  }
+}
