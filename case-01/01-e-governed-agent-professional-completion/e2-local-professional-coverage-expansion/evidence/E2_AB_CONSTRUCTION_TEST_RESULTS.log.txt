@@ -1,0 +1,49 @@
+== E2-AB CONSTRUCTION TEST RESULTS ==
+generated_at: 2026-08-24T01:39:43+00:00
+
+[PASS] AB-T01 — v0.2 reference identity / file count exact
+    files=20
+[PASS] AB-T02 — protected v0.1 unchanged (D2 fingerprint)
+    v0.1 manifest recheck
+[PASS] AB-T03 — selected source (GB 4.3.16) provenance valid
+    4.3.16 present in admitted GB corpus
+[PASS] AB-T04 — raw corpus not in repo
+    repo corpus files: 0
+[PASS] AB-T05 — Professional Change Request exists
+    change/E2_PROFESSIONAL_CHANGE_REQUEST_V0.1.md
+[PASS] AB-T06 — Change Impact Review permits bounded change
+    no material change triggers
+[PASS] AB-T07 — P-01..P-06 evidence complete
+    missing: none
+[PASS] AB-T08 — implementation capability has evidence-based rationale
+    deterministic mechanism selected; LLM/RAG rejected
+[PASS] AB-T09 — v0.3 Agent identity lineage preserved
+    BREA @ v0.3-candidate
+[PASS] AB-T10 — FN-01..11 conformance
+    FN set: ['FN-01', 'FN-02', 'FN-03', 'FN-04', 'FN-05', 'FN-06', 'FN-07', 'FN-08', 'FN-09', 'FN-10', 'FN-11']
+[PASS] AB-T11 — SEAM-01..03 conformance
+    SEAM set: ['SEAM-01', 'SEAM-02', 'SEAM-03']
+[PASS] AB-T12 — OBL-01..06 conformance
+    OBL: ['OBL-01', 'OBL-02', 'OBL-03', 'OBL-04', 'OBL-05', 'OBL-06']
+[PASS] AB-T13 — new professional capability construction self-test passes
+    case1: status=accepted_with_evidence (want accepted_with_evidence) value_ok=True; case2: status=accepted_with_evidence (want accepted_with_evidence) value_ok=True; case3: status=accepted_with_evidence (want accepted_with_evidence) value_ok=True; case4: status=insufficient_context (want insufficient_context) value_ok=True; case5: status=no_reliable_evidence (want no_reliable_evidence) value_ok=True
+[PASS] AB-T14 — E1 generalized local-query regression passes
+    QMODE-01=evidence_retrieved QMODE-03=evidence_retrieved
+[PASS] AB-T15 — T-C01 regression passes
+    status=accepted_with_evidence (want accepted_with_evidence)
+[PASS] AB-T16 — T-C02 regression passes
+    status=accepted_with_evidence (want accepted_with_evidence)
+[PASS] AB-T17 — T-C03 regression passes
+    status=insufficient_context (want insufficient_context)
+[PASS] AB-T18 — anti-hardcode source review passes
+    forbidden-literal hits: none
+[PASS] AB-T19 — Platform compatibility passes without Core/Runtime changes
+    platform_status=success
+[PASS] AB-T20 — deterministic Candidate fingerprint generated
+    37bb4864a9dd39812d9d77c24bb48d9b7abe2403c2ed6f4df31d2e7db847fa7b
+[PASS] AB-T21 — Evaluation Contract exists without future exact Benchmark cases
+    contract_exists=True benchmark_dir_absent=True
+[PASS] AB-T22 — no unauthorized path changes
+    violations=0 main=5874be1130e8
+
+== E2-AB RESULT: 22/22 PASS ==

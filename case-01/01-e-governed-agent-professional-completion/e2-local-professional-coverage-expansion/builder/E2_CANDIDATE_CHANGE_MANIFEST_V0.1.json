@@ -1,0 +1,179 @@
+{
+  "builder": "case-local-e2-change-builder-v0.1",
+  "mechanism": "v0.2 baseline copy + authorized change overlay (reuses E1 mechanism)",
+  "baseline": {
+    "definition_sha256": "6c6e4707a3f8b719d6ab9c08cb9e43f337b4cb422bce0d2c22e4b842a9059bb4",
+    "v0.1_admitted_fingerprint_verified": true,
+    "v0.2_reference": "E:\\试验场地\\Agent Harness\\case-01\\01-e-governed-agent-professional-completion\\e1-local-evidence-query-generalization\\candidate\\brea-v0.2",
+    "v0.2_reference_verified": true
+  },
+  "change_inputs": {
+    "professional_change_request": "E:\\试验场地\\Agent Harness\\case-01\\01-e-governed-agent-professional-completion\\e2-local-professional-coverage-expansion\\change\\E2_PROFESSIONAL_CHANGE_REQUEST_V0.1.md",
+    "change_impact_review": "E:\\试验场地\\Agent Harness\\case-01\\01-e-governed-agent-professional-completion\\e2-local-professional-coverage-expansion\\change\\E2_CHANGE_IMPACT_REVIEW_V0.1.md"
+  },
+  "authorized_changed_paths": [
+    "brea/coverage.py",
+    "brea/facts.py",
+    "brea/identity.py",
+    "brea/runner.py"
+  ],
+  "target": "E:\\试验场地\\Agent Harness\\case-01\\01-e-governed-agent-professional-completion\\e2-local-professional-coverage-expansion\\candidate\\brea-v0.3",
+  "copied_files": [
+    {
+      "path": "README.md",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "e5042f45e09d9740c021290e332fe654dabe077861a825d672195a72f343d554"
+    },
+    {
+      "path": "brea/applicability.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "8dc26da64544e4ac5bf7d3fb7eed62a54ca04c61e83e30fd74bde3aa3086ca5e"
+    },
+    {
+      "path": "brea/contracts.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "556142ff40bc224135c60f53a92438187a9e031b0f632d374dc64eeeba2a00c6"
+    },
+    {
+      "path": "brea/corpus.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "0ca23e8e5c61a3f948119b1382f38292fd784a3f8320b1ec6ee8677331eac9a7"
+    },
+    {
+      "path": "brea/evidence.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "97e3f80f19a22e708d83f72d6f3edcdfe567d8728d3d3d574a0bd633788b6a2f"
+    },
+    {
+      "path": "brea/facts.py",
+      "source": "v0.2 baseline copy",
+      "change": "CHANGED(overlay pending)",
+      "sha256": "2d4fa36de03e2c99a2741377f14e00eb2bed7c67a2fb01ec736e04b4c1f1ae00"
+    },
+    {
+      "path": "brea/identity.py",
+      "source": "v0.2 baseline copy",
+      "change": "CHANGED(overlay pending)",
+      "sha256": "30860103da328fd6c9ee8ff9c3787a153278a30c9682b36f7c9f1278daec77ef"
+    },
+    {
+      "path": "brea/query.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "dfcf068a3f4e5310be609762eb509b86b458c490ae7368f6865a9f8038a2b68b"
+    },
+    {
+      "path": "brea/result.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "25153c364ce132d7e984fd582b8e958519c18ef351b23e6f8d65cdb42800482b"
+    },
+    {
+      "path": "brea/runner.py",
+      "source": "v0.2 baseline copy",
+      "change": "CHANGED(overlay pending)",
+      "sha256": "14ea1e7fc2ab9c7ee34e1cc0861387be6671d25d6eb29d87cd1640073fb9c42e"
+    },
+    {
+      "path": "brea/uncertainty.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "35af56e82a3013d339a409fc404e9433b354d0239e72e9b0d2cdca2c56d423e2"
+    },
+    {
+      "path": "brea/__init__.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "0f51a29aff69b4658fb2e186fb8bd75f44edb70bc4dfa5f5a35b2daba908db27"
+    },
+    {
+      "path": "tests/run_all.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "6d924314452c77c514e7f57360e06e6f0d083e8565814a1b74465055c7551aa8"
+    },
+    {
+      "path": "tests/test_cases.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "1c830a5afd1d4907b9026f67aa5b9a32bcf2e0de194c4bc6cd54e753eff72bfe"
+    },
+    {
+      "path": "tests/test_seams.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "20379aaa71dd1448ff2770fc49f4b52f47ca0b8eac5099198ded7e0f7385874b"
+    },
+    {
+      "path": "tests/test_structural.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "9459db6d1ca8a2d0cbec5f34c60fbb773566357c1dafe361bb5eedca9b48245d"
+    },
+    {
+      "path": "tests/__init__.py",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "77a0acbb84c2926cea9986b3aed49e5bd4b514e84d52be5b9d340f7e2c2aa965"
+    },
+    {
+      "path": "tests/fixtures/requests/T-C01.json",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "a3201df11cef2b5c3cc521fb7adea68d6e944db2820bdab36391ec8e7b7cc8da"
+    },
+    {
+      "path": "tests/fixtures/requests/T-C02.json",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "0c7f7e24e75a651525a28224eb900f4fd799670eab8a6e2221ef803f63979d77"
+    },
+    {
+      "path": "tests/fixtures/requests/T-C03.json",
+      "source": "v0.2 baseline copy",
+      "change": "UNCHANGED",
+      "sha256": "16f6c33560c6cecd04e256b70c4ffa19438205bfa112ea4f366f17541a106ccb"
+    }
+  ],
+  "overlay_files": [
+    {
+      "path": "brea/coverage.py",
+      "change": "EXTENDED/NEW",
+      "sha256": "bac744efcf218d268a402f139d2209c0dc9cf60c9c9aa2d84e800a5ebca7b59e"
+    },
+    {
+      "path": "brea/facts.py",
+      "change": "EXTENDED/NEW",
+      "sha256": "29f61e9f869f86dee7346573a4c36b7a8a6a8ae86e59d249be67d76a45ea0943"
+    },
+    {
+      "path": "brea/identity.py",
+      "change": "EXTENDED/NEW",
+      "sha256": "df5a90bdda5cf94b2d97b50b44afe25e783afb95823834ce24ee751be1f36025"
+    },
+    {
+      "path": "brea/runner.py",
+      "change": "EXTENDED/NEW",
+      "sha256": "87a3e88d5dadfe8463b948540d8da3074152fc9636c358bd83fca15276f354b8"
+    },
+    {
+      "path": "README.md",
+      "change": "EXTENDED/NEW",
+      "sha256": "f3298500e215783dd837f66a890f017c82b6fa67fb55f6b763a56d9c14a7facc"
+    }
+  ],
+  "validation": {
+    "definition_sha": "PASS",
+    "v0.1_fingerprint": "PASS",
+    "v0.2_reference_verified": "PASS",
+    "clean_target": true,
+    "unchanged_modules_byte_identical": true,
+    "import_probe": "PASS"
+  },
+  "generated_at": "2026-08-24T01:37:36+00:00"
+}

@@ -1,0 +1,23 @@
+﻿== E2-AB REGRESSION RESULTS (v0.3 candidate self-check) ==
+generated_at: 2026-08-24T09:38:21.1968294+08:00
+
+== BREA v0.1-candidate self-check ==
+-- test_structural --
+PASS test_st01_all_functions_mapped
+PASS test_st02_seams_explicit
+PASS test_st03_no_provider_semantic_authority
+PASS test_st04_prompt_non_authority
+PASS test_st05_enterprise_orthogonality
+PASS test_st06_numeric_traceability
+PASS test_st07_corpus_sha_fail_closed
+PASS test_st08_answer_writes_nothing_without_out_dir
+-- test_seams --
+PASS test_seam01_facts
+PASS test_seam02_applicability
+PASS test_seam03_evidence
+PASS test_corpus_fail_closed
+-- test_cases --
+PASS test_t_c01_direct_clause
+PASS test_t_c02_conditional_table
+PASS test_t_c03_fail_closed
+== RESULT: PASS ==
