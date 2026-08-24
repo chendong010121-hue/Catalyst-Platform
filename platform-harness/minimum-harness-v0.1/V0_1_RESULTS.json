@@ -1,0 +1,228 @@
+{
+  "artifact": "CATALYST_PLATFORM_MINIMUM_HARNESS_V0_1",
+  "verdict": "MINIMUM_HARNESS_V0_1_TARGETED_REPAIR",
+  "proof_status": {
+    "H-00": "PASS",
+    "H-01": "PASS",
+    "H-02": "PASS",
+    "H-03": "TARGETED_REPAIR",
+    "H-04": "PASS",
+    "H-05": "PASS",
+    "H-06": "PASS",
+    "H-07": "PASS",
+    "H-08": "PASS",
+    "H-09": "PASS",
+    "H-10": "PASS"
+  },
+  "deterministic_tests": {
+    "command": "python -m unittest discover -s tests -p 'test_*.py' -v",
+    "tests_run": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "passed": 8
+  },
+  "live_proof": {
+    "available": false,
+    "status": "UNAVAILABLE",
+    "provider": "DeepSeekModelProvider",
+    "reason": "DEEPSEEK_API_KEY is unavailable"
+  },
+  "failure_classes": [
+    "TASK_INVALID",
+    "WORKSPACE_VIOLATION",
+    "APPROVAL_DENIED",
+    "MODEL_FAILED",
+    "TOOL_FAILED",
+    "COMMAND_TIMEOUT",
+    "VERIFICATION_FAILED",
+    "REPAIR_EXHAUSTED",
+    "TRACE_INCOMPLETE"
+  ],
+  "representative_trace": [
+    {
+      "event": "task_start",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "status": "RUNNING"
+    },
+    {
+      "event": "model_turn",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "attempt": 1,
+      "status": "RECEIVED",
+      "tool_calls": 1
+    },
+    {
+      "event": "tool_proposed",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "tool": "read",
+      "call_id": "read-proof"
+    },
+    {
+      "event": "tool_result",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "tool": "read",
+      "status": "PASS",
+      "path": "guard.py"
+    },
+    {
+      "event": "model_turn",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "attempt": 2,
+      "status": "RECEIVED",
+      "tool_calls": 1
+    },
+    {
+      "event": "tool_proposed",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "tool": "write",
+      "call_id": "write-proof-1"
+    },
+    {
+      "event": "mutation_proposed",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "path": "guard.py"
+    },
+    {
+      "event": "approval",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "tool": "write",
+      "call_id": "write-proof-1",
+      "decision": "ALLOW"
+    },
+    {
+      "event": "mutation_result",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "status": "PASS",
+      "path": "guard.py"
+    },
+    {
+      "event": "approval",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "tool": "command",
+      "call_id": "verify",
+      "decision": "ALLOW"
+    },
+    {
+      "event": "verification",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "status": "FAIL",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "F\n======================================================================\nFAIL: test_invalid_input_fails_closed (test_guard.GuardTests.test_invalid_input_fails_closed)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"E:\\试验场地\\Agent Harness\\platform-harness\\minimum-harness-v0.1\\fixture\\test_guard.py\", line 8, in test_invalid_input_fails_closed\n    self.assertFalse(is_valid_identifier(None))\nAssertionError: True is not false\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "event": "repair_requested",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "cycle": 1,
+      "evidence": "Actual deterministic verification evidence:\n{\"exit_code\": 1, \"status\": \"FAIL\", \"stderr\": \"F\\n======================================================================\\nFAIL: test_invalid_input_fails_closed (test_guard.GuardTests.test_invalid_input_fails_closed)\\n----------------------------------------------------------------------\\nTraceback (most recent call last):\\n  File \\\"E:\\\\试验场地\\\\Agent Harness\\\\platform-harness\\\\minimum-harness-v0.1\\\\fixture\\\\test_guard.py\\\", line 8, in test_invalid_input_fails_closed\\n    self.assertFalse(is_valid_identifier(None))\\nAssertionError: True is not false\\n\\n----------------------------------------------------------------------\\nRan 1 test in 0.000s\\n\\nFAILED (failures=1)\\n\", \"stdout\": \"\"}"
+    },
+    {
+      "event": "model_turn",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "attempt": 3,
+      "status": "RECEIVED",
+      "tool_calls": 1
+    },
+    {
+      "event": "tool_proposed",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "tool": "write",
+      "call_id": "write-proof-2"
+    },
+    {
+      "event": "mutation_proposed",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "path": "guard.py"
+    },
+    {
+      "event": "approval",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "tool": "write",
+      "call_id": "write-proof-2",
+      "decision": "ALLOW"
+    },
+    {
+      "event": "mutation_result",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "status": "PASS",
+      "path": "guard.py"
+    },
+    {
+      "event": "approval",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "tool": "command",
+      "call_id": "verify",
+      "decision": "ALLOW"
+    },
+    {
+      "event": "verification",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "status": "PASS",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ".\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n"
+    },
+    {
+      "event": "final_result",
+      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "task_id": "fixture-invalid-input-fail-closed",
+      "status": "PASS",
+      "failure_class": null
+    }
+  ],
+  "changed_file_boundary": {
+    "allowed_root": "platform-harness/minimum-harness-v0.1/",
+    "changed_files": [
+      "platform-harness/minimum-harness-v0.1/V0_1_RESULTS.json",
+      "platform-harness/minimum-harness-v0.1/V0_1_REVIEW.md",
+      "platform-harness/minimum-harness-v0.1/fixture/TASK.md",
+      "platform-harness/minimum-harness-v0.1/fixture/guard.py",
+      "platform-harness/minimum-harness-v0.1/fixture/test_guard.py",
+      "platform-harness/minimum-harness-v0.1/harness/__init__.py",
+      "platform-harness/minimum-harness-v0.1/harness/session.py",
+      "platform-harness/minimum-harness-v0.1/harness/workspace.py",
+      "platform-harness/minimum-harness-v0.1/tests/live_proof.py",
+      "platform-harness/minimum-harness-v0.1/tests/record_results.py",
+      "platform-harness/minimum-harness-v0.1/tests/test_harness.py"
+    ],
+    "all_changed_paths_inside_allowed_root": true
+  },
+  "protected_boundary": {
+    "status": "UNCHANGED",
+    "checked_paths": [
+      "agent_runtime/",
+      "case-01/",
+      "case-02/",
+      "platform_standard/",
+      "runtime_adapter/",
+      "ARCHITECTURE.md",
+      "README.md",
+      "pyproject.toml",
+      "main"
+    ]
+  },
+  "credential_policy": {
+    "source": "DEEPSEEK_API_KEY environment variable only",
+    "persisted_or_printed": false
+  }
+}
