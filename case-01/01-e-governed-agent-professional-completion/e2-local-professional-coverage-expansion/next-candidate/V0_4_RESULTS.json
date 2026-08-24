@@ -1,0 +1,65 @@
+{
+  "candidate": "case-01.brea @ 0.4-candidate",
+  "status": "FORMED",
+  "lineage": {
+    "parent": "case-01.brea @ 0.3-candidate",
+    "v0_2_behavior": "generalized local evidence query",
+    "v0_3_behavior": "frozen professional coverage lineage",
+    "minimum_direction": "F-EXP-03R A' minimum semantic architecture",
+    "build_head": "db62e13d40914465b0ea557cf99dfb676b5bcad6",
+    "stage_contract_baseline": "add626a2755d6de2a6be0375b22d620f5e18d94e"
+  },
+  "candidate_tree_sha256": "6e82144877242a2bef87236a5ea63887474c426e675635c8da8166990081c430",
+  "construction_checks": {
+    "C-01": {"status": "PASS", "observation": "E1 QMODE-01 and QMODE-03 generalized local-query regression"},
+    "C-02": {"status": "PASS", "observation": "PC-01..PC-07 PASS on T-C01; professional trace is source-bound"},
+    "C-03": {"status": "PASS", "observation": "direct clause, conditional rule, table rule, scope/exception, and derived modifier use one path"},
+    "C-04": {"status": "PASS", "observation": "positive public scope; underground equipment 1000 vs other underground 500; SEAM-02 owner; runtime numeric trace; table row fidelity"},
+    "C-05": {"status": "PASS", "observation": "T-C01 accepted_with_evidence; T-C02 accepted_with_evidence; T-C03 insufficient_context"},
+    "C-06": {"status": "PASS", "observation": "hidden family/source/locator hardcode scan"},
+    "C-07": {"status": "PASS", "observation": "same-structure local clause extension leaves implementation fingerprint unchanged"},
+    "C-08": {"status": "PASS", "observation": "identity and v0.3 lineage fixed; candidate tree fingerprint recorded"},
+    "C-09": {"status": "PASS", "observation": "existing Platform-bound RuntimeAdapter execution succeeds without platform/runtime changes"},
+    "C-10": {"status": "PASS", "observation": "changes confined to next-candidate surface; protected predecessors and boundaries unchanged"}
+  },
+  "professional_contract": {
+    "PC-01": "PASS",
+    "PC-02": "PASS",
+    "PC-03": "PASS",
+    "PC-04": "PASS",
+    "PC-05": "PASS",
+    "PC-06": "PASS",
+    "PC-07": "PASS",
+    "observations": {
+      "derived_numeric": {"formula": "1500.0 * 2.0", "result": 3000.0},
+      "table_source_row": {"raw_values": ["0. 8", "1. 1", "1.1", "1.0", "1.8"], "selected_value": 1.1},
+      "fail_closed": {"non_public_scope": "no_reliable_evidence", "missing_facts": "insufficient_context"}
+    }
+  },
+  "regressions": {
+    "E1_generalized_local_query": "PASS",
+    "T-C01": "PASS",
+    "T-C02": "PASS",
+    "T-C03": "PASS",
+    "inherited_v0_3_construction_suite": "PASS",
+    "v0_4_contract_tests": "10/10 PASS"
+  },
+  "growth_gate": {
+    "status": "PENDING",
+    "reason": "No additional legitimate provenance-backed supported source or source revision was available; no source was fabricated."
+  },
+  "sources": {
+    "GB55037-2022": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+    "DBJ33T1021-2023": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7"
+  },
+  "protected_boundaries": {
+    "v0_1_v0_2_v0_3": "UNCHANGED",
+    "e2_c_benchmark": "NOT_CREATED",
+    "admission_binding": "NOT_EXECUTED",
+    "platform_core_runtime_runtime_adapter_enterprise_extensions_main": "UNCHANGED",
+    "raw_corpus_upstream": "NOT_COMMITTED",
+    "prohibited_technology": "NOT_USED",
+    "new_seam_or_obligation": "NONE"
+  },
+  "expected_post_commit_state": "FROZEN / NOT ADMITTED / NOT BOUND"
+}

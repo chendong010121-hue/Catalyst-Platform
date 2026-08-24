@@ -1,0 +1,45 @@
+{
+  "record_type": "case_candidate_freeze_record",
+  "record_version": "0.1",
+  "candidate": "case-01.brea @ 0.4-candidate",
+  "status": "FROZEN",
+  "admission": "NOT ADMITTED",
+  "binding": "NOT BOUND",
+  "lineage_parent": "case-01.brea @ 0.3-candidate",
+  "build_head": "db62e13d40914465b0ea557cf99dfb676b5bcad6",
+  "candidate_tree_sha256": "6e82144877242a2bef87236a5ea63887474c426e675635c8da8166990081c430",
+  "candidate_tree_file_count": 26,
+  "freeze_basis": {
+    "construction_checks": "C-01..C-10 PASS",
+    "professional_contract": "PC-01..PC-07 PASS",
+    "e1_generalized_local_query": "PASS",
+    "t_c01_t_c02_t_c03": "PASS",
+    "inherited_v0_3_construction_suite": "PASS",
+    "source_fidelity_and_provenance": "PASS",
+    "unsupported_numeric_fail_closed": "PASS",
+    "platform_bound_compatibility": "PASS"
+  },
+  "source_references": {
+    "GB55037-2022": {"sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3"},
+    "DBJ33T1021-2023": {"sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7"}
+  },
+  "growth_gate": {
+    "status": "PENDING",
+    "source_revision_added": false,
+    "behavior_code_changed_after_freeze": false,
+    "semantic_interface_changed": false,
+    "domain_fact_schema_changed": false
+  },
+  "protected_boundaries": {
+    "predecessors_v0_1_v0_2_v0_3": "UNCHANGED",
+    "platform_core": "UNCHANGED",
+    "runtime_and_adapter": "UNCHANGED",
+    "enterprise_extensions": "UNCHANGED",
+    "main": "UNCHANGED",
+    "raw_corpus_upstream": false,
+    "e2_c_benchmark_created": false,
+    "admission_or_binding_executed": false
+  },
+  "external_review_required": true,
+  "publication_commit": "recorded by enclosing bounded Git commit"
+}
