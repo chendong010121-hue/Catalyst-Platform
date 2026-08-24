@@ -1,0 +1,18 @@
+{
+  "record_type": "brea_v0_8_candidate_freeze_record",
+  "record_version": "0.1",
+  "candidate": "case-01.brea@0.8-candidate",
+  "lineage_parent": "case-01.brea@0.7-candidate",
+  "baseline_commit": "250069eeebe47cb33b9ecb10e05d82f9d8d78092",
+  "knowledge_revision_id": "KR-003",
+  "knowledge_revision_sha256": "58424410150eb80553e746e9d1b3c3ddd3f48157eaf3b0e4c4f71ee0d087d35e",
+  "candidate_tree_sha256": "761552b17cdd57754206d66fe5bfdd4615175ff16cf0fc7da1a67d873988e3df",
+  "implementation_fingerprint": "e3e04e0fdab262ce31ed0312f9263450ca70971040075310e72f58a7e546bc06",
+  "status": "FROZEN",
+  "admission": "NOT ADMITTED",
+  "binding": "NOT BOUND",
+  "external_review": "REQUIRED",
+  "e2_c": "NOT AUTHORIZED",
+  "v0_9": "NOT FORMED",
+  "protected_boundaries": "PASS"
+}
