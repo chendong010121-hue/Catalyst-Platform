@@ -1,0 +1,15 @@
+{
+  "record_type": "brea_candidate_freeze_record",
+  "candidate": "case-01.brea@0.5-candidate",
+  "lineage_parent": "case-01.brea@0.4-candidate",
+  "candidate_tree_sha": "a42a045957e31eee20f2758bb9c1e24f286f0646fe8c33f1bd147232a13e9ce8",
+  "status": "FROZEN",
+  "admission": "NOT ADMITTED",
+  "binding": "NOT BOUND",
+  "growth_gate": "PENDING",
+  "external_review": "REQUIRED",
+  "e2_c": "NOT AUTHORIZED",
+  "platform_promotion": "NOT AUTHORIZED",
+  "protected_boundaries": "PASS",
+  "freeze_basis": "T-01..T-09 PASS; PC-01..PC-07 PASS; E1 and T-C01/T-C02/T-C03 PASS; full retained regression PASS"
+}
