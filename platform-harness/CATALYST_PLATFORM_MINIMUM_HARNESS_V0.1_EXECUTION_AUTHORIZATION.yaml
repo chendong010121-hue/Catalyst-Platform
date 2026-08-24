@@ -1,0 +1,208 @@
+authorization_id: CATALYST_PLATFORM_MINIMUM_HARNESS_V0_1_EXECUTION_AUTHORIZATION
+record_version: "0.1"
+status: AUTHORIZED
+
+branch: platform-harness
+expected_base_commit: 189eb88568d4e4eba3680233e05816a74f0c6083
+stage_spec:
+  path: platform-harness/CATALYST_PLATFORM_MINIMUM_HARNESS_V0.1_STAGE_SPEC.md
+  version: V0.2
+  commit: 189eb88568d4e4eba3680233e05816a74f0c6083
+architecture_review:
+  path: platform-harness/PLATFORM_HARNESS_CAPABILITY_ARCHITECTURE_REVIEW_V0.1.md
+  commit: 888214d9aaa5ac8d478e07a88c941d09bea305ac
+
+purpose: >-
+  Authorize exactly one isolated implementation/evidence proof of the minimum
+  Catalyst development Harness described by Stage Spec V0.2. This authorization
+  does not authorize Platform integration, Agent Builder construction, Case work,
+  Runtime modification, or promotion of any Harness implementation into Platform Core.
+
+authorized_claim: >-
+  Prove that a Catalyst-controlled development Harness Session can use a
+  provider-neutral LLM boundary plus minimum Workspace-bound development tools,
+  approval, deterministic verification and trace evidence to complete one bounded
+  authorized fixture task without inheriting governance authority or duplicating
+  the accepted Agent Runtime.
+
+required_proofs:
+  - H-00_RUNTIME_HARNESS_RESPONSIBILITY_SEPARATION
+  - H-01_SESSION_IDENTITY
+  - H-02_WORKSPACE_ISOLATION
+  - H-03_REPLACEABLE_MODEL_BOUNDARY_WITH_LIVE_INVOCATION
+  - H-04_MINIMAL_TOOL_BOUNDARY
+  - H-05_APPROVAL_ENFORCEMENT
+  - H-06_DETERMINISTIC_VERIFICATION
+  - H-07_ONE_REPAIR_MAXIMUM
+  - H-08_EXECUTION_TRACE
+  - H-09_GOVERNANCE_NON_INHERITANCE
+  - H-10_REPLACEABILITY_CLASSIFICATION
+
+read_scope:
+  required:
+    - platform-harness/CATALYST_PLATFORM_MINIMUM_HARNESS_V0.1_STAGE_SPEC.md
+    - platform-harness/PLATFORM_HARNESS_CAPABILITY_ARCHITECTURE_REVIEW_V0.1.md
+  allowed_read_only_for_h00_and_model_reuse:
+    - agent_runtime/contracts/**
+    - agent_runtime/providers/**
+    - agent_runtime/llm_reasoner.py
+    - agent_runtime/runtime.py
+    - agent_runtime/core.py
+    - agent_runtime/capability_executor.py
+    - agent_runtime/errors.py
+    - pyproject.toml
+  forbidden:
+    - case-01/**
+    - case-02/**
+    - external Penguin local clone
+    - external Waku local clone
+    - unrelated repository history unless a concrete implementation blocker requires inspection
+
+write_scope:
+  allowed:
+    - platform-harness/minimum-harness-v0.1/**
+  forbidden:
+    - agent_runtime/**
+    - platform_standard/**
+    - runtime_adapter/**
+    - case-01/**
+    - case-02/**
+    - ARCHITECTURE.md
+    - README.md
+    - pyproject.toml
+    - any file outside platform-harness/minimum-harness-v0.1/**
+
+implementation_constraints:
+  language: Python
+  dependencies: EXISTING_OR_STDLIB_ONLY
+  new_dependency_installation: FORBIDDEN
+  runtime_modification: FORBIDDEN
+  platform_core_modification: FORBIDDEN
+  git_mutation_by_harness: FORBIDDEN
+  subagents: FORBIDDEN
+  multi_agent: FORBIDDEN
+  browser_or_desktop_automation: FORBIDDEN
+  mcp_framework: FORBIDDEN
+  capability_registry: FORBIDDEN
+  skill_builder: FORBIDDEN
+  agent_builder: FORBIDDEN
+  automatic_stage_generation: FORBIDDEN
+  automatic_promotion_or_replacement: FORBIDDEN
+
+runtime_overlap_rule:
+  model_provider_contract: REUSE_FIRST
+  existing_provider_adapter: REUSE_IF_COMPATIBLE_READ_ONLY
+  agent_runtime_reasoner_loop: DO_NOT_COPY_BY_DEFAULT
+  runtime_session_semantics: DO_NOT_ALIAS
+  agent_capability_contract_for_file_shell_tools: DO_NOT_USE
+  harness_tools_semantics: HARNESS_ENVIRONMENT_INFRASTRUCTURE
+  runtime_execution_certainty_semantics: DO_NOT_REDEFINE
+
+model_proof:
+  deterministic_tests:
+    scripted_or_fake_model: ALLOWED
+    requirement: must exercise the same Harness model-response/tool-call path used by a live adapter
+  live_proof:
+    required_for_final_pass: true
+    preferred_existing_adapter: agent_runtime.providers.deepseek.DeepSeekModelProvider
+    credential_source: DEEPSEEK_API_KEY_ENVIRONMENT_ONLY
+    credential_persistence: FORBIDDEN
+    credential_logging: FORBIDDEN
+    provider_identity_recording: REQUIRED
+    provider_specific_authority: NONE
+    max_live_model_attempts_per_proof_run: 6
+    unavailable_credential_result: MINIMUM_HARNESS_V0_1_TARGETED_REPAIR
+
+workspace_proof:
+  fixture_root: platform-harness/minimum-harness-v0.1/fixture
+  required_negative_checks:
+    - parent_traversal_rejected
+    - absolute_outside_path_rejected
+    - symlink_escape_rejected_where_supported
+  protected_repository_mutation: FORBIDDEN
+
+approval_proof:
+  allow_path_required: true
+  deny_path_required: true
+  model_self_approval: FORBIDDEN
+  approval_trace: REQUIRED
+
+verification_proof:
+  deterministic_test_required: true
+  model_statement_is_not_verification: true
+  missing_verification_can_pass: false
+  max_repair_cycles: 1
+  unbounded_coding_loop: FORBIDDEN
+
+failure_classes_minimum:
+  - TASK_INVALID
+  - WORKSPACE_VIOLATION
+  - APPROVAL_DENIED
+  - MODEL_FAILED
+  - TOOL_FAILED
+  - COMMAND_TIMEOUT
+  - VERIFICATION_FAILED
+  - REPAIR_EXHAUSTED
+  - TRACE_INCOMPLETE
+
+required_outputs:
+  implementation_root: platform-harness/minimum-harness-v0.1/harness
+  fixture_root: platform-harness/minimum-harness-v0.1/fixture
+  tests_root: platform-harness/minimum-harness-v0.1/tests
+  results: platform-harness/minimum-harness-v0.1/V0_1_RESULTS.json
+  review: platform-harness/minimum-harness-v0.1/V0_1_REVIEW.md
+  representative_trace: OPTIONAL_ONLY_IF_NEEDED_FOR_H08
+
+artifact_minimum_rule:
+  separate_h_check_reports: FORBIDDEN
+  evidence_index: FORBIDDEN
+  new_architecture_document: FORBIDDEN
+  summary_of_summary: FORBIDDEN
+
+execution_sequence:
+  - verify current HEAD equals expected_base_commit plus this Authorization commit
+  - read only authorized context
+  - implement minimum Harness and fixture
+  - run deterministic H-00..H-10 proof tests
+  - run one bounded live LLM fixture proof using an existing provider adapter if credential is available
+  - write V0_1_RESULTS.json and one integrated V0_1_REVIEW.md
+  - verify protected boundaries and changed-file scope
+  - create exactly one implementation_plus_evidence commit
+  - push branch platform-harness
+  - STOP
+
+commit_policy:
+  implementation_commits: 1
+  push_required: true
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+  main_mutation: FORBIDDEN
+  case_branch_mutation: FORBIDDEN
+
+final_verdict_vocabulary:
+  - MINIMUM_HARNESS_V0_1_PASS
+  - MINIMUM_HARNESS_V0_1_TARGETED_REPAIR
+  - MINIMUM_HARNESS_V0_1_FAIL
+
+stop_conditions:
+  - any required write would leave authorized write_scope
+  - Runtime or Platform modification appears necessary
+  - more than one repair cycle appears necessary for the fixture
+  - a new dependency appears necessary
+  - live credential is unavailable after structural proofs are complete
+  - the proof requires Case 01 or Case 02 source/code
+  - the Harness would need to self-authorize scope expansion
+  - the requested claim exceeds Minimum Harness V0.1
+
+explicitly_not_authorized:
+  - Platform integration
+  - merge to main
+  - real Case 01 execution
+  - real Case 02 execution
+  - full Agent construction workflow
+  - full Skill construction workflow
+  - Capability Asset Bundle persistence implementation
+  - Capability search implementation
+  - automatic comparison or replacement
+  - second provider portability proof
+  - V0.2 Harness feature expansion
