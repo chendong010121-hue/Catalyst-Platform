@@ -1,0 +1,70 @@
+record_type: case_knowledge_growth_gate_authorization
+record_version: "0.1"
+case_id: CASE-01
+parent_stage: CASE-01-E/E2
+decision: granted
+decision_authority: user
+decision_source: current_conversation
+strategic_priority: product_first
+contract_ref: KR_002_HANGZHOU_GROWTH_GATE_V0.1_CONTRACT.md
+contract_commit: aefc66552abdb88bec97313f2f41d9b2078d4629
+target_branch: case-01
+frozen_agent:
+  identity: case-01.brea@0.6-candidate
+  freeze_commit: 807c9aede8fd0646da07c79c457286f221ce61ae
+  candidate_tree_sha256: 0f92a171a7a3e204d650ac7b456e04bd224c13b6b3ed7cd2630f8d9589a13319
+  implementation_fingerprint: 70cdf812addfbdf5c86dd990cd28a8880f73a84fcb66fcfe9c8194a20c63f6a2
+knowledge:
+  baseline_revision: KR-001
+  target_revision: KR-002
+  add_hangzhou_source_identity: true
+source:
+  title: 杭州市城市规划管理技术规定
+  authority: 杭州市规划和自然资源局
+  document: 杭规划资源发〔2026〕4号
+  issued: 2026-02-05
+  effective: 2026-04-01
+  expected_pdf_sha256: 3b72f0b0cff971ac56b1fdabf1f9d4a6af5c4e53a9e12bb0b4c3d6f5084afee8
+scope:
+  verify_source_sha: true
+  create_local_text_derivative_if_needed: true
+  create_kr_002: true
+  run_g01_knowledge_lifecycle: true
+  run_g02_source_structure_compatibility: true
+  run_g03_professional_semantic_classification: true
+  record_exact_blockers: true
+publication_limit:
+  growth_evidence_commits: 1
+  pushes: 1
+protected_boundaries:
+  brea_v0_6_candidate_mutation: false
+  candidate_tree_change: false
+  implementation_fingerprint_change: false
+  semantic_view_change: false
+  fact_vocabulary_change: false
+  fn_seam_obl_change: false
+  parser_repair: false
+  query_repair: false
+  runner_repair: false
+  add_hangzhou_professional_routes: false
+  add_new_planning_fact_descriptors: false
+  create_v0_7_candidate: false
+  admission: false
+  binding: false
+  e2_c_benchmark_creation: false
+  platform_core_mutation: false
+  runtime_mutation: false
+  runtime_adapter_mutation: false
+  enterprise_extension_mutation: false
+  main_mutation: false
+  raw_pdf_upstream: false
+  normalized_full_source_upstream: false
+allowed_long_lived_artifacts:
+  - knowledge/KR-002.json
+  - KR_002_GROWTH_RESULTS.json
+  - KR_002_GROWTH_REVIEW.md
+next_gate:
+  external_kr_002_growth_review_required: true
+  discovered_repair_authorized: false
+  v0_7_decision: not_granted
+  e2_c_decision: not_granted
