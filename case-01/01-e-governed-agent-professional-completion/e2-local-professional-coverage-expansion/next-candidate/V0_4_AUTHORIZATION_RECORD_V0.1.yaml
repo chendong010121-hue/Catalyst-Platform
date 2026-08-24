@@ -1,0 +1,64 @@
+record_type: case_candidate_build_authorization
+record_version: "0.1"
+case_id: CASE-01
+parent_stage: CASE-01-E/E2
+target_candidate: case-01.brea@0.4-candidate
+lineage_parent: case-01.brea@0.3-candidate
+decision: granted
+decision_authority: user
+decision_source: current_conversation
+strategic_priority: product_first
+stage_contract: CASE_01_E_E2_BREA_V0_4_CANDIDATE_V0.1_STAGE_CONTRACT.md
+stage_contract_commit: 769478a034b6d263f17cc5fd5af04285fb07e7f0
+target_branch: case-01
+scope:
+  form_v0_4_candidate: true
+  use_v0_2_generalized_query_behavior: true
+  use_v0_3_lineage_and_valid_professional_evidence: true
+  use_a_prime_minimum_semantic_direction: true
+  repair_v0_3_professional_contract_defects: true
+  preserve_fn_01_to_fn_11: true
+  preserve_seam_01_to_seam_03: true
+  preserve_obl_01_to_obl_06: true
+  run_minimum_construction_checks_c01_to_c10: true
+  freeze_candidate: true
+  integrated_growth_gate_if_real_supported_source_available: true
+integrated_growth_gate:
+  fabricate_source_if_unavailable: false
+  agent_behavior_code_change_after_freeze_for_normal_growth: false
+  semantic_interface_change_for_normal_growth: false
+  domain_fact_schema_change_for_normal_growth: false
+  if_no_legitimate_source_available: mark_pending
+publication_limit:
+  candidate_implementation_evidence_freeze_commits: 1
+  pushes: 1
+protected_boundaries:
+  brea_v0_1_mutation: false
+  brea_v0_2_mutation: false
+  brea_v0_3_mutation: false
+  e2_c_specific_benchmark_creation: false
+  admission: false
+  binding: false
+  raw_corpus_upstream: false
+  platform_core_mutation: false
+  runtime_mutation: false
+  runtime_adapter_mutation: false
+  enterprise_extension_mutation: false
+  main_mutation: false
+technology_boundary:
+  llm_by_default: false
+  dense_retrieval_by_default: false
+  embeddings_by_default: false
+  vector_db_by_default: false
+  web_fallback_by_default: false
+  memory_or_multi_agent_by_default: false
+stop_if:
+  new_governed_seam_required: true
+  new_obligation_required: true
+  platform_or_runtime_change_required: true
+  prohibited_technology_required_to_meet_contract: true
+  candidate_cannot_be_formed_without_mutating_protected_predecessor: true
+next_gate:
+  external_candidate_freeze_review_required: true
+  e2_c_authorization: not_granted
+  admission_or_binding: not_granted
