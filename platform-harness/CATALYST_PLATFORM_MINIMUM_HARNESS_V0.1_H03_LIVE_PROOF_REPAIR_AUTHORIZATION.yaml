@@ -1,0 +1,130 @@
+authorization_id: CATALYST_PLATFORM_MINIMUM_HARNESS_V0_1_H03_LIVE_PROOF_REPAIR_AUTHORIZATION
+record_version: "0.1"
+status: AUTHORIZED
+
+branch: platform-harness
+expected_base_commit: c3eea4cad3f062b087f4c4a2e736f31b4423b461
+source_stage_authorization: 31964ecaca91d4e4eb46e46e5a584a08b15b6c37
+current_verdict: MINIMUM_HARNESS_V0_1_TARGETED_REPAIR
+repair_scope: H-03_LIVE_LLM_EVIDENCE_ONLY
+
+purpose: >-
+  Close the single remaining H-03 evidence gap by running the already-implemented
+  live DeepSeek proof with DEEPSEEK_API_KEY available in the executor environment.
+  This repair is evidence-only. It does not authorize Harness implementation changes.
+
+external_review_basis:
+  one_commit_from_original_authorization: PASS
+  changed_paths_inside_authorized_root: PASS
+  protected_boundaries: PASS
+  h00: PASS
+  h01: PASS
+  h02: PASS
+  h03: TARGETED_REPAIR_ONLY_BECAUSE_LIVE_CREDENTIAL_UNAVAILABLE
+  h04: PASS
+  h05: PASS
+  h06: PASS
+  h07: PASS
+  h08: PASS
+  h09: PASS
+  h10: PASS
+  architecture_repair_required: false
+  implementation_repair_required_before_live_proof: false
+
+required_existing_files:
+  - platform-harness/minimum-harness-v0.1/tests/live_proof.py
+  - platform-harness/minimum-harness-v0.1/tests/record_results.py
+  - platform-harness/minimum-harness-v0.1/tests/test_harness.py
+  - platform-harness/minimum-harness-v0.1/harness/session.py
+  - platform-harness/minimum-harness-v0.1/harness/workspace.py
+
+read_scope:
+  allowed:
+    - platform-harness/minimum-harness-v0.1/**
+    - agent_runtime/contracts/**
+    - agent_runtime/providers/deepseek.py
+  forbidden:
+    - case-01/**
+    - case-02/**
+    - external Penguin local clone
+    - external Waku local clone
+    - unrelated repository history
+
+write_scope:
+  allowed_only:
+    - platform-harness/minimum-harness-v0.1/V0_1_RESULTS.json
+    - platform-harness/minimum-harness-v0.1/V0_1_REVIEW.md
+  forbidden:
+    - platform-harness/minimum-harness-v0.1/harness/**
+    - platform-harness/minimum-harness-v0.1/fixture/**
+    - platform-harness/minimum-harness-v0.1/tests/**
+    - agent_runtime/**
+    - platform_standard/**
+    - runtime_adapter/**
+    - case-01/**
+    - case-02/**
+    - ARCHITECTURE.md
+    - README.md
+    - pyproject.toml
+    - any other repository path
+
+credential_policy:
+  required_environment_variable: DEEPSEEK_API_KEY
+  user_must_not_commit_key: true
+  key_persistence: FORBIDDEN
+  key_logging: FORBIDDEN
+  key_in_results: FORBIDDEN
+  key_in_review: FORBIDDEN
+  key_in_trace: FORBIDDEN
+
+execution_sequence:
+  - verify branch is platform-harness
+  - verify HEAD equals this Authorization commit before evidence execution
+  - verify working tree clean
+  - verify DEEPSEEK_API_KEY exists in the executor process environment without printing its value
+  - run existing deterministic test suite unchanged
+  - run existing live_proof.py unchanged
+  - run existing record_results.py unchanged with the same environment
+  - verify V0_1_RESULTS.json records live_proof.status PASS and H-03 PASS
+  - verify final verdict becomes MINIMUM_HARNESS_V0_1_PASS
+  - verify only V0_1_RESULTS.json and V0_1_REVIEW.md changed after this Authorization
+  - create exactly one evidence-repair commit
+  - push platform-harness
+  - STOP
+
+stop_conditions:
+  - DEEPSEEK_API_KEY is unavailable
+  - live proof fails for any reason
+  - provider/tool-call compatibility fails
+  - deterministic tests regress
+  - any Harness/fixture/test code change appears necessary
+  - any write outside the two authorized evidence files appears necessary
+
+failure_rule: >-
+  If the live proof exposes any real implementation/provider compatibility defect,
+  STOP and report the defect. Do not repair code under this authorization. A new
+  targeted implementation-repair authorization would be required.
+
+commit_policy:
+  evidence_repair_commits: 1
+  suggested_message: "platform-harness: close minimum harness v0.1 live proof"
+  push_required: true
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+
+successful_final_state:
+  h03: PASS
+  verdict: MINIMUM_HARNESS_V0_1_PASS
+  platform_integration: NOT_AUTHORIZED
+  case01_trial: NOT_AUTHORIZED
+
+explicitly_not_authorized:
+  - Harness code repair
+  - provider adapter repair
+  - Platform integration
+  - Case 01 trial
+  - Case 02 work
+  - Harness V0.2
+  - Agent Builder
+  - Skill Builder
+  - Capability Registry
