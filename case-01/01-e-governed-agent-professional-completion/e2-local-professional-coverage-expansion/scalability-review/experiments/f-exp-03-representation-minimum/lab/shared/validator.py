@@ -49,8 +49,9 @@ def _base_ok(base: dict[str, Any] | None, case: dict[str, Any]) -> bool:
 
 
 def _applicability(rep: dict[str, Any], facts: dict[str, Any]) -> dict[str, Any]:
-    scope = rep.get("scope")
-    conditions = rep.get("conditions")
+    semantic = rep.get("semantic_view", {})
+    scope = semantic.get("scope")
+    conditions = semantic.get("conditions")
     if not scope or not conditions:
         return {"state": "unresolved", "reason": "typed scope or condition representation is absent"}
 
@@ -92,7 +93,7 @@ def _applicability(rep: dict[str, Any], facts: dict[str, Any]) -> dict[str, Any]
 
 
 def _numeric(rep: dict[str, Any], facts: dict[str, Any], applicable: dict[str, Any]) -> dict[str, Any]:
-    numeric = rep.get("numeric")
+    numeric = rep.get("semantic_view", {}).get("numeric")
     if not numeric:
         return {"state": "not_applicable", "trace": None}
     operands = numeric.get("operands", [])
@@ -106,14 +107,12 @@ def _numeric(rep: dict[str, Any], facts: dict[str, Any], applicable: dict[str, A
     if modifier.get("operator") != "multiply":
         return {"state": "unsupported", "code": "unsupported_numeric", "trace": None}
     result = facts[operand["fact"]] * modifier["value"]
-    if result != numeric.get("result"):
-        return {"state": "invalid", "code": "numeric_trace_mismatch", "trace": None}
     return {
         "state": "supported",
         "trace": {
             "operands": [{"fact": operand["fact"], "value": facts[operand["fact"]]}],
             "modifiers": modifiers,
-            "formula": numeric.get("formula"),
+            "formula": f"{operand['fact']} * {modifier['value']}",
             "result": result,
             "advisory_caps": numeric.get("advisory_caps", []),
         },
@@ -140,15 +139,26 @@ def validate(case: dict[str, Any], representation: dict[str, Any]) -> dict[str, 
         fail_code = "unresolved_applicability"
 
     status = "PASS" if fail_code is None and applicability["state"] == "applicable" else "FAIL_CLOSED"
-    if expected.get("status") == "PASS" and status == "PASS" and conclusion != expected.get("outcome"):
+    expected_effect = expected.get("effect")
+    target_contains = expected.get("target_contains")
+    outcome_valid = (
+        expected_effect is None
+        or (
+            isinstance(conclusion, dict)
+            and conclusion.get("effect") == expected_effect
+            and (not target_contains or target_contains in conclusion.get("target", ""))
+        )
+    )
+    if expected.get("status") == "PASS" and status == "PASS" and not outcome_valid:
         fail_code = "outcome_mismatch"
         status = "FAIL_CLOSED"
 
-    has_scope = bool(representation.get("scope") and representation["scope"].get("positive_scope"))
-    has_conditions = bool(representation.get("conditions") and representation["conditions"].get("rules"))
+    semantic = representation.get("semantic_view", {})
+    has_scope = bool(semantic.get("scope") and semantic["scope"].get("positive_scope"))
+    has_conditions = bool(semantic.get("conditions") and semantic["conditions"].get("rules"))
     has_seam02 = bool(
-        representation.get("conditions", {}).get("seam02", {}).get("owner") == "applicability"
-        if representation.get("conditions")
+        semantic.get("conditions", {}).get("seam02", {}).get("owner") == "applicability"
+        if semantic.get("conditions")
         else False
     )
     negative_expected = expected.get("status") == "FAIL_CLOSED"
@@ -162,28 +172,42 @@ def validate(case: dict[str, Any], representation: dict[str, Any]) -> dict[str, 
         "PC-07": ("PASS" if (status == "FAIL_CLOSED" or applicability["state"] == "applicable") else "FAIL", "unresolved applicability or evidence fails closed"),
     }
     if expected.get("numeric_result") is not None:
-        pc["PC-04"] = ("PASS" if numeric["state"] == "supported" and numeric["trace"] is not None else "FAIL", "operand, modifier, formula, and result are traced")
+        pc["PC-04"] = (
+            "PASS" if numeric["state"] == "supported" and numeric["trace"] is not None and numeric["trace"]["result"] == expected["numeric_result"] else "FAIL",
+            "operand, modifier, formula, and result are traced and independently gold-checked",
+        )
     if not base_ok:
         pc["PC-07"] = ("FAIL", "source identity, locator, evidence, or SHA is absent")
 
     contract_ok = all(value[0] == "PASS" for value in pc.values()) and (
-        expected.get("status") == status and (expected.get("outcome") in (None, conclusion))
+        expected.get("status") == status and outcome_valid
     )
+    table_values = {}
+    if applicability.get("rule"):
+        table_values = applicability["rule"].get("values", {})
+    table_gold = expected.get("table_values")
+    table_values_gold_match = table_gold is None or table_values == table_gold
+    if table_gold is not None and not table_values_gold_match:
+        contract_ok = False
+    evidence_trace = {
+        "source_id": case["source"]["id"] if base_ok else None,
+        "source_sha256": representation.get("base", {}).get("sha256") if base_ok else None,
+        "locator": case["source"]["locator"] if base_ok else None,
+        "raw_evidence": case["source"]["raw_evidence"] if base_ok else None,
+        "semantic_view": semantic,
+        "applicability_basis": applicability.get("basis"),
+        "numeric_trace": numeric.get("trace"),
+        "table_values": table_values,
+        "table_values_gold_match": table_values_gold_match,
+        "failure_code": fail_code,
+    }
     return {
         "case_id": case["case_id"],
         "track": representation["track"],
         "status": status,
         "contract_ok": contract_ok,
         "conclusion": conclusion,
-        "evidence_trace": {
-            "source_id": case["source"]["id"] if base_ok else None,
-            "source_sha256": representation.get("base", {}).get("sha256") if base_ok else None,
-            "locator": case["source"]["locator"] if base_ok else None,
-            "raw_evidence": case["source"]["raw_evidence"] if base_ok else None,
-            "applicability_basis": applicability.get("basis"),
-            "numeric_trace": numeric.get("trace"),
-            "failure_code": fail_code,
-        },
+        "evidence_trace": evidence_trace,
         "pc_results": [
             {"id": pc_id, "status": result[0], "reason": result[1]}
             for pc_id, result in pc.items()

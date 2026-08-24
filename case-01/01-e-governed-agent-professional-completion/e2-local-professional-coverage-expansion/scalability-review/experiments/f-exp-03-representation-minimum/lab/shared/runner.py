@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from shared.model import GROUPS, RESULT_KEYS, load_lab_data
+from shared.semantic import SEMANTIC_INTERFACE_KEYS
 from shared.validator import validate
 
 
@@ -28,13 +29,14 @@ def _run_track(
     track: str,
     cases: list[dict[str, Any]],
     registry: dict[str, Any],
+    descriptors: dict[str, Any],
     omit_groups: tuple[str, ...] = (),
 ) -> list[dict[str, Any]]:
     if track == "A_PRIME":
         adapt = _load_adapter("a-prime")
-        return [validate(case, adapt(case, registry)) for case in cases]
+        return [validate(case, adapt(case, registry, descriptors)) for case in cases]
     adapt = _load_adapter("b-min")
-    return [validate(case, adapt(case, registry, omit_groups)) for case in cases]
+    return [validate(case, adapt(case, registry, omit_groups, descriptors)) for case in cases]
 
 
 def _pc_summary(results: list[dict[str, Any]]) -> dict[str, str]:
@@ -84,6 +86,7 @@ def _hidden_knowledge_scan() -> dict[str, Any]:
         "A_PRIME": [LAB_ROOT / "a-prime" / "adapter.py"],
         "B_MIN": [LAB_ROOT / "b-min" / "adapter.py"],
         "shared_validator": [LAB_ROOT / "shared" / "validator.py"],
+        "shared_semantic_derivation": [LAB_ROOT / "shared" / "semantic.py"],
     }
     findings: dict[str, list[str]] = {}
     for label, paths in files.items():
@@ -98,12 +101,33 @@ def _hidden_knowledge_scan() -> dict[str, Any]:
     } | {"findings": findings}
 
 
+def decide_from_observations(results: dict[str, Any]) -> str:
+    comparison = results["comparison"]
+    hidden = results["hidden_knowledge"]
+    if not all(comparison.values()) or any(hidden[label] != "PASS" for label in ("A_PRIME", "B_MIN", "shared_validator", "shared_semantic_derivation")):
+        return "EXPERIMENT_INVALID"
+    a_ok = results["tracks"]["A_PRIME"]["all_cases_contract_ok"] and results["same_structure_extension"]["tracks"]["A_PRIME"]["contract_ok"]
+    b_ok = results["tracks"]["B_MIN"]["all_cases_contract_ok"] and results["same_structure_extension"]["tracks"]["B_MIN"]["contract_ok"]
+    b_groups_add_material_benefit = all(
+        results["b_min_ablation"][group]["material_failure"]
+        for group in GROUPS
+    )
+    if a_ok and not b_groups_add_material_benefit:
+        return "A_PRIME_SUFFICIENT"
+    if b_ok and not a_ok and b_groups_add_material_benefit:
+        return "B_MIN_EVIDENCED"
+    if not a_ok and not b_ok:
+        return "BOTH_INSUFFICIENT"
+    return "INCONCLUSIVE"
+
+
 def run_experiment() -> dict[str, Any]:
     data = load_lab_data()
     core_cases = data["cases"]
     registry = data["source_registry"]
-    a_prime = _run_track("A_PRIME", core_cases, registry)
-    b_min = _run_track("B_MIN", core_cases, registry)
+    descriptors = data["fact_descriptors"]
+    a_prime = _run_track("A_PRIME", core_cases, registry, descriptors)
+    b_min = _run_track("B_MIN", core_cases, registry, descriptors)
 
     shared_keys = all(set(result) == set(RESULT_KEYS) for result in a_prime + b_min)
     same_case_ids = [result["case_id"] for result in a_prime] == [result["case_id"] for result in b_min]
@@ -113,10 +137,15 @@ def run_experiment() -> dict[str, Any]:
         and left["evidence_trace"]["raw_evidence"] == right["evidence_trace"]["raw_evidence"]
         for left, right in zip(a_prime, b_min)
     )
+    shared_semantic_interface = all(
+        set(left["evidence_trace"]["semantic_view"]) == set(SEMANTIC_INTERFACE_KEYS)
+        and set(right["evidence_trace"]["semantic_view"]) == set(SEMANTIC_INTERFACE_KEYS)
+        for left, right in zip(a_prime, b_min)
+    )
 
     ablation: dict[str, Any] = {}
     for group in GROUPS:
-        ablated = _run_track("B_MIN", core_cases, registry, (group,))
+        ablated = _run_track("B_MIN", core_cases, registry, descriptors, (group,))
         failures = [result["case_id"] for result in ablated if not result["contract_ok"]]
         pc_failures = sorted({
             item["id"]
@@ -134,8 +163,8 @@ def run_experiment() -> dict[str, Any]:
 
     extension = data["extension"]
     before_hash = _implementation_hash()
-    extension_a = _run_track("A_PRIME", [extension], registry)[0]
-    extension_b = _run_track("B_MIN", [extension], registry)[0]
+    extension_a = _run_track("A_PRIME", [extension], registry, descriptors)[0]
+    extension_b = _run_track("B_MIN", [extension], registry, descriptors)[0]
     after_hash = _implementation_hash()
     extension_result = {
         "data_only": True,
@@ -146,14 +175,16 @@ def run_experiment() -> dict[str, Any]:
         "tracks": {"A_PRIME": extension_a, "B_MIN": extension_b},
     }
 
-    return {
+    results = {
+        "repair_id": "F-EXP-03R",
         "experiment_id": "F-EXP-03",
-        "baseline": "93d491653931c048369579e972791a95bf075587",
+        "baseline": "00ae01df7cdc8909d0289fa7a63e65b551ef9802",
         "comparison": {
             "same_case_ids": same_case_ids,
             "same_source_evidence": same_sources,
             "shared_result_contract": shared_keys,
             "same_pc_validator": True,
+            "shared_semantic_interface": shared_semantic_interface,
         },
         "tracks": {
             "A_PRIME": _track_summary(a_prime),
@@ -169,6 +200,8 @@ def run_experiment() -> dict[str, Any]:
             "candidate_or_platform_mutated": False,
         },
     }
+    results["decision_candidate"] = decide_from_observations(results)
+    return results
 
 
 def write_results(path: Path) -> dict[str, Any]:

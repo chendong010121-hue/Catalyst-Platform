@@ -7,15 +7,20 @@ Status: authorized execution design; no architecture decision is made here.
 This lab compares the minimum representation required by BREA:
 
 - A': source identity, version/effective note, jurisdiction, unit type, locator,
-  verbatim evidence, SHA-256, and non-semantic metadata only.
+  verbatim evidence, SHA-256, and non-semantic metadata, plus an ephemeral
+  semantic view derived from raw evidence by a generic grammar. The derivation
+  uses shared project-fact vocabulary and `unit_type`; it has no source,
+  locator, family, clause, or hardcoded-value branches and does not read B-MIN.
 - B-MIN: the same G-BASE fields plus only G-SCOPE, G-CONDITION, and G-NUMERIC
   typed groups where the professional contract needs them.
 
-Both tracks receive the same case facts, source identifiers, locators, SHA-256
-values, evidence excerpts, PC-01..PC-07 validator, expected result contract,
-fail-closed rules, and deterministic evaluation. Retrieval is controlled: the
-lab loads registered records directly. No LLM, Web, retrieval technology,
-embedding, vector store, platform, runtime, or candidate code is used.
+Both tracks receive the same project facts and fact descriptors, source
+identifiers, locators, SHA-256 values, evidence excerpts, PC-01..PC-07
+validator, independent Gold, fail-closed rules, and deterministic evaluation.
+A' and B-MIN enter the same `semantic_view = {scope, conditions, numeric}`
+interface before validation. Retrieval is controlled: the lab loads registered
+records directly. No LLM, Web, retrieval technology, embedding, vector store,
+platform, runtime, or candidate code is used.
 
 The raw corpus is read-only and remains outside Git. The two admitted local
 sources are recorded by the existing manifest:
@@ -37,7 +42,7 @@ not a corpus submission.
 | RF-02 | conditional numbered rule | GB55037-2022 §3.4.3: `除受环境地理条件限制只能设置1条消防车道的公共建筑外，其他高层公共建筑和占地面积大于3000m²的其他单、多层公共建筑应至少沿建筑的两条长边设置消防车道。` | `building_kind=公共建筑`; `is_high_rise=true`; `environment_limited_one_lane=false` | applicability resolves positive; conclusion is the two-long-edges fire-lane requirement; exception remains visible |
 | RF-03 | table rule | DBJ33T1021-2023 §5.0.4 / 表5.0.4: `商业场所停车位指标不应小于表5.0.4的规定。` and row `大型商业（建筑面积>10000m²）` with rates `机动车 0.8`, `非机动车 1.1` | `project_type=商业`; `building_area_m2=12000` | select the large-commercial row; return both table rates and table locator; do not infer from retrieval alone |
 | RF-04 | positive scope + exception/exclusion | GB55037-2022 §2.2.3: `除有特殊要求的建筑和甲类厂房可不设置消防救援口外，在建筑的外墙上应设置便于消防救援人员出入的消防救援口。` | `building_kind=公共建筑`; `special_requirement=false`; `is_class_a_factory=false` | positive scope applies; conclusion is rescue openings required; exclusions are auditable |
-| RF-05 | derived numeric modifier | DBJ33T1021-2023 §3.0.11: `住宅建筑应设置访客停车位，设置数量不计入应配建机动车停车位总数，访客停车位数量不应小于应配建机动车停车位总数的2%，且不宜超过20个。` | `project_type=住宅`; `visitor_parking=true`; `required_motor_spaces=600` | return minimum `12` with operand `600`, modifier `0.02`, formula `600 * 0.02`, result trace, and the advisory cap `20` |
+| RF-05 | derived numeric modifier | DBJ33T1021-2023 §3.0.11: `住宅建筑应设置访客停车位，设置数量不计入应配建机动车停车位总数，访客停车位数量不应小于应配建机动车停车位总数的2%，且不宜超过20个。` | `project_type=住宅`; `visitor_parking=true`; `required_motor_spaces=600` | retain operand reference, multiply operator, modifier `0.02`, and advisory cap `20`; calculate `12` at runtime and compare it with independent Gold |
 
 RF-05 has one negative control variant with `required_motor_spaces` absent.
 It must fail closed as unsupported numeric rather than guess. RF-04 has one
@@ -58,7 +63,8 @@ PC-02 — material conditions/zone distinctions are explicit and evaluated.
 PC-03 — the applicability decision remains observable through a SEAM-02
 responsibility trace (`owner=applicability`).
 
-PC-04 — every derived numeric retains source operand, modifier, formula, and
+PC-04 — every derived numeric retains source operand, modifier, runtime formula,
+and result trace; stored B-MIN regulation data contains no project-derived
 result; non-derived cases are explicitly `not_applicable`.
 
 PC-05 — evidence presence is not treated as applicability; applicability must
@@ -74,7 +80,8 @@ Each assertion produces the same machine result shape:
 {
   case_id, track, status, contract_ok, conclusion,
   evidence_trace: {source_id, source_sha256, locator, raw_evidence,
-                   applicability_basis, numeric_trace},
+                   semantic_view, applicability_basis, numeric_trace,
+                   table_values, table_values_gold_match},
   pc_results: [{id, status, reason}],
   diagnostics: {representation_groups, hidden_knowledge, data_only_extension}
 }
@@ -93,7 +100,7 @@ required decision.
 | G-BASE | source/version/locator/raw evidence/SHA | source and evidence auditability; removal must break PC-07/audit trace |
 | G-SCOPE | subject/positive scope/exceptions | RF-01, RF-02, RF-04 applicability and PC-01 |
 | G-CONDITION | condition predicates/outcomes/SEAM-02 responsibility | RF-02..RF-05 distinctions and PC-02/03/05 |
-| G-NUMERIC | operands/modifiers/formula/result | RF-05 PC-04 and unsupported numeric closure |
+| G-NUMERIC | operand reference/operator/modifier/advisory cap; no project-derived result | RF-05 PC-04 and unsupported numeric closure |
 
 Each group is removed in isolation, affected cases are rerun, and a retained
 group is justified only if its removal causes a material mandatory-contract or
@@ -110,7 +117,8 @@ replace F-EXP-01.
 
 ## 6. Decision evidence
 
-The runner records raw per-case results, PC summaries, B-MIN ablation, the
-extension probe, hidden-knowledge scan, code-surface counts, and repository
-boundary checks in `02_RESULTS.json`. Interpretation, limitations, and the
-decision candidate are integrated in `03_EXPERIMENT_REVIEW.md` only.
+The runner records raw per-case results, semantic-interface comparison, PC
+summaries, B-MIN ablation, the extension probe, hidden-knowledge scan,
+code-surface counts, repository boundary checks, and a verdict derived from
+those observations in `02_RESULTS.json`. Interpretation, limitations, and the
+observed decision candidate are integrated in `03_EXPERIMENT_REVIEW.md` only.
