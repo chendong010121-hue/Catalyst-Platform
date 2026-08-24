@@ -1,0 +1,114 @@
+{
+  "source_registry": {
+    "GB55037-2022": {
+      "version": "2022",
+      "jurisdiction": "全国",
+      "sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3"
+    },
+    "DBJ33T1021-2023": {
+      "version": "2023-09-28 / 2024-03-01",
+      "jurisdiction": "浙江省",
+      "sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7"
+    }
+  },
+  "cases": [
+    {
+      "case_id": "RF-01",
+      "form": "direct_clause",
+      "source": {"id": "GB55037-2022", "locator": "4.3.1", "unit_type": "direct_clause", "raw_evidence": "民用建筑内不应设置经营、存放或使用甲乙类火灾危险性物品的商店、作坊或储藏间等。"},
+      "facts": {"building_kind": "民用建筑", "has_class_ab_hazardous_goods": true},
+      "expected": {"outcome": "not_permitted", "status": "PASS"},
+      "b_min": {
+        "G-SCOPE": {"subject": "建筑内使用功能", "positive_scope": [{"fact": "building_kind", "op": "equals", "value": "民用建筑"}], "exceptions": []},
+        "G-CONDITION": {"rules": [{"all": [{"fact": "has_class_ab_hazardous_goods", "op": "equals", "value": true}], "outcome": "not_permitted"}], "seam02": {"owner": "applicability", "path": ["scope", "conditions"]}},
+        "G-NUMERIC": null
+      }
+    },
+    {
+      "case_id": "RF-02",
+      "form": "conditional_numbered_rule",
+      "source": {"id": "GB55037-2022", "locator": "3.4.3", "unit_type": "conditional_rule", "raw_evidence": "除受环境地理条件限制只能设置1条消防车道的公共建筑外，其他高层公共建筑和占地面积大于3000m²的其他单、多层公共建筑应至少沿建筑的两条长边设置消防车道。"},
+      "facts": {"building_kind": "公共建筑", "is_high_rise": true, "environment_limited_one_lane": false},
+      "expected": {"outcome": "two_long_edges_fire_lane", "status": "PASS"},
+      "b_min": {
+        "G-SCOPE": {"subject": "消防车道", "positive_scope": [{"fact": "building_kind", "op": "equals", "value": "公共建筑"}], "exceptions": [{"fact": "environment_limited_one_lane", "op": "equals", "value": true}]},
+        "G-CONDITION": {"rules": [{"all": [{"fact": "is_high_rise", "op": "equals", "value": true}, {"fact": "environment_limited_one_lane", "op": "equals", "value": false}], "outcome": "two_long_edges_fire_lane"}], "seam02": {"owner": "applicability", "path": ["scope", "conditions", "exceptions"]}},
+        "G-NUMERIC": null
+      }
+    },
+    {
+      "case_id": "RF-03",
+      "form": "table_rule",
+      "source": {"id": "DBJ33T1021-2023", "locator": "5.0.4 / 表5.0.4", "unit_type": "table_rule", "raw_evidence": "商业场所停车位指标不应小于表5.0.4的规定。 大型商业（建筑面积>10000m²） 机动车 0.8 非机动车 1.1"},
+      "facts": {"project_type": "商业", "building_area_m2": 12000},
+      "expected": {"outcome": "commercial_large_rates", "status": "PASS"},
+      "b_min": {
+        "G-SCOPE": {"subject": "商业场所停车配建", "positive_scope": [{"fact": "project_type", "op": "equals", "value": "商业"}], "exceptions": []},
+        "G-CONDITION": {"rules": [{"all": [{"fact": "building_area_m2", "op": "greater_than", "value": 10000}], "outcome": "commercial_large_rates", "values": {"motor_rate": 0.8, "nonmotor_rate": 1.1}}], "seam02": {"owner": "applicability", "path": ["scope", "conditions", "table_row"]}},
+        "G-NUMERIC": null
+      }
+    },
+    {
+      "case_id": "RF-04",
+      "form": "positive_scope_with_exception",
+      "source": {"id": "GB55037-2022", "locator": "2.2.3", "unit_type": "scope_exception", "raw_evidence": "除有特殊要求的建筑和甲类厂房可不设置消防救援口外，在建筑的外墙上应设置便于消防救援人员出入的消防救援口。"},
+      "facts": {"building_kind": "公共建筑", "special_requirement": false, "is_class_a_factory": false},
+      "expected": {"outcome": "rescue_openings_required", "status": "PASS"},
+      "b_min": {
+        "G-SCOPE": {"subject": "建筑外墙消防救援口", "positive_scope": [{"fact": "building_kind", "op": "exists"}], "exceptions": [{"fact": "special_requirement", "op": "equals", "value": true}, {"fact": "is_class_a_factory", "op": "equals", "value": true}]},
+        "G-CONDITION": {"rules": [{"all": [{"fact": "special_requirement", "op": "equals", "value": false}, {"fact": "is_class_a_factory", "op": "equals", "value": false}], "outcome": "rescue_openings_required"}], "seam02": {"owner": "applicability", "path": ["scope", "conditions", "exceptions"]}},
+        "G-NUMERIC": null
+      }
+    },
+    {
+      "case_id": "RF-05",
+      "form": "derived_numeric_modifier",
+      "source": {"id": "DBJ33T1021-2023", "locator": "3.0.11", "unit_type": "derived_numeric", "raw_evidence": "住宅建筑应设置访客停车位，设置数量不计入应配建机动车停车位总数，访客停车位数量不应小于应配建机动车停车位总数的2%，且不宜超过20个。"},
+      "facts": {"project_type": "住宅", "visitor_parking": true, "required_motor_spaces": 600},
+      "expected": {"outcome": "visitor_parking_minimum", "status": "PASS", "numeric_result": 12},
+      "b_min": {
+        "G-SCOPE": {"subject": "住宅访客停车位", "positive_scope": [{"fact": "project_type", "op": "equals", "value": "住宅"}], "exceptions": []},
+        "G-CONDITION": {"rules": [{"all": [{"fact": "visitor_parking", "op": "equals", "value": true}], "outcome": "visitor_parking_minimum"}], "seam02": {"owner": "applicability", "path": ["scope", "conditions", "numeric"]}},
+        "G-NUMERIC": {"operands": [{"name": "required_motor_spaces", "fact": "required_motor_spaces"}], "modifiers": [{"name": "visitor_min_ratio", "value": 0.02, "operator": "multiply"}], "formula": "required_motor_spaces * visitor_min_ratio", "result": 12, "advisory_caps": [{"value": 20, "meaning": "not_preferably_over"}]}
+      }
+    },
+    {
+      "case_id": "RF-05-MISSING-OPERAND",
+      "form": "derived_numeric_modifier",
+      "control_for": "RF-05",
+      "source": {"id": "DBJ33T1021-2023", "locator": "3.0.11", "unit_type": "derived_numeric", "raw_evidence": "住宅建筑应设置访客停车位，设置数量不计入应配建机动车停车位总数，访客停车位数量不应小于应配建机动车停车位总数的2%，且不宜超过20个。"},
+      "facts": {"project_type": "住宅", "visitor_parking": true},
+      "expected": {"outcome": null, "status": "FAIL_CLOSED", "fail_code": "unsupported_numeric"},
+      "b_min": {
+        "G-SCOPE": {"subject": "住宅访客停车位", "positive_scope": [{"fact": "project_type", "op": "equals", "value": "住宅"}], "exceptions": []},
+        "G-CONDITION": {"rules": [{"all": [{"fact": "visitor_parking", "op": "equals", "value": true}], "outcome": "visitor_parking_minimum"}], "seam02": {"owner": "applicability", "path": ["scope", "conditions", "numeric"]}},
+        "G-NUMERIC": {"operands": [{"name": "required_motor_spaces", "fact": "required_motor_spaces"}], "modifiers": [{"name": "visitor_min_ratio", "value": 0.02, "operator": "multiply"}], "formula": "required_motor_spaces * visitor_min_ratio", "result": 12, "advisory_caps": [{"value": 20, "meaning": "not_preferably_over"}]}
+      }
+    },
+    {
+      "case_id": "RF-04-UNRESOLVED-SCOPE",
+      "form": "positive_scope_with_exception",
+      "control_for": "RF-04",
+      "source": {"id": "GB55037-2022", "locator": "2.2.3", "unit_type": "scope_exception", "raw_evidence": "除有特殊要求的建筑和甲类厂房可不设置消防救援口外，在建筑的外墙上应设置便于消防救援人员出入的消防救援口。"},
+      "facts": {"building_kind": "公共建筑", "is_class_a_factory": false},
+      "expected": {"outcome": null, "status": "FAIL_CLOSED", "fail_code": "unresolved_applicability"},
+      "b_min": {
+        "G-SCOPE": {"subject": "建筑外墙消防救援口", "positive_scope": [{"fact": "building_kind", "op": "exists"}], "exceptions": [{"fact": "special_requirement", "op": "equals", "value": true}, {"fact": "is_class_a_factory", "op": "equals", "value": true}]},
+        "G-CONDITION": {"rules": [{"all": [{"fact": "special_requirement", "op": "equals", "value": false}, {"fact": "is_class_a_factory", "op": "equals", "value": false}], "outcome": "rescue_openings_required"}], "seam02": {"owner": "applicability", "path": ["scope", "conditions", "exceptions"]}},
+        "G-NUMERIC": null
+      }
+    }
+  ],
+  "extension": {
+    "case_id": "RF-EXT-01",
+    "form": "direct_clause",
+    "source": {"id": "DBJ33T1021-2023", "locator": "4.5.1", "unit_type": "direct_clause", "raw_evidence": "非机动车停车场（库）应设在建筑工程用地红线内。"},
+    "facts": {"project_type": "城市建筑工程", "nonmotor_parking_inside_redline": false},
+    "expected": {"outcome": "nonmotor_parking_inside_redline_required", "status": "PASS"},
+    "b_min": {
+      "G-SCOPE": {"subject": "非机动车停车场", "positive_scope": [{"fact": "project_type", "op": "equals", "value": "城市建筑工程"}], "exceptions": []},
+      "G-CONDITION": {"rules": [{"all": [{"fact": "nonmotor_parking_inside_redline", "op": "equals", "value": false}], "outcome": "nonmotor_parking_inside_redline_required"}], "seam02": {"owner": "applicability", "path": ["scope", "conditions"]}},
+      "G-NUMERIC": null
+    }
+  }
+}

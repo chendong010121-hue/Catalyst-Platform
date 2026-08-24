@@ -1,0 +1,1336 @@
+{
+  "experiment_id": "F-EXP-03",
+  "baseline": "93d491653931c048369579e972791a95bf075587",
+  "comparison": {
+    "same_case_ids": true,
+    "same_source_evidence": true,
+    "shared_result_contract": true,
+    "same_pc_validator": true
+  },
+  "tracks": {
+    "A_PRIME": {
+      "cases": [
+        {
+          "case_id": "RF-01",
+          "track": "A_PRIME",
+          "status": "FAIL_CLOSED",
+          "contract_ok": false,
+          "conclusion": null,
+          "evidence_trace": {
+            "source_id": "GB55037-2022",
+            "source_sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "locator": "4.3.1",
+            "raw_evidence": "民用建筑内不应设置经营、存放或使用甲乙类火灾危险性物品的商店、作坊或储藏间等。",
+            "applicability_basis": null,
+            "numeric_trace": null,
+            "failure_code": "unresolved_applicability"
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "FAIL",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "FAIL",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "FAIL",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "FAIL",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-02",
+          "track": "A_PRIME",
+          "status": "FAIL_CLOSED",
+          "contract_ok": false,
+          "conclusion": null,
+          "evidence_trace": {
+            "source_id": "GB55037-2022",
+            "source_sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "locator": "3.4.3",
+            "raw_evidence": "除受环境地理条件限制只能设置1条消防车道的公共建筑外，其他高层公共建筑和占地面积大于3000m²的其他单、多层公共建筑应至少沿建筑的两条长边设置消防车道。",
+            "applicability_basis": null,
+            "numeric_trace": null,
+            "failure_code": "unresolved_applicability"
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "FAIL",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "FAIL",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "FAIL",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "FAIL",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-03",
+          "track": "A_PRIME",
+          "status": "FAIL_CLOSED",
+          "contract_ok": false,
+          "conclusion": null,
+          "evidence_trace": {
+            "source_id": "DBJ33T1021-2023",
+            "source_sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "locator": "5.0.4 / 表5.0.4",
+            "raw_evidence": "商业场所停车位指标不应小于表5.0.4的规定。 大型商业（建筑面积>10000m²） 机动车 0.8 非机动车 1.1",
+            "applicability_basis": null,
+            "numeric_trace": null,
+            "failure_code": "unresolved_applicability"
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "FAIL",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "FAIL",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "FAIL",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "FAIL",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-04",
+          "track": "A_PRIME",
+          "status": "FAIL_CLOSED",
+          "contract_ok": false,
+          "conclusion": null,
+          "evidence_trace": {
+            "source_id": "GB55037-2022",
+            "source_sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "locator": "2.2.3",
+            "raw_evidence": "除有特殊要求的建筑和甲类厂房可不设置消防救援口外，在建筑的外墙上应设置便于消防救援人员出入的消防救援口。",
+            "applicability_basis": null,
+            "numeric_trace": null,
+            "failure_code": "unresolved_applicability"
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "FAIL",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "FAIL",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "FAIL",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "FAIL",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-05",
+          "track": "A_PRIME",
+          "status": "FAIL_CLOSED",
+          "contract_ok": false,
+          "conclusion": null,
+          "evidence_trace": {
+            "source_id": "DBJ33T1021-2023",
+            "source_sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "locator": "3.0.11",
+            "raw_evidence": "住宅建筑应设置访客停车位，设置数量不计入应配建机动车停车位总数，访客停车位数量不应小于应配建机动车停车位总数的2%，且不宜超过20个。",
+            "applicability_basis": null,
+            "numeric_trace": null,
+            "failure_code": "unresolved_applicability"
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "FAIL",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "FAIL",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "FAIL",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "FAIL",
+              "reason": "operand, modifier, formula, and result are traced"
+            },
+            {
+              "id": "PC-05",
+              "status": "FAIL",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-05-MISSING-OPERAND",
+          "track": "A_PRIME",
+          "status": "FAIL_CLOSED",
+          "contract_ok": false,
+          "conclusion": null,
+          "evidence_trace": {
+            "source_id": "DBJ33T1021-2023",
+            "source_sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "locator": "3.0.11",
+            "raw_evidence": "住宅建筑应设置访客停车位，设置数量不计入应配建机动车停车位总数，访客停车位数量不应小于应配建机动车停车位总数的2%，且不宜超过20个。",
+            "applicability_basis": null,
+            "numeric_trace": null,
+            "failure_code": "unresolved_applicability"
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "FAIL",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "FAIL",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "FAIL",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "FAIL",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "FAIL",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-04-UNRESOLVED-SCOPE",
+          "track": "A_PRIME",
+          "status": "FAIL_CLOSED",
+          "contract_ok": false,
+          "conclusion": null,
+          "evidence_trace": {
+            "source_id": "GB55037-2022",
+            "source_sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "locator": "2.2.3",
+            "raw_evidence": "除有特殊要求的建筑和甲类厂房可不设置消防救援口外，在建筑的外墙上应设置便于消防救援人员出入的消防救援口。",
+            "applicability_basis": null,
+            "numeric_trace": null,
+            "failure_code": "unresolved_applicability"
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "FAIL",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "FAIL",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "FAIL",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "FAIL",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        }
+      ],
+      "pc_summary": {
+        "PC-01": "FAIL",
+        "PC-02": "FAIL",
+        "PC-03": "FAIL",
+        "PC-04": "FAIL",
+        "PC-05": "FAIL",
+        "PC-06": "FAIL",
+        "PC-07": "PASS"
+      },
+      "all_cases_contract_ok": false
+    },
+    "B_MIN": {
+      "cases": [
+        {
+          "case_id": "RF-01",
+          "track": "B_MIN",
+          "status": "PASS",
+          "contract_ok": true,
+          "conclusion": "not_permitted",
+          "evidence_trace": {
+            "source_id": "GB55037-2022",
+            "source_sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "locator": "4.3.1",
+            "raw_evidence": "民用建筑内不应设置经营、存放或使用甲乙类火灾危险性物品的商店、作坊或储藏间等。",
+            "applicability_basis": {
+              "scope": [
+                {
+                  "fact": "building_kind",
+                  "op": "equals",
+                  "value": "民用建筑"
+                }
+              ],
+              "exceptions": [],
+              "conditions": [
+                {
+                  "fact": "has_class_ab_hazardous_goods",
+                  "op": "equals",
+                  "value": true
+                }
+              ],
+              "seam02": {
+                "owner": "applicability",
+                "path": [
+                  "scope",
+                  "conditions"
+                ]
+              }
+            },
+            "numeric_trace": null,
+            "failure_code": null
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "PASS",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "PASS",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "PASS",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "PASS",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE",
+              "G-SCOPE",
+              "G-CONDITION",
+              "G-NUMERIC"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-02",
+          "track": "B_MIN",
+          "status": "PASS",
+          "contract_ok": true,
+          "conclusion": "two_long_edges_fire_lane",
+          "evidence_trace": {
+            "source_id": "GB55037-2022",
+            "source_sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "locator": "3.4.3",
+            "raw_evidence": "除受环境地理条件限制只能设置1条消防车道的公共建筑外，其他高层公共建筑和占地面积大于3000m²的其他单、多层公共建筑应至少沿建筑的两条长边设置消防车道。",
+            "applicability_basis": {
+              "scope": [
+                {
+                  "fact": "building_kind",
+                  "op": "equals",
+                  "value": "公共建筑"
+                }
+              ],
+              "exceptions": [
+                {
+                  "fact": "environment_limited_one_lane",
+                  "op": "equals",
+                  "value": true
+                }
+              ],
+              "conditions": [
+                {
+                  "fact": "is_high_rise",
+                  "op": "equals",
+                  "value": true
+                },
+                {
+                  "fact": "environment_limited_one_lane",
+                  "op": "equals",
+                  "value": false
+                }
+              ],
+              "seam02": {
+                "owner": "applicability",
+                "path": [
+                  "scope",
+                  "conditions",
+                  "exceptions"
+                ]
+              }
+            },
+            "numeric_trace": null,
+            "failure_code": null
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "PASS",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "PASS",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "PASS",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "PASS",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE",
+              "G-SCOPE",
+              "G-CONDITION",
+              "G-NUMERIC"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-03",
+          "track": "B_MIN",
+          "status": "PASS",
+          "contract_ok": true,
+          "conclusion": "commercial_large_rates",
+          "evidence_trace": {
+            "source_id": "DBJ33T1021-2023",
+            "source_sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "locator": "5.0.4 / 表5.0.4",
+            "raw_evidence": "商业场所停车位指标不应小于表5.0.4的规定。 大型商业（建筑面积>10000m²） 机动车 0.8 非机动车 1.1",
+            "applicability_basis": {
+              "scope": [
+                {
+                  "fact": "project_type",
+                  "op": "equals",
+                  "value": "商业"
+                }
+              ],
+              "exceptions": [],
+              "conditions": [
+                {
+                  "fact": "building_area_m2",
+                  "op": "greater_than",
+                  "value": 10000
+                }
+              ],
+              "seam02": {
+                "owner": "applicability",
+                "path": [
+                  "scope",
+                  "conditions",
+                  "table_row"
+                ]
+              }
+            },
+            "numeric_trace": null,
+            "failure_code": null
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "PASS",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "PASS",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "PASS",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "PASS",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE",
+              "G-SCOPE",
+              "G-CONDITION",
+              "G-NUMERIC"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-04",
+          "track": "B_MIN",
+          "status": "PASS",
+          "contract_ok": true,
+          "conclusion": "rescue_openings_required",
+          "evidence_trace": {
+            "source_id": "GB55037-2022",
+            "source_sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "locator": "2.2.3",
+            "raw_evidence": "除有特殊要求的建筑和甲类厂房可不设置消防救援口外，在建筑的外墙上应设置便于消防救援人员出入的消防救援口。",
+            "applicability_basis": {
+              "scope": [
+                {
+                  "fact": "building_kind",
+                  "op": "exists"
+                }
+              ],
+              "exceptions": [
+                {
+                  "fact": "special_requirement",
+                  "op": "equals",
+                  "value": true
+                },
+                {
+                  "fact": "is_class_a_factory",
+                  "op": "equals",
+                  "value": true
+                }
+              ],
+              "conditions": [
+                {
+                  "fact": "special_requirement",
+                  "op": "equals",
+                  "value": false
+                },
+                {
+                  "fact": "is_class_a_factory",
+                  "op": "equals",
+                  "value": false
+                }
+              ],
+              "seam02": {
+                "owner": "applicability",
+                "path": [
+                  "scope",
+                  "conditions",
+                  "exceptions"
+                ]
+              }
+            },
+            "numeric_trace": null,
+            "failure_code": null
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "PASS",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "PASS",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "PASS",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "PASS",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE",
+              "G-SCOPE",
+              "G-CONDITION",
+              "G-NUMERIC"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-05",
+          "track": "B_MIN",
+          "status": "PASS",
+          "contract_ok": true,
+          "conclusion": "visitor_parking_minimum",
+          "evidence_trace": {
+            "source_id": "DBJ33T1021-2023",
+            "source_sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "locator": "3.0.11",
+            "raw_evidence": "住宅建筑应设置访客停车位，设置数量不计入应配建机动车停车位总数，访客停车位数量不应小于应配建机动车停车位总数的2%，且不宜超过20个。",
+            "applicability_basis": {
+              "scope": [
+                {
+                  "fact": "project_type",
+                  "op": "equals",
+                  "value": "住宅"
+                }
+              ],
+              "exceptions": [],
+              "conditions": [
+                {
+                  "fact": "visitor_parking",
+                  "op": "equals",
+                  "value": true
+                }
+              ],
+              "seam02": {
+                "owner": "applicability",
+                "path": [
+                  "scope",
+                  "conditions",
+                  "numeric"
+                ]
+              }
+            },
+            "numeric_trace": {
+              "operands": [
+                {
+                  "fact": "required_motor_spaces",
+                  "value": 600
+                }
+              ],
+              "modifiers": [
+                {
+                  "name": "visitor_min_ratio",
+                  "value": 0.02,
+                  "operator": "multiply"
+                }
+              ],
+              "formula": "required_motor_spaces * visitor_min_ratio",
+              "result": 12.0,
+              "advisory_caps": [
+                {
+                  "value": 20,
+                  "meaning": "not_preferably_over"
+                }
+              ]
+            },
+            "failure_code": null
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "PASS",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "PASS",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "PASS",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "operand, modifier, formula, and result are traced"
+            },
+            {
+              "id": "PC-05",
+              "status": "PASS",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE",
+              "G-SCOPE",
+              "G-CONDITION",
+              "G-NUMERIC"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-05-MISSING-OPERAND",
+          "track": "B_MIN",
+          "status": "FAIL_CLOSED",
+          "contract_ok": true,
+          "conclusion": null,
+          "evidence_trace": {
+            "source_id": "DBJ33T1021-2023",
+            "source_sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "locator": "3.0.11",
+            "raw_evidence": "住宅建筑应设置访客停车位，设置数量不计入应配建机动车停车位总数，访客停车位数量不应小于应配建机动车停车位总数的2%，且不宜超过20个。",
+            "applicability_basis": {
+              "scope": [
+                {
+                  "fact": "project_type",
+                  "op": "equals",
+                  "value": "住宅"
+                }
+              ],
+              "exceptions": [],
+              "conditions": [
+                {
+                  "fact": "visitor_parking",
+                  "op": "equals",
+                  "value": true
+                }
+              ],
+              "seam02": {
+                "owner": "applicability",
+                "path": [
+                  "scope",
+                  "conditions",
+                  "numeric"
+                ]
+              }
+            },
+            "numeric_trace": null,
+            "failure_code": "unsupported_numeric"
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "PASS",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "PASS",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "PASS",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "PASS",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE",
+              "G-SCOPE",
+              "G-CONDITION",
+              "G-NUMERIC"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        },
+        {
+          "case_id": "RF-04-UNRESOLVED-SCOPE",
+          "track": "B_MIN",
+          "status": "FAIL_CLOSED",
+          "contract_ok": true,
+          "conclusion": null,
+          "evidence_trace": {
+            "source_id": "GB55037-2022",
+            "source_sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "locator": "2.2.3",
+            "raw_evidence": "除有特殊要求的建筑和甲类厂房可不设置消防救援口外，在建筑的外墙上应设置便于消防救援人员出入的消防救援口。",
+            "applicability_basis": null,
+            "numeric_trace": null,
+            "failure_code": "unresolved_applicability"
+          },
+          "pc_results": [
+            {
+              "id": "PC-01",
+              "status": "PASS",
+              "reason": "positive scope resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-02",
+              "status": "PASS",
+              "reason": "material conditions resolved or explicitly represented for closure"
+            },
+            {
+              "id": "PC-03",
+              "status": "PASS",
+              "reason": "SEAM-02 applicability ownership observed"
+            },
+            {
+              "id": "PC-04",
+              "status": "PASS",
+              "reason": "not applicable"
+            },
+            {
+              "id": "PC-05",
+              "status": "PASS",
+              "reason": "evidence is separated from applicability"
+            },
+            {
+              "id": "PC-06",
+              "status": "PASS",
+              "reason": "unsupported numeric fails closed"
+            },
+            {
+              "id": "PC-07",
+              "status": "PASS",
+              "reason": "unresolved applicability or evidence fails closed"
+            }
+          ],
+          "diagnostics": {
+            "representation_groups": [
+              "G-BASE",
+              "G-SCOPE",
+              "G-CONDITION",
+              "G-NUMERIC"
+            ],
+            "hidden_knowledge": "not_checked_here",
+            "data_only_extension": false
+          }
+        }
+      ],
+      "pc_summary": {
+        "PC-01": "PASS",
+        "PC-02": "PASS",
+        "PC-03": "PASS",
+        "PC-04": "PASS",
+        "PC-05": "PASS",
+        "PC-06": "PASS",
+        "PC-07": "PASS"
+      },
+      "all_cases_contract_ok": true
+    }
+  },
+  "b_min_ablation": {
+    "G-BASE": {
+      "removed_group": "G-BASE",
+      "material_failure": true,
+      "failed_cases": [
+        "RF-01",
+        "RF-02",
+        "RF-03",
+        "RF-04",
+        "RF-05",
+        "RF-05-MISSING-OPERAND",
+        "RF-04-UNRESOLVED-SCOPE"
+      ],
+      "failed_pcs": [
+        "PC-05",
+        "PC-07"
+      ]
+    },
+    "G-SCOPE": {
+      "removed_group": "G-SCOPE",
+      "material_failure": true,
+      "failed_cases": [
+        "RF-01",
+        "RF-02",
+        "RF-03",
+        "RF-04",
+        "RF-05",
+        "RF-05-MISSING-OPERAND",
+        "RF-04-UNRESOLVED-SCOPE"
+      ],
+      "failed_pcs": [
+        "PC-01",
+        "PC-02",
+        "PC-03",
+        "PC-05",
+        "PC-06"
+      ]
+    },
+    "G-CONDITION": {
+      "removed_group": "G-CONDITION",
+      "material_failure": true,
+      "failed_cases": [
+        "RF-01",
+        "RF-02",
+        "RF-03",
+        "RF-04",
+        "RF-05",
+        "RF-05-MISSING-OPERAND",
+        "RF-04-UNRESOLVED-SCOPE"
+      ],
+      "failed_pcs": [
+        "PC-01",
+        "PC-02",
+        "PC-03",
+        "PC-05",
+        "PC-06"
+      ]
+    },
+    "G-NUMERIC": {
+      "removed_group": "G-NUMERIC",
+      "material_failure": true,
+      "failed_cases": [
+        "RF-05",
+        "RF-05-MISSING-OPERAND"
+      ],
+      "failed_pcs": [
+        "PC-04",
+        "PC-06"
+      ]
+    },
+    "retained_groups": [
+      "G-BASE",
+      "G-SCOPE",
+      "G-CONDITION",
+      "G-NUMERIC"
+    ]
+  },
+  "same_structure_extension": {
+    "data_only": true,
+    "mechanism_code_unchanged": true,
+    "schema_unchanged": true,
+    "implementation_hash_before": "1587852b714a00a167957ec2d8b9d1683f382f27ccc908c626662b6ac8c1c506",
+    "implementation_hash_after": "1587852b714a00a167957ec2d8b9d1683f382f27ccc908c626662b6ac8c1c506",
+    "tracks": {
+      "A_PRIME": {
+        "case_id": "RF-EXT-01",
+        "track": "A_PRIME",
+        "status": "FAIL_CLOSED",
+        "contract_ok": false,
+        "conclusion": null,
+        "evidence_trace": {
+          "source_id": "DBJ33T1021-2023",
+          "source_sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+          "locator": "4.5.1",
+          "raw_evidence": "非机动车停车场（库）应设在建筑工程用地红线内。",
+          "applicability_basis": null,
+          "numeric_trace": null,
+          "failure_code": "unresolved_applicability"
+        },
+        "pc_results": [
+          {
+            "id": "PC-01",
+            "status": "FAIL",
+            "reason": "positive scope resolved or explicitly represented for closure"
+          },
+          {
+            "id": "PC-02",
+            "status": "FAIL",
+            "reason": "material conditions resolved or explicitly represented for closure"
+          },
+          {
+            "id": "PC-03",
+            "status": "FAIL",
+            "reason": "SEAM-02 applicability ownership observed"
+          },
+          {
+            "id": "PC-04",
+            "status": "PASS",
+            "reason": "not applicable"
+          },
+          {
+            "id": "PC-05",
+            "status": "FAIL",
+            "reason": "evidence is separated from applicability"
+          },
+          {
+            "id": "PC-06",
+            "status": "PASS",
+            "reason": "unsupported numeric fails closed"
+          },
+          {
+            "id": "PC-07",
+            "status": "PASS",
+            "reason": "unresolved applicability or evidence fails closed"
+          }
+        ],
+        "diagnostics": {
+          "representation_groups": [
+            "G-BASE"
+          ],
+          "hidden_knowledge": "not_checked_here",
+          "data_only_extension": false
+        }
+      },
+      "B_MIN": {
+        "case_id": "RF-EXT-01",
+        "track": "B_MIN",
+        "status": "PASS",
+        "contract_ok": true,
+        "conclusion": "nonmotor_parking_inside_redline_required",
+        "evidence_trace": {
+          "source_id": "DBJ33T1021-2023",
+          "source_sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+          "locator": "4.5.1",
+          "raw_evidence": "非机动车停车场（库）应设在建筑工程用地红线内。",
+          "applicability_basis": {
+            "scope": [
+              {
+                "fact": "project_type",
+                "op": "equals",
+                "value": "城市建筑工程"
+              }
+            ],
+            "exceptions": [],
+            "conditions": [
+              {
+                "fact": "nonmotor_parking_inside_redline",
+                "op": "equals",
+                "value": false
+              }
+            ],
+            "seam02": {
+              "owner": "applicability",
+              "path": [
+                "scope",
+                "conditions"
+              ]
+            }
+          },
+          "numeric_trace": null,
+          "failure_code": null
+        },
+        "pc_results": [
+          {
+            "id": "PC-01",
+            "status": "PASS",
+            "reason": "positive scope resolved or explicitly represented for closure"
+          },
+          {
+            "id": "PC-02",
+            "status": "PASS",
+            "reason": "material conditions resolved or explicitly represented for closure"
+          },
+          {
+            "id": "PC-03",
+            "status": "PASS",
+            "reason": "SEAM-02 applicability ownership observed"
+          },
+          {
+            "id": "PC-04",
+            "status": "PASS",
+            "reason": "not applicable"
+          },
+          {
+            "id": "PC-05",
+            "status": "PASS",
+            "reason": "evidence is separated from applicability"
+          },
+          {
+            "id": "PC-06",
+            "status": "PASS",
+            "reason": "unsupported numeric fails closed"
+          },
+          {
+            "id": "PC-07",
+            "status": "PASS",
+            "reason": "unresolved applicability or evidence fails closed"
+          }
+        ],
+        "diagnostics": {
+          "representation_groups": [
+            "G-BASE",
+            "G-SCOPE",
+            "G-CONDITION",
+            "G-NUMERIC"
+          ],
+          "hidden_knowledge": "not_checked_here",
+          "data_only_extension": false
+        }
+      }
+    }
+  },
+  "hidden_knowledge": {
+    "A_PRIME": "PASS",
+    "B_MIN": "PASS",
+    "shared_validator": "PASS",
+    "findings": {}
+  },
+  "execution_trace": {
+    "case_count": 7,
+    "raw_corpus_committed": false,
+    "llm_or_retrieval_used": false,
+    "candidate_or_platform_mutated": false
+  }
+}
