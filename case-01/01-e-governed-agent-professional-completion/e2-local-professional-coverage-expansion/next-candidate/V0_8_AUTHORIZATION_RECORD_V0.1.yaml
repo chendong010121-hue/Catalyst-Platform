@@ -1,0 +1,85 @@
+record_type: case_candidate_implementation_authorization
+record_version: "0.1"
+case_id: CASE-01
+parent_stage: CASE-01-E/E2
+decision: granted
+decision_authority: user
+decision_source: current_conversation
+strategic_priority: product_first
+stage_contract_ref: CASE_01_E_E2_BREA_V0_8_RESIDENTIAL_FAR_DENSITY_V0.1_STAGE_CONTRACT.md
+stage_contract_commit: 691d66c372bac829d1197433715d71b2dfc684f3
+target_branch: case-01
+baseline_head: 915ad9057780e2b446c92c63d8afc798096f97e8
+frozen_parent:
+  identity: case-01.brea@0.7-candidate
+  freeze_commit: 915ad9057780e2b446c92c63d8afc798096f97e8
+  candidate_tree_sha256: 06654d8decce427cc3a7f1d6129f7d30d528a9b4c3b911d68fb1ff6e5c6e5d2a
+  implementation_fingerprint: b58ef8789d28f83e18c3300d2ed24bc7f81c1abe41358b9bfeb9f28dda9e00c3
+target_candidate:
+  identity: case-01.brea@0.8-candidate
+  parent: case-01.brea@0.7-candidate
+  expected_status_after_build: FROZEN
+  admitted: false
+  bound: false
+target_knowledge_revision:
+  id: KR-003
+  parent: KR-002
+scope:
+  create_kr_003: true
+  residential_far_density_professional_slice: true
+  add_professional_facts:
+    - land_use_nature
+    - residential_average_storeys
+    - planning_special_area_status
+  numeric_banded_table_selection_private_how: true
+  table_2_3_native_evidence_binding: true
+  preserve_80m_source_note_without_full_compliance_claim: true
+  run_p01_to_p09_construction_checks: true
+  run_v0_7_and_legacy_regressions: true
+  candidate_freeze: true
+publication_limit:
+  implementation_evidence_freeze_commits: 1
+  pushes: 1
+protected_boundaries:
+  brea_v0_1_to_v0_7_mutation: false
+  kr_001_mutation: false
+  kr_002_mutation: false
+  raw_source_upstream: false
+  normalized_full_source_upstream: false
+  table_3_2_professional_route: false
+  road_width_m: false
+  q_semantics: false
+  road_setback_semantics: false
+  planning_orientation_semantics: false
+  full_80m_compliance_evaluation: false
+  new_governed_seam: false
+  new_obligation: false
+  platform_core_mutation: false
+  runtime_mutation: false
+  runtime_adapter_mutation: false
+  enterprise_extension_mutation: false
+  main_mutation: false
+  e2_c_benchmark_creation: false
+  admission: false
+  binding: false
+  v0_9_formation: false
+technology_boundary:
+  llm: false
+  dense_retrieval: false
+  embeddings: false
+  vector_db: false
+  reranker: false
+  web: false
+  memory: false
+  multi_agent: false
+allowed_long_lived_artifacts:
+  - knowledge/KR-003.json
+  - candidate/brea-v0.8/**
+  - V0_8_RESULTS.json
+  - V0_8_CANDIDATE_REVIEW.md
+  - V0_8_FREEZE_RECORD.json
+next_gate:
+  external_v0_8_candidate_freeze_review_required: true
+  discovered_repair_authorized: false
+  e2_c_decision: not_granted
+  admission_decision: not_granted
