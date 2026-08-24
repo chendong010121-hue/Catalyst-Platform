@@ -1,0 +1,52 @@
+record_type: case_candidate_build_authorization
+record_version: "0.1"
+case_id: CASE-01
+parent_stage: CASE-01-E/E2
+target_candidate: case-01.brea@0.5-candidate
+lineage_parent: case-01.brea@0.4-candidate
+decision: granted
+decision_authority: user
+decision_source: current_conversation
+strategic_priority: product_first
+stage_contract: CASE_01_E_E2_BREA_V0_5_TARGETED_PRODUCT_REPAIR_V0.1_STAGE_CONTRACT.md
+stage_contract_commit: 5f0455af5fbfaaf3e72bae0ced855325940edbe9
+target_branch: case-01
+scope:
+  form_v0_5_candidate: true
+  repair_generic_modifier_semantics: true
+  repair_declarative_route_resolution: true
+  strengthen_anti_hardcode_evidence: true
+  align_five_form_path_claim_and_test: true
+  preserve_pc_01_to_pc_07: true
+  preserve_e1_generalized_query: true
+  preserve_t_c01_t_c02_t_c03: true
+  preserve_fn_01_to_fn_11: true
+  preserve_seam_01_to_seam_03: true
+  preserve_obl_01_to_obl_06: true
+  freeze_candidate: true
+publication_limit:
+  implementation_evidence_freeze_commits: 1
+  pushes: 1
+protected_boundaries:
+  brea_v0_1_mutation: false
+  brea_v0_2_mutation: false
+  brea_v0_3_mutation: false
+  brea_v0_4_mutation: false
+  raw_corpus_upstream: false
+  e2_c_benchmark_creation: false
+  f_exp_01_execution: false
+  admission: false
+  binding: false
+  new_governed_seam: false
+  new_obligation: false
+  platform_core_mutation: false
+  runtime_mutation: false
+  runtime_adapter_mutation: false
+  enterprise_extension_mutation: false
+  main_mutation: false
+growth_gate:
+  status: pending_allowed
+  fabricate_source_if_unavailable: false
+next_gate:
+  external_candidate_freeze_review_required: true
+  e2_c_decision: not_granted
