@@ -1,0 +1,80 @@
+{
+  "record_type": "kr_002_hangzhou_growth_gate_results",
+  "execution_head": "dc19eaf66a4c597f6ebbd6de69a6c67fb5733936",
+  "frozen_agent": {
+    "identity": "case-01.brea@0.6-candidate",
+    "freeze_commit": "807c9aede8fd0646da07c79c457286f221ce61ae",
+    "candidate_tree_sha256": "0f92a171a7a3e204d650ac7b456e04bd224c13b6b3ed7cd2630f8d9589a13319",
+    "implementation_fingerprint": "70cdf812addfbdf5c86dd990cd28a8880f73a84fcb66fcfe9c8194a20c63f6a2"
+  },
+  "source": {
+    "title": "杭州市城市规划管理技术规定",
+    "authority": "杭州市规划和自然资源局",
+    "document": "杭规划资源发〔2026〕4号",
+    "issued": "2026-02-05",
+    "effective": "2026-04-01",
+    "pdf_sha256": "3b72f0b0cff971ac56b1fdabf1f9d4a6af5c4e53a9e12bb0b4c3d6f5084afee8",
+    "derivative": {
+      "local_reference": "C:\\Users\\13752\\AppData\\Local\\Temp\\case01-kr002-hangzhou-growth\\hangzhou_regulation.extracted.txt",
+      "sha256": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44",
+      "method": "pypdf 6.14.2 page.extract_text(extraction_mode=layout), UTF-8 write with [page N] markers; no semantic rewriting or table/heading renumbering",
+      "local_only": true,
+      "committed": false
+    }
+  },
+  "knowledge_revision": {
+    "baseline": "KR-001",
+    "target": "KR-002",
+    "kr_002_sha256": "a0dc80fb257ac78750c500df13976b009a58423a99bae5db27695bf89d47d938",
+    "content_boundary": "KR-001 inherited intact plus CORPUS-03 provenance/local reference/SHA and Hangzhou standard metadata/aliases; no Hangzhou routes, planning facts, reasoning primitives, or test answers."
+  },
+  "gates": {
+    "G-01": {
+      "status": "PASS",
+      "observation": "Explicit KR-002 binding was accepted by the frozen v0.6 code; CORPUS-03 loaded through KR-002 source records; candidate tree and canonical implementation fingerprint remained the supplied frozen values."
+    },
+    "G-02": {
+      "status": "SOURCE_STRUCTURE_GROWTH_DETECTED",
+      "source_resolution": "PASS",
+      "probe_summary": "0/5 evidence retrieval probes returned evidence; all returned no_reliable_evidence without numeric fabrication.",
+      "failure_boundary": "Frozen search_units are built only from X.Y.Z clause_index entries. The extracted source uses Chinese section markers and single-level ordinals for these provisions. The frozen table locator/caption path expects 表N.M, while the source preserves 表（2-3） and 表（3-2）.",
+      "probes": {
+        "S-01": {"status": "FAIL_CLOSED", "query_mode": "QMODE-03", "evidence": false, "locator": false, "numeric_fabrication": false},
+        "S-02": {"status": "FAIL_CLOSED", "query_mode": "QMODE-03", "evidence": false, "locator": false, "numeric_fabrication": false},
+        "S-03": {"status": "FAIL_CLOSED", "query_mode": "QMODE-03", "evidence": false, "locator": false, "numeric_fabrication": false},
+        "S-04": {"status": "FAIL_CLOSED", "query_mode": "QMODE-03", "evidence": false, "locator": false, "numeric_fabrication": false},
+        "S-05": {"status": "FAIL_CLOSED", "query_mode": "QMODE-03", "evidence": false, "locator": false, "numeric_fabrication": false}
+      },
+      "source_observation": "The complete local derivative contains the施行 date, 2.2米 wall-height rule, 4米/2.5米 underground connection rule, 表（2-3） values, and 表（3-2） values; frozen generalized retrieval could not expose them as evidence units."
+    },
+    "G-03": {
+      "status": "STRUCTURAL_GROWTH_REQUIRED",
+      "analysis_only": true,
+      "classifications": {
+        "P-01": {
+          "subject": "表（2-3）住宅用地容积率 / 建筑密度",
+          "classification": "STRUCTURAL_GROWTH_REQUIRED",
+          "minimum_missing_primitives": ["Hangzhou table-rule route declaration", "land_use_type / residential-land-use relation", "residential height or average-storey band for row selection", "table row/column selection and numeric outcome relation"]
+        },
+        "P-02": {
+          "subject": "表（3-2）建筑后退道路红线",
+          "classification": "STRUCTURAL_GROWTH_REQUIRED",
+          "minimum_missing_primitives": ["Hangzhou table-rule route declaration", "road_width_m fact", "building height-class fact/relation", "table row/column selection", "source-defined Q coefficient relation for high-rise values"]
+        }
+      },
+      "current_contract_basis": "Frozen v0.6 has table_rule as a route kind but no Hangzhou route, no planning facts for these row selections, and no matching deterministic applicability/verifier contract. No primitives were added."
+    }
+  },
+  "final": {
+    "G-01": "PASS",
+    "G-02": "SOURCE_STRUCTURE_GROWTH_DETECTED",
+    "G-03": "STRUCTURAL_GROWTH_REQUIRED",
+    "normal_knowledge_content_growth_without_agent_mutation_case_proven": false,
+    "agent_mutation": false,
+    "candidate_build": false,
+    "v0_7": "NOT CREATED",
+    "e2_c": "NOT AUTHORIZED",
+    "admission": "NOT AUTHORIZED",
+    "binding": "NOT AUTHORIZED"
+  }
+}
