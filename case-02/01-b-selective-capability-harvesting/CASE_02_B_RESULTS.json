@@ -1,0 +1,69 @@
+{
+  "result": "UNBOUND_RECONSTRUCTION_PASS",
+  "artifact_status": "UNBOUND_CASE_LOCAL_MECHANISM",
+  "selected_asset_id": "WAKU-A01",
+  "source_asset_id": "WAKU-A01",
+  "source_catalog_id": "CASE_02_WAKU_ASSET_CATALOG_V0.1",
+  "source_agent": "waku-agent",
+  "source_commit": "8328f567ab52d07921445cb40feed23cbc5ea2ad",
+  "reconstruction_type": "CATALYST_NATIVE_CASE_LOCAL",
+  "semantic_binding": "UNBOUND",
+  "domain_binding": "NONE",
+  "enterprise_binding": "NONE",
+  "target_agent_binding": "NONE",
+  "implementation_files": [
+    "case-02/01-b-selective-capability-harvesting/reconstruction/retrieval_gate/retrieval_gate.py",
+    "case-02/01-b-selective-capability-harvesting/reconstruction/retrieval_gate/test_retrieval_gate.py"
+  ],
+  "proofs": ["R-01", "R-02", "R-03", "R-04", "R-05", "R-06"],
+  "R-01": {
+    "status": "PASS",
+    "decision": "RETRIEVE",
+    "store_search_count": 1,
+    "query_propagation": "exact",
+    "trace_fields": ["decision", "query", "reason", "fallback"]
+  },
+  "R-02": {
+    "status": "PASS",
+    "decision": "SKIP",
+    "store_search_count": 0,
+    "retrieved_material": [],
+    "trace_fields": ["decision", "reason", "fallback"]
+  },
+  "R-03": {
+    "status": "PASS",
+    "decision": "RETRIEVE",
+    "fallback": true,
+    "fallback_query": "original turn text",
+    "trace_fields": ["decision", "query", "reason", "fallback"]
+  },
+  "R-04": {
+    "status": "PASS",
+    "durable_memory_write": false,
+    "ranking_owner": false,
+    "prompt_assembly_owner": false,
+    "agent_loop_owner": false,
+    "domain_semantics_owner": false,
+    "enterprise_semantics_owner": false
+  },
+  "R-05": {
+    "status": "PASS",
+    "lineage_fields_present": true
+  },
+  "R-06": {
+    "status": "PASS",
+    "waku_personal_assistant_semantics": false,
+    "case_01_building_regulation_semantics": false,
+    "domain": "NONE",
+    "enterprise": "NONE",
+    "target_agent": "NONE"
+  },
+  "protected_boundaries": [
+    "frozen asset catalog unchanged",
+    "no Waku source read or copied",
+    "no durable memory write",
+    "no ranking, prompt assembly, or Agent-loop ownership",
+    "no Domain, Enterprise, or Target Agent binding",
+    "no Platform Core, Runtime, RuntimeAdapter, main, Adapter, Waku registration, or case-01 change"
+  ]
+}
