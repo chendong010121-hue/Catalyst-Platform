@@ -1,0 +1,49 @@
+authorization_id: CASE-02-A-WAKU-UNDERSTANDING-DECOMPOSITION-ASSET-DISCOVERY-V0.1
+status: granted
+branch: case-02
+stage_spec: case-02/01-a-waku-understanding/CASE_02_A_WAKU_EXTERNAL_AGENT_UNDERSTANDING_AND_DECONSTRUCTION_V0.1_STAGE_SPEC.md
+stage_spec_commit: dce70ebcc9fd92676ea487b278fa9740bfc2b24b
+source_repository: https://github.com/ShenSeanChen/waku-agent.git
+source_commit: 8328f567ab52d07921445cb40feed23cbc5ea2ad
+purpose: >-
+  Test Catalyst platform capability to understand a mature external Agent,
+  decompose it by function and responsibility, identify high-value reusable
+  mechanisms, preserve them as case-local governed knowledge assets, and
+  rediscover those assets later without rescanning the Waku source.
+allowed:
+  - read pinned Waku source/docs/tests
+  - use existing local deployment report as operational evidence
+  - run read-only/local structural smoke checks
+  - recover product and lifecycle model
+  - functional/responsibility decomposition
+  - mechanism classification
+  - create minimal case-local governed asset catalog
+  - freeze catalog before rediscovery pass
+  - run asset rediscovery probes without rereading Waku source
+  - assess candidate integration seams
+  - produce minimal Stage outputs
+forbidden:
+  - modify_waku
+  - fork_waku
+  - copy_waku_source_into_catalyst
+  - create_catalyst_adapter
+  - register_waku_in_catalyst
+  - modify_platform_core
+  - modify_runtime
+  - modify_runtime_adapter
+  - modify_main
+  - create_generic_memory_tool_workflow_standard
+  - promote_waku_pattern_to_platform_core
+  - implement_reconstructed_asset
+  - start_case_02_b
+  - require_live_llm_key_for_structural_understanding
+required_outputs:
+  - 01_WAKU_UNDERSTANDING.md
+  - 02_WAKU_MECHANISM_DECONSTRUCTION.md
+  - CASE_02_WAKU_ASSET_CATALOG_V0.1.json
+  - 03_CASE_02_A_REVIEW.md
+commit_policy:
+  max_execution_commits: 1
+  max_pushes: 1
+stop_after_execution: true
+next_stage_authorized: false
