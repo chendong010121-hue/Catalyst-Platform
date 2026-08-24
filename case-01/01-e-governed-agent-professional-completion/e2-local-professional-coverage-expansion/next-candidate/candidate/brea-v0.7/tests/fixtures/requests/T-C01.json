@@ -1,0 +1,12 @@
+{
+  "request": {
+    "request_id": "T-C01",
+    "question": "某园区拟建设一座停放汽油运输车的汽车库（甲类物品运输车）。该汽车库与邻近人员密集场所（如商场）之间的最小防火间距应为多少？",
+    "project_context": {
+      "vehicle_goods_category": "甲类物品运输车（汽油运输车）",
+      "adjacent_building_nature": "人员密集场所"
+    },
+    "regulation_context": {"standard_hint": "GB 55037-2022"},
+    "enterprise_context": {"organization_id": "org-hangzhou-001", "user_id": "user-pilot-001"}
+  }
+}

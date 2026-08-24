@@ -1,0 +1,81 @@
+{
+  "record_type": "brea_v0_7_source_structure_generalization_results",
+  "candidate": "case-01.brea@0.7-candidate",
+  "lineage_parent": "case-01.brea@0.6-candidate",
+  "baseline_commit": "a5b22f83c7714c3b91668a2aeb745949ae40985c",
+  "stage_contract_commit": "048311d9af29f361057232d0bcaf99f862420d51",
+  "scope": "G-02 source-structure growth only; G-03 professional semantic growth not implemented.",
+  "tests": {
+    "S-01": {
+      "status": "PASS",
+      "observation": "施行日期 evidence is retrieved from section prose under native locator 六、附则; no synthetic 第6.1.1条 locator is emitted."
+    },
+    "S-02": {
+      "status": "PASS",
+      "observation": "The source-backed 2.2米 wall-height statement is retrieved verbatim with native source provenance."
+    },
+    "S-03": {
+      "status": "PASS",
+      "observation": "The source-backed underground pedestrian connection values 4米 and 2.5米 are retrieved verbatim."
+    },
+    "S-04": {
+      "status": "PASS",
+      "observation": "Native table 表（2-3） is retrieved with source values including 1.2 and 43%; no 表2.3 rewrite is emitted."
+    },
+    "S-05": {
+      "status": "PASS",
+      "observation": "Explicit native table locator 表（2-3） resolves through the generic table route (QMODE-04) and remains native in evidence."
+    }
+  },
+  "legacy_regressions": {
+    "legacy_X_Y_Z_clause": "PASS",
+    "legacy_decimal_table_表5.0.4": "PASS",
+    "E1_generalized_local_query": "PASS",
+    "PC-01..PC-07": "PASS",
+    "five_professional_forms": "PASS",
+    "T-C01": "PASS",
+    "T-C02": "PASS",
+    "T-C03": "PASS",
+    "FN-01..FN-11": "PASS",
+    "SEAM-01..SEAM-03": "PASS",
+    "OBL-01..OBL-06": "PASS",
+    "Platform_bound_compatibility": "PASS"
+  },
+  "source_structure": {
+    "native_locator_fidelity": "PASS",
+    "generic_forms": [
+      "X.Y.Z",
+      "一、/六、",
+      "（一）",
+      "1. and 1.text",
+      "（1）",
+      "表5.0.4",
+      "表（2-3）",
+      "表（3-2）"
+    ],
+    "section_prose_without_leaf_clause": "PASS",
+    "anti_hardcode": "PASS",
+    "anti_rewrite": "PASS"
+  },
+  "knowledge_compatibility": {
+    "KR-001": {
+      "status": "PASS",
+      "sha256": "71ca09bc0815094e2b436d60aa08458d7c56d8ae546ac4b2c255e7e817b97730"
+    },
+    "KR-002": {
+      "status": "PASS",
+      "sha256": "9995749b9457bcca5727f4e2407c23f4443ea68104f4d56b90e8d39c2f237c04"
+    },
+    "CORPUS-03_derivative_sha256": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44"
+  },
+  "candidate_tree_sha256": "06654d8decce427cc3a7f1d6129f7d30d528a9b4c3b911d68fb1ff6e5c6e5d2a",
+  "candidate_file_count": 26,
+  "implementation_fingerprint": "b58ef8789d28f83e18c3300d2ed24bc7f81c1abe41358b9bfeb9f28dda9e00c3",
+  "freeze_status": "FROZEN",
+  "admission": "NOT ADMITTED",
+  "binding": "NOT BOUND",
+  "external_review": "REQUIRED",
+  "e2_c": "NOT AUTHORIZED",
+  "v0_8": "NOT FORMED",
+  "protected_boundaries": "PASS"
+}
