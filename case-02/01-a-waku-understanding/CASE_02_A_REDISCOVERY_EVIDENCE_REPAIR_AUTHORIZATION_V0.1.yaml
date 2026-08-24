@@ -1,0 +1,83 @@
+authorization_id: CASE_02_A_REDISCOVERY_EVIDENCE_REPAIR_V0.1
+status: AUTHORIZED
+case_branch: case-02
+expected_base_commit: d19c7b1cc03edb126a32ebde0b92b28aa9bd8976
+purpose: >-
+  Repair only the independent-evidence weakness in Case 02-A asset rediscovery.
+  Prove that new capability needs can be matched from the already-frozen Waku
+  asset catalog without rescanning Waku or reopening understanding/decomposition.
+
+frozen_input:
+  path: case-02/01-a-waku-understanding/CASE_02_WAKU_ASSET_CATALOG_V0.1.json
+  status_required: FROZEN_FOR_REDISCOVERY
+  source_commit_required: 8328f567ab52d07921445cb40feed23cbc5ea2ad
+  mutation_allowed: false
+
+allowed_read_scope:
+  - case-02/01-a-waku-understanding/CASE_02_WAKU_ASSET_CATALOG_V0.1.json
+  - this authorization record
+
+forbidden_read_scope:
+  - ShenSeanChen/waku-agent repository
+  - E:\试验场地\agent-lab\waku-agent
+  - any Waku source file, test, README, docs, .env, .waku state, trace, database, or dashboard
+  - case-02/01-a-waku-understanding/01_WAKU_UNDERSTANDING.md
+  - case-02/01-a-waku-understanding/02_WAKU_MECHANISM_DECONSTRUCTION.md
+  - case-02/01-a-waku-understanding/03_CASE_02_A_REVIEW.md
+
+new_need_probes:
+  D: >-
+    I have multiple tasks that may run in parallel. I need to prevent parallel
+    branches from writing the same state key, and the overall flow must have a
+    clear maximum number of steps. Have we previously learned a mechanism relevant
+    to this problem?
+  E: >-
+    I have many operational instructions, but I do not want to inject every full
+    instruction into the Agent prompt on every turn. Have we previously learned a
+    mechanism relevant to this problem?
+  F: >-
+    I need an external Agent's live runtime events to be observable by a UI while
+    also preserving inspectable local execution evidence. Have we previously
+    learned a mechanism relevant to this problem?
+
+required_result_per_probe:
+  - matched_asset_ids
+  - why_relevant
+  - reuse_preconditions
+  - why_not_directly_platform_core
+  - next_action_if_reuse_is_authorized
+
+required_evidence:
+  - record the frozen catalog git commit and file path used
+  - compute and record a SHA-256 of the catalog bytes before discovery
+  - confirm catalog bytes remain unchanged after discovery
+  - confirm no forbidden read scope was accessed during the rediscovery phase
+  - do not use Need A/B/C as evidence for this repair
+
+allowed_output:
+  - case-02/01-a-waku-understanding/04_CASE_02_A_REDISCOVERY_EVIDENCE_REPAIR.md
+
+forbidden_actions:
+  - modify the asset catalog
+  - reread or rescan Waku
+  - reopen Waku understanding or decomposition
+  - create or modify any asset record
+  - reconstruct or execute any stored asset
+  - create a Catalyst adapter
+  - register Waku in Catalyst
+  - modify Platform Core, Runtime, RuntimeAdapter, main, or case-01
+  - start Case 02-B
+
+execution_discipline:
+  commits_after_authorization: 1
+  push_branch: case-02
+  stop_after_push: true
+
+success_condition: >-
+  Need D/E/F are answered from the frozen catalog only, with the catalog unchanged
+  and an independently later repository commit preserving the rediscovery result.
+
+failure_condition: >-
+  If answering any probe requires Waku/source/decomposition reread, catalog mutation,
+  or new mechanism inference not supported by the stored asset records, mark that
+  probe FAIL_CLOSED and STOP without expanding scope.
