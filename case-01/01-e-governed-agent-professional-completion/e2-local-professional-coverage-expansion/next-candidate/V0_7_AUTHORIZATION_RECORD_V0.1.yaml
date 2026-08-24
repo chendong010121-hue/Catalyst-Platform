@@ -1,0 +1,89 @@
+record_type: case_candidate_implementation_authorization
+record_version: "0.1"
+case_id: CASE-01
+parent_stage: CASE-01-E/E2
+decision: granted
+decision_authority: user
+decision_source: current_conversation
+strategic_priority: product_first
+stage_contract_ref: CASE_01_E_E2_BREA_V0_7_SOURCE_STRUCTURE_GENERALIZATION_V0.1_STAGE_CONTRACT.md
+stage_contract_commit: 048311d9af29f361057232d0bcaf99f862420d51
+target_branch: case-01
+baseline_head: 388d47a21c36efec94fce5b7910094a4c2d8be84
+frozen_parent:
+  identity: case-01.brea@0.6-candidate
+  freeze_commit: 807c9aede8fd0646da07c79c457286f221ce61ae
+  candidate_tree_sha256: 0f92a171a7a3e204d650ac7b456e04bd224c13b6b3ed7cd2630f8d9589a13319
+  implementation_fingerprint: 70cdf812addfbdf5c86dd990cd28a8880f73a84fcb66fcfe9c8194a20c63f6a2
+target_candidate:
+  identity: case-01.brea@0.7-candidate
+  parent: case-01.brea@0.6-candidate
+  expected_status_after_build: FROZEN
+  admitted: false
+  bound: false
+knowledge_inputs:
+  kr_001_allowed_for_regression: true
+  kr_002_allowed_for_source_structure_proof: true
+scope:
+  source_native_evidence_unit_generalization: true
+  observed_structure_support:
+    decimal_clause: true
+    chinese_top_level_heading: true
+    chinese_parenthesized_subsection: true
+    single_level_ordinal_item: true
+    parenthesized_numeric_item: true
+    decimal_table_locator: true
+    parenthesized_hyphen_table_locator: true
+  generalized_locator_extraction: true
+  generalized_table_caption_resolution: true
+  generalized_evidence_unit_search: true
+  preserve_native_source_locator: true
+  run_s01_to_s05_hangzhou_probes: true
+  run_legacy_regressions: true
+  candidate_freeze: true
+publication_limit:
+  implementation_evidence_freeze_commits: 1
+  pushes: 1
+protected_boundaries:
+  brea_v0_1_to_v0_6_mutation: false
+  kr_001_mutation: false
+  kr_002_mutation: false
+  raw_source_upstream: false
+  normalized_full_source_upstream: false
+  add_hangzhou_professional_routes: false
+  add_planning_fact_descriptors: false
+  add_land_use_type: false
+  add_road_width_m: false
+  add_building_height_planning_semantics: false
+  add_q_semantics: false
+  professional_semantic_growth_implementation: false
+  new_governed_seam: false
+  new_obligation: false
+  platform_core_mutation: false
+  runtime_mutation: false
+  runtime_adapter_mutation: false
+  enterprise_extension_mutation: false
+  main_mutation: false
+  e2_c_benchmark_creation: false
+  admission: false
+  binding: false
+  v0_8_formation: false
+technology_boundary:
+  llm: false
+  dense_retrieval: false
+  embeddings: false
+  vector_db: false
+  reranker: false
+  web: false
+  memory: false
+  multi_agent: false
+allowed_long_lived_artifacts:
+  - candidate/brea-v0.7/**
+  - V0_7_RESULTS.json
+  - V0_7_CANDIDATE_REVIEW.md
+  - V0_7_FREEZE_RECORD.json
+next_gate:
+  external_v0_7_candidate_freeze_review_required: true
+  discovered_repair_authorized: false
+  v0_8_decision: not_granted
+  e2_c_decision: not_granted
