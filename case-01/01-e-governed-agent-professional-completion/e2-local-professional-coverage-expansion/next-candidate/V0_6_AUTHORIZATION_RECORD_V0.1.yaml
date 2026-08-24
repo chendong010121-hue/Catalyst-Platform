@@ -1,0 +1,47 @@
+record_type: case_candidate_authorization
+record_version: "0.1"
+case_id: CASE-01
+parent_stage: CASE-01-E/E2
+decision: granted
+decision_authority: user
+decision_source: current_conversation
+strategic_priority: product_first
+target_candidate: case-01.brea@0.6-candidate
+lineage_parent: case-01.brea@0.5-candidate
+stage_contract_ref: CASE_01_E_E2_BREA_V0_6_KNOWLEDGE_LIFECYCLE_DECOUPLING_V0.1_STAGE_CONTRACT.md
+stage_contract_commit: e1c50c543ec118e60a3eff49c139a9efa87eb5fd
+target_branch: case-01
+scope:
+  form_brea_v0_6_candidate: true
+  create_case_local_kr_001: true
+  explicit_knowledge_binding: true
+  remove_historical_manifest_hard_binding: true
+  remove_candidate_local_professional_data_ownership: true
+  knowledge_revision_trace_identity: true
+  preserve_v0_5_behavior: true
+publication_limit:
+  implementation_evidence_freeze_commits: 1
+  pushes: 1
+protected_boundaries:
+  brea_v0_1_mutation: false
+  brea_v0_2_mutation: false
+  brea_v0_3_mutation: false
+  brea_v0_4_mutation: false
+  brea_v0_5_mutation: false
+  add_hangzhou_source_to_kr_001: false
+  add_new_domain_fact_vocabulary: false
+  add_new_planning_professional_routes: false
+  source_format_expansion_beyond_kr_001_need: false
+  raw_corpus_upstream: false
+  e2_c_benchmark_creation: false
+  platform_core_mutation: false
+  runtime_mutation: false
+  runtime_adapter_mutation: false
+  enterprise_extension_mutation: false
+  main_mutation: false
+next_gate:
+  external_v0_6_freeze_review_required: true
+  kr_002_hangzhou_growth_gate: not_granted
+  e2_c_decision: not_granted
+  admission: not_granted
+  binding: not_granted
