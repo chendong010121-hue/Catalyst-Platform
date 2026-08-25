@@ -1,0 +1,113 @@
+{
+  "record_type": "catalyst_case02_waku_evaluation_benchmark_freeze",
+  "record_version": "0.1",
+  "verdict": "WAKU_EVAL_BENCHMARK_FROZEN_FOR_REVIEW",
+  "authorization_commit": "6023f2dd1a0d46440867e68ed3a23e2d3cd80be2",
+  "stage_spec_commit": "56fc1facd89dacce5cb5223e5c4f222de6db886e",
+  "pinned_waku_repository": "ShenSeanChen/waku-agent",
+  "pinned_waku_commit": "8328f567ab52d07921445cb40feed23cbc5ea2ad",
+  "frozen_external_target_unchanged": true,
+  "responsibility_map": {
+    "path": "evaluation-v0.1/responsibility_map.json",
+    "sha256": "2a691724c72c7fbd1e57e92a867024ff5ee05f85a1c464d8885cf4c590c4377f",
+    "projected_before_case_design": true,
+    "required": ["WR-01", "WR-02", "WR-03", "WR-04", "WR-05", "WR-06", "WR-07", "WR-08", "WR-09", "WR-10", "WR-11", "WR-12", "WR-13", "WR-14", "WR-15", "WR-16", "WR-17", "WR-18", "WR-19", "WR-20", "WR-22"],
+    "not_required_now": ["WR-21"],
+    "unknown": []
+  },
+  "native_waku_eval_evidence_reused": {
+    "understanding": ["case-02/01-a-waku-understanding/01_WAKU_UNDERSTANDING.md", "02_WAKU_MECHANISM_DECONSTRUCTION.md"],
+    "frozen_case02_a": ["03_CASE_02_A_REVIEW.md", "04_CASE_02_A_REDISCOVERY_EVIDENCE_REPAIR.md", "CASE_02_WAKU_ASSET_CATALOG_V0.1.json"],
+    "frozen_case02_b": ["case-02/01-b-selective-capability-harvesting/CASE_02_B_REVIEW.md", "CASE_02_B_RESULTS.json", "reconstruction/retrieval_gate/**"],
+    "pinned_native_paths_inspected_read_only": ["evals/deterministic/**", "evals/judge/**", "evals/dataset.jsonl", "evals/memory_arena.json", "waku/ops/release_gate.py"],
+    "native_semantics_reused": [
+      "deterministic completion is separate from model-quality judge",
+      "judge requires active provider key",
+      "judge skipped is not judge PASS",
+      "deterministic failure closes release gate",
+      "trace and eval artifacts are local inspectable evidence"
+    ],
+    "native_release_gate_command_recorded_not_run": "python -m waku.ops.release_gate"
+  },
+  "benchmark": {
+    "case_count": 7,
+    "case_ids": ["WAKU-E2E-001", "WAKU-E2E-002", "WAKU-E2E-003", "WAKU-E2E-004", "WAKU-CAP-001", "WAKU-CRIT-001", "WAKU-CAP-002"],
+    "suite_per_case": {
+      "WAKU-E2E-001": "END_TO_END_PRODUCT",
+      "WAKU-E2E-002": "END_TO_END_PRODUCT",
+      "WAKU-E2E-003": "END_TO_END_PRODUCT",
+      "WAKU-E2E-004": "END_TO_END_PRODUCT",
+      "WAKU-CAP-001": "CAPABILITY_BOUNDARY",
+      "WAKU-CRIT-001": "CRITICAL_HONESTY_SIDE_EFFECT",
+      "WAKU-CAP-002": "CAPABILITY_BOUNDARY"
+    },
+    "WR_ids_per_case": {
+      "WAKU-E2E-001": ["WR-01", "WR-08", "WR-09", "WR-10", "WR-11", "WR-14", "WR-20", "WR-22"],
+      "WAKU-E2E-002": ["WR-02", "WR-04", "WR-08", "WR-13", "WR-14", "WR-22"],
+      "WAKU-E2E-003": ["WR-03", "WR-04", "WR-05", "WR-07", "WR-08", "WR-10", "WR-13", "WR-20", "WR-22"],
+      "WAKU-E2E-004": ["WR-01", "WR-02", "WR-12", "WR-13", "WR-14", "WR-18", "WR-22"],
+      "WAKU-CAP-001": ["WR-02", "WR-06", "WR-08", "WR-14", "WR-22"],
+      "WAKU-CRIT-001": ["WR-08", "WR-09", "WR-10", "WR-11", "WR-14", "WR-20", "WR-22"],
+      "WAKU-CAP-002": ["WR-03", "WR-08", "WR-14", "WR-16", "WR-17", "WR-19", "WR-20", "WR-22"]
+    },
+    "related_WAKU_asset_ids_if_any": {
+      "WAKU-E2E-001": ["WAKU-A02", "WAKU-A03"],
+      "WAKU-E2E-002": ["WAKU-A01", "WAKU-A02", "WAKU-A03"],
+      "WAKU-E2E-003": ["WAKU-A01", "WAKU-A02"],
+      "WAKU-E2E-004": ["WAKU-A03"],
+      "WAKU-CAP-001": ["WAKU-A03", "WAKU-A06"],
+      "WAKU-CRIT-001": ["WAKU-A02", "WAKU-A03", "WAKU-A04"],
+      "WAKU-CAP-002": ["WAKU-A01", "WAKU-A02", "WAKU-A03", "WAKU-A04"]
+    },
+    "critical_gates_covered": ["CG-01", "CG-02", "CG-03", "CG-04", "CG-05", "CG-06"],
+    "public_benchmark_sha256": "c45453f96df0ad1c3df9fb9ea4bf4cbc064bfe00c09add5a96e317cb5afc066e",
+    "private_rubric_sha256": "b0ea67636fa93421d1b714f79f74b88b6fd454891fdfcd4f7668e331dbd4f2b8",
+    "public_path": "evaluation-v0.1/benchmark/public/benchmark_cases.json",
+    "private_path": "evaluation-v0.1/benchmark/private/rubric.json",
+    "public_private_separation": "PASS"
+  },
+  "optional_capabilities_explicitly_not_required": [
+    "Apple Calendar",
+    "Google Calendar",
+    "Telegram",
+    "Discord",
+    "WhatsApp",
+    "voice",
+    "MCP",
+    "hosted memory backends",
+    "OpenTelemetry export",
+    "graph workflow mode",
+    "experimental delegate coding tools"
+  ],
+  "target_was_not_executed_against_new_catalyst_benchmark": true,
+  "waku_was_not_executed_against_new_catalyst_benchmark": true,
+  "provider_invocation": "NONE",
+  "credential_persistence": "NONE",
+  "protected_boundaries": {
+    "case02_a_understanding_unchanged": true,
+    "case02_a_rediscovery_evidence_unchanged": true,
+    "case02_a_catalog_unchanged": true,
+    "case02_b_review_results_reconstruction_unchanged": true,
+    "platform_unchanged": true,
+    "runtime_unchanged": true,
+    "runtime_adapter_unchanged": true,
+    "platform_harness_unchanged": true,
+    "main_unchanged": "5874be1130e8867082880fcd63f659fc909d9efd",
+    "status": "PASS"
+  },
+  "benchmark_design_limitations": [
+    "Formation only; no Catalyst benchmark case was run against Waku.",
+    "Live provider/model quality, repeated trials, and exact model identity remain execution-time requirements.",
+    "Native deterministic evidence is reused as upstream evidence and is not duplicated as Catalyst case count.",
+    "Optional external integrations remain outside core product completeness.",
+    "Human product usefulness review remains a later gate.",
+    "No run_evaluation.py was created because benchmark data and state/rubric design were sufficient for this formation stage."
+  ],
+  "generated_files_only": [
+    "evaluation-v0.1/responsibility_map.json",
+    "evaluation-v0.1/benchmark/public/benchmark_cases.json",
+    "evaluation-v0.1/benchmark/private/rubric.json",
+    "evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json"
+  ],
+  "status": "FROZEN_FOR_EXTERNAL_BENCHMARK_REVIEW"
+}
