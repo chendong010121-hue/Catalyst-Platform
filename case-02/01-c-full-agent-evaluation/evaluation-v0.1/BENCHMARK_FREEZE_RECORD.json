@@ -1,8 +1,8 @@
 {
   "record_type": "catalyst_case02_waku_evaluation_benchmark_freeze",
   "record_version": "0.1",
-  "verdict": "WAKU_EVAL_BENCHMARK_FROZEN_FOR_REVIEW",
-  "authorization_commit": "6023f2dd1a0d46440867e68ed3a23e2d3cd80be2",
+  "verdict": "WAKU_BENCHMARK_REPAIRED_FOR_RE_REVIEW",
+  "authorization_commit": "639c3079b42f1185214cb284b84ab047d8f07e37",
   "stage_spec_commit": "56fc1facd89dacce5cb5223e5c4f222de6db886e",
   "pinned_waku_repository": "ShenSeanChen/waku-agent",
   "pinned_waku_commit": "8328f567ab52d07921445cb40feed23cbc5ea2ad",
@@ -60,8 +60,8 @@
       "WAKU-CAP-002": ["WAKU-A01", "WAKU-A02", "WAKU-A03", "WAKU-A04"]
     },
     "critical_gates_covered": ["CG-01", "CG-02", "CG-03", "CG-04", "CG-05", "CG-06"],
-    "public_benchmark_sha256": "c45453f96df0ad1c3df9fb9ea4bf4cbc064bfe00c09add5a96e317cb5afc066e",
-    "private_rubric_sha256": "b0ea67636fa93421d1b714f79f74b88b6fd454891fdfcd4f7668e331dbd4f2b8",
+    "public_benchmark_sha256": "3e9e2313abc0ed465a0f0cca8ff2a190ef7cd632028d2d6bece939e6e9c1846a",
+    "private_rubric_sha256": "7c3e57324612747d759535eb2dc665adcf11d9f4ed9fd015fb45767fcd884295",
     "public_path": "evaluation-v0.1/benchmark/public/benchmark_cases.json",
     "private_path": "evaluation-v0.1/benchmark/private/rubric.json",
     "public_private_separation": "PASS"
@@ -103,11 +103,51 @@
     "Human product usefulness review remains a later gate.",
     "No run_evaluation.py was created because benchmark data and state/rubric design were sufficient for this formation stage."
   ],
+  "repair": {
+    "repair_authorization_commit": "639c3079b42f1185214cb284b84ab047d8f07e37",
+    "original_formation_commit": "12acca7ee0b29971d8b1dbed659285bf6986587f",
+    "target_visible_fields": ["case_id", "target_turns"],
+    "target_turns_contract": "target_turns are exact user-visible text sent through the Waku product path in order; evaluator-owned restart/session-switch/setup/ops steps are private",
+    "fixture_manifest": [
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-001/calendar.ics", "sha256": "a84d7324617f8d0821235f571507040b796664f54c842932c1a58da2e0fce8a8"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-001/setup.json", "sha256": "b3c9b622e55911a68215d214828924ae51a61eaea1f108f07e1824ea0c0a5a63"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-002/setup.json", "sha256": "33d74953dc6b0a9202c65d028e959d6595af38b9b4fd2f005fe46d854e13cb4d"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-003/stale_preference_setup.json", "sha256": "1f4fde9c02176c0c08a1020333ec95fa545284fd46510f881e7993a713f213a6"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-004/session_setup.json", "sha256": "3c35d104c6b18b9417caf8c475ed47c51478f0882feeb2b0ebcb49c36210f577"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CAP-001/skills/weekly-project-brief/SKILL.md", "sha256": "c9d6199238756ee35b155efe4062571a139a284a042c5acd9a6b6c2ef30e5667"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CAP-001/skills/unrelated/SKILL.md", "sha256": "caede0a712a23a0270e2455c1e2a927338c7788e8758ae57b6508ff429e75bae"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CAP-001/setup.json", "sha256": "38ece49e3bafc7c22e25543b4ed7ec0ed5b65b5753f63e9f9fcc5ea21d3bdc8e"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CRIT-001/note_tool_failure.json", "sha256": "56269d38abf07ccd794de5fd7075b3740f326cd7d7d9d6d5165766faefc73678"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CAP-002/setup.json", "sha256": "6edaf7c82b9238060fb2cef2e4439b059c86f1cea3162aaefa1032f5a427fb1c"}
+    ],
+    "cap002_target_ops_separation": {
+      "target_step": "normal bounded no-side-effect user knowledge turn",
+      "private_ops": ["trace inspection/reconstruction", "provider/model identity recording", "later native deterministic/judge/release-gate evaluation", "judge skipped != PASS", "credential non-persistence"],
+      "target_requests_none_of": ["evaluation result", "release gate report", "provider/model identity", "benchmark trace"],
+      "judge_skipped_is_not_pass": true
+    },
+    "clock_timezone_contract": {
+      "case": "WAKU-E2E-001",
+      "clock": "2026-08-25T09:00:00+08:00",
+      "timezone": "Asia/Shanghai",
+      "target_date": "2026-08-26",
+      "relative_time_removed_from_target_turn": true
+    },
+    "observability_limitations": [
+      "Pinned Waku has no canonical external correlation-id contract; use session_id, chat_log metadata, trace file identity, and process boundary.",
+      "Do not require a skill_match or skill_load trace event unless pinned Waku emits it or the evaluator has an externally captured request-context record.",
+      "Do not require a dedicated reload event; verify the real process boundary plus session/chat state."
+    ],
+    "waku_was_not_executed_during_repair": true,
+    "provider_invocation": "NONE",
+    "protected_boundaries_unchanged": true
+  },
   "generated_files_only": [
     "evaluation-v0.1/responsibility_map.json",
     "evaluation-v0.1/benchmark/public/benchmark_cases.json",
     "evaluation-v0.1/benchmark/private/rubric.json",
+    "evaluation-v0.1/benchmark/private/fixtures/**",
     "evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json"
   ],
-  "status": "FROZEN_FOR_EXTERNAL_BENCHMARK_REVIEW"
+  "status": "FROZEN_FOR_EXTERNAL_BENCHMARK_RE_REVIEW"
 }

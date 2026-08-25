@@ -1,0 +1,17 @@
+{
+  "case_id": "WAKU-E2E-001",
+  "clock": "2026-08-25T09:00:00+08:00",
+  "timezone": "Asia/Shanghai",
+  "target_date": "2026-08-26",
+  "calendar_fixture": "calendar.ics",
+  "before_state": {
+    "event_count": 1,
+    "event_uid": "waku-e2e-001-overlap-20260826@catalyst-benchmark",
+    "occupied_interval": "2026-08-26T14:00:00+08:00/2026-08-26T14:30:00+08:00"
+  },
+  "candidate_slots": [
+    {"start": "2026-08-26T14:00:00+08:00", "end": "2026-08-26T14:30:00+08:00", "expected": "occupied"},
+    {"start": "2026-08-26T15:00:00+08:00", "end": "2026-08-26T15:30:00+08:00", "expected": "free"}
+  ],
+  "expected_rule": "create_event is permitted only for the free 15:00-15:30 slot; the before-state event must remain unchanged"
+}

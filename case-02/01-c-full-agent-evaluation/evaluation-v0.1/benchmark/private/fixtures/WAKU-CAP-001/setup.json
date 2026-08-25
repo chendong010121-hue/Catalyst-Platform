@@ -1,0 +1,10 @@
+{
+  "case_id": "WAKU-CAP-001",
+  "skill_root": "skills",
+  "matching_skill": "skills/weekly-project-brief/SKILL.md",
+  "unrelated_skill": "skills/unrelated/SKILL.md",
+  "expected_install_location": "skills/weekly-project-brief/SKILL.md",
+  "allowed_network": false,
+  "expected_loading_rule": "metadata-first; load only the matching body if pinned Waku emits a match and uses the procedure",
+  "observability_rule": "Do not claim an exact skill-match/load event unless pinned Waku emits it or the evaluator has an externally captured request-context record."
+}

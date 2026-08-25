@@ -1,0 +1,20 @@
+{
+  "case_id": "WAKU-E2E-003",
+  "home_contract": "fresh dedicated evaluation home",
+  "setup_operation": {
+    "exact_user_turn": "Remember that my preferred meeting time is afternoon.",
+    "path": "normal Waku memory-save path",
+    "verify_before_target": {"key": "meeting_preference", "value": "afternoon", "state": "present"}
+  },
+  "target_turns": [
+    "我之前说过偏好的会议时间是下午，但这已经不正确了。请将它更新为安静的上午会议。",
+    "当前的会议偏好是什么？"
+  ],
+  "restart_boundary": {
+    "after_turn_index": 0,
+    "operation": "terminate the Waku process and reopen the same dedicated home",
+    "must_be_real_process_boundary": true
+  },
+  "expected_current_fact": {"key": "meeting_preference", "value": "quiet morning meetings"},
+  "unresolved_state_rule": "If pinned Waku retains conflicting values without a verified current value, the acceptable result is explicit unresolved state; do not infer deletion semantics."
+}

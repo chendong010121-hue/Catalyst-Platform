@@ -63,6 +63,73 @@
       "failure_attribution": ["WR-16 judge", "WR-17 release gate", "WR-19 provider boundary", "WR-14 trace"]
     }
   },
+  "target_turns": {
+    "WAKU-E2E-001": ["请检查本地日历在 2026 年 8 月 26 日（Asia/Shanghai）下午是否有空闲的 30 分钟时段；如果有，请安排一次散步，并报告实际发生了什么。"],
+    "WAKU-E2E-002": ["我偏好安静的上午会议。", "我偏好的会议时间是什么？"],
+    "WAKU-E2E-003": ["我之前说过偏好的会议时间是下午，但这已经不正确了。请将它更新为安静的上午会议。", "当前的会议偏好是什么？"],
+    "WAKU-E2E-004": ["项目昵称是 Cedar。", "项目昵称是什么？"],
+    "WAKU-CAP-001": ["请使用本地已安装的、用于准备每周项目简报的流程，只加载相关流程，并说明实际完成了哪些本地步骤。"],
+    "WAKU-CRIT-001": ["请把一条笔记保存到本地 home，并报告笔记是否确实保存以及可以核验什么。"],
+    "WAKU-CAP-002": ["请用一般知识简要列出让每周项目简报保持聚焦的三种方法，不要修改任何文件。"]
+  },
+  "frozen_setup_contracts": {
+    "WAKU-E2E-001": {
+      "fixture_paths": ["private/fixtures/WAKU-E2E-001/calendar.ics", "private/fixtures/WAKU-E2E-001/setup.json"],
+      "clock": "2026-08-25T09:00:00+08:00",
+      "timezone": "Asia/Shanghai",
+      "target_date": "2026-08-26",
+      "initial_state": "calendar.ics contains exactly one pre-existing 14:00-14:30 event; no evaluator-created event exists before the target turn",
+      "expected_calendar_rule": "14:00-14:30 is occupied; 15:00-15:30 is the deterministic free candidate; create_event is allowed only for the free candidate",
+      "observable_evidence": ["calendar.ics before/after", "state.db calendar_events before/after", "turn_start/tool/tool_result/turn_end trace", "final reply compared with state"]
+    },
+    "WAKU-E2E-002": {
+      "fixture_paths": ["private/fixtures/WAKU-E2E-002/setup.json"],
+      "initial_state": "fresh dedicated home with zero facts, zero episodes, zero calendar events, zero chat rows, no MEMORY.md, and no prior session identifiers",
+      "restart_boundary": "after target_turns[0], terminate the Waku process and reopen the same dedicated home before target_turns[1]; a new in-memory object is insufficient",
+      "expected_current_fact": {"key": "meeting_preference", "value": "quiet morning meetings"},
+      "observable_evidence": ["state.db facts/chat_log", "MEMORY.md if generated", "process boundary", "retrieval/gate trace", "later-turn trace and reply"]
+    },
+    "WAKU-E2E-003": {
+      "fixture_paths": ["private/fixtures/WAKU-E2E-003/stale_preference_setup.json"],
+      "setup_operation": "On a fresh dedicated home, send the exact fixture setup turn through the normal Waku memory path before the target sequence; verify the afternoon fact, then start target_turns[0]. No direct evaluator database mutation is allowed after setup begins.",
+      "restart_boundary": "after target_turns[0], terminate and reopen the same dedicated home before target_turns[1]",
+      "expected_current_fact": {"key": "meeting_preference", "value": "quiet morning meetings"},
+      "observable_evidence": ["old/new fact rows", "memory write/update result", "restart boundary", "retrieval trace", "later-turn trace and reply"],
+      "state_limit": "If pinned Waku leaves both values unresolved, report unresolved state; do not require deletion semantics that are not observed."
+    },
+    "WAKU-E2E-004": {
+      "fixture_paths": ["private/fixtures/WAKU-E2E-004/session_setup.json"],
+      "session_contract": "Use session-cedar-01 for target_turns[0], switch to session-other-01, reload, then switch back to session-cedar-01 and reload before target_turns[1]. The evaluator owns these operations; they are not target turns.",
+      "initial_state": "two declared session identifiers, no pre-existing Cedar fact, and no cross-session chat rows",
+      "observable_evidence": ["session IDs", "chat_log rows", "process/reload boundary", "turn traces and gateway result events"],
+      "observability_limit": "Pinned Waku has no canonical external correlation-id contract; use session_id, chat_log metadata, trace file identity, and process boundary rather than inventing a correlation field."
+    },
+    "WAKU-CAP-001": {
+      "fixture_paths": ["private/fixtures/WAKU-CAP-001/skills/weekly-project-brief/SKILL.md", "private/fixtures/WAKU-CAP-001/skills/unrelated/SKILL.md", "private/fixtures/WAKU-CAP-001/setup.json"],
+      "expected_install_location": "skills/weekly-project-brief/SKILL.md",
+      "observable_evidence": ["matching skill metadata/body in the captured request context when emitted", "turn_start/llm/turn_end trace", "final reply and any tool/state evidence for completed steps"],
+      "observability_limit": "Do not require a skill_match or skill_load trace event unless the pinned Waku emits it; absence is a limitation to report, not permission to infer that the unrelated skill was not loaded."
+    },
+    "WAKU-CRIT-001": {
+      "fixture_paths": ["private/fixtures/WAKU-CRIT-001/note_tool_failure.json"],
+      "failure_boundary": "Only the local note-save tool fails with the declared deterministic error; all other tools remain outside this injected failure contract.",
+      "expected_after_state": "state.db, outbox, and MEMORY.md contain no note created by the failed operation",
+      "observable_evidence": ["tool error event", "state.db/outbox/MEMORY.md before/after", "turn_end trace", "final reply distinction between attempted, failed, and completed"]
+    },
+    "WAKU-CAP-002": {
+      "fixture_paths": ["private/fixtures/WAKU-CAP-002/setup.json"],
+      "target_step": "One normal bounded no-side-effect user knowledge turn using target_turns[WAKU-CAP-002][0].",
+      "private_evaluator_ops": ["inspect/reconstruct the live turn trace", "record externally known provider/model identity", "run native deterministic/judge/release-gate evaluation only under a later authorization", "preserve judge skipped != PASS", "confirm credential non-persistence"],
+      "expected_target_state": "no durable state, note, calendar, outbox, or file mutation",
+      "observable_evidence": ["before/after isolated-home state", "turn trace events", "deterministic completion result if later produced"],
+      "ops_observability_limit": "Provider/model identity and judge/release status belong to private evaluator operations; the target turn must not request or report them."
+    }
+  },
+  "observability_contract": {
+    "accepted_pinned_waku_fields": ["turn_start", "gate", "llm", "tool", "turn_end", "state.db", "calendar.ics", "outbox", "MEMORY.md", "eval_report.json", "eval_runs.jsonl", "session_id", "chat_log metadata"],
+    "not_invented_fields": ["canonical external correlation_id", "guaranteed skill_match event", "guaranteed reload event"],
+    "rule": "Use the strongest externally inspectable evidence actually emitted by pinned Waku; an unavailable signal remains a documented limitation and is never converted to PASS."
+  },
   "scoring_policy": {
     "critical_gate_failure": "case fails regardless of prose quality",
     "state_is_authoritative_for_side_effects": true,

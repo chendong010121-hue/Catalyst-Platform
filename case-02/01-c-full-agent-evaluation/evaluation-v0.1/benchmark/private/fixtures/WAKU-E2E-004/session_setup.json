@@ -1,0 +1,13 @@
+{
+  "case_id": "WAKU-E2E-004",
+  "home_contract": "fresh dedicated evaluation home",
+  "session_ids": {"cedar": "session-cedar-01", "other": "session-other-01"},
+  "initial_state": {"preexisting_cedar_fact": false, "chat_log_rows": 0},
+  "evaluator_owned_sequence": [
+    {"session": "session-cedar-01", "operation": "send target_turns[0]"},
+    {"session": "session-other-01", "operation": "switch session and reload"},
+    {"session": "session-cedar-01", "operation": "switch back and reload"},
+    {"session": "session-cedar-01", "operation": "send target_turns[1]"}
+  ],
+  "forbidden": ["repeat Cedar in target_turns[1]", "read another session state", "claim continuity from final text alone"]
+}

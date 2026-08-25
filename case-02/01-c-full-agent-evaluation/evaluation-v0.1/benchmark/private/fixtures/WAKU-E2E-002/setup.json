@@ -1,0 +1,19 @@
+{
+  "case_id": "WAKU-E2E-002",
+  "home_contract": "fresh dedicated evaluation home",
+  "initial_state": {
+    "state_db": {"calendar_events": 0, "facts": 0, "episodes": 0, "chat_log": 0},
+    "memory_md": "absent",
+    "session_ids": []
+  },
+  "target_turns": [
+    "我偏好安静的上午会议。",
+    "我偏好的会议时间是什么？"
+  ],
+  "restart_boundary": {
+    "after_turn_index": 0,
+    "operation": "terminate the Waku process and reopen the same dedicated home",
+    "must_be_real_process_boundary": true
+  },
+  "expected_current_fact": {"key": "meeting_preference", "value": "quiet morning meetings"}
+}
