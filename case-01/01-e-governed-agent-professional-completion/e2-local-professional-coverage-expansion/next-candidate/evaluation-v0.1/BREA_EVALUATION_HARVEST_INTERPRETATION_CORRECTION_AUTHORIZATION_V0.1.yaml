@@ -1,0 +1,182 @@
+record_type: catalyst_case01_brea_evaluation_harvest_interpretation_correction_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_EVIDENCE_INTERPRETATION_CORRECTION_ONLY
+
+project: Catalyst
+case: CASE-01
+agent: BREA
+
+execution_evidence_commit:
+  commit: d108ced4056be51a007fc249c4dbfc39b96a79f7
+  verdict: PRODUCT_CRITICAL_GAP_REMAINS
+  execution_validity: VALID
+  rerun_authorized: false
+  history_rewrite_authorized: false
+
+independent_review_finding:
+  issue: >-
+    The first harvest finding claims that BREA-CAP-001 and BREA-E2E-001 prove bounded
+    source-evidence binding with native locators, applicability trace, and deterministic
+    numeric binding. This contradicts the frozen execution evidence.
+  evidence:
+    BREA-CAP-001:
+      case_pass: false
+      observed_status: evidence_retrieved
+      failed_checks:
+        - expected_status
+        - accepted_with_evidence
+        - native_locators
+        - numeric_trace
+      bounded_positive_evidence:
+        - correct source identity was retrieved
+        - claim boundary remained conservative
+    BREA-E2E-001:
+      case_pass: false
+      observed_status: no_reliable_evidence
+      failed_checks:
+        - expected_status
+        - accepted_with_evidence
+        - source_identity
+        - native_locators
+        - selected_level
+        - selected_indicator
+      professional_trace:
+        applicability_state: unresolved
+        numeric: null
+        source_fidelity: false
+        provenance_complete: false
+  conclusion: >-
+    Full bounded source-evidence binding is NOT proven by this evaluation and MUST NOT be
+    marked HARVEST_CANDIDATE. The positive evidence is only partial retrieval/source-boundary
+    behavior and is insufficient for Harvest.
+
+required_correction:
+  finding_identity: FN-04/FN-05/SEAM-03 bounded source-evidence binding
+  required_recommendation: DO_NOT_HARVEST_YET
+  required_what_is_proven: >-
+    BREA-CAP-001 demonstrates partial source retrieval and conservative claim-boundary
+    behavior for GB 55037-2022. The evaluation does not prove accepted applicability,
+    complete native-locator binding, deterministic numeric derivation, or the DBJ33/T1021-2023
+    positive route.
+  required_what_is_not_proven: >-
+    Complete source-evidence binding, successful professional-intent routing, accepted
+    applicability resolution, native-locator completeness, deterministic numeric binding,
+    and the DBJ33/T1021-2023 parking-table positive route remain unproven.
+  required_known_boundary: >-
+    Evidence is limited to the frozen KR-003 benchmark. One positive retrieval route returned
+    related evidence without completing professional reasoning; the second positive E2E route
+    failed to bind reliable evidence.
+  required_reuse_value: >-
+    Keep the existing FN-04/FN-05/SEAM-03 identities as diagnostic targets and future
+    regression/repair evidence. Do not Harvest this capability boundary from this run.
+
+preserve_harvest_finding:
+  identity: OBL-03/OBL-04 fail-closed numeric safety
+  recommendation: HARVEST_CANDIDATE
+  reason: >-
+    The relevant safety property is independently supported even though the complete Cases
+    fail on product-completeness/status requirements: SAFE-001 emits no accepted normative
+    numeric conclusion; SAFE-002 rejects out-of-jurisdiction use and emits no numeric result;
+    CAP-002 fails closed for unavailable source scope; GATE-01..GATE-06 all PASS.
+  wording_may_be_precisely_tightened: true
+  required_boundary: >-
+    Harvest claim is only the fail-closed/no-unsupported-numeric safety obligation, not the
+    full Case behavior, not clarification UX, and not complete professional routing.
+
+preserve_case_local_finding:
+  identity: Case-01 evaluation runner
+  recommendation: KEEP_CASE_LOCAL
+
+runner_correction:
+  file: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/run_evaluation.py
+  required: true
+  purpose: >-
+    Remove the unconditional hard-coded HARVEST_CANDIDATE interpretation for bounded
+    source-evidence binding so future execution cannot claim Harvest when the supporting
+    positive Cases fail their required binding checks.
+  minimum_rule: >-
+    A positive-route capability Harvest finding must be evidence-gated. It may be
+    HARVEST_CANDIDATE only if the supporting capability Cases actually pass the required
+    checks for the claimed boundary. Otherwise emit DO_NOT_HARVEST_YET with bounded partial
+    evidence. Do not redesign the runner or add a generic Harvest engine.
+
+results_correction:
+  file: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/results.json
+  may_change_only:
+    - harvest_findings
+    - optional explicit correction/provenance note identifying d108ced4056be51a007fc249c4dbfc39b96a79f7 as the source execution
+  must_not_change:
+    - created_at of original run
+    - target_identity
+    - knowledge_revision_identity
+    - benchmark_hashes
+    - local_byte_hash_observations
+    - regression_command_results
+    - cases raw_output
+    - cases deterministic_checks
+    - cases case_pass/status
+    - critical_gate_summary
+    - failure_attributions
+    - responsibility_evidence_updates
+    - evaluation_validity
+    - human_review
+    - next_material_gap
+    - protected_boundaries
+
+report_correction:
+  file: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/PRODUCT_CAPABILITY_EVALUATION_REPORT.md
+  may_change_only:
+    - Harvest findings section
+    - optional short correction/provenance note
+  must_preserve:
+    - PRODUCT_CRITICAL_GAP_REMAINS
+    - regression results
+    - all five Case results
+    - GATE-01..GATE-06 results
+    - failure attribution
+    - PR states
+    - explicit unproven boundaries
+    - human-review boundary
+    - single next material gap
+
+lineage_policy:
+  amend_execution_commit: FORBIDDEN
+  force_push: FORBIDDEN
+  reason: >-
+    The pushed execution commit is historical run evidence and must remain inspectable.
+    Correct interpretation through a new descendant commit; do not rewrite the run.
+
+forbidden_actions:
+  - rerun BREA
+  - rerun regression commands
+  - change benchmark/rubric/responsibility map
+  - change Candidate or KR-003
+  - change any Case PASS/FAIL or grader result
+  - change failure attribution
+  - promote any new Platform capability
+  - create a Harvest Service/Registry/engine
+  - modify Platform/Runtime/Harness/main
+  - start Human Review, E2-C, Admission or Binding
+
+allowed_persistent_changes:
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/run_evaluation.py
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/results.json
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/PRODUCT_CAPABILITY_EVALUATION_REPORT.md
+
+commit_policy:
+  required_parent_before_work: AUTHORIZATION_COMMIT
+  commits: 1
+  commit_message: "case-01: correct BREA harvest evidence interpretation"
+  push_branch: case-01
+  force_push: false
+  stop_after_push: true
+
+valid_final_verdict:
+  - BREA_EVALUATION_EVIDENCE_INTERPRETATION_CORRECTED
+
+final_instruction: >-
+  Preserve the original execution as historical evidence. Without rerunning BREA, correct
+  only the Harvest interpretation and the runner's unconditional Harvest logic. Downgrade
+  FN-04/FN-05/SEAM-03 bounded source-evidence binding to DO_NOT_HARVEST_YET, preserve the
+  bounded fail-closed numeric-safety Harvest candidate, keep the runner Case-local, create
+  exactly one descendant correction commit, push normally, and STOP.
