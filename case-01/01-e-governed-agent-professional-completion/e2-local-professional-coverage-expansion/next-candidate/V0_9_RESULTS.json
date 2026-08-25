@@ -1,0 +1,122 @@
+{
+  "record_type": "brea_v0_9_knowledge_identity_hardening_results",
+  "record_version": "0.1",
+  "verdict": "BREA_V0_9_CANDIDATE_PASS",
+  "authorization_commit": "54e2be38b9f6dfa2ce87032150b4593d7c366979",
+  "baseline_commit": "54e2be38b9f6dfa2ce87032150b4593d7c366979",
+  "stage_contract_baseline_commit": "5ac4b3c8256655bed161db4b4297f8f4058e7e0b",
+  "stage_contract_commit": "13633f341a820418ff3c61d87e3de58ef30bc651",
+  "frozen_predecessor": {
+    "identity": "case-01.brea@0.8-candidate",
+    "historical_freeze_commit": "30e85a917535773844df8f8af20f579ee2538f50",
+    "tree_copy_complete": true,
+    "tree_mutated": false
+  },
+  "trial_repair_lineage": {
+    "donor_commit": "3de91bbcf8c74cc9cfd96dd4eb40bbff230c660b",
+    "external_review_commit": "5ac4b3c8256655bed161db4b4297f8f4058e7e0b",
+    "merged": false,
+    "cherry_picked": false
+  },
+  "candidate_identity": {
+    "candidate": "case-01.brea@0.9-candidate",
+    "version": "v0.9-candidate",
+    "lineage_parent": "case-01.brea@0.8-candidate",
+    "professional_behavior_changed": false,
+    "professional_capability_growth": false
+  },
+  "knowledge_revision": {
+    "revision_id": "KR-003",
+    "canonical_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2",
+    "sha_semantics": "canonical_knowledge_revision_sha256",
+    "content_unchanged": true,
+    "content_unchanged_basis": "protected KR-003 path has no diff from authorization commit; no knowledge source file was written",
+    "historical_raw_byte_sha_rejection": "PASS",
+    "raw_byte_fallback": false
+  },
+  "v09_hardening": {
+    "V9-H01": "PASS",
+    "V9-H02": "PASS",
+    "V9-H03": "PASS",
+    "V9-H04": "PASS",
+    "V9-H05": "PASS",
+    "V9-H06": "PASS",
+    "V9-H07": "PASS",
+    "V9-H08": "PASS",
+    "V9-H09": "PASS",
+    "V9-H10": "PASS"
+  },
+  "regression_commands": {
+    "python tests/run_all.py": {"exit": 0, "status": "PASS"},
+    "python tests/test_v07_source_structure.py": {"exit": 0, "status": "PASS", "tests": 10},
+    "python tests/test_v08_residential_slice.py": {"exit": 0, "status": "PASS", "tests": 12},
+    "python tests/test_v09_knowledge_identity.py": {"exit": 0, "status": "PASS", "tests": 10}
+  },
+  "professional_regressions": {
+    "P-01": "PASS", "P-02": "PASS", "P-03": "PASS", "P-04": "PASS", "P-05": "PASS",
+    "P-06": "PASS", "P-07": "PASS", "P-08": "PASS", "P-09": "PASS",
+    "PC-01": "PASS", "PC-02": "PASS", "PC-03": "PASS", "PC-04": "PASS",
+    "PC-05": "PASS", "PC-06": "PASS", "PC-07": "PASS",
+    "S-01": "PASS", "S-02": "PASS", "S-03": "PASS", "S-04": "PASS", "S-05": "PASS",
+    "T-C01": "PASS", "T-C02": "PASS", "T-C03": "PASS",
+    "legacy_clause_table_behavior": "PASS",
+    "E1_generalized_local_query": "PASS",
+    "five_professional_forms": "PASS",
+    "KR-001_canonical_binding": "PASS",
+    "KR-002_canonical_binding": "PASS",
+    "KR-003_canonical_binding": "PASS",
+    "FN-01..FN-11": "PASS",
+    "SEAM-01..SEAM-03": "PASS",
+    "OBL-01..OBL-06": "PASS",
+    "Platform_bound_compatibility": "PASS",
+    "anti_hardcode_boundary": "PASS",
+    "source_sha_fail_closed": "PASS"
+  },
+  "candidate_metrics": {
+    "candidate_tree_sha256": "d68bd70cc8edd9900ff385f1cdc5a31f3b6f48b2003a442ccdb3c458c6af9eb0",
+    "candidate_tree_sha256_definition": "SHA256 of sorted relative-path TAB file-SHA256 entries with a trailing LF, excluding __pycache__",
+    "candidate_file_count": 29,
+    "implementation_fingerprint": "cf5ede8acc9528f0b3deab57659cb29f282f4575381474040d9d5b61834e70b6",
+    "implementation_fingerprint_definition": "SHA256 of sorted relative-path TAB file-SHA256 entries for README.md, brea/identity.py, and brea/knowledge.py with a trailing LF"
+  },
+  "changed_file_set": {
+    "candidate_tree_files": 29,
+    "modified_against_v0_8": [
+      "README.md",
+      "brea/identity.py",
+      "brea/knowledge.py",
+      "tests/run_all.py",
+      "tests/test_cases.py",
+      "tests/test_seams.py",
+      "tests/test_structural.py",
+      "tests/test_v07_source_structure.py",
+      "tests/test_v08_residential_slice.py"
+    ],
+    "new_allowed_files": [
+      "tests/knowledge_binding_support.py",
+      "tests/test_v09_knowledge_identity.py"
+    ],
+    "evidence_files": [
+      "V0_9_RESULTS.json",
+      "V0_9_CANDIDATE_REVIEW.md",
+      "V0_9_FREEZE_RECORD.json"
+    ],
+    "unexpected_candidate_changes": []
+  },
+  "protected_boundaries": {
+    "v0_8_predecessor_unchanged": true,
+    "KR-001_unchanged": true,
+    "KR-002_unchanged": true,
+    "KR-003_unchanged": true,
+    "old_v0_8_evidence_unchanged": true,
+    "trial_branch_unchanged": true,
+    "agent_runtime_unchanged": true,
+    "platform_standard_unchanged": true,
+    "runtime_adapter_unchanged": true,
+    "platform_harness_unchanged": true,
+    "repository_root_protected_files_unchanged": true,
+    "main_commit_unchanged": "5874be1130e8867082880fcd63f659fc909d9efd",
+    "status": "PASS"
+  },
+  "freeze_status": "FROZEN_NOT_ADMITTED_NOT_BOUND"
+}
