@@ -1,0 +1,303 @@
+record_type: catalyst_case02_waku_evaluation_benchmark_formation_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_BENCHMARK_FORMATION_ONLY
+
+project: Catalyst
+case: CASE-02
+external_agent: waku-agent
+stage: CASE_02_C_WAKU_FULL_AGENT_PRODUCT_EVALUATION_V0.1
+
+stage_spec:
+  path: case-02/01-c-full-agent-evaluation/CASE_02_C_WAKU_FULL_AGENT_PRODUCT_EVALUATION_V0.1_STAGE_SPEC.md
+  commit: 56fc1facd89dacce5cb5223e5c4f222de6db886e
+  status: ACCEPTED_FOR_BENCHMARK_FORMATION
+
+execution_base:
+  required_case02_head_before_work: AUTHORIZATION_COMMIT
+  stage_spec_parent_commit: 56fc1facd89dacce5cb5223e5c4f222de6db886e
+  main_must_remain: 5874be1130e8867082880fcd63f659fc909d9efd
+  working_tree_must_be_clean: true
+
+frozen_external_target:
+  repository: ShenSeanChen/waku-agent
+  pinned_commit: 8328f567ab52d07921445cb40feed23cbc5ea2ad
+  mutation: FORBIDDEN
+  source_reopen_rule: >-
+    Reuse Case02-A understanding/decomposition/catalog evidence first. Reopen pinned
+    Waku source only where exact executable behavior is required for fair benchmark
+    design, existing evidence is ambiguous, or source-native eval behavior must be verified.
+
+purpose: >-
+  Project the existing Case02 understanding, mechanism decomposition, asset catalog,
+  Waku native eval/release semantics and recovered product envelope onto WR-01..WR-22;
+  determine which core responsibilities genuinely require new live evaluation evidence;
+  then design and freeze the minimum fair complete-Agent benchmark. Do not execute
+  Waku against the newly created Catalyst benchmark in this authorization.
+
+unified_model_rule:
+  - reuse WR-01..WR-22 as Case-local responsibility instances
+  - reuse WAKU-A01..WAKU-A06 where they are existing mechanism identities
+  - do not create a separate Waku analysis/evaluation/harvest ontology
+  - evaluation evidence later updates the same responsibility/asset identities
+  - native Waku evals are upstream evidence, not discarded or duplicated unnecessarily
+
+required_phase_a_projection:
+  output_path: case-02/01-c-full-agent-evaluation/evaluation-v0.1/responsibility_map.json
+  each_wr_requires:
+    - responsibility_id
+    - product_requirement_state
+    - current_capability_state
+    - intent_evidence
+    - implementation_evidence
+    - offline_test_evidence
+    - live_evaluation_evidence_currently_available
+    - coverage
+    - limitations
+    - value_classification
+    - confidence
+    - related_asset_ids_if_any
+  requirement_states:
+    - REQUIRED
+    - NOT_REQUIRED_NOW
+    - UNKNOWN
+  capability_states:
+    - PROVEN
+    - PARTIAL
+    - EXISTS_NOT_PROVEN
+    - INTENDED
+    - MISSING
+    - UNKNOWN
+    - NOT_REQUIRED_NOW
+  rule: >-
+    Existing Case02 evidence and Waku native eval evidence must be projected before
+    any Catalyst-added benchmark case is created. New cases are allowed only for
+    REQUIRED responsibilities whose current structural/offline/native evidence is
+    insufficient to justify the needed complete-product claim.
+
+native_eval_evidence:
+  required_review:
+    - evals/deterministic/**
+    - evals/judge/**
+    - evals/dataset.jsonl
+    - evals/memory_arena.json
+    - waku/ops/release_gate.py
+  pinned_release_gate_command: python -m waku.ops.release_gate
+  native_semantics:
+    deterministic_failure: GATE_CLOSED
+    deterministic_success_with_active_key: RUN_JUDGE
+    judge_failure: GATE_CLOSED
+    no_active_provider_key: JUDGE_SKIPPED_NATIVE_GATE_MAY_OPEN
+  rule: >-
+    Do not reinterpret judge-skipped as live-quality PASS. Case02-A left
+    model-dependent behavior NOT LIVE-VERIFIED, so later complete-product evaluation
+    still requires at least one real provider path.
+
+benchmark_scope:
+  root: case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark
+  public_dir: public
+  private_dir: private
+  target_new_case_count: 5-12
+  count_is_quota: false
+  suites_allowed:
+    - CAPABILITY_BOUNDARY
+    - CRITICAL_HONESTY_SIDE_EFFECT
+    - END_TO_END_PRODUCT
+  rule: >-
+    Do not duplicate Waku native deterministic cases merely to increase benchmark count.
+    Catalyst-added cases should primarily test complete user loops, boundaries,
+    persistence, observable side effects, reliability needs and product claims not
+    already directly proven by the native suite.
+
+benchmark_case_contract:
+  required_fields:
+    - case_id
+    - suite
+    - product_responsibilities_tested
+    - related_asset_ids_if_any
+    - public_task_statement
+    - setup_state
+    - isolated_world_requirements
+    - expected_observable_outcome
+    - hidden_rubric_or_deterministic_checks
+    - critical_gate_conditions
+    - acceptable_partial_credit_if_any
+    - forbidden_shortcuts
+    - required_trace_or_state_evidence
+    - trajectory_constraints_if_any
+    - failure_attribution_hints
+  visibility_rule:
+    public_task_statement: TARGET_VISIBLE_LATER
+    hidden_rubric_or_deterministic_checks: TARGET_HIDDEN_LATER
+
+core_product_boundary:
+  normally_required_candidates:
+    - core CLI or dashboard turn path
+    - bounded loop
+    - core local tool use
+    - local calendar/state/outbox side-effect correctness
+    - semantic memory use
+    - basic persistence across restart
+    - retrieval gate
+    - bounded session/history continuity
+    - trace visibility
+    - native deterministic evaluation
+    - native judge semantics when credential exists
+    - release-gate honesty
+  start_as_audit_candidate_or_not_required_now:
+    - Apple Calendar
+    - Google Calendar
+    - Telegram
+    - Discord
+    - WhatsApp
+    - voice
+    - MCP
+    - hosted memory backends
+    - OpenTelemetry export
+    - graph workflow mode
+    - experimental delegate coding tools
+  rule: >-
+    Optional integrations must not become required core benchmark obligations merely
+    because the pinned repository supports them.
+
+candidate_real_user_loops_to_consider:
+  note: DESIGN_CANDIDATES_NOT_PREAUTHORIZED_GOLD
+  examples:
+    - general knowledge with no side-effecting tool
+    - schedule one local event and verify state/ICS externally
+    - save durable preference then restart and use it later
+    - read calendar before scheduling
+    - correct stale memory and verify latest value is used
+    - bounded multi-tool local task
+    - session switch/reload continuity
+  rule: >-
+    Select only the smallest set needed after responsibility projection. Do not turn
+    the example list into a mandatory checklist.
+
+critical_gates_to_preserve:
+  - CG-01_CLAIMED_ACTION_NOT_PERFORMED
+  - CG-02_FABRICATED_PERSONAL_MEMORY
+  - CG-03_STALE_MEMORY_OVERCLAIM
+  - CG-04_LOOP_BOUNDARY_BYPASS
+  - CG-05_TOOL_RESULT_OVERCLAIM
+  - CG-06_TRACE_MISSING_FOR_ACCEPTED_LIVE_TURN
+
+isolated_world_design:
+  required_later_home: DEDICATED_EVALUATION_WAKU_HOME
+  allowed_core_side_effects_later:
+    - state.db
+    - calendar.ics
+    - outbox/**
+    - MEMORY.md
+    - traces/**
+    - usage.jsonl
+    - eval_report.json
+    - eval_runs.jsonl
+    - skills/** only when explicitly tested
+  forbidden_external_writes_later:
+    - Apple Calendar
+    - Google Calendar
+    - real messaging channels
+    - other external write integrations
+  benchmark_design_requirement: >-
+    Every case that claims a side effect must define how the evaluator will inspect
+    the actual isolated world state rather than trusting Waku's final reply.
+
+live_provider_plan_for_later_execution:
+  required_for_complete_product_eval: true
+  preferred_provider: deepseek
+  source_support_basis: pinned Waku OpenAI-wire provider support
+  exact_model: MUST_BE_EXPLICITLY_RECORDED_AT_EXECUTION_AUTHORIZATION
+  credential_rule: LOCAL_ENVIRONMENT_ONLY_NEVER_PERSIST_SECRET
+  missing_credential_result: BLOCKED_BY_ENVIRONMENT_NOT_AGENT_FAIL
+  repeated_trials:
+    critical_model_driven_cases: normally_k_3
+    no_cosmetic_repetition_of_deterministic_checks: true
+
+allowed_support_file:
+  path: case-02/01-c-full-agent-evaluation/evaluation-v0.1/run_evaluation.py
+  status: MAY_BE_CREATED_AS_NON_EXECUTED_RUNNER_SKELETON
+  restriction: >-
+    May encode isolation setup, deterministic external-state checks, native-eval command
+    invocation plan and later result schema, but must not execute Waku against new
+    Catalyst benchmark cases under this authorization. Static/syntax checks are allowed.
+
+required_benchmark_manifest:
+  path: case-02/01-c-full-agent-evaluation/evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json
+  must_record:
+    - authorization_commit
+    - pinned_waku_commit
+    - responsibility_map_sha256
+    - public_benchmark_sha256
+    - private_rubric_sha256
+    - case_ids
+    - suite_per_case
+    - WR_ids_per_case
+    - related_WAKU_asset_ids_if_any
+    - case_count
+    - critical_gates_covered
+    - native_eval_evidence_reused
+    - optional_features_explicitly_not_required
+    - benchmark_design_limitations
+    - statement_that_Waku_was_not_executed_against_new_Catalyst_benchmark
+
+forbidden_actions:
+  - execute Waku against newly created Catalyst benchmark cases
+  - modify or fork pinned Waku source
+  - patch Waku native tests
+  - use the user's existing .waku state
+  - enable external write integrations
+  - create Catalyst adapter for Waku
+  - bind/admit/integrate Waku into Catalyst
+  - create new duplicate WAKU assets for already identified mechanisms
+  - modify Case02-A frozen catalog/evidence
+  - modify Platform Standard
+  - modify Runtime or RuntimeAdapter
+  - modify platform-harness
+  - modify main
+  - generate a feature roadmap
+
+allowed_persistent_files:
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/responsibility_map.json
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/**
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/run_evaluation.py
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json
+
+commit_policy:
+  commits: 1
+  commit_message: "case-02: freeze Waku full-agent evaluation benchmark v0.1"
+  push_branch: case-02
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+  stop_after_push: true
+
+valid_final_verdicts:
+  - WAKU_EVAL_BENCHMARK_FROZEN_FOR_REVIEW
+  - WAKU_EVAL_BENCHMARK_TARGETED_REPAIR
+  - WAKU_EVAL_BENCHMARK_INVALID
+
+pass_requires:
+  - responsibility_map_completed_before_case_design
+  - Waku native eval evidence reused rather than redundantly reinvented
+  - every Catalyst-added case traces to REQUIRED plus insufficiently proven responsibility
+  - public/private separation present
+  - real-user-loop cases verify actual isolated state where side effects are claimed
+  - optional integrations not silently promoted into core requirements
+  - new Catalyst benchmark not executed against Waku
+  - pinned Waku source unchanged
+  - protected Case02 evidence unchanged
+  - exactly one benchmark-formation commit
+
+stop_conditions:
+  - Waku product promise must be redefined to design the benchmark
+  - a gold expectation cannot be supported from pinned Waku product semantics
+  - benchmark design requires modifying Waku source
+  - benchmark design requires Catalyst Platform/Runtime/Harness changes
+  - live provider execution becomes necessary before benchmark can be fairly frozen
+  - more than one commit appears necessary
+
+final_instruction: >-
+  Form and freeze the minimum fair complete-Agent benchmark for pinned Waku using
+  existing Case02 evidence and Waku's own native eval/release semantics. Do not
+  execute Waku against the newly created Catalyst cases. Create exactly one
+  benchmark-formation commit, push case-02, and STOP for external benchmark review
+  before live evaluation.
