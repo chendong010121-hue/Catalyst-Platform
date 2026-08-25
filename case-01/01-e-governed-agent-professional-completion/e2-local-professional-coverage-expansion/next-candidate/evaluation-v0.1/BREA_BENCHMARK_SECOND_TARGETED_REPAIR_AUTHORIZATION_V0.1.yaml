@@ -1,0 +1,144 @@
+record_type: catalyst_case01_brea_benchmark_second_targeted_repair_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_FINAL_BENCHMARK_REPAIR_ONLY
+
+project: Catalyst
+case: CASE-01
+agent: BREA
+
+re_review:
+  commit: 14bf4609fec7637b95dad626efc2183b480c35f0
+  verdict: TARGETED_REPAIR_BEFORE_EXECUTION
+
+execution_base:
+  required_case01_head_before_work: AUTHORIZATION_COMMIT
+  review_parent_commit: 14bf4609fec7637b95dad626efc2183b480c35f0
+  main_must_remain: 5874be1130e8867082880fcd63f659fc909d9efd
+  working_tree_must_be_clean: true
+
+frozen_target:
+  candidate: case-01.brea@0.9-candidate
+  candidate_freeze_commit: c6393d4210708400b492ad9e531002e29fe3635e
+  knowledge_revision: KR-003
+  mutation: FORBIDDEN
+  execution_against_benchmark: FORBIDDEN
+
+repair_scope:
+  - FREEZE_RECORD_LINEAGE_SHA_CORRECTION
+  - BREA_E2E_001_INPUT_GOLD_ALIGNMENT
+
+required_repair_1_lineage:
+  file: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json
+  incorrect_value: c4e754d6568a379b22734d3cb299a729da6f830
+  required_value: c4e754d6568a379b22734d3cb299a7299da6f830
+  rule: >-
+    Correct only the recorded repair-authorization lineage SHA. Preserve all other
+    historical commit identities unless hash refreshes are mechanically required by
+    the benchmark input repair below.
+
+required_repair_2_e2e001_alignment:
+  case_id: BREA-E2E-001
+  issue: >-
+    The target-visible input currently says only '规划人口大于20万人', while the
+    frozen private oracle selects the II-level scope '规划人口大于20万人、不大于50万人的城市'.
+    Pinned BREA resolves level scope by normalized exact equality, so the current
+    mismatch could produce a benchmark-caused failure.
+  public_file: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/benchmark/public/benchmark_cases.json
+  required_target_visible_city_class: "规划人口大于20万人、不大于50万人的城市"
+  required_task_meaning: >-
+    Keep the same Hangzhou commercial-complex parking task, same 9000 m² floor area,
+    same DBJ33/T1021-2023 source scope, same enterprise-attribution requirement, and
+    same request for applicable parking indicator/calculation/source. Only make the
+    city-class input explicit enough to match the already-frozen gold.
+  private_oracle_semantics_must_remain:
+    standard: DBJ33/T1021-2023
+    level: II
+    locators:
+      - "5.0.1"
+      - "5.0.4"
+    indicator: "1.0 车位/100m² 建筑面积"
+    floor_area_m2: 9000
+    expected_calculation: "9000 / 100 * 1.0 = 90"
+    expected_result: 90
+  private_file_policy: >-
+    private/rubric.json may change only if it contains a mirrored copy of the target
+    input that must be synchronized. Gold/oracle meaning, values, gates, scoring and
+    responsibility attribution must not change.
+
+must_remain_unchanged:
+  - benchmark case count = 5
+  - all five case IDs
+  - core task intent of every case
+  - responsibility_map.json bytes and SHA256
+  - PR classifications
+  - GATE-01..GATE-06 semantics
+  - BREA-CAP-001 gold/oracle
+  - BREA-E2E-001 gold/oracle semantics/values
+  - BREA v0.9 Candidate
+  - KR-001 / KR-002 / KR-003
+  - professional routes / facts / sources
+  - Evaluation Contract / Execution Stage
+  - Platform / Runtime / RuntimeAdapter / Harness
+  - main
+
+allowed_persistent_changes:
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/benchmark/public/benchmark_cases.json
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/benchmark/private/rubric.json only_if_mirrored_target_input_requires_sync
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json
+
+freeze_record_requirements:
+  - record this authorization commit
+  - preserve original formation and first-repair lineage
+  - record corrected first-repair authorization SHA exactly
+  - refresh target-visible benchmark SHA256
+  - refresh private rubric SHA256 only if private file changed
+  - preserve responsibility_map SHA256 unchanged
+  - record case IDs/count unchanged
+  - record BREA was not executed
+  - status = FROZEN_FOR_FINAL_EXTERNAL_RE_REVIEW
+
+forbidden_actions:
+  - execute BREA
+  - change any other target input
+  - add/remove benchmark cases
+  - change responsibility classifications
+  - change oracle values to fit BREA
+  - modify Candidate or Knowledge
+  - start Evaluation Execution / E2-C / Admission / Binding
+  - modify Platform / Runtime / Harness / main
+
+commit_policy:
+  commits: 1
+  commit_message: "case-01: finalize BREA benchmark fairness repair"
+  push_branch: case-01
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+  stop_after_push: true
+
+valid_final_verdicts:
+  - BREA_BENCHMARK_FINAL_REPAIR_READY_FOR_RE_REVIEW
+  - BREA_BENCHMARK_FINAL_REPAIR_BLOCKED
+  - BREA_BENCHMARK_INVALID
+
+pass_requires:
+  - lineage SHA corrected exactly
+  - BREA-E2E-001 target city_class exactly matches frozen II-level scope
+  - oracle semantics unchanged
+  - case count/IDs unchanged
+  - responsibility map byte-identical
+  - BREA/KR/protected paths unchanged
+  - BREA not executed
+  - exactly one repair commit
+
+stop_conditions:
+  - fixing input requires changing the frozen gold
+  - fixing input changes the core product responsibility being tested
+  - any additional benchmark defect is discovered
+  - repair requires Candidate/Knowledge change
+  - more than one commit appears necessary
+
+final_instruction: >-
+  Perform only the two authorized final BREA benchmark fairness repairs: correct the
+  lineage SHA and align BREA-E2E-001 city-class input with the already-frozen II-level
+  oracle. Refresh hashes, create exactly one commit, push case-01, and STOP without
+  executing BREA.
