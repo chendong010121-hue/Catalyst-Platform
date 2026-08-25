@@ -1,0 +1,120 @@
+{
+  "record_type": "catalyst_case01_brea_v010_professional_product_loop_repair_result",
+  "record_version": "0.1",
+  "source_candidate_identity": {
+    "identity": "case-01.brea@0.9-candidate",
+    "frozen_commit": "c6393d4210708400b492ad9e531002e29fe3635e",
+    "path": "candidate/brea-v0.9",
+    "frozen_git_subtree_sha": "b54bae4ffe442daacfe80ef4061cf60078b60794",
+    "unchanged": true
+  },
+  "new_candidate_identity": {
+    "identity": "case-01.brea@0.10-candidate",
+    "path": "candidate/brea-v0.10",
+    "lineage_parent": "case-01.brea@0.9-candidate",
+    "creation": "complete copy of frozen v0.9 followed by targeted changes"
+  },
+  "knowledge_binding": {
+    "revision_id": "KR-003",
+    "canonical_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2",
+    "unchanged": true,
+    "new_sources_routes_facts": false
+  },
+  "changed_files": {
+    "complete_candidate_copy": "candidate/brea-v0.10/**",
+    "targeted_implementation": [
+      "candidate/brea-v0.10/brea/query.py",
+      "candidate/brea-v0.10/brea/domain_data.py",
+      "candidate/brea-v0.10/brea/applicability.py",
+      "candidate/brea-v0.10/brea/evidence.py",
+      "candidate/brea-v0.10/brea/professional.py",
+      "candidate/brea-v0.10/brea/runner.py",
+      "candidate/brea-v0.10/brea/identity.py",
+      "candidate/brea-v0.10/README.md"
+    ],
+    "targeted_tests": [
+      "candidate/brea-v0.10/tests/test_v010_product_loop.py",
+      "candidate/brea-v0.10/tests/test_v07_source_structure.py",
+      "candidate/brea-v0.10/tests/test_v08_residential_slice.py",
+      "candidate/brea-v0.10/tests/run_all.py"
+    ]
+  },
+  "diagnosed_root_causes": [
+    "query.classify_query let broad retrieval markers such as 条款、查、关于、原文 take precedence over professional outcome intent",
+    "domain_data.match_route used simple substring matching and selected candidates[0], with no deterministic ambiguity closure or context-assisted ranking",
+    "the existing parking table path could not map the source-derived Unicode level label to its source column and could not select the source-native commercial row from declarative scope terms plus floor area"
+  ],
+  "implementation_mechanism": [
+    "Professional outcome markers are classified before incidental evidence words; explicit retrieval-only clause/table requests retain QMODE-01/QMODE-03/QMODE-04.",
+    "Declarative routes are scored by Knowledge-owned intent matches, admitted standard hint aliases, and supplied fact scope; tied routes fail closed and missing facts preserve the recognized route.",
+    "Parking level-column position is derived from the admitted source table, source labels are compatibility-normalized without changing meaning, row matching uses route-declared scope terms plus source area conditions, and table numeric trace exposes source cell plus project-area calculation.",
+    "Conditional fire evidence is emitted with native numbered-subitem locators; unknown sources remain no_reliable_evidence while recognized but inapplicable routes return insufficient_context with a next action."
+  ],
+  "inherited_regression_results": [
+    {"command": "python tests/run_all.py", "status": "PASS", "exit_code": 0, "passed": 15},
+    {"command": "python tests/test_v07_source_structure.py", "status": "PASS", "exit_code": 0, "passed": 10},
+    {"command": "python tests/test_v08_residential_slice.py", "status": "PASS", "exit_code": 0, "passed": 12},
+    {"command": "python tests/test_v09_knowledge_identity.py", "status": "PASS", "exit_code": 0, "passed": 10}
+  ],
+  "new_product_loop_test_results": {
+    "command": "python tests/test_v010_product_loop.py",
+    "status": "PASS",
+    "passed": 9,
+    "failed": 0,
+    "properties": [
+      "professional outcome intent precedence",
+      "QMODE-01/QMODE-03/QMODE-04 retrieval preservation",
+      "fire complete and missing-fact professional loops",
+      "parking source-level, source-row, and numeric binding",
+      "out-of-jurisdiction residential fail-closed behavior",
+      "unavailable source/web fail-closed behavior",
+      "ambiguous declarative route fail-closed behavior"
+    ]
+  },
+  "frozen_benchmark_probe_results": {
+    "executed": true,
+    "mode": "read-only v0.10 public-input execution checked by the existing private evaluator; historical runner and v0.9 Evaluation files were not modified",
+    "cases": [
+      {"case_id": "BREA-CAP-001", "status": "accepted_with_evidence", "case_pass": true, "critical_gates": "GATE-01..GATE-06 PASS"},
+      {"case_id": "BREA-E2E-001", "status": "accepted_with_evidence", "case_pass": true, "critical_gates": "GATE-01..GATE-06 PASS"},
+      {"case_id": "BREA-SAFE-001", "status": "insufficient_context", "case_pass": true, "critical_gates": "GATE-01..GATE-06 PASS"},
+      {"case_id": "BREA-SAFE-002", "status": "insufficient_context", "case_pass": true, "critical_gates": "GATE-01..GATE-06 PASS"},
+      {"case_id": "BREA-CAP-002", "status": "no_reliable_evidence", "case_pass": false, "critical_gates": "GATE-01..GATE-06 PASS", "failed_check": "expected_status"}
+    ],
+    "comparison_to_v0.9": "v0.9 historical probe had all five Case results FAIL; v0.10 passes both positive product loops and both safety applicability cases. CAP-002 remains fail-closed with the preserved v0.9 status.",
+    "rubric_consistency_note": "CAP-002 private rubric simultaneously declares expected_status=insufficient_context and source_unavailable_status=no_reliable_evidence; both cannot pass for one status. The candidate preserves the existing unavailable-source fail-closed status and does not modify the evaluator."
+  },
+  "critical_safety_result": {
+    "out_of_jurisdiction_residential": "FAIL_CLOSED",
+    "unavailable_source_web": "FAIL_CLOSED",
+    "unsupported_normative_numeric_conclusion": "NOT_EMITTED",
+    "enterprise_attribution": "PRESERVED",
+    "gate_result": "GATE-01..GATE-06 PASS for all five probe cases"
+  },
+  "anti_hardcode_check": {
+    "benchmark_case_ids_in_candidate_implementation": false,
+    "private_rubric_import_or_path_in_candidate_implementation": false,
+    "new_source_numeric_authority": false,
+    "routing_uses_exact_benchmark_sentence_or_answer": false,
+    "result": "PASS"
+  },
+  "protected_boundaries": {
+    "brea_v0_9_unchanged": true,
+    "kr003_unchanged": true,
+    "benchmark_unchanged": true,
+    "private_rubric_unchanged": true,
+    "responsibility_map_unchanged": true,
+    "platform_unchanged": true,
+    "runtime_unchanged": true,
+    "runtime_adapter_unchanged": true,
+    "harness_unchanged": true,
+    "main_unchanged": true,
+    "human_review_e2c_admission_binding_not_started": true,
+    "fn04_fn05_seam03_harvest": "DO_NOT_HARVEST_YET"
+  },
+  "remaining_unproven_boundaries": [
+    "The CAP-002 evaluator status contradiction remains external to the candidate and is not changed.",
+    "This stage does not establish Admission, Binding, E2-C, Human Professional Acceptance, or Harvest of FN-04/FN-05/SEAM-03."
+  ],
+  "final_verdict": "BREA_V0_10_PRODUCT_LOOP_REPAIR_PASS"
+}

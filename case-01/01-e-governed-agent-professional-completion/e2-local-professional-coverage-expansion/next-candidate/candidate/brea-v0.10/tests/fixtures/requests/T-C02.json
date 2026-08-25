@@ -1,0 +1,18 @@
+{
+  "request": {
+    "request_id": "T-C02",
+    "question": "杭州市某大型商业项目（商业综合体，建筑面积 15000 m²）需按浙江省标准配建机动车停车位。按 DBJ33/T1021-2023，其机动车配建停车位指标应为多少？",
+    "project_context": {
+      "jurisdiction": "浙江省·杭州市",
+      "building_category": "大型商业",
+      "floor_area_m2": 15000,
+      "city_class": "规划人口大于50万的城市"
+    },
+    "regulation_context": {"standard_hint": "DBJ33/T1021-2023"},
+    "enterprise_context": {
+      "organization_id": "org-hangzhou-001",
+      "user_id": "user-pilot-001",
+      "project_id": "proj-commercial-001"
+    }
+  }
+}

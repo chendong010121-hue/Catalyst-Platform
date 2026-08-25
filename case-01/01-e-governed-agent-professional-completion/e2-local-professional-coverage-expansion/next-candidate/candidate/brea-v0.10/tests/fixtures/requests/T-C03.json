@@ -1,0 +1,9 @@
+{
+  "request": {
+    "request_id": "T-C03",
+    "question": "该商业项目的机动车配建停车位指标应为多少？",
+    "project_context": {},
+    "regulation_context": {},
+    "enterprise_context": {"organization_id": "org-hangzhou-001", "user_id": "user-pilot-001"}
+  }
+}
