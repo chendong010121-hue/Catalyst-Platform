@@ -1,0 +1,226 @@
+record_type: catalyst_case01_brea_evaluation_benchmark_formation_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_BENCHMARK_FORMATION_ONLY
+
+project: Catalyst
+case: CASE-01
+agent: BREA
+stage: CASE_01_E2_BREA_PRODUCT_CAPABILITY_EVALUATION_EXECUTION_V0.1
+
+stage_spec:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_E2_BREA_PRODUCT_CAPABILITY_EVALUATION_EXECUTION_V0.1_STAGE_SPEC.md
+  commit: 0cc12dd5ed3626b5efa10067552dadf40593c6ba
+  status: ACCEPTED_FOR_BENCHMARK_FORMATION
+
+evaluation_contract:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_E2_BREA_PRODUCT_CAPABILITY_EVALUATION_V0.1.md
+  commit: 8a6505992a784c5e525c2cdd96c84966b434b905
+
+execution_base:
+  required_case01_head_before_work: AUTHORIZATION_COMMIT
+  stage_spec_parent_commit: 0cc12dd5ed3626b5efa10067552dadf40593c6ba
+  main_must_remain: 5874be1130e8867082880fcd63f659fc909d9efd
+  working_tree_must_be_clean: true
+
+frozen_target:
+  candidate: case-01.brea@0.9-candidate
+  candidate_freeze_commit: c6393d4210708400b492ad9e531002e29fe3635e
+  candidate_tree_sha256: d68bd70cc8edd9900ff385f1cdc5a31f3b6f48b2003a442ccdb3c458c6af9eb0
+  implementation_fingerprint: cf5ede8acc9528f0b3deab57659cb29f282f4575381474040d9d5b61834e70b6
+  knowledge_revision: KR-003
+  knowledge_revision_sha256: 4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2
+  mutation: FORBIDDEN
+
+purpose: >-
+  Project existing Case01 understanding, decomposition, governed obligations,
+  frozen v0.9 evidence and current product envelope onto PR-01..PR-18; determine
+  which responsibilities genuinely require new evaluation evidence; design and
+  freeze only the minimum fair benchmark needed for the later machine evaluation.
+  Do not run BREA against the new benchmark in this authorization.
+
+unified_model_rule:
+  - reuse PR-01..PR-18 as the evaluation responsibility map
+  - reuse FN-01..FN-11, SEAM-01..SEAM-03 and OBL-01..OBL-06 as evidence anchors
+  - do not create a parallel analysis/evaluation/capability ontology
+  - decomposition and classification are methods over the same responsibility identities
+  - benchmark design adds evidence requirements; it does not create new product capabilities
+
+required_phase_a_projection:
+  output_path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/responsibility_map.json
+  each_pr_requires:
+    - responsibility_id
+    - requirement_status
+    - capability_state
+    - current_evidence
+    - coverage
+    - known_limitation
+    - value_classification_if_relevant
+    - confidence
+  requirement_states:
+    - REQUIRED
+    - NOT_REQUIRED_NOW
+    - UNKNOWN
+  capability_states:
+    - PROVEN
+    - PARTIAL
+    - EXISTS_NOT_PROVEN
+    - INTENDED
+    - MISSING
+    - UNKNOWN
+    - NOT_REQUIRED_NOW
+  rule: >-
+    Existing evidence must be projected before any new benchmark case is created.
+    A PR may generate a new case only when it is REQUIRED and current evidence is
+    insufficient to justify PROVEN for the declared product envelope.
+
+benchmark_scope:
+  root: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/benchmark
+  public_dir: public
+  private_dir: private
+  target_new_case_count: 4-10
+  count_is_quota: false
+  suites_allowed:
+    - CAPABILITY_BOUNDARY
+    - CRITICAL_SAFETY_FAIL_CLOSED
+    - END_TO_END_PRODUCT
+  regression_cases:
+    rule: reuse_existing_v0_9_regression_surface_do_not_duplicate_as_new_cases
+
+benchmark_case_contract:
+  required_fields:
+    - case_id
+    - suite
+    - product_responsibilities_tested
+    - public_task_statement
+    - provided_project_context
+    - provided_regulation_context
+    - available_source_scope
+    - expected_observable_outcome
+    - hidden_rubric_or_deterministic_checks
+    - critical_gate_conditions
+    - acceptable_partial_credit_if_any
+    - forbidden_shortcuts
+    - required_evidence_properties
+    - trajectory_constraints_if_any
+    - failure_attribution_hints
+  visibility_rule:
+    public_task_statement: TARGET_VISIBLE_LATER
+    hidden_rubric_or_deterministic_checks: TARGET_HIDDEN_LATER
+
+precision_rules:
+  source_bounded_honesty: >-
+    A correct fail-closed or explicit source-bound limitation for material outside
+    KR-003 must not be scored as an Agent defect merely because an ideal system
+    might have web or broader corpus access.
+  jurisdiction: >-
+    Do not pre-label full jurisdiction hierarchy resolution as missing. Probe only
+    the product-relevant boundary needed to decide whether current handling is sufficient.
+  source_edition_status: >-
+    Evaluate only where the current declared scope and available source metadata make
+    edition/effective-status selection a real responsibility; do not invent an unsupported gold answer.
+  clarification: >-
+    Do not assume multi-turn clarification is required. First test whether structured
+    insufficient_context plus explicit missing facts already satisfies the current product responsibility.
+  cross_source_composition: >-
+    Add a cross-source case only if a realistic task inside the frozen declared envelope
+    genuinely requires composition. Do not force one for architectural elegance.
+  external_supplementation: >-
+    Do not mark absence of web access as MISSING by default. PR-18 may be REQUIRED only
+    if current product promise cannot be credibly satisfied by bound authoritative sources plus fail-closed behavior.
+
+critical_gates_to_preserve:
+  - GATE-01_UNSUPPORTED_NORMATIVE_NUMERIC_CLAIM
+  - GATE-02_EVIDENCE_FABRICATION_OR_MISMATCH
+  - GATE-03_APPLICABILITY_OVERCLAIM
+  - GATE-04_FAIL_CLOSED_BYPASS
+  - GATE-05_SOURCE_FIDELITY_FAILURE
+  - GATE-06_REQUIRED_ATTRIBUTION_LOSS
+  rule: >-
+    A new critical gate may be proposed in the benchmark review only if the responsibility
+    is first shown to be REQUIRED for the current declared BREA scope.
+
+allowed_support_file:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/run_evaluation.py
+  status: MAY_BE_CREATED_AS_NON_EXECUTED_RUNNER_SKELETON
+  restriction: >-
+    It may encode deterministic grader logic and later execution plumbing, but this
+    authorization forbids executing new benchmark cases against BREA. Syntax/static
+    validation is allowed; target evaluation is not.
+
+required_benchmark_manifest:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json
+  must_record:
+    - authorization_commit
+    - frozen_target_identity
+    - responsibility_map_sha256
+    - public_benchmark_sha256
+    - private_rubric_sha256
+    - case_ids
+    - suite_per_case
+    - PR_ids_per_case
+    - case_count
+    - critical_gates_covered
+    - benchmark_design_limitations
+    - statement_that_target_was_not_executed_against_new_benchmark
+
+forbidden_actions:
+  - execute BREA against any newly created benchmark case
+  - modify candidate/brea-v0.9/**
+  - modify KR-001.json
+  - modify KR-002.json
+  - modify KR-003.json
+  - add LLM dependency to BREA or benchmark merely for grading
+  - create web fallback
+  - create new professional route/fact/source
+  - create E2-C implementation
+  - begin Admission or Binding
+  - modify Platform Standard
+  - modify Runtime or RuntimeAdapter
+  - modify platform-harness
+  - modify main
+  - create a feature roadmap
+  - create a second capability/evaluation ontology
+
+allowed_persistent_files:
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/responsibility_map.json
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/benchmark/**
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/run_evaluation.py
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json
+
+commit_policy:
+  commits: 1
+  commit_message: "case-01: freeze BREA product evaluation benchmark v0.1"
+  push_branch: case-01
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+  stop_after_push: true
+
+valid_final_verdicts:
+  - BREA_EVAL_BENCHMARK_FROZEN_FOR_REVIEW
+  - BREA_EVAL_BENCHMARK_TARGETED_REPAIR
+  - BREA_EVAL_BENCHMARK_INVALID
+
+pass_requires:
+  - responsibility_map_completed_before_case_design
+  - every new case traces to REQUIRED plus insufficiently proven responsibility
+  - public/private separation present
+  - critical gates represented fairly
+  - no ideal-agent feature wishlist encoded as required capability
+  - new benchmark not executed against BREA
+  - frozen target unchanged
+  - protected paths unchanged
+  - exactly one benchmark-formation commit
+
+stop_conditions:
+  - product scope must be redefined to design the benchmark
+  - a required gold answer is not supported by current authoritative evidence
+  - benchmark design requires modifying BREA
+  - benchmark design requires modifying Knowledge Revision
+  - evaluation runner would need Platform/Runtime/Harness changes
+  - more than one commit appears necessary
+
+final_instruction: >-
+  Form and freeze the minimum fair BREA v0.9 product evaluation benchmark from
+  existing Case01 evidence and the accepted responsibility map. Do not execute
+  the target Agent against the new cases. Create exactly one benchmark-formation
+  commit, push case-01, and STOP for external benchmark review before evaluation.
