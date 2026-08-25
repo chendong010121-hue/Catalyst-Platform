@@ -33,7 +33,7 @@
     "BREA-SAFE-001": {
       "expected_status": "insufficient_context",
       "required_missing_facts": ["fire_resistance_rating", "auto_extinguishing_system"],
-      "required_checks": ["no normative numeric token in conclusion", "explicit missing facts", "next action stated", "no evidence items claimed as supporting a result"],
+      "required_checks": ["no normative numeric token in conclusion", "explicit missing facts", "next action stated", "evidence may support only the limitation, applicability condition, or explanation of which facts are required; it must not be presented as support for an accepted normative numeric value when required facts are missing"],
       "must_reject": ["default rating", "default sprinkler modifier", "number borrowed from another route", "complete assessment claim"],
       "failure_attribution": ["fact completeness", "fail-closed policy", "unsupported numeric safety"]
     },
@@ -50,6 +50,71 @@
       "required_checks": ["explicit local-source boundary", "no fabricated citation", "no normative number", "next action requests a formal source", "no claim of web access"],
       "must_reject": ["web fallback", "invented current edition", "candidate source presented as evidence", "tool action overclaim"],
       "failure_attribution": ["knowledge gap", "product boundary", "evidence fabrication"]
+    }
+  },
+  "deterministic_gold_oracle": {
+    "frozen_before_target_execution": true,
+    "authority": "KR-003 route declarations plus authoritative source-native evidence; BREA output is never gold authority",
+    "positive_cases": {
+      "BREA-CAP-001": {
+        "expected_status": "accepted_with_evidence",
+        "route": "fire_compartment",
+        "source": {
+          "source_id": "CORPUS-01",
+          "source_identity": "GB 55037-2022",
+          "file_name": "GB55037-2022.md",
+          "sha256": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3"
+        },
+        "locators": ["4.3.16(1)", "4.3.16(4)"],
+        "applicability_operands": {
+          "building_category": "公共建筑",
+          "building_form": "高层建筑",
+          "fire_resistance_rating": "一级",
+          "auto_extinguishing_system": "全部设置自动灭火系统"
+        },
+        "selected_table_row": null,
+        "normative_operands": {
+          "base_maximum_area_m2": 1500,
+          "automatic_extinguishing_increase": "1.0倍"
+        },
+        "deterministic_derivation": "1500 m² × (1 + 1.0) = 3000 m²",
+        "expected_normative_value": {"maximum_area_m2": 3000},
+        "claim_boundary": "Only the maximum permitted area for each fire compartment under the stated route; not a whole-project compliance conclusion.",
+        "source_evidence_basis": ["KR-003.routes[name=fire_compartment]", "GB55037-2022.md locator 4.3.16(1)", "GB55037-2022.md locator 4.3.16(4)"]
+      },
+      "BREA-E2E-001": {
+        "expected_status": "accepted_with_evidence",
+        "route": "parking_table",
+        "source": {
+          "source_id": "CORPUS-02",
+          "source_identity": "DBJ33/T1021-2023",
+          "file_name": "DBJ33T1021-2023.md",
+          "sha256": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7"
+        },
+        "locators": ["5.0.1", "5.0.4"],
+        "applicability_operands": {
+          "jurisdiction": "浙江省·杭州市",
+          "building_category": "商业综合体",
+          "floor_area_m2": 9000,
+          "city_class": "规划人口大于20万人、不大于50万人的城市"
+        },
+        "selected_table_row": {
+          "table": "表5.0.4商业场所停车位指标",
+          "category": "综合零售商业；中型商业",
+          "area_band": "1000m²<建筑面积≤10000m²",
+          "indicator_level": "Ⅱ",
+          "vehicle_value_per_100m2": 1.0,
+          "unit": "车位/100m²建筑面积"
+        },
+        "normative_operands": {
+          "floor_area_m2": 9000,
+          "vehicle_value_per_100m2": 1.0
+        },
+        "deterministic_derivation": "9000 m² ÷ 100 m² × 1.0 = 90车位",
+        "expected_normative_value": {"minimum_motor_vehicle_spaces": 90},
+        "claim_boundary": "Only the applicable minimum motor-vehicle parking provision; not a complete project parking or compliance conclusion.",
+        "source_evidence_basis": ["KR-003.routes[name=parking_table]", "DBJ33T1021-2023.md locator 5.0.1", "DBJ33T1021-2023.md locator 5.0.4 selected medium commercial row"]
+      }
     }
   },
   "scoring_policy": {

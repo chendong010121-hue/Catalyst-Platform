@@ -1,8 +1,8 @@
 {
   "record_type": "catalyst_case01_brea_evaluation_benchmark_freeze",
   "record_version": "0.1",
-  "verdict": "BREA_EVAL_BENCHMARK_FROZEN_FOR_REVIEW",
-  "authorization_commit": "e2701a3fdaad22c6beca8585e76d7bd341dea8fa",
+  "verdict": "BREA_BENCHMARK_REPAIRED_FOR_RE_REVIEW",
+  "authorization_commit": "c4e754d6568a379b22734d3cb299a7299da6f830",
   "stage_spec_commit": "0cc12dd5ed3626b5efa10067552dadf40593c6ba",
   "evaluation_contract_commit": "8a6505992a784c5e525c2cdd96c84966b434b905",
   "frozen_target": {
@@ -40,12 +40,27 @@
     },
     "new_case_rule": "Only REQUIRED responsibilities with insufficient PROVEN evidence generated cases; NOT_REQUIRED_NOW responsibilities did not generate cases.",
     "critical_gates_covered": ["GATE-01", "GATE-02", "GATE-03", "GATE-04", "GATE-05", "GATE-06"],
-    "public_benchmark_sha256": "7b9388a3038122dd023ea84f6a1b8640d96e9a82f73d49a80e39a4b12d27754a",
-    "private_rubric_sha256": "c4e525cd497b07b9a39f5d9cca8dfb2a8e35f5afce710da43d61c22d0cfc8b50",
+    "public_benchmark_sha256": "49cabcbcb2b12ebf9982ddf105bac5604eb47944b527373e8033752ad3b6ee74",
+    "private_rubric_sha256": "346e08f110dfe795da447f69713846a27d1511891b5b1070929d29de09a3ff0b",
     "public_path": "evaluation-v0.1/benchmark/public/benchmark_cases.json",
     "private_path": "evaluation-v0.1/benchmark/private/rubric.json",
     "public_private_separation": "PASS",
     "new_cases_executed_against_brea": false
+  },
+  "repair": {
+    "repair_authorization_commit": "c4e754d6568a379b22734d3cb299a729da6f830",
+    "original_formation_commit": "112251a14ffb1698211d89317406ea00fe788ee9",
+    "target_visible_fields": ["case_id", "public_task_statement", "provided_project_context", "provided_regulation_context", "available_source_scope when genuinely supplied as product context"],
+    "deterministic_gold_oracle": {
+      "authority": "KR-003 route declarations plus authoritative source-native evidence; BREA output is never gold authority",
+      "frozen_before_target_execution": true,
+      "positive_cases": {
+        "BREA-CAP-001": {"route": "fire_compartment", "source_identity": "GB 55037-2022", "locators": ["4.3.16(1)", "4.3.16(4)"], "expected_value": "3000 m² maximum area"},
+        "BREA-E2E-001": {"route": "parking_table", "source_identity": "DBJ33/T1021-2023", "locators": ["5.0.1", "5.0.4"], "selected_row": "Ⅱ / 综合零售商业·中型商业 / 1000m²<建筑面积≤10000m²", "expected_value": "90 minimum motor-vehicle spaces"}
+      }
+    },
+    "brea_was_not_executed_during_repair": true,
+    "protected_boundaries_unchanged": true
   },
   "target_was_not_executed_against_new_benchmark": true,
   "brea_was_not_executed": true,
@@ -74,5 +89,5 @@
     "evaluation-v0.1/benchmark/private/rubric.json",
     "evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json"
   ],
-  "status": "FROZEN_FOR_EXTERNAL_BENCHMARK_REVIEW"
+  "status": "FROZEN_FOR_EXTERNAL_BENCHMARK_RE_REVIEW"
 }
