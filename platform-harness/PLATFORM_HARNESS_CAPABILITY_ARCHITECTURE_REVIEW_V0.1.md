@@ -892,3 +892,89 @@ No Case 01 mutation.
 No Case 02 mutation.
 No Harness implementation.
 No Platform integration.
+
+---
+
+# 20. Healthy Harness Growth Rule
+
+Harness evolution must remain demand-driven rather than feature-list-driven.
+
+Catalyst does **not** try to predict or pre-build every capability that a mature Harness may eventually need. It preserves enough viability, executability, observability and replaceability to continue real work, then lets real Cases expose the next missing responsibility.
+
+The preferred growth loop is:
+
+```text
+REAL USE / REAL CASE
+        ↓
+OBSERVE A MATERIAL GAP
+        ↓
+CLASSIFY WHICH RESPONSIBILITY IS ACTUALLY MISSING
+        ↓
+SEARCH EXISTING CATALYST ASSETS FIRST
+        ↓
+IF STILL MISSING, SEARCH EXTERNAL SYSTEMS FOR STRONG SOLUTIONS
+        ↓
+UNDERSTAND / DECOMPOSE / COMPARE
+        ↓
+REUSE / ADAPT / RECONSTRUCT / BUILD ONLY WHAT IS NEEDED
+        ↓
+APPLY CATALYST RESPONSIBILITY, AUTHORIZATION AND EVIDENCE BOUNDARIES
+        ↓
+MINIMUM PROOF
+        ↓
+PRESERVE THE USEFUL ASSET / EVIDENCE
+        ↓
+CONTINUE THE REAL CASE
+```
+
+Core rules:
+
+```text
+CAPABILITY GROWTH
+!= FEATURE ROADMAP GROWTH
+
+EXTERNAL SYSTEM FEATURE
+!= CATALYST BACKLOG ITEM
+
+KNOWN POSSIBLE GAP
+!= IMPLEMENTATION REQUIREMENT
+
+REAL OBSERVED GAP
++ MATERIAL EFFECT ON EXECUTION / SAFETY / EVIDENCE
+= CANDIDATE FOR TARGETED REPAIR
+```
+
+External Harnesses remain learning and solution donors, not roadmap authorities. Catalyst should assume that other systems will often solve particular mechanisms better than the current Catalyst implementation. When that happens, the correct response is not defensive reimplementation and not wholesale copying. The response is to identify the exact missing responsibility, study the strongest available mechanism, and choose the cheapest valid path:
+
+```text
+REUSE
+→ ADAPT
+→ RECONSTRUCT
+→ BUILD NEW
+```
+
+A new mechanism must conform to Catalyst boundaries before it becomes a governed Catalyst asset. External quality does not bypass Catalyst responsibility classification, Domain / Enterprise semantics where applicable, authorization, evidence, or replacement requirements.
+
+Growth remains layered:
+
+```text
+PRIVATE IMPLEMENTATION / MECHANISM
+→ easiest to replace or improve
+
+HARNESS SEAM / RESPONSIBILITY
+→ stabilize only when independently meaningful and repeatedly useful
+
+HARNESS RESPONSIBILITY CONTRACT
+→ evolve only with stronger repeated evidence
+
+PLATFORM-WIDE STANDARD / CORE
+→ promote only after cross-Case evidence proves the responsibility must remain stable across implementations
+```
+
+Therefore deferred items such as durable session resume, compaction, broader sandboxing, jobs, MCP, multi-agent behavior, provider fleets or new tool ecosystems remain observations, not promises. They should be implemented only when a real Case cannot proceed safely or effectively without them.
+
+After a targeted gap is closed and proven, the default action is **STOP FEATURE EXPANSION AND RETURN TO REAL USE**.
+
+This creates the intended healthy growth mechanism:
+
+> Keep Catalyst runnable, let reality reveal what is missing, learn from whoever has solved that problem best, integrate only the necessary responsibility under Catalyst standards, prove it, preserve it, and continue.
