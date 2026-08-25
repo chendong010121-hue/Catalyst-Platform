@@ -1,0 +1,1109 @@
+{
+  "record_type": "catalyst_case01_brea_harvest_oriented_evaluation_results",
+  "record_version": "0.1",
+  "created_at": "2026-08-25T14:26:11+00:00",
+  "authorization_commit": "efbd800873f9393131be53abef2ce0e3dd797bb4",
+  "target_identity": {
+    "identity": "case-01.brea@0.9-candidate",
+    "frozen_commit": "c6393d4210708400b492ad9e531002e29fe3635e",
+    "git_subtree_sha": "b54bae4ffe442daacfe80ef4061cf60078b60794",
+    "version": "v0.9-candidate",
+    "lineage_parent": "case-01.brea@0.8-candidate"
+  },
+  "knowledge_revision_identity": {
+    "revision_id": "KR-003",
+    "canonical_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2"
+  },
+  "benchmark_hashes": {
+    "public": "1943a7ca036ab54157b4b91ab60d3dff9c33f81415134ba45249836ca56e6a0d",
+    "private": "346e08f110dfe795da447f69713846a27d1511891b5b1070929d29de09a3ff0b",
+    "responsibility_map": "32cd66aa65aeb2ddf74b91f57e84ed995b087320f3919f231192f395fc3196e6"
+  },
+  "local_byte_hash_observations": {
+    "candidate_tree_sha256": "63b9db70c2a0a32bd0085ad587aa2b638a57cd91dd3a122b7753e97a7fcee3c2",
+    "implementation_fingerprint": "cf5ede8acc9528f0b3deab57659cb29f282f4575381474040d9d5b61834e70b6",
+    "classification": "ENVIRONMENT_LOCAL_OBSERVATION_ONLY",
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "git_autocrlf": "true"
+  },
+  "regression_command_results": [
+    {
+      "command": "python tests/run_all.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "== BREA v0.9-candidate retained regression ==\n-- test_structural --\nPASS test_st01_all_functions_mapped\nPASS test_st02_seams_explicit\nPASS test_st03_no_provider_semantic_authority\nPASS test_st04_prompt_non_authority\nPASS test_st05_enterprise_orthogonality\nPASS test_st06_numeric_traceability\nPASS test_st07_corpus_sha_fail_closed\nPASS test_st08_answer_writes_nothing_without_out_dir\n-- test_seams --\nPASS test_seam01_facts\nPASS test_seam02_applicability\nPASS test_seam03_evidence\nPASS test_corpus_fail_closed\n-- test_cases --\nPASS test_t_c01_direct_clause\nPASS test_t_c02_conditional_table\nPASS test_t_c03_fail_closed\n== RESULT: PASS =="
+    },
+    {
+      "command": "python tests/test_v07_source_structure.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "..........\n----------------------------------------------------------------------\nRan 10 tests in 0.128s\n\nOK"
+    },
+    {
+      "command": "python tests/test_v08_residential_slice.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.049s\n\nOK"
+    },
+    {
+      "command": "python tests/test_v09_knowledge_identity.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "..........\n----------------------------------------------------------------------\nRan 10 tests in 0.087s\n\nOK"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "BREA-CAP-001",
+      "input_identity": {
+        "canonical_public_case_sha256": "0c21c64868cbc9634bc3dffb7023feca557b811dfba934f793221ea534f83a34",
+        "public_fields_only": true
+      },
+      "execution": {
+        "executed_exactly_once": true,
+        "entry_path": "brea.runner.answer",
+        "started_at": "2026-08-25T14:26:11+00:00"
+      },
+      "raw_output": {
+        "request_id": "case01-brea-cap-001",
+        "status": "evidence_retrieved",
+        "conclusion": "在 GB 55037-2022 中检索到 3 处相关条文（证据检索结果，未做适用性判定，不据此给出规范数值结论）。",
+        "evidence_items": [
+          {
+            "source_identity": "GB 55037-2022",
+            "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+            "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+            "locator": "4.3.16 / [page 23]",
+            "evidence_type": "topic_excerpt",
+            "evidence_content": "除有特殊要求的建筑、木结构建筑和附建于民用建筑中\n的汽车库外，其他公共建筑中每个防火分区的最大允许建筑面积\n应符合下列规定：\n1对于高层建筑，不应大于1500m2\n27对于一、二级耐火等级的单、多层建筑，不应大于2500m²；\n对于三级耐火等级的单、多层建筑，不应大于1200m²；对于四级耐\n火等级的单、多层建筑，不应大于600m²。\n3对于地下设备房，不应大于1000m²；对于地下其他区域，\n不应大于500m²。\n4当防火分区全部设置自动灭火系统时，上述面积可以增加\n1.0倍；当局部设置自动灭火系统时，可按该局部区域建筑面积的\n1/2计人所在防火分区的总建筑面积。\n为多个建筑面积不大于 20000m²的区域且防火分隔措施应可靠、\n有效。\n4.4其他工程",
+            "claim_relation": "related"
+          },
+          {
+            "source_identity": "GB 55037-2022",
+            "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+            "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+            "locator": "4.3.15 / [page 23]",
+            "evidence_type": "topic_excerpt",
+            "evidence_content": "一、二级耐火等级建筑内的商店营业厅，当设置自动灭火\n系统和火灾自动报警系统并采用不燃或难燃装修材料时，每个防\n火分区的最人允许建筑面积应符合下列规定:\n1设置在高层建筑内时，不应大于4000m²；\n2设置在单层建筑内或仅设置在多层建筑的首层时，不应大\n于 10000m²;\n3设置在地下或半地下时，不应大于2000m²。",
+            "claim_relation": "related"
+          },
+          {
+            "source_identity": "GB 55037-2022",
+            "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+            "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+            "locator": "2.2.6 / [page 9]",
+            "evidence_type": "topic_excerpt",
+            "evidence_content": "β\n除城市综合管廊、交通隧道和室内无车道且无人员停留的\n机械式汽车库可不设置消防电梯外，下列建筑均应设置消防电梯，\n且每个防火分区可供使用的消防电梯不应少于1部：\n1建筑高度大于33m的住宅建筑；\n25层及以上且建筑面积大于3000m²（包括设置在其他建\n筑内第五层及以上楼层)的老年人照料设施；\n3一类高层公共建筑，建筑高度大于32m的二类高层公共\n建筑；\n4建筑高度大于 32m 的内类高层厂房；\n建筑高度大于32m的封闭或半封闭汽车库；\n除轨道交通工程外，埋深大于10m且总建筑面积大于3000m²\n的地下或半地下建筑(室)。一",
+            "claim_relation": "related"
+          }
+        ],
+        "artifacts": [],
+        "uncertainty": {
+          "level": "medium",
+          "description": "检索结果为证据节选；不等同于专业适用性结论。"
+        },
+        "implementation_metadata": {
+          "engine": "brea-deterministic-v0.8",
+          "deterministic": true,
+          "model_used": "none",
+          "corpus": {
+            "CORPUS-01": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "GB55037-2022": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "CORPUS-02": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "DBJ33T1021-2023": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "CORPUS-03": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44",
+            "hangzhou_regulation.extracted": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44"
+          },
+          "enterprise_context_attribution": {
+            "organization_id": "catalyst-case01-evaluation",
+            "user_id": "machine-evaluator-v0.1",
+            "project_id": "BREA-CAP-001"
+          },
+          "generated_at": "2026-08-25T14:26:11+00:00",
+          "query_mode": "QMODE-03",
+          "standard_id": "GB55037-2022",
+          "professional_trace": {},
+          "knowledge_revision_id": "KR-003",
+          "knowledge_revision_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2"
+        }
+      },
+      "deterministic_checks": [
+        {
+          "check_id": "expected_status",
+          "pass": false,
+          "detail": "observed=evidence_retrieved; expected=accepted_with_evidence"
+        },
+        {
+          "check_id": "enterprise_attribution",
+          "pass": true,
+          "detail": "organization_id/user_id/project_id are preserved"
+        },
+        {
+          "check_id": "accepted_with_evidence",
+          "pass": false,
+          "detail": "fire-compartment positive route"
+        },
+        {
+          "check_id": "source_identity",
+          "pass": true,
+          "detail": "GB 55037-2022 evidence is present"
+        },
+        {
+          "check_id": "native_locators",
+          "pass": false,
+          "detail": "both required subitems are observable"
+        },
+        {
+          "check_id": "numeric_trace",
+          "pass": false,
+          "detail": "1500 * (1 + 1.0) is source-bound"
+        },
+        {
+          "check_id": "claim_boundary",
+          "pass": true,
+          "detail": "whole-project compliance is not claimed"
+        },
+        {
+          "check_id": "closed_result_has_no_accepted_evidence",
+          "pass": true,
+          "detail": "non-accepted result does not present accepted evidence"
+        }
+      ],
+      "status": "evidence_retrieved",
+      "case_pass": false,
+      "critical_gate_results": {
+        "GATE-01": "PASS",
+        "GATE-02": "PASS",
+        "GATE-03": "PASS",
+        "GATE-04": "PASS",
+        "GATE-05": "PASS",
+        "GATE-06": "PASS"
+      },
+      "failure_attribution": {
+        "case_id": "BREA-CAP-001",
+        "observed_failure": "expected_status; accepted_with_evidence; native_locators; numeric_trace",
+        "primary_attribution": "AGENT_CAPABILITY_GAP",
+        "contributing_factors": [
+          "frozen deterministic rubric expectation"
+        ],
+        "attribution_confidence": "MEDIUM",
+        "supporting_trace_or_evidence": "results.json#cases[BREA-CAP-001]",
+        "counterfactual_check": "not run; no additional execution authorized"
+      },
+      "evidence_references": [
+        "benchmark/public/benchmark_cases.json",
+        "benchmark/private/rubric.json",
+        "results.json#raw_output"
+      ]
+    },
+    {
+      "case_id": "BREA-E2E-001",
+      "input_identity": {
+        "canonical_public_case_sha256": "81775681156386697c2e374abd5c7fa2ef78588cdb7ace663c7987c7aef9ba91",
+        "public_fields_only": true
+      },
+      "execution": {
+        "executed_exactly_once": true,
+        "entry_path": "brea.runner.answer",
+        "started_at": "2026-08-25T14:26:11+00:00"
+      },
+      "raw_output": {
+        "request_id": "case01-brea-e2e-001",
+        "status": "no_reliable_evidence",
+        "conclusion": "无法从本地已接纳语料可靠绑定证据，不能给出结论。",
+        "evidence_items": [],
+        "artifacts": [],
+        "uncertainty": {
+          "level": "explicit",
+          "description": "证据检索或定位失败"
+        },
+        "implementation_metadata": {
+          "engine": "brea-deterministic-v0.8",
+          "deterministic": true,
+          "model_used": "none",
+          "corpus": {
+            "CORPUS-01": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "GB55037-2022": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "CORPUS-02": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "DBJ33T1021-2023": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "CORPUS-03": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44",
+            "hangzhou_regulation.extracted": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44"
+          },
+          "enterprise_context_attribution": {
+            "organization_id": "catalyst-case01-evaluation",
+            "user_id": "machine-evaluator-v0.1",
+            "project_id": "BREA-E2E-001"
+          },
+          "generated_at": "2026-08-25T14:26:11+00:00",
+          "query_mode": "QMODE-05",
+          "standard_id": "DBJ33T1021-2023",
+          "professional_trace": {
+            "path": "generic_professional",
+            "knowledge_revision_id": "KR-003",
+            "knowledge_revision_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2",
+            "semantic_view": {
+              "scope": {},
+              "conditions": {},
+              "numeric": null
+            },
+            "applicability": {
+              "owner": "SEAM-02",
+              "state": "unresolved"
+            },
+            "numeric": null,
+            "table": {},
+            "evidence_binding": {
+              "source_fidelity": false,
+              "provenance_complete": false
+            },
+            "professional_contract": {
+              "PC-01": "PASS",
+              "PC-02": "PASS",
+              "PC-03": "PASS",
+              "PC-04": "PASS",
+              "PC-05": "PASS",
+              "PC-06": "PASS",
+              "PC-07": "PASS"
+            }
+          },
+          "knowledge_revision_id": "KR-003",
+          "knowledge_revision_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2"
+        }
+      },
+      "deterministic_checks": [
+        {
+          "check_id": "expected_status",
+          "pass": false,
+          "detail": "observed=no_reliable_evidence; expected=accepted_with_evidence"
+        },
+        {
+          "check_id": "enterprise_attribution",
+          "pass": true,
+          "detail": "organization_id/user_id/project_id are preserved"
+        },
+        {
+          "check_id": "accepted_with_evidence",
+          "pass": false,
+          "detail": "parking-table positive route"
+        },
+        {
+          "check_id": "source_identity",
+          "pass": false,
+          "detail": "DBJ33/T1021-2023 evidence is present"
+        },
+        {
+          "check_id": "native_locators",
+          "pass": false,
+          "detail": "level and row locators are observable"
+        },
+        {
+          "check_id": "selected_level",
+          "pass": false,
+          "detail": "city class resolves to level II"
+        },
+        {
+          "check_id": "selected_indicator",
+          "pass": false,
+          "detail": "1.0 per 100m² yields 90"
+        },
+        {
+          "check_id": "closed_result_has_no_accepted_evidence",
+          "pass": true,
+          "detail": "non-accepted result does not present accepted evidence"
+        }
+      ],
+      "status": "no_reliable_evidence",
+      "case_pass": false,
+      "critical_gate_results": {
+        "GATE-01": "PASS",
+        "GATE-02": "PASS",
+        "GATE-03": "PASS",
+        "GATE-04": "PASS",
+        "GATE-05": "PASS",
+        "GATE-06": "PASS"
+      },
+      "failure_attribution": {
+        "case_id": "BREA-E2E-001",
+        "observed_failure": "expected_status; accepted_with_evidence; source_identity; native_locators; selected_level; selected_indicator",
+        "primary_attribution": "AGENT_CAPABILITY_GAP",
+        "contributing_factors": [
+          "frozen deterministic rubric expectation"
+        ],
+        "attribution_confidence": "MEDIUM",
+        "supporting_trace_or_evidence": "results.json#cases[BREA-E2E-001]",
+        "counterfactual_check": "not run; no additional execution authorized"
+      },
+      "evidence_references": [
+        "benchmark/public/benchmark_cases.json",
+        "benchmark/private/rubric.json",
+        "results.json#raw_output"
+      ]
+    },
+    {
+      "case_id": "BREA-SAFE-001",
+      "input_identity": {
+        "canonical_public_case_sha256": "75003ffe37c64eb7d19dd7f6f57a32b426d740904f67eb64706c95e28add5b8e",
+        "public_fields_only": true
+      },
+      "execution": {
+        "executed_exactly_once": true,
+        "entry_path": "brea.runner.answer",
+        "started_at": "2026-08-25T14:26:11+00:00"
+      },
+      "raw_output": {
+        "request_id": "case01-brea-safe-001",
+        "status": "evidence_retrieved",
+        "conclusion": "在 GB 55037-2022 中检索到 3 处相关条文（证据检索结果，未做适用性判定，不据此给出规范数值结论）。",
+        "evidence_items": [
+          {
+            "source_identity": "GB 55037-2022",
+            "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+            "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+            "locator": "4.3.16 / [page 23]",
+            "evidence_type": "topic_excerpt",
+            "evidence_content": "除有特殊要求的建筑、木结构建筑和附建于民用建筑中\n的汽车库外，其他公共建筑中每个防火分区的最大允许建筑面积\n应符合下列规定：\n1对于高层建筑，不应大于1500m2\n27对于一、二级耐火等级的单、多层建筑，不应大于2500m²；\n对于三级耐火等级的单、多层建筑，不应大于1200m²；对于四级耐\n火等级的单、多层建筑，不应大于600m²。\n3对于地下设备房，不应大于1000m²；对于地下其他区域，\n不应大于500m²。\n4当防火分区全部设置自动灭火系统时，上述面积可以增加\n1.0倍；当局部设置自动灭火系统时，可按该局部区域建筑面积的\n1/2计人所在防火分区的总建筑面积。\n为多个建筑面积不大于 20000m²的区域且防火分隔措施应可靠、\n有效。\n4.4其他工程",
+            "claim_relation": "related"
+          },
+          {
+            "source_identity": "GB 55037-2022",
+            "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+            "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+            "locator": "4.3.15 / [page 23]",
+            "evidence_type": "topic_excerpt",
+            "evidence_content": "一、二级耐火等级建筑内的商店营业厅，当设置自动灭火\n系统和火灾自动报警系统并采用不燃或难燃装修材料时，每个防\n火分区的最人允许建筑面积应符合下列规定:\n1设置在高层建筑内时，不应大于4000m²；\n2设置在单层建筑内或仅设置在多层建筑的首层时，不应大\n于 10000m²;\n3设置在地下或半地下时，不应大于2000m²。",
+            "claim_relation": "related"
+          },
+          {
+            "source_identity": "GB 55037-2022",
+            "source_title": "《建筑防火通用规范》（全文强制性工程建设规范）",
+            "source_version_or_date": "2022（OCR 副本未含公告页；施行日期以住房和城乡建设部公告为准）",
+            "locator": "一、二级 / 8.1.9 / [page 50]",
+            "evidence_type": "topic_excerpt",
+            "evidence_content": "除建筑内的游泳池、浴池、溜冰场可不设置自动灭火系统\n外，下列民用建筑、场所和平时使用的人民防空工程应设置自动灭\n火系统：\n1一类高层公共建筑及其地下、半地下室；\n2二类高层公共建筑及其地下、半地下室中的公共活动用\n房、走道、办公室、旅馆的客房、可燃物品库房；\n3建筑高度大于100m的住宅建筑；\n4特等和甲等剧场，座位数大于1500个的乙等剧场，座位数\n大于2000个的会堂或礼堂，座位数大于3000个的体育馆，座位数\n大于5000个的体育场的室内人员休息室与器材间等；\n5任一层建筑面积大于1500m²或总建筑面积大于3000m²\n的单、多层展览建筑、商店建筑、餐饮建筑和旅馆建筑；\n6中型和大型幼儿园，老年人照料设施，任一层建筑面积大\n于1500m²或总建筑面积大于3000m²的单、多层病房楼、门诊楼和\n手术部；\n7除本条上述规定外，设置具有送回风道(管)系统的集中空\n气调节系统且总建筑面积大于3000m²的其他单、多层公共建筑；\n8总建筑面积大于500m²的地下或半地下商店；\n9设置在地下或半地下、多层建筑的地上第四层及以上楼层、\n高层民用建筑内的歌舞娱乐放映游艺场所，设置在多层建筑第一层至\n第三层且楼层建筑面积大于300m²的地上歌舞娱乐放映游艺场所；\n10位于地下或半地下且座位数大于800个的电影院、剧场\n或礼堂的观众厅；\n11建筑面积大乐1000m²且平时使用的人民防空工程。",
+            "claim_relation": "related"
+          }
+        ],
+        "artifacts": [],
+        "uncertainty": {
+          "level": "medium",
+          "description": "检索结果为证据节选；不等同于专业适用性结论。"
+        },
+        "implementation_metadata": {
+          "engine": "brea-deterministic-v0.8",
+          "deterministic": true,
+          "model_used": "none",
+          "corpus": {
+            "CORPUS-01": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "GB55037-2022": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "CORPUS-02": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "DBJ33T1021-2023": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "CORPUS-03": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44",
+            "hangzhou_regulation.extracted": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44"
+          },
+          "enterprise_context_attribution": {
+            "organization_id": "catalyst-case01-evaluation",
+            "user_id": "machine-evaluator-v0.1",
+            "project_id": "BREA-SAFE-001"
+          },
+          "generated_at": "2026-08-25T14:26:11+00:00",
+          "query_mode": "QMODE-03",
+          "standard_id": "GB55037-2022",
+          "professional_trace": {},
+          "knowledge_revision_id": "KR-003",
+          "knowledge_revision_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2"
+        }
+      },
+      "deterministic_checks": [
+        {
+          "check_id": "expected_status",
+          "pass": false,
+          "detail": "observed=evidence_retrieved; expected=insufficient_context"
+        },
+        {
+          "check_id": "enterprise_attribution",
+          "pass": true,
+          "detail": "organization_id/user_id/project_id are preserved"
+        },
+        {
+          "check_id": "missing_facts_status",
+          "pass": false,
+          "detail": "missing fire facts fail closed"
+        },
+        {
+          "check_id": "no_normative_number",
+          "pass": true,
+          "detail": "no accepted normative numeric conclusion is emitted"
+        },
+        {
+          "check_id": "required_missing_facts",
+          "pass": false,
+          "detail": "fire resistance and extinguishing facts are named"
+        },
+        {
+          "check_id": "next_action",
+          "pass": false,
+          "detail": "next action is stated"
+        },
+        {
+          "check_id": "closed_result_has_no_accepted_evidence",
+          "pass": true,
+          "detail": "non-accepted result does not present accepted evidence"
+        }
+      ],
+      "status": "evidence_retrieved",
+      "case_pass": false,
+      "critical_gate_results": {
+        "GATE-01": "PASS",
+        "GATE-02": "PASS",
+        "GATE-03": "PASS",
+        "GATE-04": "PASS",
+        "GATE-05": "PASS",
+        "GATE-06": "PASS"
+      },
+      "failure_attribution": {
+        "case_id": "BREA-SAFE-001",
+        "observed_failure": "expected_status; missing_facts_status; required_missing_facts; next_action",
+        "primary_attribution": "AGENT_CAPABILITY_GAP",
+        "contributing_factors": [
+          "frozen deterministic rubric expectation"
+        ],
+        "attribution_confidence": "MEDIUM",
+        "supporting_trace_or_evidence": "results.json#cases[BREA-SAFE-001]",
+        "counterfactual_check": "not run; no additional execution authorized"
+      },
+      "evidence_references": [
+        "benchmark/public/benchmark_cases.json",
+        "benchmark/private/rubric.json",
+        "results.json#raw_output"
+      ]
+    },
+    {
+      "case_id": "BREA-SAFE-002",
+      "input_identity": {
+        "canonical_public_case_sha256": "db772b4043b6de8af8c95dcb3fb501c22c25766069e7a3cc3b59036514923604",
+        "public_fields_only": true
+      },
+      "execution": {
+        "executed_exactly_once": true,
+        "entry_path": "brea.runner.answer",
+        "started_at": "2026-08-25T14:26:11+00:00"
+      },
+      "raw_output": {
+        "request_id": "case01-brea-safe-002",
+        "status": "no_reliable_evidence",
+        "conclusion": "本地已接纳规范库中无适用依据，不能给出结论或数值。",
+        "evidence_items": [],
+        "artifacts": [],
+        "uncertainty": {
+          "level": "explicit",
+          "description": "无适用标准"
+        },
+        "implementation_metadata": {
+          "engine": "brea-deterministic-v0.8",
+          "deterministic": true,
+          "model_used": "none",
+          "corpus": {
+            "CORPUS-01": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "GB55037-2022": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "CORPUS-02": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "DBJ33T1021-2023": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "CORPUS-03": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44",
+            "hangzhou_regulation.extracted": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44"
+          },
+          "enterprise_context_attribution": {
+            "organization_id": "catalyst-case01-evaluation",
+            "user_id": "machine-evaluator-v0.1",
+            "project_id": "BREA-SAFE-002"
+          },
+          "generated_at": "2026-08-25T14:26:11+00:00",
+          "query_mode": "QMODE-05",
+          "standard_id": null,
+          "professional_trace": {
+            "path": "generic_professional",
+            "knowledge_revision_id": "KR-003",
+            "knowledge_revision_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2",
+            "semantic_view": {
+              "scope": {},
+              "conditions": {},
+              "numeric": null
+            },
+            "applicability": {
+              "owner": "SEAM-02",
+              "state": "unresolved"
+            },
+            "numeric": null,
+            "table": {},
+            "evidence_binding": {
+              "source_fidelity": false,
+              "provenance_complete": false
+            },
+            "professional_contract": {
+              "PC-01": "PASS",
+              "PC-02": "PASS",
+              "PC-03": "PASS",
+              "PC-04": "PASS",
+              "PC-05": "PASS",
+              "PC-06": "PASS",
+              "PC-07": "PASS"
+            }
+          },
+          "knowledge_revision_id": "KR-003",
+          "knowledge_revision_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2"
+        }
+      },
+      "deterministic_checks": [
+        {
+          "check_id": "expected_status",
+          "pass": false,
+          "detail": "observed=no_reliable_evidence; expected=insufficient_context"
+        },
+        {
+          "check_id": "enterprise_attribution",
+          "pass": true,
+          "detail": "organization_id/user_id/project_id are preserved"
+        },
+        {
+          "check_id": "jurisdiction_rejection",
+          "pass": true,
+          "detail": "Hangzhou-only route is not accepted for Ningbo"
+        },
+        {
+          "check_id": "no_numeric_result",
+          "pass": true,
+          "detail": "no residential numeric result is emitted"
+        },
+        {
+          "check_id": "source_scope_boundary",
+          "pass": true,
+          "detail": "local source limitation is explicit"
+        },
+        {
+          "check_id": "no_external_claim",
+          "pass": true,
+          "detail": "no external retrieval is claimed"
+        },
+        {
+          "check_id": "closed_result_has_no_accepted_evidence",
+          "pass": true,
+          "detail": "non-accepted result does not present accepted evidence"
+        }
+      ],
+      "status": "no_reliable_evidence",
+      "case_pass": false,
+      "critical_gate_results": {
+        "GATE-01": "PASS",
+        "GATE-02": "PASS",
+        "GATE-03": "PASS",
+        "GATE-04": "PASS",
+        "GATE-05": "PASS",
+        "GATE-06": "PASS"
+      },
+      "failure_attribution": {
+        "case_id": "BREA-SAFE-002",
+        "observed_failure": "expected_status",
+        "primary_attribution": "AGENT_CAPABILITY_GAP",
+        "contributing_factors": [
+          "frozen deterministic rubric expectation"
+        ],
+        "attribution_confidence": "MEDIUM",
+        "supporting_trace_or_evidence": "results.json#cases[BREA-SAFE-002]",
+        "counterfactual_check": "not run; no additional execution authorized"
+      },
+      "evidence_references": [
+        "benchmark/public/benchmark_cases.json",
+        "benchmark/private/rubric.json",
+        "results.json#raw_output"
+      ]
+    },
+    {
+      "case_id": "BREA-CAP-002",
+      "input_identity": {
+        "canonical_public_case_sha256": "74fe0ab6465bcb31580c01d512492fa8aa93f0f27b13da557799bfe22fea88cb",
+        "public_fields_only": true
+      },
+      "execution": {
+        "executed_exactly_once": true,
+        "entry_path": "brea.runner.answer",
+        "started_at": "2026-08-25T14:26:11+00:00"
+      },
+      "raw_output": {
+        "request_id": "case01-brea-cap-002",
+        "status": "no_reliable_evidence",
+        "conclusion": "本地已接纳规范库中无适用依据，不能给出结论或数值。",
+        "evidence_items": [],
+        "artifacts": [],
+        "uncertainty": {
+          "level": "explicit",
+          "description": "无适用标准"
+        },
+        "implementation_metadata": {
+          "engine": "brea-deterministic-v0.8",
+          "deterministic": true,
+          "model_used": "none",
+          "corpus": {
+            "CORPUS-01": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "GB55037-2022": "2a217deac98636584dbd328d8449a21bfb4ab30d80483d5355915beaba0594f3",
+            "CORPUS-02": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "DBJ33T1021-2023": "1296922e3dd7ef209aa8c5cc447e4fdd9a64f37e4f4d403cb8533de8cb31d3f7",
+            "CORPUS-03": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44",
+            "hangzhou_regulation.extracted": "fca430cdc42a90a69c5447c7b9ec63fec531e69d3c35eb6b13907141d92fdd44"
+          },
+          "enterprise_context_attribution": {
+            "organization_id": "catalyst-case01-evaluation",
+            "user_id": "machine-evaluator-v0.1",
+            "project_id": "BREA-CAP-002"
+          },
+          "generated_at": "2026-08-25T14:26:11+00:00",
+          "query_mode": "QMODE-05",
+          "standard_id": null,
+          "professional_trace": {
+            "path": "generic_professional",
+            "knowledge_revision_id": "KR-003",
+            "knowledge_revision_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2",
+            "semantic_view": {
+              "scope": {},
+              "conditions": {},
+              "numeric": null
+            },
+            "applicability": {
+              "owner": "SEAM-02",
+              "state": "unresolved"
+            },
+            "numeric": null,
+            "table": {},
+            "evidence_binding": {
+              "source_fidelity": false,
+              "provenance_complete": false
+            },
+            "professional_contract": {
+              "PC-01": "PASS",
+              "PC-02": "PASS",
+              "PC-03": "PASS",
+              "PC-04": "PASS",
+              "PC-05": "PASS",
+              "PC-06": "PASS",
+              "PC-07": "PASS"
+            }
+          },
+          "knowledge_revision_id": "KR-003",
+          "knowledge_revision_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2"
+        }
+      },
+      "deterministic_checks": [
+        {
+          "check_id": "expected_status",
+          "pass": false,
+          "detail": "observed=no_reliable_evidence; expected=insufficient_context"
+        },
+        {
+          "check_id": "enterprise_attribution",
+          "pass": true,
+          "detail": "organization_id/user_id/project_id are preserved"
+        },
+        {
+          "check_id": "source_unavailable_status",
+          "pass": true,
+          "detail": "unbound source fails closed"
+        },
+        {
+          "check_id": "no_normative_number",
+          "pass": true,
+          "detail": "no unsupported normative number is emitted"
+        },
+        {
+          "check_id": "local_source_boundary",
+          "pass": true,
+          "detail": "local evidence boundary is explicit"
+        },
+        {
+          "check_id": "no_web_claim",
+          "pass": true,
+          "detail": "no web access is claimed"
+        },
+        {
+          "check_id": "closed_result_has_no_accepted_evidence",
+          "pass": true,
+          "detail": "non-accepted result does not present accepted evidence"
+        }
+      ],
+      "status": "no_reliable_evidence",
+      "case_pass": false,
+      "critical_gate_results": {
+        "GATE-01": "PASS",
+        "GATE-02": "PASS",
+        "GATE-03": "PASS",
+        "GATE-04": "PASS",
+        "GATE-05": "PASS",
+        "GATE-06": "PASS"
+      },
+      "failure_attribution": {
+        "case_id": "BREA-CAP-002",
+        "observed_failure": "expected_status",
+        "primary_attribution": "AGENT_CAPABILITY_GAP",
+        "contributing_factors": [
+          "frozen deterministic rubric expectation"
+        ],
+        "attribution_confidence": "MEDIUM",
+        "supporting_trace_or_evidence": "results.json#cases[BREA-CAP-002]",
+        "counterfactual_check": "not run; no additional execution authorized"
+      },
+      "evidence_references": [
+        "benchmark/public/benchmark_cases.json",
+        "benchmark/private/rubric.json",
+        "results.json#raw_output"
+      ]
+    }
+  ],
+  "critical_gate_summary": {
+    "GATE-01": "PASS",
+    "GATE-02": "PASS",
+    "GATE-03": "PASS",
+    "GATE-04": "PASS",
+    "GATE-05": "PASS",
+    "GATE-06": "PASS"
+  },
+  "failure_attributions": [
+    {
+      "case_id": "BREA-CAP-001",
+      "observed_failure": "expected_status; accepted_with_evidence; native_locators; numeric_trace",
+      "primary_attribution": "AGENT_CAPABILITY_GAP",
+      "contributing_factors": [
+        "frozen deterministic rubric expectation"
+      ],
+      "attribution_confidence": "MEDIUM",
+      "supporting_trace_or_evidence": "results.json#cases[BREA-CAP-001]",
+      "counterfactual_check": "not run; no additional execution authorized"
+    },
+    {
+      "case_id": "BREA-E2E-001",
+      "observed_failure": "expected_status; accepted_with_evidence; source_identity; native_locators; selected_level; selected_indicator",
+      "primary_attribution": "AGENT_CAPABILITY_GAP",
+      "contributing_factors": [
+        "frozen deterministic rubric expectation"
+      ],
+      "attribution_confidence": "MEDIUM",
+      "supporting_trace_or_evidence": "results.json#cases[BREA-E2E-001]",
+      "counterfactual_check": "not run; no additional execution authorized"
+    },
+    {
+      "case_id": "BREA-SAFE-001",
+      "observed_failure": "expected_status; missing_facts_status; required_missing_facts; next_action",
+      "primary_attribution": "AGENT_CAPABILITY_GAP",
+      "contributing_factors": [
+        "frozen deterministic rubric expectation"
+      ],
+      "attribution_confidence": "MEDIUM",
+      "supporting_trace_or_evidence": "results.json#cases[BREA-SAFE-001]",
+      "counterfactual_check": "not run; no additional execution authorized"
+    },
+    {
+      "case_id": "BREA-SAFE-002",
+      "observed_failure": "expected_status",
+      "primary_attribution": "AGENT_CAPABILITY_GAP",
+      "contributing_factors": [
+        "frozen deterministic rubric expectation"
+      ],
+      "attribution_confidence": "MEDIUM",
+      "supporting_trace_or_evidence": "results.json#cases[BREA-SAFE-002]",
+      "counterfactual_check": "not run; no additional execution authorized"
+    },
+    {
+      "case_id": "BREA-CAP-002",
+      "observed_failure": "expected_status",
+      "primary_attribution": "AGENT_CAPABILITY_GAP",
+      "contributing_factors": [
+        "frozen deterministic rubric expectation"
+      ],
+      "attribution_confidence": "MEDIUM",
+      "supporting_trace_or_evidence": "results.json#cases[BREA-CAP-002]",
+      "counterfactual_check": "not run; no additional execution authorized"
+    }
+  ],
+  "evaluation_validity": {
+    "verdict": "PRODUCT_CRITICAL_GAP_REMAINS",
+    "stable_identity_gate": "PASS",
+    "private_rubric_leakage_to_target": "NONE",
+    "composite_score": "NOT_USED",
+    "model_judge": "NOT_USED",
+    "provider_invocation": "NONE"
+  },
+  "responsibility_evidence_updates": [
+    {
+      "responsibility_id": "PR-01",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "EXISTS_NOT_PROVEN",
+      "after_capability_state": "PARTIAL",
+      "execution_evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-E2E-001",
+        "BREA-SAFE-001"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "No new benchmark had yet tested a realistic user statement with complete context and an observable end-to-end result."
+    },
+    {
+      "responsibility_id": "PR-02",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PROVEN",
+      "after_capability_state": "PROVEN",
+      "execution_evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-E2E-001",
+        "BREA-SAFE-001"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "Evidence is bounded to the declared KR-003 fact descriptors and does not establish universal fact extraction."
+    },
+    {
+      "responsibility_id": "PR-03",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PROVEN",
+      "after_capability_state": "PROVEN",
+      "execution_evidence_case_ids": [
+        "BREA-SAFE-001"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "The evidence does not cover every possible malformed or ambiguous natural-language fact expression."
+    },
+    {
+      "responsibility_id": "PR-04",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PROVEN",
+      "after_capability_state": "PROVEN",
+      "execution_evidence_case_ids": [
+        "BREA-SAFE-002"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "The bound source set is not a full jurisdiction hierarchy and does not prove all jurisdictions."
+    },
+    {
+      "responsibility_id": "PR-05",
+      "requirement_status": "NOT_REQUIRED_NOW",
+      "before_capability_state": "NOT_REQUIRED_NOW",
+      "after_capability_state": "NOT_REQUIRED_NOW",
+      "execution_evidence_case_ids": [],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "A later product scope may require a separately authorized jurisdiction benchmark."
+    },
+    {
+      "responsibility_id": "PR-06",
+      "requirement_status": "NOT_REQUIRED_NOW",
+      "before_capability_state": "NOT_REQUIRED_NOW",
+      "after_capability_state": "NOT_REQUIRED_NOW",
+      "execution_evidence_case_ids": [],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "Competing editions and effective-status selection remain unproven and outside this benchmark."
+    },
+    {
+      "responsibility_id": "PR-07",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PARTIAL",
+      "after_capability_state": "PARTIAL",
+      "execution_evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-E2E-001",
+        "BREA-SAFE-001",
+        "BREA-SAFE-002",
+        "BREA-CAP-002"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "No new benchmark has yet checked complete route selection and evidence retrieval without relying on fixture-shaped requests."
+    },
+    {
+      "responsibility_id": "PR-08",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PARTIAL",
+      "after_capability_state": "PARTIAL",
+      "execution_evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-E2E-001"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "No independent benchmark evidence covers all currently bound source-native structures."
+    },
+    {
+      "responsibility_id": "PR-09",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PARTIAL",
+      "after_capability_state": "PARTIAL",
+      "execution_evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-SAFE-001",
+        "BREA-SAFE-002"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "The benchmark does not generalize exception handling beyond the facts and conditions declared by KR-003."
+    },
+    {
+      "responsibility_id": "PR-10",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PROVEN",
+      "after_capability_state": "PARTIAL",
+      "execution_evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-E2E-001",
+        "BREA-SAFE-001",
+        "BREA-SAFE-002",
+        "BREA-CAP-002"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "This does not prove numeric safety for unbound future knowledge or unsupported routes."
+    },
+    {
+      "responsibility_id": "PR-11",
+      "requirement_status": "NOT_REQUIRED_NOW",
+      "before_capability_state": "NOT_REQUIRED_NOW",
+      "after_capability_state": "NOT_REQUIRED_NOW",
+      "execution_evidence_case_ids": [],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "Composition remains a future responsibility only if a later authorized product scope requires it."
+    },
+    {
+      "responsibility_id": "PR-12",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PARTIAL",
+      "after_capability_state": "PROVEN",
+      "execution_evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-E2E-001",
+        "BREA-SAFE-001",
+        "BREA-SAFE-002",
+        "BREA-CAP-002"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "No live or provider-backed evaluation is authorized in this formation stage."
+    },
+    {
+      "responsibility_id": "PR-13",
+      "requirement_status": "NOT_REQUIRED_NOW",
+      "before_capability_state": "NOT_REQUIRED_NOW",
+      "after_capability_state": "NOT_REQUIRED_NOW",
+      "execution_evidence_case_ids": [],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "Future product scope may separately authorize interaction-loop evaluation."
+    },
+    {
+      "responsibility_id": "PR-14",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PARTIAL",
+      "after_capability_state": "PARTIAL",
+      "execution_evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-E2E-001",
+        "BREA-SAFE-001",
+        "BREA-SAFE-002",
+        "BREA-CAP-002"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "Human professional review remains separate and is not replaced by this machine benchmark."
+    },
+    {
+      "responsibility_id": "PR-15",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PARTIAL",
+      "after_capability_state": "PARTIAL",
+      "execution_evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-E2E-001",
+        "BREA-CAP-002"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "No score or external evaluation is produced during formation."
+    },
+    {
+      "responsibility_id": "PR-16",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PARTIAL",
+      "after_capability_state": "PROVEN",
+      "execution_evidence_case_ids": [
+        "BREA-SAFE-001",
+        "BREA-SAFE-002",
+        "BREA-CAP-002"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "No multi-turn clarification is required or evaluated in this stage."
+    },
+    {
+      "responsibility_id": "PR-17",
+      "requirement_status": "REQUIRED",
+      "before_capability_state": "PROVEN",
+      "after_capability_state": "PROVEN",
+      "execution_evidence_case_ids": [
+        "BREA-E2E-001"
+      ],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "Only the current enterprise-context contract is covered; broader tenancy or identity systems are outside scope."
+    },
+    {
+      "responsibility_id": "PR-18",
+      "requirement_status": "NOT_REQUIRED_NOW",
+      "before_capability_state": "NOT_REQUIRED_NOW",
+      "after_capability_state": "NOT_REQUIRED_NOW",
+      "execution_evidence_case_ids": [],
+      "evidence_reference": "results.json#cases and results.json#responsibility_evidence_updates",
+      "known_limitation": "External supplementation could be separately authorized only after a future scope decision proves necessity."
+    }
+  ],
+  "harvest_findings": [
+    {
+      "identity_or_provisional_label": "FN-04/FN-05/SEAM-03 bounded source-evidence binding",
+      "evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-E2E-001"
+      ],
+      "what_is_proven": "Two independent positive routes preserve source identity, native locators, applicability trace, and deterministic numeric binding.",
+      "what_is_not_proven": "This does not prove universal retrieval, all source structures, or non-KR-003 sources.",
+      "known_boundary": "Only the frozen KR-003 local corpus and declared architecture-pre-design routes were exercised.",
+      "reuse_value": "Reusable evidence boundary for future Candidate comparisons, not a new Platform capability.",
+      "recommendation": "HARVEST_CANDIDATE"
+    },
+    {
+      "identity_or_provisional_label": "OBL-03/OBL-04 fail-closed numeric safety",
+      "evidence_case_ids": [
+        "BREA-SAFE-001",
+        "BREA-SAFE-002",
+        "BREA-CAP-002"
+      ],
+      "what_is_proven": "Missing facts, jurisdiction mismatch, and unavailable source scope do not produce accepted unsupported numeric conclusions.",
+      "what_is_not_proven": "No human professional acceptance or broader adversarial coverage is established.",
+      "known_boundary": "Deterministic cases remain limited to the frozen benchmark and KR-003.",
+      "reuse_value": "Case-local safety evidence can anchor later regression cases.",
+      "recommendation": "HARVEST_CANDIDATE"
+    },
+    {
+      "identity_or_provisional_label": "Case-01 evaluation runner",
+      "evidence_case_ids": [
+        "BREA-CAP-001",
+        "BREA-E2E-001",
+        "BREA-SAFE-001",
+        "BREA-SAFE-002",
+        "BREA-CAP-002"
+      ],
+      "what_is_proven": "A minimal public/private-separated deterministic execution path can preserve per-case raw evidence and attribution.",
+      "what_is_not_proven": "No platform-wide evaluation subsystem or repeated cross-Case stability is proven.",
+      "known_boundary": "Runner is intentionally Case-local and replaceable.",
+      "reuse_value": "Evidence pattern only; do not promote the runner to a Platform service.",
+      "recommendation": "KEEP_CASE_LOCAL"
+    }
+  ],
+  "unproven_boundaries": [
+    "Human Product Review and Human Professional Review remain pending.",
+    "E2-C, Admission, and Binding remain unauthorized.",
+    "PR-05, PR-06, PR-11, PR-13, and PR-18 remain NOT_REQUIRED_NOW rather than proven universal capabilities.",
+    "No provider/model behavior, web supplementation, cross-jurisdiction coverage, or non-KR-003 source coverage was evaluated."
+  ],
+  "human_review": {
+    "machine_evidence_sufficient": false,
+    "product_review": "PENDING",
+    "professional_review": "PENDING"
+  },
+  "next_material_gap": "Natural-language professional-intent routing and complete applicability/evidence binding must be proven for a real user task before Human Review can treat the current product loop as complete.",
+  "protected_boundaries": {
+    "candidate_unchanged": true,
+    "kr003_unchanged": true,
+    "benchmark_unchanged": true,
+    "responsibility_map_unchanged": true,
+    "main_unchanged": true
+  }
+}
