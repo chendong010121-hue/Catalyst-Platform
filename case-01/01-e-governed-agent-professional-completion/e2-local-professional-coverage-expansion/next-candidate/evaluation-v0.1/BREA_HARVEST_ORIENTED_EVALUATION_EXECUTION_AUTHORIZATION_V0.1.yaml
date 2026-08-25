@@ -1,0 +1,240 @@
+record_type: catalyst_case01_brea_harvest_oriented_evaluation_execution_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_MACHINE_EVALUATION_EXECUTION_ONLY
+
+project: Catalyst
+case: CASE-01
+agent: BREA
+
+purpose: >-
+  Execute the already-frozen BREA v0.9 evaluation once, using a minimal replaceable
+  deterministic runner, in order to produce reliable capability evidence for later
+  Harvest / Reuse / Repair decisions. Evaluation is not an end-state score and must
+  not become a new Platform subsystem.
+
+governing_stage:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_E2_BREA_PRODUCT_CAPABILITY_EVALUATION_EXECUTION_V0.1_STAGE_SPEC.md
+  stage_spec_commit: 0cc12dd5ed3626b5efa10067552dadf40593c6ba
+
+evaluation_contract:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_E2_BREA_PRODUCT_CAPABILITY_EVALUATION_V0.1.md
+  contract_commit: 8a6505992a784c5e525c2cdd96c84966b434b905
+
+benchmark_final_review:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/BREA_BENCHMARK_FINAL_EXTERNAL_REVIEW_V0.1.md
+  commit: 580944adaa60464ce48e2d06fb1fee8967327a06
+  verdict: BREA_BENCHMARK_V0_1_EVIDENCE_BACKED_PASS_EXECUTION_READY
+
+execution_base:
+  required_case01_head_before_work: AUTHORIZATION_COMMIT
+  historical_case_base: 5874be1130e8867082880fcd63f659fc909d9efd
+  current_remote_main_observed_at_authorization: 19f0d7701ff849bd837bd5c2c4aba16ad5914968
+  current_remote_main_mutation: FORBIDDEN
+  rebase_case01_onto_current_main: FORBIDDEN
+  working_tree_must_be_clean: true
+
+frozen_target:
+  candidate: case-01.brea@0.9-candidate
+  candidate_freeze_commit: c6393d4210708400b492ad9e531002e29fe3635e
+  candidate_tree_sha256: d68bd70cc8edd9900ff385f1cdc5a31f3b6f48b2003a442ccdb3c458c6af9eb0
+  implementation_fingerprint: cf5ede8acc9528f0b3deab57659cb29f282f4575381474040d9d5b61834e70b6
+  knowledge_revision: KR-003
+  knowledge_revision_sha256: 4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2
+  mutation: FORBIDDEN
+
+frozen_benchmark:
+  case_ids:
+    - BREA-CAP-001
+    - BREA-E2E-001
+    - BREA-SAFE-001
+    - BREA-SAFE-002
+    - BREA-CAP-002
+  case_count: 5
+  public_benchmark_sha256: 1943a7ca036ab54157b4b91ab60d3dff9c33f81415134ba45249836ca56e6a0d
+  private_rubric_sha256: 346e08f110dfe795da447f69713846a27d1511891b5b1070929d29de09a3ff0b
+  responsibility_map_sha256: 32cd66aa65aeb2ddf74b91f57e84ed995b087320f3919f231192f395fc3196e6
+  mutation: FORBIDDEN
+
+v0_1_evaluation_principles:
+  - responsibility first: evaluate PR-01..PR-18 under their existing identities
+  - evidence before score: preserve outputs, evidence, gates and attribution; no single Agent score
+  - deterministic where possible: BREA is deterministic; do not add an LLM judge
+  - outcome and source fidelity over preferred internal path
+  - benchmark defect / environment failure are not Agent failure
+  - execution machinery is replaceable and must not own Catalyst meaning
+  - evaluation output must support Harvest / Reuse / Repair decisions
+
+external_method_borrowing_without_hard_dependency:
+  inspect_style:
+    - frozen Task/Sample identity
+    - public input separated from private scorer/oracle
+    - isolated reproducible execution
+    - structured evaluation log
+  anthropic_style:
+    - distinguish task/trial/grader/evaluation-infrastructure failure
+    - code grader for deterministic behavior
+    - inspect outcome and trajectory evidence where useful
+  langsmith_style:
+    - preserve run evidence so later real-use failures can become regressions
+  openai_testing_style:
+    - verify behavior at the responsibility boundary
+    - do not use test doubles to claim model/network behavior not actually exercised
+  rule: >-
+    These are method principles only. Do not install Inspect AI, LangSmith, OpenAI SDK,
+    or any new evaluation framework solely for this Case01 execution unless the current
+    benchmark cannot be executed correctly without it. A stdlib/local deterministic
+    runner is preferred for V0.1.
+
+required_execution:
+  regression_floor:
+    working_directory: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.9
+    commands:
+      - python tests/run_all.py
+      - python tests/test_v07_source_structure.py
+      - python tests/test_v08_residential_slice.py
+      - python tests/test_v09_knowledge_identity.py
+  frozen_benchmark:
+    execute_all_5_cases: true
+    target_receives_only_public_case_material: true
+    private_rubric_hidden_from_target: true
+    deterministic_grading: true
+    critical_gates_must_be_reported: true
+
+minimal_runner:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/run_evaluation.py
+  may_be_created: true
+  requirements:
+    - stdlib-first; no new dependency unless strictly required
+    - load exact frozen public/private benchmark files
+    - verify frozen benchmark hashes before run
+    - verify target identity / knowledge revision before run when observable
+    - run target through its real product entry path, not a synthetic reimplementation
+    - preserve raw observable result per case
+    - deterministic scorer uses frozen private rubric/oracle
+    - never modify target Candidate or Knowledge
+    - classify infrastructure failure separately from Agent failure
+    - exit nonzero only for invalid evaluation execution/infrastructure, not merely because an Agent case fails
+
+required_results:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/results.json
+  must_include:
+    - authorization_commit
+    - target_identity
+    - knowledge_revision_identity
+    - benchmark_hashes
+    - regression_command_results
+    - per_case_input_identity
+    - per_case_raw_output_or_structured_result
+    - per_case_deterministic_checks
+    - per_case_pass_fail_blocked
+    - critical_gate_results
+    - failure_attribution_for_each_material_failure
+    - evaluation_validity
+    - responsibility_evidence_update_for_PR_01_through_PR_18
+    - harvest_findings
+  harvest_findings_rule: >-
+    Harvest findings must reference existing PR/FN/SEAM/OBL/mechanism identities wherever
+    possible. They may propose a PROVISIONAL capability candidate only when the run adds
+    independent evidence that a stable reusable boundary exists. Do not create a new
+    Capability Registry entry, Platform object, or new formal capability identity in this Stage.
+  harvest_finding_fields:
+    - identity_or_provisional_label
+    - evidence_case_ids
+    - what_is_proven
+    - what_is_not_proven
+    - known_boundary
+    - reuse_value
+    - recommendation
+  harvest_recommendations:
+    - HARVEST_CANDIDATE
+    - KEEP_CASE_LOCAL
+    - DO_NOT_HARVEST_YET
+    - NOT_RELEVANT
+
+required_primary_report:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/PRODUCT_CAPABILITY_EVALUATION_REPORT.md
+  purpose: >-
+    One concise decision report. Do not create separate gap-analysis, score report,
+    benchmark report, failure report, or harvest report.
+  must_answer:
+    - Is the evaluation itself valid?
+    - Which REQUIRED responsibilities are now PROVEN / PARTIAL / MISSING?
+    - Did any critical gate fail?
+    - If something failed, what is the primary attribution?
+    - What, if anything, is now credible as a Harvest candidate?
+    - What remains explicitly unproven?
+    - Is machine evidence sufficient to proceed to Human Product / Professional Review?
+    - If not, what is the single next material gap?
+
+no_single_score:
+  enabled: true
+  rule: >-
+    Do not collapse BREA into a single percentage or composite score. Case-level results,
+    critical gates, responsibility evidence, and harvest findings are authoritative.
+
+human_review:
+  execution_in_this_authorization: FORBIDDEN
+  machine_stage_may_only_conclude:
+    - MACHINE_EVALUATION_SUPPORTS_READY_FOR_HUMAN_REVIEW
+    - PRODUCT_CRITICAL_GAP_REMAINS
+    - EVALUATION_NOT_YET_VALID
+
+allowed_persistent_changes:
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/run_evaluation.py
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/results.json
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/PRODUCT_CAPABILITY_EVALUATION_REPORT.md
+
+forbidden_actions:
+  - modify benchmark public/private files or responsibility_map.json
+  - modify BREA v0.9 Candidate
+  - modify KR-001 / KR-002 / KR-003 or source files
+  - add new professional facts/routes/sources
+  - repair BREA in the same execution
+  - add LLM judge
+  - create Eval Service / Eval Registry / Benchmark Service / Harvest Service
+  - install external eval framework without demonstrated necessity
+  - modify Platform / Runtime / RuntimeAdapter / platform-harness
+  - modify or rebase onto current remote main
+  - start E2-C / Admission / Binding
+  - execute Waku evaluation
+
+commit_policy:
+  commits: 1
+  commit_message: "case-01: execute harvest-oriented BREA evaluation v0.1"
+  push_branch: case-01
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+  stop_after_push: true
+
+valid_final_verdicts:
+  - MACHINE_EVALUATION_SUPPORTS_READY_FOR_HUMAN_REVIEW
+  - PRODUCT_CRITICAL_GAP_REMAINS
+  - EVALUATION_NOT_YET_VALID
+
+pass_requires:
+  - all four inherited regression commands executed and recorded
+  - all five frozen benchmark cases executed exactly once through real product path
+  - frozen benchmark hashes verified before execution
+  - no target-visible leakage of private rubric
+  - every critical gate explicitly reported
+  - every material failure attributed or marked unresolved
+  - results.json includes harvest findings and explicit unproven boundaries
+  - one primary report only
+  - Candidate/Knowledge/Platform/Runtime/Harness protected
+  - exactly one execution commit
+
+stop_conditions:
+  - benchmark hash mismatch
+  - target identity mismatch
+  - Knowledge Revision mismatch
+  - evaluation cannot use the real BREA product entry path
+  - private rubric would need to be shown to BREA
+  - evaluation infrastructure cannot distinguish its own failure from Agent failure
+  - any benchmark defect is discovered that could materially change a verdict
+  - more than one implementation/execution commit appears necessary
+
+final_instruction: >-
+  Execute the frozen BREA v0.9 evaluation once. Use the minimum deterministic runner
+  needed, preserve evidence and attribution, produce harvest-oriented findings rather
+  than a single score, create exactly one execution commit, push case-01, and STOP.
+  Do not repair BREA and do not build new evaluation infrastructure.
