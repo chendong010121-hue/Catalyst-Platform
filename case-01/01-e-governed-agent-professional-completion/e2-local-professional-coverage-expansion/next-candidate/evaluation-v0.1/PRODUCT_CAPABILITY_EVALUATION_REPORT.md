@@ -60,13 +60,15 @@ Target: `case-01.brea@0.9-candidate`; Candidate freeze commit: `c6393d4210708400
 
 ## Harvest findings
 
-### FN-04/FN-05/SEAM-03 bounded source-evidence binding — HARVEST_CANDIDATE
+This report preserves the original execution evidence from `d108ced4056be51a007fc249c4dbfc39b96a79f7`. Harvest interpretation was corrected in this governed descendant commit without rerunning the Agent.
 
-Two independent positive routes preserve source identity, native locators, applicability trace, and deterministic numeric binding. Evidence: BREA-CAP-001, BREA-E2E-001. Boundary: Only the frozen KR-003 local corpus and declared architecture-pre-design routes were exercised. Not proven: This does not prove universal retrieval, all source structures, or non-KR-003 sources. Reuse value: Reusable evidence boundary for future Candidate comparisons, not a new Platform capability.
+### FN-04/FN-05/SEAM-03 bounded source-evidence binding — DO_NOT_HARVEST_YET
+
+BREA-CAP-001 demonstrates partial source retrieval and conservative claim-boundary behavior for GB 55037-2022. Evidence: BREA-CAP-001, BREA-E2E-001. Boundary: Evidence is limited to the frozen KR-003 benchmark. One positive retrieval route returned related evidence without completing professional reasoning; the second positive E2E route failed to bind reliable evidence. Not proven: Complete source-evidence binding, successful professional-intent routing, accepted applicability resolution, native-locator completeness, deterministic numeric binding, and the DBJ33/T1021-2023 parking-table positive route remain unproven. Reuse value: Keep the existing FN-04/FN-05/SEAM-03 identities as diagnostic targets and future regression/repair evidence. Do not Harvest this capability boundary from this run.
 
 ### OBL-03/OBL-04 fail-closed numeric safety — HARVEST_CANDIDATE
 
-Missing facts, jurisdiction mismatch, and unavailable source scope do not produce accepted unsupported numeric conclusions. Evidence: BREA-SAFE-001, BREA-SAFE-002, BREA-CAP-002. Boundary: Deterministic cases remain limited to the frozen benchmark and KR-003. Not proven: No human professional acceptance or broader adversarial coverage is established. Reuse value: Case-local safety evidence can anchor later regression cases.
+Within the frozen KR-003 benchmark, BREA preserves the bounded fail-closed safety obligation that unsupported, unavailable, or out-of-scope evidence does not become an accepted normative numeric conclusion. Evidence: BREA-SAFE-001, BREA-SAFE-002, BREA-CAP-002. Boundary: The Harvest claim is only the fail-closed/no-unsupported-numeric safety obligation, not the full Case behavior, clarification UX, or complete professional routing. Not proven: Complete clarification behavior, full professional routing, cross-jurisdiction generality, broader adversarial coverage and Human Professional Acceptance remain unproven. Reuse value: A narrow reusable safety boundary for future governed regression evidence; not universal safety across future Knowledge.
 
 ### Case-01 evaluation runner — KEEP_CASE_LOCAL
 

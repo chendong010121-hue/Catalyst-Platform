@@ -384,6 +384,56 @@ def run_regressions() -> list[dict]:
     return records
 
 
+def harvest_findings_for(case_result_index: dict[str, dict]) -> list[dict]:
+    positive_cases = ("BREA-CAP-001", "BREA-E2E-001")
+    positive_boundary_proven = all(case_result_index[case]["case_pass"] for case in positive_cases)
+    return [
+        {
+            "identity_or_provisional_label": "FN-04/FN-05/SEAM-03 bounded source-evidence binding",
+            "evidence_case_ids": list(positive_cases),
+            "what_is_proven": (
+                "BREA-CAP-001 demonstrates partial source retrieval and conservative claim-boundary behavior for GB 55037-2022."
+                if not positive_boundary_proven
+                else "The supporting positive cases preserve source identity, native locators, applicability trace, and deterministic numeric binding."
+            ),
+            "what_is_not_proven": (
+                "Complete source-evidence binding, successful professional-intent routing, accepted applicability resolution, native-locator completeness, deterministic numeric binding, and the DBJ33/T1021-2023 parking-table positive route remain unproven."
+                if not positive_boundary_proven
+                else "This does not prove universal retrieval, all source structures, or non-KR-003 sources."
+            ),
+            "known_boundary": (
+                "Evidence is limited to the frozen KR-003 benchmark. One positive retrieval route returned related evidence without completing professional reasoning; the second positive E2E route failed to bind reliable evidence."
+                if not positive_boundary_proven
+                else "Only the frozen KR-003 local corpus and declared architecture-pre-design routes were exercised."
+            ),
+            "reuse_value": (
+                "Keep the existing FN-04/FN-05/SEAM-03 identities as diagnostic targets and future regression/repair evidence. Do not Harvest this capability boundary from this run."
+                if not positive_boundary_proven
+                else "Reusable evidence boundary for future Candidate comparisons, not a new Platform capability."
+            ),
+            "recommendation": "HARVEST_CANDIDATE" if positive_boundary_proven else "DO_NOT_HARVEST_YET",
+        },
+        {
+            "identity_or_provisional_label": "OBL-03/OBL-04 fail-closed numeric safety",
+            "evidence_case_ids": ["BREA-SAFE-001", "BREA-SAFE-002", "BREA-CAP-002"],
+            "what_is_proven": "Within the frozen KR-003 benchmark, BREA preserves the bounded fail-closed safety obligation that unsupported, unavailable, or out-of-scope evidence does not become an accepted normative numeric conclusion.",
+            "what_is_not_proven": "Complete clarification behavior, full professional routing, cross-jurisdiction generality, broader adversarial coverage and Human Professional Acceptance remain unproven.",
+            "known_boundary": "The Harvest claim is only the fail-closed/no-unsupported-numeric safety obligation, not the full Case behavior, clarification UX, or complete professional routing.",
+            "reuse_value": "A narrow reusable safety boundary for future governed regression evidence; not universal safety across future Knowledge.",
+            "recommendation": "HARVEST_CANDIDATE",
+        },
+        {
+            "identity_or_provisional_label": "Case-01 evaluation runner",
+            "evidence_case_ids": CASE_IDS,
+            "what_is_proven": "A minimal public/private-separated deterministic execution path can preserve per-case raw evidence and attribution.",
+            "what_is_not_proven": "No platform-wide evaluation subsystem or repeated cross-Case stability is proven.",
+            "known_boundary": "Runner is intentionally Case-local and replaceable.",
+            "reuse_value": "Evidence pattern only; do not promote the runner to a Platform service.",
+            "recommendation": "KEEP_CASE_LOCAL",
+        },
+    ]
+
+
 def write_finalized_result(result: dict, private: dict, responsibility_map: dict) -> int:
     case_result_index: dict[str, dict] = {}
     failures = []
@@ -409,6 +459,7 @@ def write_finalized_result(result: dict, private: dict, responsibility_map: dict
     case_failure = any(not case["case_pass"] for case in result["cases"])
     result["failure_attributions"] = failures
     result["critical_gate_summary"] = all_gates
+    result["harvest_findings"] = harvest_findings_for(case_result_index)
     result["evaluation_validity"]["verdict"] = (
         "EVALUATION_NOT_YET_VALID" if infra_failure
         else "PRODUCT_CRITICAL_GAP_REMAINS" if case_failure
