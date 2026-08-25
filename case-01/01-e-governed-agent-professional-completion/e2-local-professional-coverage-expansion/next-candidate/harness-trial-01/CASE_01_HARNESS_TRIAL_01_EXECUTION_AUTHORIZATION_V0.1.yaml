@@ -1,0 +1,233 @@
+record_type: catalyst_case01_harness_trial_execution_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_ONE_EXECUTION
+
+project: Catalyst
+case: CASE-01
+agent: BREA
+trial_id: CASE01-HARNESS-TRIAL-01
+trial_name: KNOWLEDGE_REVISION_HASH_HARDENING
+
+stage_spec:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_HARNESS_TRIAL_01_KNOWLEDGE_HASH_HARDENING_V0.1_STAGE_SPEC.md
+  commit: 9ed78c271e314019e493ad03dc5e62b74ec84898
+  status: ACCEPTED_FOR_THIS_AUTHORIZATION
+
+pre_authorization_verifier:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/harness-trial-01/verify_knowledge_hash_hardening.py
+  freeze_commit: 74740e9025da8baab2bf72142195083064eb7ca6
+  model_may_modify: false
+
+case_reference:
+  historical_frozen_baseline_commit: 30e85a917535773844df8f8af20f579ee2538f50
+  frozen_product: case-01.brea@0.8-candidate
+  frozen_candidate_tree_sha256: 761552b17cdd57754206d66fe5bfdd4615175ff16cf0fc7da1a67d873988e3df
+  historical_evidence_must_remain_unchanged: true
+
+executor:
+  type: EXTERNAL_REPLACEABLE_CATALYST_HARNESS
+  repository: chendong010121-hue/agent-runtime
+  implementation_commit: 2c2fc065d713b4060d3d6ba7200393a1e83e90a6
+  implementation_path: platform-harness/harness-v0.2-candidate
+  must_run_from_separate_executor_worktree: true
+  merge_harness_into_case01: FORBIDDEN
+  copy_harness_into_case01: FORBIDDEN
+  modify_harness: FORBIDDEN
+
+model_provider:
+  provider_contract: existing agent_runtime ModelProvider
+  implementation: agent_runtime.providers.deepseek.DeepSeekModelProvider
+  provider_id: deepseek
+  model_id: deepseek-v4-flash
+  credential_ref: deepseek.default
+  required_credential_source: USER_LOCAL
+  process_environment_secret_required: false
+  credential_value_must_not_be_printed: true
+  credential_value_must_not_be_persisted_in_repo: true
+  credential_value_must_not_enter_tool_subprocess_environment: true
+
+trial_branch:
+  required_name: case-01-harness-trial-01
+  create_from: EXACT_AUTHORIZATION_COMMIT
+  persistent_target_branch_case_01_must_not_be_mutated_by_trial_execution: true
+  main_must_not_be_mutated: true
+
+workspace:
+  root: TARGET_TRIAL_WORKTREE_REPOSITORY_ROOT
+  must_be_existing_directory: true
+  model_allowed_reads:
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.8/brea/knowledge.py
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.8/brea/corpus.py
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/knowledge/KR-003.json
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_HARNESS_TRIAL_01_KNOWLEDGE_HASH_HARDENING_V0.1_STAGE_SPEC.md
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/harness-trial-01/verify_knowledge_hash_hardening.py
+  model_allowed_writes:
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.8/brea/knowledge.py
+  model_write_file_count_max: 1
+  model_git_tool: FORBIDDEN
+
+execution_policy:
+  approval_policy: EXTERNAL_ALLOW_ONLY_FOR_DECLARED_ACTIONS
+  execution_policy_must_be_narrower_than_approval_policy: true
+  verification_command_id: verify-case01-hash-hardening
+  verification_command:
+    - PYTHON_EXECUTABLE
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/harness-trial-01/verify_knowledge_hash_hardening.py
+  command_timeout_seconds: 60
+  max_model_attempts: 6
+  max_repair_cycles: 1
+  task_environment:
+    CATALYST_TRIAL_BASE_SHA: EXACT_AUTHORIZATION_COMMIT
+  task_environment_secret_names_forbidden: true
+
+model_task:
+  task_id: case01-knowledge-hash-hardening
+  instruction: >-
+    Harden the BREA v0.8 Case-local Knowledge Revision binding identity in the
+    single authorized knowledge.py file. Replace raw JSON-file-byte identity with
+    a deterministic canonical Knowledge Revision SHA. Preserve all knowledge-bearing
+    content in identity except sources[].local_reference, which is machine-local
+    execution location only. Stable identity is required across indentation,
+    object-key order, JSON line endings, and local_reference-only changes. Source
+    SHA, route, fact, schema, authority and other knowledge-bearing changes must
+    change identity. Malformed JSON, identity mismatch, non-standard JSON numeric
+    values such as NaN/Infinity, and hash mismatch must fail closed. Do not weaken
+    independent sources[].sha256 corpus verification. Do not modify any other file.
+    Use the supplied deterministic verifier; do not claim completion without PASS.
+
+preflight_requirements:
+  status: READY
+  credential_source_type: USER_LOCAL
+  workspace_identity_must_match_trial_worktree: true
+  executable_python_available: true
+  failure_action: STOP_NO_PRODUCT_COMMIT
+
+required_verification_contract:
+  H-01: indentation_identity_stable
+  H-02: object_key_order_identity_stable
+  H-03: json_line_endings_identity_stable
+  H-04: local_reference_only_identity_stable
+  H-05: source_sha_changes_identity
+  H-06: route_or_fact_change_changes_identity
+  H-07: canonical_binding_accepts_equivalent_revision
+  H-08: wrong_expected_canonical_sha_fails_closed
+  H-09: malformed_identity_mismatch_nonstandard_numbers_fail_closed
+  H-10: source_content_sha_integrity_remains_independent
+  H-11: only_knowledge_py_candidate_diff_and_relevant_v08_boundary_preserved
+
+persistent_mutation_boundary:
+  authorized_product_file:
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.8/brea/knowledge.py
+  authorized_post_run_evidence_files:
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/harness-trial-01/TRIAL_01_RESULTS.json
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/harness-trial-01/TRIAL_01_REVIEW.md
+  all_other_product_or_governance_files: READ_ONLY
+
+transient_runtime_mutation_policy:
+  distinction: >-
+    Runtime-created temporary files/directories used by the frozen verifier are
+    allowed only outside tracked repository state or must be fully removed/restored
+    before commit. Persistent git changes remain governed by persistent_mutation_boundary.
+  tracked_unrelated_file_mutation: FORBIDDEN
+
+forbidden:
+  - mutate KR-001.json
+  - mutate KR-002.json
+  - mutate KR-003.json
+  - mutate corpus.py
+  - mutate runner.py
+  - mutate professional.py
+  - mutate semantic.py
+  - mutate facts.py
+  - mutate any existing v0.8 test
+  - mutate prior candidate trees
+  - mutate historical freeze/results/review evidence
+  - create v0.9
+  - perform E2-C
+  - admission
+  - binding
+  - Platform promotion
+  - Platform Standard mutation
+  - Runtime mutation
+  - RuntimeAdapter mutation
+  - main mutation
+  - Harness implementation mutation
+  - merge or copy Harness into Case01
+  - new professional capability
+  - new Knowledge schema
+  - new source/corpus
+
+required_post_run_evidence:
+  results_json_must_record:
+    - exact authorization commit
+    - exact executor implementation commit
+    - target trial branch and target workspace identity
+    - preflight public result
+    - credential source type without credential value
+    - model provider and model id
+    - model attempts
+    - repair cycles
+    - governance_authority false
+    - model-visible read/write boundaries
+    - Harness trace sufficient to prove authorized read/write/verification sequence
+    - deterministic verifier exit status
+    - H-01 through H-11 statuses
+    - persistent git changed-file set
+    - main unchanged observation
+    - case-01 unchanged observation after trial branch creation
+  review_md_must_state:
+    - KNOWLEDGE_HASH_HARDENING_PROOF verdict
+    - HARNESS_PRACTICAL_USE_PROOF verdict
+    - integrated Trial verdict
+    - limits and non-claims
+
+commit_policy:
+  trial_branch_execution_commits: 1
+  required_commit_contents:
+    - authorized knowledge.py repair candidate
+    - TRIAL_01_RESULTS.json
+    - TRIAL_01_REVIEW.md
+  no_other_persistent_files: true
+  push_trial_branch: true
+  do_not_merge: true
+  stop_after_push: true
+
+valid_verdicts:
+  - CASE01_HARNESS_TRIAL_01_PASS
+  - CASE01_HARNESS_TRIAL_01_TARGETED_REPAIR
+  - CASE01_HARNESS_TRIAL_01_FAIL
+
+pass_requires:
+  knowledge_hash_hardening_proof: PASS
+  harness_practical_use_proof: PASS
+  verifier: PASS
+  persistent_changed_files_exactly_authorized: true
+  main_unchanged: true
+  case_01_branch_unchanged_after_trial_branch_creation: true
+
+pass_does_not_authorize:
+  - merge_or_cherry_pick_into_case-01
+  - v0.9
+  - E2_close
+  - admission
+  - binding
+  - Platform_integration
+  - Platform_wide_canonical_JSON
+  - additional_Harness_features
+
+stop_conditions:
+  - preflight_not_READY
+  - USER_LOCAL_credential_unavailable
+  - frozen_Harness_executor_cannot_operate_external_target_worktree
+  - deterministic_verifier_invalid_or_not_runnable
+  - repair_requires_more_than_knowledge.py
+  - more_than_one_repair_cycle_required
+  - source_integrity_would_be_weakened
+  - professional_behavior_regression
+  - any_forbidden_persistent_mutation_required
+
+final_instruction: >-
+  Execute exactly one bounded Harness Trial only after confirming this authorization
+  commit is the base of the trial branch. If any stop condition occurs, stop and
+  report without widening scope. A PASS is evidence for this Trial only and carries
+  no merge, admission, binding, Platform, Runtime, or further implementation authority.
