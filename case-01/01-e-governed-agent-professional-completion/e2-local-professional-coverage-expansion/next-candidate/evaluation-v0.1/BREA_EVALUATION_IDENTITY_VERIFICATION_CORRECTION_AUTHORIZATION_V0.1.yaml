@@ -1,0 +1,99 @@
+record_type: catalyst_case01_brea_evaluation_identity_verification_correction_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_IDENTITY_GATE_CORRECTION_AND_RETRY_ONLY
+
+project: Catalyst
+case: CASE-01
+agent: BREA
+
+trigger:
+  prior_authorization_commit: e0b7f55bd5090a4ae06d155896ba105f066a469d
+  prior_attempt_verdict: EVALUATION_NOT_YET_VALID
+  reason: >-
+    Local working-tree byte-derived candidate hashes did not reproduce the historical
+    freeze values, while Git repository identity shows the frozen Candidate subtree is
+    unchanged. Evaluation stopped correctly before any benchmark execution.
+
+independent_repository_evidence:
+  frozen_candidate_commit: c6393d4210708400b492ad9e531002e29fe3635e
+  frozen_candidate_git_subtree_sha: b54bae4ffe442daacfe80ef4061cf60078b60794
+  current_authorized_head_before_this_record: e0b7f55bd5090a4ae06d155896ba105f066a469d
+  current_candidate_git_subtree_sha: b54bae4ffe442daacfe80ef4061cf60078b60794
+  candidate_path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.9
+  git_compare_candidate_changes_since_freeze: NONE
+  conclusion: >-
+    The repository-tracked Candidate content is unchanged from the accepted v0.9 freeze.
+    The local byte-hash mismatch is therefore an evaluation identity-verification issue,
+    not evidence of Candidate mutation.
+
+historical_identity_evidence_preserved:
+  candidate_tree_sha256: d68bd70cc8edd9900ff385f1cdc5a31f3b6f48b2003a442ccdb3c458c6af9eb0
+  candidate_tree_definition: "SHA256 of sorted relative-path TAB file-SHA256 entries with trailing LF, excluding __pycache__"
+  implementation_fingerprint: cf5ede8acc9528f0b3deab57659cb29f282f4575381474040d9d5b61834e70b6
+  implementation_fingerprint_definition: "SHA256 of sorted relative-path TAB file-SHA256 entries for README.md, brea/identity.py, brea/knowledge.py with trailing LF"
+  policy: >-
+    Do not rewrite or delete historical freeze evidence. These values remain historical
+    evidence from the original freeze environment, but they are not by themselves a
+    cross-environment execution gate because their construction hashes checkout file bytes.
+
+corrected_execution_identity_gate:
+  required_all:
+    - current case-01 working tree is clean before execution
+    - current candidate path has no Git diff from c6393d4210708400b492ad9e531002e29fe3635e
+    - Git subtree SHA for candidate/brea-v0.9 equals b54bae4ffe442daacfe80ef4061cf60078b60794
+    - BREA VERSION / LINEAGE identity remains v0.9-candidate / case-01.brea@0.8-candidate
+    - KR-003 canonical SHA256 equals 4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2
+    - frozen benchmark public/private/responsibility hashes match authorization
+  local_working_tree_byte_hashes:
+    role: ENVIRONMENT_LOCAL_OBSERVATION_ONLY
+    mismatch_policy: >-
+      Record the locally observed candidate_tree/fingerprint values and environment facts
+      such as platform and Git EOL/autocrlf settings if readily observable. A mismatch with
+      the historical byte-derived values is not a blocker when all repository/content gates
+      above pass. Do not normalize or mutate files merely to reproduce old local hashes.
+
+allowed_action:
+  - retry the already-authorized harvest-oriented BREA machine evaluation
+  - create the same minimal run_evaluation.py / results.json / PRODUCT_CAPABILITY_EVALUATION_REPORT.md authorized previously
+  - update the runner identity preflight so it uses the corrected gate above
+
+forbidden_actions:
+  - modify V0_9_FREEZE_RECORD.json or V0_9_RESULTS.json
+  - modify Candidate or Knowledge
+  - alter benchmark or rubric
+  - change historical hashes to current local values
+  - add .gitattributes or change Git EOL policy in this Stage
+  - repair BREA
+  - add external evaluation frameworks
+  - modify Platform / Runtime / Harness / main
+  - evaluate Waku
+  - start E2-C / Admission / Binding
+
+execution_rules:
+  - first verify corrected identity gate
+  - if corrected identity gate fails, STOP as EVALUATION_NOT_YET_VALID
+  - if it passes, execute all four inherited regression commands and all five frozen benchmark cases exactly once
+  - preserve failure attribution and harvest-oriented outputs from the prior authorization
+  - do not create a composite score
+
+persistent_change_policy:
+  allowed_files:
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/run_evaluation.py
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/results.json
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/PRODUCT_CAPABILITY_EVALUATION_REPORT.md
+  commits: 1
+  commit_message: "case-01: execute BREA evaluation with stable identity gate"
+  push_branch: case-01
+  stop_after_push: true
+
+valid_final_verdicts:
+  - MACHINE_EVALUATION_SUPPORTS_READY_FOR_HUMAN_REVIEW
+  - PRODUCT_CRITICAL_GAP_REMAINS
+  - EVALUATION_NOT_YET_VALID
+
+final_instruction: >-
+  Treat Git-tracked Candidate content plus canonical KR identity as the stable execution
+  identity gate. Preserve historical local byte-derived hashes as evidence but do not use
+  them as a cross-environment blocker when repository identity proves the Candidate is
+  unchanged. Retry the already-authorized evaluation once, commit only the three allowed
+  evaluation artifacts, push case-01, and STOP.
