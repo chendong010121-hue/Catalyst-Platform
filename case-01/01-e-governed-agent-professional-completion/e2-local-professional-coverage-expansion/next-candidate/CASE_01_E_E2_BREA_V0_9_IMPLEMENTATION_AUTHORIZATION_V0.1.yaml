@@ -1,0 +1,277 @@
+record_type: catalyst_case01_brea_candidate_implementation_authorization
+record_version: "0.1"
+status: AUTHORIZED
+
+project: Catalyst
+case: CASE-01
+agent: BREA
+stage: CASE_01_E_E2_BREA_V0_9_KNOWLEDGE_IDENTITY_HARDENING_ADOPTION
+
+stage_contract:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_E_E2_BREA_V0_9_KNOWLEDGE_IDENTITY_HARDENING_ADOPTION_V0.1_STAGE_CONTRACT.md
+  commit: 13633f341a820418ff3c61d87e3de58ef30bc651
+  status: ACCEPTED_FOR_IMPLEMENTATION
+
+execution_base:
+  required_case01_head_before_implementation: AUTHORIZATION_COMMIT
+  stage_contract_parent_commit: 13633f341a820418ff3c61d87e3de58ef30bc651
+  main_must_remain: 5874be1130e8867082880fcd63f659fc909d9efd
+  working_tree_must_be_clean: true
+
+candidate:
+  id: case-01.brea
+  target_version: 0.9-candidate
+  target_path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.9
+  predecessor_version: 0.8-candidate
+  predecessor_path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.8
+  predecessor_historical_freeze_commit: 30e85a917535773844df8f8af20f579ee2538f50
+  formation_rule: COPY_COMPLETE_PREDECESSOR_TREE_THEN_REPAIR_ONLY_NEW_CANDIDATE
+  predecessor_mutation: FORBIDDEN
+
+lineage:
+  version: v0.9-candidate
+  lineage_parent: case-01.brea@0.8-candidate
+  professional_purpose_change: NONE
+  professional_capability_growth: NONE
+  trial_repair_donor_commit: 3de91bbcf8c74cc9cfd96dd4eb40bbff230c660b
+  trial_external_review_commit: 5ac4b3c8256655bed161db4b4297f8f4058e7e0b
+  trial_branch_merge: FORBIDDEN
+  trial_commit_cherry_pick: FORBIDDEN
+
+knowledge:
+  revision_id: KR-003
+  revision_path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/knowledge/KR-003.json
+  content_mutation: FORBIDDEN
+  create_KR_004: FORBIDDEN
+  binding_sha_semantics: CANONICAL_KNOWLEDGE_REVISION_SHA256
+  historical_raw_byte_sha_compatibility_fallback: FORBIDDEN
+
+required_repair:
+  source: HARNESS_TRIAL_01_PROVEN_MECHANISM
+  product_file: brea/knowledge.py
+  requirements:
+    - parse UTF-8 JSON strictly
+    - reject malformed JSON
+    - reject NaN and Infinity non-standard numeric constants
+    - require JSON object top level
+    - preserve revision identity/schema fail-closed behavior
+    - canonicalize complete knowledge document except exactly sources[].local_reference
+    - deterministic object-key ordering
+    - deterministic compact JSON serialization
+    - UTF-8 canonical bytes
+    - SHA256 canonical bytes
+    - compare binding sha256 against canonical SHA
+    - no raw-byte SHA fallback
+    - preserve independent sources[].sha256 source integrity
+  forbidden_generalization:
+    - ignore arbitrary path fields
+    - ignore arbitrary location fields
+    - ignore arbitrary reference fields
+    - create Platform canonical JSON standard
+
+required_identity_updates:
+  - brea/identity.py VERSION = v0.9-candidate
+  - brea/identity.py LINEAGE_PARENT = case-01.brea@0.8-candidate
+  - README describes knowledge identity hardening adoption
+  - README states KR-003 unchanged
+  - README states professional behavior unchanged from v0.8
+  unchanged_governed_contracts:
+    - FN-01..FN-11
+    - SEAM-01..SEAM-03
+    - OBL-01..OBL-06
+
+allowed_candidate_writes:
+  root: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.9/**
+  rules:
+    - new candidate tree may be created only by copying complete brea-v0.8 predecessor tree
+    - brea/knowledge.py may adopt proven canonical identity repair
+    - brea/identity.py may change only candidate version/lineage text required by v0.9
+    - README.md may change only candidate identity/status/repair description required by v0.9
+    - tests may change only binding-SHA construction, v0.9 identity assertions, candidate-root mechanical text, and v0.9 hardening proof
+    - fixtures professional content must remain unchanged
+    - unrelated implementation files must remain byte-equivalent to v0.8 unless execution proves a strictly mechanical candidate-path/version necessity
+
+allowed_test_migration:
+  inherited_test_files:
+    - tests/test_cases.py
+    - tests/test_seams.py
+    - tests/test_structural.py
+    - tests/test_v07_source_structure.py
+    - tests/test_v08_residential_slice.py
+    - tests/run_all.py
+  optional_single_shared_test_support_file:
+    - tests/knowledge_binding_support.py
+  new_focused_test_file:
+    - tests/test_v09_knowledge_identity.py
+  allowed_changes:
+    - replace raw-file-byte Knowledge Binding SHA construction with canonical Knowledge Revision SHA construction
+    - update VERSION and LINEAGE_PARENT assertions to v0.9
+    - update run_all banner/version text if needed
+    - add focused v0.9 identity hardening tests
+  forbidden_changes:
+    - weaken existing professional assertions
+    - alter expected normative values
+    - alter source locators/evidence expectations
+    - remove fail-closed cases
+    - alter T-C01/T-C02/T-C03 fixtures
+    - skip previously passing tests
+    - change professional routing merely to make tests pass
+
+required_v09_hardening_proof:
+  V9-H01: indentation_whitespace_identity_stable
+  V9-H02: object_key_order_identity_stable
+  V9-H03: JSON_LF_CRLF_identity_stable
+  V9-H04: local_reference_only_relocation_identity_stable
+  V9-H05: source_sha_change_changes_identity
+  V9-H06: route_or_fact_change_changes_identity
+  V9-H07: canonical_KR003_binding_accepted
+  V9-H08: historical_raw_byte_sha_rejected_as_canonical_identity
+  V9-H09: malformed_identity_mismatch_NaN_Infinity_fail_closed
+  V9-H10: source_content_sha_integrity_independent
+
+required_regression_commands:
+  working_directory: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.9
+  commands:
+    - python tests/run_all.py
+    - python tests/test_v07_source_structure.py
+    - python tests/test_v08_residential_slice.py
+    - python tests/test_v09_knowledge_identity.py
+  all_must_exit_zero: true
+  note: >-
+    tests/run_all.py does not itself execute the v0.7 and v0.8 unittest modules;
+    therefore all four commands are mandatory for Candidate PASS.
+
+required_regression_claims:
+  - P-01..P-09 PASS
+  - PC-01..PC-07 preserved
+  - S-01..S-05 PASS
+  - legacy clause/table behavior preserved
+  - E1 generalized local query preserved
+  - five professional forms preserved
+  - T-C01 PASS
+  - T-C02 PASS
+  - T-C03 PASS
+  - KR-001 canonical binding works
+  - KR-002 canonical binding works
+  - KR-003 canonical binding works
+  - source SHA fail-closed preserved
+  - Platform-bound compatibility preserved
+  - anti-hardcode boundary preserved
+  - professional behavior unchanged from v0.8
+
+protected_paths:
+  forbidden_writes:
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.8/**
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/knowledge/KR-001.json
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/knowledge/KR-002.json
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/knowledge/KR-003.json
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/V0_8_RESULTS.json
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/V0_8_CANDIDATE_REVIEW.md
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/V0_8_FREEZE_RECORD.json
+    - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/harness-trial-01/**
+    - agent_runtime/**
+    - platform_standard/**
+    - runtime_adapter/**
+    - platform-harness/**
+    - ARCHITECTURE.md
+    - README.md
+    - pyproject.toml
+  main_mutation: FORBIDDEN
+
+explicit_non_scope:
+  - Table_3_2_road_setback
+  - road_width_m
+  - Q_semantics
+  - new_professional_route
+  - new_professional_fact
+  - new_source_or_corpus
+  - KR_004
+  - E2_C
+  - admission
+  - binding
+  - Platform_promotion
+  - Platform_wide_canonical_JSON
+  - Harness_feature_work
+  - MCP
+  - multi_agent
+  - context_compaction
+
+required_evidence_files:
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/V0_9_RESULTS.json
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/V0_9_CANDIDATE_REVIEW.md
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/V0_9_FREEZE_RECORD.json
+
+results_requirements:
+  - exact authorization commit
+  - baseline commit
+  - frozen predecessor identity
+  - Trial donor commit
+  - Trial External Review commit
+  - VERSION and LINEAGE_PARENT
+  - KR-003 canonical SHA
+  - explicit KR-003 content unchanged statement
+  - V9-H01 through V9-H10 statuses
+  - historical raw-byte SHA rejection status
+  - four required regression command exit statuses
+  - P-01..P-09 status
+  - S-01..S-05 status
+  - PC-01..PC-07 preservation
+  - T-C01/T-C02/T-C03 status
+  - professional_behavior_changed false
+  - Candidate tree SHA256
+  - Candidate file count
+  - implementation fingerprint
+  - changed-file set
+  - protected-boundary status
+  - main unchanged observation
+
+freeze_record_requirements:
+  candidate_id: case-01.brea
+  candidate_version: 0.9-candidate
+  status: FROZEN_NOT_ADMITTED_NOT_BOUND
+  knowledge_revision: KR-003
+  knowledge_revision_sha_semantics: canonical
+  must_record_candidate_tree_sha256: true
+  must_record_implementation_fingerprint: true
+  must_record_trial_repair_lineage: true
+
+commit_policy:
+  implementation_evidence_freeze_commits: 1
+  commit_message: "case-01: freeze BREA v0.9 knowledge identity hardening"
+  push_branch: case-01
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+  stop_after_push: true
+
+valid_final_verdicts:
+  - BREA_V0_9_CANDIDATE_PASS
+  - BREA_V0_9_CANDIDATE_TARGETED_REPAIR
+  - BREA_V0_9_CANDIDATE_FAIL
+
+pass_requires:
+  - all V9-H01..V9-H10 PASS
+  - all four required regression commands exit 0
+  - professional behavior unchanged
+  - KR-003 byte content unchanged
+  - v0.8 predecessor tree unchanged
+  - protected boundaries unchanged
+  - Candidate frozen with tree SHA and implementation fingerprint
+  - exactly one implementation/evidence/freeze commit
+
+stop_conditions:
+  - any need to mutate v0.8
+  - any need to mutate KR-001/KR-002/KR-003 content
+  - any professional regression unrelated to binding/version migration
+  - any new professional capability required
+  - any need to modify Platform/Runtime/Harness
+  - raw-byte backward-compatibility fallback appears necessary
+  - more than one implementation/evidence/freeze commit appears necessary
+
+final_instruction: >-
+  Form BREA v0.9 strictly as Candidate N+1 from the complete frozen v0.8 tree,
+  adopt only the Trial-01-proven Knowledge identity hardening, migrate only the
+  Candidate-local test binding/version infrastructure needed by the new contract,
+  run the complete mandatory regression surface, freeze the new Candidate, create
+  exactly one implementation+evidence+freeze commit, push case-01, and STOP. Do not
+  merge/cherry-pick the Trial branch, do not mutate frozen v0.8 or KR-003, and do not
+  begin E2-C, admission, binding, or further professional/Harness work.
