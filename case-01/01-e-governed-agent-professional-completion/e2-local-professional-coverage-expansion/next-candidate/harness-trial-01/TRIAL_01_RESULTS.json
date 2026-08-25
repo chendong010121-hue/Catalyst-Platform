@@ -1,0 +1,110 @@
+{
+  "record_type": "catalyst_case01_harness_trial_execution_results",
+  "record_version": "0.1",
+  "trial_verdict": "CASE01_HARNESS_TRIAL_01_PASS",
+  "authorization_commit": "093d6ec2214a98096dbfaf55fa4f1571b97d92bf",
+  "executor_implementation_commit": "2c2fc065d713b4060d3d6ba7200393a1e83e90a6",
+  "trial_branch": "case-01-harness-trial-01",
+  "target_workspace": "E:\\w\\c01t01",
+  "provider": "DeepSeekModelProvider",
+  "provider_id": "deepseek",
+  "model_id": "deepseek-v4-flash",
+  "credential_ref": "deepseek.default",
+  "credential_source_type": "USER_LOCAL",
+  "preflight": {
+    "status": "READY",
+    "credential_resolved": true,
+    "credential_source_type": "USER_LOCAL",
+    "process_env_deepseek_api_key": false,
+    "workspace_identity_matches_target": true,
+    "model_call_during_preflight": false
+  },
+  "harness_execution": {
+    "status": "PASS",
+    "model_attempts": 6,
+    "repair_cycles": 0,
+    "governance_authority": false,
+    "available_tools": ["read", "write", "command"],
+    "tool_subprocess_deepseek_api_key": false,
+    "execution_policy": {
+      "verification_command_id": "verify-case01-hash-hardening",
+      "command_timeout_seconds": 60,
+      "max_model_attempts": 6,
+      "max_repair_cycles": 1,
+      "task_environment": {
+        "CATALYST_TRIAL_BASE_SHA": "093d6ec2214a98096dbfaf55fa4f1571b97d92bf"
+      }
+    },
+    "model_visible_read_paths": [
+      "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.8/brea/knowledge.py",
+      "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.8/brea/corpus.py",
+      "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/knowledge/KR-003.json",
+      "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_HARNESS_TRIAL_01_KNOWLEDGE_HASH_HARDENING_V0.1_STAGE_SPEC.md",
+      "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/harness-trial-01/verify_knowledge_hash_hardening.py"
+    ],
+    "model_visible_write_paths": [
+      "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.8/brea/knowledge.py"
+    ],
+    "trace": [
+      {"event": "task_start", "status": "READY"},
+      {"event": "model_turn", "attempt": 1, "tool_calls": 1, "status": "RECEIVED"},
+      {"event": "read", "path": ".../candidate/brea-v0.8/brea/knowledge.py", "status": "PASS"},
+      {"event": "model_turn", "attempt": 2, "tool_calls": 1, "status": "RECEIVED"},
+      {"event": "read", "path": ".../candidate/brea-v0.8/brea/corpus.py", "status": "PASS"},
+      {"event": "model_turn", "attempt": 3, "tool_calls": 1, "status": "RECEIVED"},
+      {"event": "read", "path": ".../next-candidate/knowledge/KR-003.json", "status": "PASS"},
+      {"event": "model_turn", "attempt": 4, "tool_calls": 1, "status": "RECEIVED"},
+      {"event": "read", "path": ".../next-candidate/CASE_01_HARNESS_TRIAL_01_KNOWLEDGE_HASH_HARDENING_V0.1_STAGE_SPEC.md", "status": "PASS"},
+      {"event": "model_turn", "attempt": 5, "tool_calls": 1, "status": "RECEIVED"},
+      {"event": "read", "path": ".../next-candidate/harness-trial-01/verify_knowledge_hash_hardening.py", "status": "PASS"},
+      {"event": "model_turn", "attempt": 6, "tool_calls": 1, "status": "RECEIVED"},
+      {"event": "write", "path": ".../candidate/brea-v0.8/brea/knowledge.py", "approval": "ALLOW", "status": "PASS"},
+      {"event": "verification", "command_id": "verify-case01-hash-hardening", "approval": "ALLOW", "exit_code": 0, "status": "PASS", "tests_run": 11, "failures": 0, "errors": 0},
+      {"event": "final_result", "status": "PASS"}
+    ]
+  },
+  "knowledge_hash_hardening": {
+    "H-01": "PASS",
+    "H-02": "PASS",
+    "H-03": "PASS",
+    "H-04": "PASS",
+    "H-05": "PASS",
+    "H-06": "PASS",
+    "H-07": "PASS",
+    "H-08": "PASS",
+    "H-09": "PASS",
+    "H-10": "PASS",
+    "H-11": "PASS",
+    "verifier_exit_code": 0,
+    "verifier_tests_run": 11,
+    "verifier_failures": 0,
+    "verifier_errors": 0
+  },
+  "representative_v08_regression": {
+    "status": "PASS",
+    "T-C01": "PASS",
+    "T-C02": "PASS",
+    "T-C03": "PASS",
+    "professional_behavior_changed": false
+  },
+  "governance_post_run": {
+    "persistent_changed_files_before_evidence": [
+      "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.8/brea/knowledge.py"
+    ],
+    "case01_branch_base_unchanged": true,
+    "main_ref_before_and_after": "5874be1130e8867082880fcd63f659fc909d9efd",
+    "main_unchanged": true,
+    "case01_ref_unchanged": true,
+    "harness_executor_head": "2c2fc065d713b4060d3d6ba7200393a1e83e90a6",
+    "harness_executor_unchanged": true,
+    "protected_product_files_unchanged": true,
+    "historical_evidence_unchanged": true,
+    "credential_value_recorded": false,
+    "credential_store_content_recorded": false,
+    "credential_store_path_recorded": false
+  },
+  "authorized_evidence_files": [
+    "TRIAL_01_RESULTS.json",
+    "TRIAL_01_REVIEW.md"
+  ]
+}
