@@ -1,0 +1,215 @@
+{
+  "record_type": "catalyst_case01_brea_product_responsibility_map",
+  "record_version": "0.1",
+  "target": "case-01.brea@0.9-candidate",
+  "target_commit": "c6393d4210708400b492ad9e531002e29fe3635e",
+  "knowledge_revision": "KR-003",
+  "scope": "architecture_pre_design building-regulation evidence with explicit local authoritative sources, applicability, traceability, numeric safety, uncertainty, and fail-closed behavior",
+  "responsibilities": [
+    {
+      "responsibility_id": "PR-01",
+      "requirement_status": "REQUIRED",
+      "capability_state": "EXISTS_NOT_PROVEN",
+      "current_evidence": ["FN-01", "T-C01", "T-C02", "T-C03", "V0_9_RESULTS.json"],
+      "coverage": "Structured request identity and bounded route selection are exercised, but no independent public product-task trajectory proves the complete intake loop.",
+      "known_limitation": "No new benchmark had yet tested a realistic user statement with complete context and an observable end-to-end result.",
+      "value_classification_if_relevant": "core product responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-CAP-001", "BREA-E2E-001", "BREA-SAFE-001"]
+    },
+    {
+      "responsibility_id": "PR-02",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PROVEN",
+      "current_evidence": ["FN-02", "SEAM-01", "P-01..P-09", "T-C01", "T-C02"],
+      "coverage": "Bounded project facts are normalized and used by the tested routes without answer-specific hardcoding.",
+      "known_limitation": "Evidence is bounded to the declared KR-003 fact descriptors and does not establish universal fact extraction.",
+      "value_classification_if_relevant": "core product responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-CAP-001", "BREA-E2E-001", "BREA-SAFE-001"]
+    },
+    {
+      "responsibility_id": "PR-03",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PROVEN",
+      "current_evidence": ["FN-02", "FN-06", "P-04", "P-07", "T-C03"],
+      "coverage": "Missing and invalid facts fail closed in the retained deterministic surface.",
+      "known_limitation": "The evidence does not cover every possible malformed or ambiguous natural-language fact expression.",
+      "value_classification_if_relevant": "core safety responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-SAFE-001"]
+    },
+    {
+      "responsibility_id": "PR-04",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PROVEN",
+      "current_evidence": ["FN-03", "SEAM-02", "P-05", "P-06", "T-C02", "V0_9_RESULTS.json"],
+      "coverage": "Tested land-use, jurisdiction, and special-area applicability gates prevent unsupported route use in the current bounded scope.",
+      "known_limitation": "The bound source set is not a full jurisdiction hierarchy and does not prove all jurisdictions.",
+      "value_classification_if_relevant": "core product responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-SAFE-002"]
+    },
+    {
+      "responsibility_id": "PR-05",
+      "requirement_status": "NOT_REQUIRED_NOW",
+      "capability_state": "NOT_REQUIRED_NOW",
+      "current_evidence": ["evaluation contract current declared scope", "KR-003 bound-source model"],
+      "coverage": "The current product promise is explicitly bounded to supplied project context and admitted local sources; full jurisdiction-hierarchy resolution is not needed to close this loop.",
+      "known_limitation": "A later product scope may require a separately authorized jurisdiction benchmark.",
+      "value_classification_if_relevant": "future audit candidate, not current product gate",
+      "confidence": "MEDIUM",
+      "benchmark_case_ids": []
+    },
+    {
+      "responsibility_id": "PR-06",
+      "requirement_status": "NOT_REQUIRED_NOW",
+      "capability_state": "NOT_REQUIRED_NOW",
+      "current_evidence": ["KR-003 source metadata", "FN-03", "FN-09"],
+      "coverage": "The current bound source metadata is sufficient for the declared cases; no alternative-edition selection promise is required by the frozen envelope.",
+      "known_limitation": "Competing editions and effective-status selection remain unproven and outside this benchmark.",
+      "value_classification_if_relevant": "future audit candidate, not current product gate",
+      "confidence": "MEDIUM",
+      "benchmark_case_ids": []
+    },
+    {
+      "responsibility_id": "PR-07",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PARTIAL",
+      "current_evidence": ["FN-04", "FN-09", "S-01..S-05", "T-C01", "T-C02", "V9-H07"],
+      "coverage": "Local retrieval is proven for retained deterministic routes, but product-level coverage across realistic user tasks is not yet independently proven.",
+      "known_limitation": "No new benchmark has yet checked complete route selection and evidence retrieval without relying on fixture-shaped requests.",
+      "value_classification_if_relevant": "core product responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-CAP-001", "BREA-E2E-001", "BREA-SAFE-001", "BREA-SAFE-002", "BREA-CAP-002"]
+    },
+    {
+      "responsibility_id": "PR-08",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PARTIAL",
+      "current_evidence": ["FN-04", "SEAM-03", "S-01..S-05", "T-C01", "T-C02"],
+      "coverage": "Clause and table locators are proven for the existing deterministic cases, but a broader complete-product benchmark is still needed.",
+      "known_limitation": "No independent benchmark evidence covers all currently bound source-native structures.",
+      "value_classification_if_relevant": "core traceability responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-CAP-001", "BREA-E2E-001"]
+    },
+    {
+      "responsibility_id": "PR-09",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PARTIAL",
+      "current_evidence": ["FN-03", "FN-05", "P-05", "P-06", "T-C02"],
+      "coverage": "Known conditions and modifiers are tested for bounded routes, but complete-product behavior at route-specific condition boundaries remains insufficiently proven.",
+      "known_limitation": "The benchmark does not generalize exception handling beyond the facts and conditions declared by KR-003.",
+      "value_classification_if_relevant": "core safety responsibility",
+      "confidence": "MEDIUM",
+      "benchmark_case_ids": ["BREA-CAP-001", "BREA-SAFE-001", "BREA-SAFE-002"]
+    },
+    {
+      "responsibility_id": "PR-10",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PROVEN",
+      "current_evidence": ["FN-05", "OBL-03", "P-01..P-03", "P-07", "P-08", "T-C01", "T-C02", "V9-H05", "V9-H08"],
+      "coverage": "Normative numeric results are source-bound or fail closed in the current deterministic surface; raw-byte identity fallback is rejected.",
+      "known_limitation": "This does not prove numeric safety for unbound future knowledge or unsupported routes.",
+      "value_classification_if_relevant": "critical safety responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-CAP-001", "BREA-E2E-001", "BREA-SAFE-001", "BREA-SAFE-002", "BREA-CAP-002"]
+    },
+    {
+      "responsibility_id": "PR-11",
+      "requirement_status": "NOT_REQUIRED_NOW",
+      "capability_state": "NOT_REQUIRED_NOW",
+      "current_evidence": ["evaluation contract current declared scope", "V0_9_EXTERNAL_FREEZE_REVIEW_V0.1.md"],
+      "coverage": "The current declared product loop can close with one selected bound route and does not require cross-rule or cross-source composition.",
+      "known_limitation": "Composition remains a future responsibility only if a later authorized product scope requires it.",
+      "value_classification_if_relevant": "future audit candidate, not current product gate",
+      "confidence": "MEDIUM",
+      "benchmark_case_ids": []
+    },
+    {
+      "responsibility_id": "PR-12",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PARTIAL",
+      "current_evidence": ["FN-05", "FN-06", "P-04", "P-06", "P-07", "T-C03", "OBL-04"],
+      "coverage": "Deterministic sufficient/insufficient evidence decisions are proven for fixtures, but realistic product-task boundary behavior needs independent benchmark evidence.",
+      "known_limitation": "No live or provider-backed evaluation is authorized in this formation stage.",
+      "value_classification_if_relevant": "core safety responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-CAP-001", "BREA-E2E-001", "BREA-SAFE-001", "BREA-SAFE-002", "BREA-CAP-002"]
+    },
+    {
+      "responsibility_id": "PR-13",
+      "requirement_status": "NOT_REQUIRED_NOW",
+      "capability_state": "NOT_REQUIRED_NOW",
+      "current_evidence": ["FN-01", "FN-06", "T-C03", "evaluation precision rule"],
+      "coverage": "Structured insufficient_context with explicit missing facts and next action is sufficient for the current product loop; a multi-turn clarification UI is not required.",
+      "known_limitation": "Future product scope may separately authorize interaction-loop evaluation.",
+      "value_classification_if_relevant": "future interaction enhancement, not current product gate",
+      "confidence": "MEDIUM",
+      "benchmark_case_ids": []
+    },
+    {
+      "responsibility_id": "PR-14",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PARTIAL",
+      "current_evidence": ["FN-07", "P-08", "T-C01", "T-C02", "T-C03", "five professional forms"],
+      "coverage": "Bounded conclusion composition is proven in regression, but realistic task-level usefulness and non-overclaiming need independent benchmark observation.",
+      "known_limitation": "Human professional review remains separate and is not replaced by this machine benchmark.",
+      "value_classification_if_relevant": "core product responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-CAP-001", "BREA-E2E-001", "BREA-SAFE-001", "BREA-SAFE-002", "BREA-CAP-002"]
+    },
+    {
+      "responsibility_id": "PR-15",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PARTIAL",
+      "current_evidence": ["FN-08", "SEAM-03", "OBL-01", "OBL-05", "T-C01", "T-C02"],
+      "coverage": "Evidence locators and provenance are checked for retained cases, but independent benchmark evidence is needed to verify claim-to-evidence binding on new user-shaped tasks.",
+      "known_limitation": "No score or external evaluation is produced during formation.",
+      "value_classification_if_relevant": "critical trust responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-CAP-001", "BREA-E2E-001", "BREA-CAP-002"]
+    },
+    {
+      "responsibility_id": "PR-16",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PARTIAL",
+      "current_evidence": ["FN-06", "FN-07", "P-04", "P-06", "P-07", "T-C03"],
+      "coverage": "The current tests prove explicit uncertainty for bounded failures, but task-level next-action communication is not independently benchmarked.",
+      "known_limitation": "No multi-turn clarification is required or evaluated in this stage.",
+      "value_classification_if_relevant": "core safety communication",
+      "confidence": "MEDIUM",
+      "benchmark_case_ids": ["BREA-SAFE-001", "BREA-SAFE-002", "BREA-CAP-002"]
+    },
+    {
+      "responsibility_id": "PR-17",
+      "requirement_status": "REQUIRED",
+      "capability_state": "PROVEN",
+      "current_evidence": ["OBL-06", "T-C02", "PC-01..PC-07"],
+      "coverage": "Minimum organization/user/project attribution is preserved in the retained accepted result.",
+      "known_limitation": "Only the current enterprise-context contract is covered; broader tenancy or identity systems are outside scope.",
+      "value_classification_if_relevant": "governed product responsibility",
+      "confidence": "HIGH",
+      "benchmark_case_ids": ["BREA-E2E-001"]
+    },
+    {
+      "responsibility_id": "PR-18",
+      "requirement_status": "NOT_REQUIRED_NOW",
+      "capability_state": "NOT_REQUIRED_NOW",
+      "current_evidence": ["evaluation contract current declared scope", "KR-003 explicit local-source model", "v0.9 README"],
+      "coverage": "Bound authoritative local sources plus honest fail-closed behavior can close the current declared product loop; web/external supplementation is not required by default.",
+      "known_limitation": "External supplementation could be separately authorized only after a future scope decision proves necessity.",
+      "value_classification_if_relevant": "future enhancement, not current product gate",
+      "confidence": "HIGH",
+      "benchmark_case_ids": []
+    }
+  ],
+  "classification_summary": {
+    "REQUIRED": ["PR-01", "PR-02", "PR-03", "PR-04", "PR-07", "PR-08", "PR-09", "PR-10", "PR-12", "PR-14", "PR-15", "PR-16", "PR-17"],
+    "NOT_REQUIRED_NOW": ["PR-05", "PR-06", "PR-11", "PR-13", "PR-18"],
+    "UNKNOWN": [],
+    "new_case_rule_applied": true,
+    "new_case_count": 5
+  }
+}

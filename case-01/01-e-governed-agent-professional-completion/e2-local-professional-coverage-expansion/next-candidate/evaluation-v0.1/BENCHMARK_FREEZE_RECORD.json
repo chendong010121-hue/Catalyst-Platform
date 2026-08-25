@@ -1,0 +1,78 @@
+{
+  "record_type": "catalyst_case01_brea_evaluation_benchmark_freeze",
+  "record_version": "0.1",
+  "verdict": "BREA_EVAL_BENCHMARK_FROZEN_FOR_REVIEW",
+  "authorization_commit": "e2701a3fdaad22c6beca8585e76d7bd341dea8fa",
+  "stage_spec_commit": "0cc12dd5ed3626b5efa10067552dadf40593c6ba",
+  "evaluation_contract_commit": "8a6505992a784c5e525c2cdd96c84966b434b905",
+  "frozen_target": {
+    "identity": "case-01.brea@0.9-candidate",
+    "candidate_freeze_commit": "c6393d4210708400b492ad9e531002e29fe3635e",
+    "candidate_tree_sha256": "d68bd70cc8edd9900ff385f1cdc5a31f3b6f48b2003a442ccdb3c458c6af9eb0",
+    "implementation_fingerprint": "cf5ede8acc9528f0b3deab57659cb29f282f4575381474040d9d5b61834e70b6",
+    "knowledge_revision": "KR-003",
+    "knowledge_revision_sha256": "4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2"
+  },
+  "responsibility_map": {
+    "path": "evaluation-v0.1/responsibility_map.json",
+    "sha256": "32cd66aa65aeb2ddf74b91f57e84ed995b087320f3919f231192f395fc3196e6",
+    "projected_before_case_design": true,
+    "required": ["PR-01", "PR-02", "PR-03", "PR-04", "PR-07", "PR-08", "PR-09", "PR-10", "PR-12", "PR-14", "PR-15", "PR-16", "PR-17"],
+    "not_required_now": ["PR-05", "PR-06", "PR-11", "PR-13", "PR-18"],
+    "unknown": []
+  },
+  "benchmark": {
+    "case_count": 5,
+    "case_ids": ["BREA-CAP-001", "BREA-E2E-001", "BREA-SAFE-001", "BREA-SAFE-002", "BREA-CAP-002"],
+    "suite_per_case": {
+      "BREA-CAP-001": "CAPABILITY_BOUNDARY",
+      "BREA-E2E-001": "END_TO_END_PRODUCT",
+      "BREA-SAFE-001": "CRITICAL_SAFETY_FAIL_CLOSED",
+      "BREA-SAFE-002": "CRITICAL_SAFETY_FAIL_CLOSED",
+      "BREA-CAP-002": "CAPABILITY_BOUNDARY"
+    },
+    "PR_ids_per_case": {
+      "BREA-CAP-001": ["PR-01", "PR-02", "PR-07", "PR-08", "PR-09", "PR-12", "PR-14", "PR-15", "PR-16", "PR-17"],
+      "BREA-E2E-001": ["PR-01", "PR-02", "PR-04", "PR-07", "PR-08", "PR-10", "PR-12", "PR-14", "PR-15", "PR-17"],
+      "BREA-SAFE-001": ["PR-01", "PR-03", "PR-07", "PR-09", "PR-12", "PR-14", "PR-16"],
+      "BREA-SAFE-002": ["PR-04", "PR-07", "PR-09", "PR-12", "PR-14", "PR-16"],
+      "BREA-CAP-002": ["PR-01", "PR-07", "PR-10", "PR-12", "PR-14", "PR-15", "PR-16"]
+    },
+    "new_case_rule": "Only REQUIRED responsibilities with insufficient PROVEN evidence generated cases; NOT_REQUIRED_NOW responsibilities did not generate cases.",
+    "critical_gates_covered": ["GATE-01", "GATE-02", "GATE-03", "GATE-04", "GATE-05", "GATE-06"],
+    "public_benchmark_sha256": "7b9388a3038122dd023ea84f6a1b8640d96e9a82f73d49a80e39a4b12d27754a",
+    "private_rubric_sha256": "c4e525cd497b07b9a39f5d9cca8dfb2a8e35f5afce710da43d61c22d0cfc8b50",
+    "public_path": "evaluation-v0.1/benchmark/public/benchmark_cases.json",
+    "private_path": "evaluation-v0.1/benchmark/private/rubric.json",
+    "public_private_separation": "PASS",
+    "new_cases_executed_against_brea": false
+  },
+  "target_was_not_executed_against_new_benchmark": true,
+  "brea_was_not_executed": true,
+  "protected_boundaries": {
+    "candidate_brea_v0_9_unchanged": true,
+    "KR-001_unchanged": true,
+    "KR-002_unchanged": true,
+    "KR-003_unchanged": true,
+    "platform_unchanged": true,
+    "runtime_unchanged": true,
+    "runtime_adapter_unchanged": true,
+    "platform_harness_unchanged": true,
+    "main_unchanged": "5874be1130e8867082880fcd63f659fc909d9efd",
+    "status": "PASS"
+  },
+  "benchmark_design_limitations": [
+    "Formation only; no target execution, score, provider invocation, or comparison was performed.",
+    "The benchmark is bounded to KR-003 and the declared architecture-pre-design local-source product envelope.",
+    "PR-05, PR-06, PR-11, PR-13, and PR-18 remain NOT_REQUIRED_NOW rather than being treated as missing.",
+    "Human Product Review and Human Professional Review remain future gates.",
+    "No run_evaluation.py was created because formation did not require executable evaluation infrastructure."
+  ],
+  "generated_files_only": [
+    "evaluation-v0.1/responsibility_map.json",
+    "evaluation-v0.1/benchmark/public/benchmark_cases.json",
+    "evaluation-v0.1/benchmark/private/rubric.json",
+    "evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json"
+  ],
+  "status": "FROZEN_FOR_EXTERNAL_BENCHMARK_REVIEW"
+}

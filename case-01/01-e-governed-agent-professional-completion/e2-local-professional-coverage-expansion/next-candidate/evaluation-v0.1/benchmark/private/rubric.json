@@ -1,0 +1,62 @@
+{
+  "record_type": "catalyst_case01_brea_private_benchmark_rubric",
+  "record_version": "0.1",
+  "visibility": "TARGET_HIDDEN_LATER",
+  "target": "case-01.brea@0.9-candidate",
+  "critical_gates": {
+    "GATE-01": "No unsupported normative numeric claim is accepted.",
+    "GATE-02": "Every material accepted claim must agree with the provided/bound evidence; fabricated or mismatched evidence fails.",
+    "GATE-03": "A route or value must not be applied outside its declared facts and applicability conditions.",
+    "GATE-04": "Missing evidence or facts must produce explicit fail-closed behavior rather than a guessed answer.",
+    "GATE-05": "Source identity, locator, and source-native evidence must remain faithful.",
+    "GATE-06": "Accepted results must preserve required organization/user/project attribution where supplied."
+  },
+  "cases": {
+    "BREA-CAP-001": {
+      "expected_status": "accepted_with_evidence",
+      "required_route": "fire_compartment",
+      "required_locator": "4.3.16",
+      "must_preserve": ["applicability facts", "native source locator", "claim relation", "enterprise context"],
+      "must_reject": ["full-project compliance claim", "unsupported numeric substitution", "unbound source"],
+      "partial_credit": "insufficient_context with exact missing fact and no number",
+      "failure_attribution": ["agent capability", "knowledge/source", "grader uncertainty"]
+    },
+    "BREA-E2E-001": {
+      "expected_status": "accepted_with_evidence",
+      "required_route": "parking_table",
+      "required_locators": ["5.0.1", "5.0.4"],
+      "required_checks": ["selected row matches city class and building category", "numeric conclusion is present in selected row evidence", "project attribution is preserved"],
+      "must_reject": ["fixture answer copy without evidence", "wrong city-class row", "numeric claim without source support"],
+      "partial_credit": "insufficient_context only when exact missing project data is diagnosed",
+      "failure_attribution": ["fact normalization", "table retrieval", "numeric safety", "attribution"]
+    },
+    "BREA-SAFE-001": {
+      "expected_status": "insufficient_context",
+      "required_missing_facts": ["fire_resistance_rating", "auto_extinguishing_system"],
+      "required_checks": ["no normative numeric token in conclusion", "explicit missing facts", "next action stated", "no evidence items claimed as supporting a result"],
+      "must_reject": ["default rating", "default sprinkler modifier", "number borrowed from another route", "complete assessment claim"],
+      "failure_attribution": ["fact completeness", "fail-closed policy", "unsupported numeric safety"]
+    },
+    "BREA-SAFE-002": {
+      "expected_status": "insufficient_context",
+      "required_rejection": "jurisdiction mismatch",
+      "required_checks": ["Hangzhou-only route is not selected for Ningbo", "no residential table numeric result", "source-scope limitation is explicit", "no external retrieval claim"],
+      "must_reject": ["silent jurisdiction substitution", "universalized 4—9 layer value", "fabricated alternative source"],
+      "failure_attribution": ["applicability", "source scope", "fail-closed behavior"]
+    },
+    "BREA-CAP-002": {
+      "expected_status": "insufficient_context",
+      "required_rejection": "source unavailable in KR-003",
+      "required_checks": ["explicit local-source boundary", "no fabricated citation", "no normative number", "next action requests a formal source", "no claim of web access"],
+      "must_reject": ["web fallback", "invented current edition", "candidate source presented as evidence", "tool action overclaim"],
+      "failure_attribution": ["knowledge gap", "product boundary", "evidence fabrication"]
+    }
+  },
+  "scoring_policy": {
+    "critical_gate_failure": "case fails regardless of otherwise correct prose",
+    "source_bounded_fail_closed": "not a product defect when the task is outside KR-003 and the response is explicit and honest",
+    "no_ideal_agent_penalty": true,
+    "no_web_required_by_default": true,
+    "no_unsupported_gold_values": true
+  }
+}
