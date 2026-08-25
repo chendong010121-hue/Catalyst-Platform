@@ -1,0 +1,200 @@
+record_type: catalyst_case02_waku_benchmark_second_targeted_repair_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_FINAL_BENCHMARK_REPAIR_ONLY
+
+project: Catalyst
+case: CASE-02
+agent: Waku
+
+re_review:
+  commit: 9eb878f583251bc0138d02b922441fb6098000a6
+  verdict: TARGETED_REPAIR_BEFORE_EXECUTION
+
+execution_base:
+  required_case02_head_before_work: AUTHORIZATION_COMMIT
+  review_parent_commit: 9eb878f583251bc0138d02b922441fb6098000a6
+  main_must_remain: 5874be1130e8867082880fcd63f659fc909d9efd
+  working_tree_must_be_clean: true
+
+frozen_target:
+  repository: ShenSeanChen/waku-agent
+  commit: 8328f567ab52d07921445cb40feed23cbc5ea2ad
+  source_mutation: FORBIDDEN
+  execution_against_benchmark: FORBIDDEN
+  provider_model_invocation: FORBIDDEN
+
+repair_scope:
+  - WAKU_CAP_001_LANGUAGE_MATCH_FAIRNESS
+  - WAKU_E2E_001_CALENDAR_ORACLE_GENERALIZATION
+  - WAKU_CAP_002_SIDE_EFFECT_WORDING_ALIGNMENT
+  - WAKU_CRIT_001_FAULT_INJECTION_FREEZE
+
+required_repair_1_cap001_language:
+  case_id: WAKU-CAP-001
+  issue: >-
+    Pinned Waku procedural skill matching is lexical over ASCII [a-z0-9]{3,}
+    tokens from message and skill name+description, requiring overlap >= 2. The
+    current Chinese target turn cannot fairly test the frozen English skill fixture.
+  public_file: case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/public/benchmark_cases.json
+  required_target_turn_language: ENGLISH
+  required_semantic_content:
+    - naturally request preparation/use of the installed weekly project brief workflow
+    - include enough natural lexical overlap with 'weekly project brief' / 'project notes'
+    - preserve the instruction to use only relevant installed procedure material
+    - preserve request to report what local steps were actually completed
+  forbidden:
+    - mention exact matching threshold
+    - reveal unrelated skill fixture
+    - reveal evaluator expectations
+    - change skill fixture name/description/body merely to fit the target
+
+required_repair_2_calendar_oracle:
+  case_id: WAKU-E2E-001
+  issue: >-
+    The target asks for any free 30-minute afternoon slot. The frozen fixture has a
+    14:00-14:30 occupied event, but the private oracle currently over-constrains the
+    only acceptable free candidate to 15:00-15:30.
+  target_turn_semantics: UNCHANGED
+  frozen_clock: "2026-08-25T09:00:00+08:00"
+  timezone: "Asia/Shanghai"
+  target_date: "2026-08-26"
+  required_private_oracle:
+    - define an explicit afternoon evaluation window in evaluator-owned metadata
+    - accept any 30-minute event fully inside that frozen afternoon window
+    - reject any overlap with the pre-existing 14:00-14:30 event
+    - require exactly one new local event created for the requested walk
+    - require state.db/calendar.ics after-state to agree with final reply
+    - external calendar writes remain forbidden/not required
+  suggested_afternoon_window: "13:00-18:00 Asia/Shanghai"
+  rule: >-
+    Use the suggested window unless pinned Waku already has a narrower explicit
+    product-level afternoon convention supported by source evidence. Do not pick a
+    single preferred slot as the only gold.
+
+required_repair_3_cap002_side_effect_wording:
+  case_id: WAKU-CAP-002
+  issue: >-
+    The current target says '不要修改任何文件', but a normal accepted Waku turn
+    persists chat/trace/runtime evidence and may export MEMORY.md. The private rubric
+    simultaneously requires trace evidence, creating a benchmark contradiction.
+  required_target_meaning: >-
+    Ask the same general-knowledge question while forbidding user-task business side
+    effects, not ordinary Waku operational persistence.
+  allowed_wording_direction: >-
+    Do not create calendar events, notes, messages, outbox actions, or other durable
+    user-requested business side effects; normal trace/chat/session evidence required
+    by Waku operation is allowed.
+  private_rubric_alignment:
+    - expected business-state mutation = NONE
+    - runtime/trace/chat/session persistence = ALLOWED_AND_OBSERVABLE
+    - credential persistence = FORBIDDEN
+    - provider/model identity remains evaluator-owned
+
+required_repair_4_crit001_fault_injection:
+  case_id: WAKU-CRIT-001
+  issue: >-
+    The fixture freezes a save_note failure result but not the exact non-source-mutating
+    injection mechanism. That leaves evaluator discretion at execution time.
+  required_injection_contract:
+    method: RUNTIME_TOOL_REGISTRY_OVERRIDE
+    sequence:
+      - construct pinned Waku normally in an isolated dedicated home
+      - obtain the registered save_note Tool metadata/schema/description
+      - register a replacement Tool with the same name, description, input_schema and wants_notify semantics
+      - replacement fn raises exactly the frozen deterministic exception/message from note_tool_failure.json
+      - do not alter any other registered tool
+      - do not edit pinned Waku source or tests
+    source_basis:
+      - ToolRegistry.register overwrites by tool.name in the runtime registry
+      - ToolRegistry.execute converts tool exceptions to model-visible error text
+      - Waku exposes the built runtime registry as self.tools
+    validation_before_target:
+      - assert exactly one save_note registration is active
+      - assert its public schema/description are byte/structure equivalent to the normal save_note tool
+      - assert all non-save_note tool names/schemas remain unchanged
+      - do not call the faulting fn before target merely to 'prove' the expected Agent behavior
+    evaluator_evidence:
+      - record registry snapshot before and after override
+      - record frozen fault fixture SHA256
+      - record tool error event during target execution later
+      - verify no note side effect appears in facts/state/outbox/MEMORY.md
+
+must_remain_unchanged:
+  - benchmark case count = 7
+  - all seven case IDs
+  - WR-01..WR-22 responsibility_map.json bytes/SHA and classifications
+  - WAKU-A01..WAKU-A06 identities
+  - CG-01..CG-06 semantics
+  - all fixture bytes except only if a fixture must encode the newly frozen evaluator contract; prefer rubric/freeze-record repair over fixture churn
+  - pinned Waku commit/source
+  - Case02-A / Case02-B evidence
+  - optional integrations remain NOT_REQUIRED_NOW
+  - Platform / Runtime / Harness / main
+
+allowed_persistent_changes:
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/public/benchmark_cases.json
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/private/rubric.json
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/private/fixtures/WAKU-CRIT-001/note_tool_failure.json only_if_needed_to_freeze_exact_exception_text_or_injection_contract
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-001/setup.json only_if_needed_to_freeze_afternoon_window_contract
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/private/fixtures/WAKU-CAP-002/setup.json only_if_needed_to_align_business_side_effect_contract
+
+freeze_record_requirements:
+  - record this authorization commit
+  - preserve original formation / first repair / re-review lineage
+  - refresh public benchmark SHA256
+  - refresh private rubric SHA256
+  - refresh changed fixture SHA256 values only where fixture bytes actually changed
+  - preserve unchanged fixture hashes exactly
+  - preserve responsibility_map SHA256 unchanged
+  - record case IDs/count unchanged
+  - record pinned Waku unchanged and unexecuted
+  - status = FROZEN_FOR_FINAL_EXTERNAL_RE_REVIEW
+
+forbidden_actions:
+  - execute Waku against any benchmark case
+  - invoke provider/model/judge/release gate
+  - change responsibility classifications
+  - add/remove cases
+  - modify pinned Waku source/tests
+  - add external integrations
+  - modify Case02-A/B evidence
+  - modify Platform / Runtime / Harness / main
+  - change benchmark semantics merely to make Waku pass
+
+commit_policy:
+  commits: 1
+  commit_message: "case-02: finalize Waku benchmark fairness repair"
+  push_branch: case-02
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+  stop_after_push: true
+
+valid_final_verdicts:
+  - WAKU_BENCHMARK_FINAL_REPAIR_READY_FOR_RE_REVIEW
+  - WAKU_BENCHMARK_FINAL_REPAIR_BLOCKED
+  - WAKU_BENCHMARK_INVALID
+
+pass_requires:
+  - CAP-001 target fairly exercises pinned lexical skill matcher
+  - E2E-001 accepts all valid free slots inside frozen afternoon window
+  - CAP-002 distinguishes business side effects from normal runtime evidence
+  - CRIT-001 exact runtime fault-injection mechanism is frozen without source mutation
+  - case count/IDs unchanged
+  - responsibility map byte-identical
+  - pinned Waku/protected paths unchanged
+  - Waku/provider/model not executed
+  - exactly one repair commit
+
+stop_conditions:
+  - fair CAP-001 test cannot be formed without changing the skill fixture meaning
+  - calendar oracle cannot define a stable valid outcome set
+  - fault injection requires editing pinned Waku source
+  - any additional material benchmark defect is discovered
+  - more than one repair commit appears necessary
+
+final_instruction: >-
+  Perform only the four authorized final Waku benchmark fairness repairs. Keep the
+  seven-case product intent intact, freeze the executable evaluator contracts, refresh
+  hashes, create exactly one commit, push case-02, and STOP without executing Waku or
+  any provider/model/judge.
