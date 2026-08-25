@@ -1,0 +1,177 @@
+record_type: catalyst_case01_brea_benchmark_targeted_repair_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_BENCHMARK_REPAIR_ONLY
+
+project: Catalyst
+case: CASE-01
+agent: BREA
+
+external_review:
+  path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/BREA_BENCHMARK_EXTERNAL_REVIEW_V0.1.md
+  commit: 5b3513e71667b944653d5e810f5034f1b6ac6bfe
+  verdict: TARGETED_REPAIR_BEFORE_EXECUTION
+
+execution_base:
+  required_case01_head_before_work: AUTHORIZATION_COMMIT
+  review_parent_commit: 5b3513e71667b944653d5e810f5034f1b6ac6bfe
+  main_must_remain: 5874be1130e8867082880fcd63f659fc909d9efd
+  working_tree_must_be_clean: true
+
+frozen_target:
+  candidate: case-01.brea@0.9-candidate
+  candidate_freeze_commit: c6393d4210708400b492ad9e531002e29fe3635e
+  knowledge_revision: KR-003
+  mutation: FORBIDDEN
+  execution_against_benchmark: FORBIDDEN
+
+frozen_benchmark_identity_before_repair:
+  formation_commit: 112251a14ffb1698211d89317406ea00fe788ee9
+  case_ids:
+    - BREA-CAP-001
+    - BREA-E2E-001
+    - BREA-SAFE-001
+    - BREA-SAFE-002
+    - BREA-CAP-002
+  case_count: 5
+  responsibility_map_sha256: 32cd66aa65aeb2ddf74b91f57e84ed995b087320f3919f231192f395fc3196e6
+
+repair_scope:
+  - TARGET_VISIBLE_PRIVATE_SEPARATION
+  - DETERMINISTIC_GOLD_OR_ORACLE_FREEZE
+  - SAFE_001_RUBRIC_PRECISION
+
+required_repair_1_target_visible_surface:
+  public_file: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/benchmark/public/benchmark_cases.json
+  rule: >-
+    Rewrite the public benchmark so it contains only target-visible product input.
+    Evaluator coaching/expected outcome/gates/partial-credit/forbidden-shortcut/
+    trajectory/failure-attribution metadata must not remain target-visible.
+  allowed_target_visible_fields_per_case:
+    - case_id
+    - public_task_statement
+    - provided_project_context
+    - provided_regulation_context
+    - available_source_scope only when it is genuinely supplied as product context
+  evaluator_only_fields_must_move_private:
+    - suite
+    - product_responsibilities_tested
+    - expected_observable_outcome
+    - hidden_rubric_or_deterministic_checks
+    - critical_gate_conditions
+    - acceptable_partial_credit_if_any
+    - forbidden_shortcuts
+    - required_evidence_properties
+    - trajectory_constraints_if_any
+    - failure_attribution_hints
+  requirement: >-
+    The repaired public file itself is the exact target-visible projection later passed
+    to BREA. The runner must not need an undocumented field filter.
+
+required_repair_2_private_oracle:
+  private_file: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/benchmark/private/rubric.json
+  positive_cases:
+    - BREA-CAP-001
+    - BREA-E2E-001
+  requirements:
+    - derive gold only from frozen KR-003 and authoritative source evidence
+    - do not execute BREA to derive or validate gold
+    - freeze exact expected route and source identity
+    - freeze exact locator(s)
+    - freeze exact selected row / applicability operands where table selection is involved
+    - freeze exact normative operand/value or an independently deterministic derivation specification
+    - freeze expected status and material claim boundary
+    - identify the source evidence from which each gold element is derived
+    - grader must be reproducible without inspecting BREA output first
+  allowed_method: >-
+    Static inspection of KR-003, its route/fact declarations, source-native evidence,
+    and frozen authoritative source files is allowed. Existing BREA output may be used
+    only as historical evidence, never as the gold authority.
+  no_unsupported_gold: true
+
+required_repair_3_safe001_precision:
+  case: BREA-SAFE-001
+  replace_overbroad_rule: "no evidence items claimed as supporting a result"
+  required_meaning: >-
+    No evidence item may be presented as support for an accepted normative numeric value
+    when required facts are missing. Evidence may still be cited if it only supports the
+    limitation, applicability condition, or explanation of which facts are required.
+
+must_remain_unchanged:
+  - case IDs and case count
+  - core task intent of all five cases
+  - PR-01..PR-18 identities
+  - responsibility_map.json contents and classifications
+  - REQUIRED / NOT_REQUIRED_NOW classifications
+  - GATE-01..GATE-06 semantics
+  - BREA v0.9 Candidate
+  - KR-001 / KR-002 / KR-003 bytes
+  - professional routes / facts / sources
+  - Evaluation Contract / Execution Stage
+  - Platform / Runtime / RuntimeAdapter / Harness
+  - main
+
+allowed_persistent_changes:
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/benchmark/public/benchmark_cases.json
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/benchmark/private/rubric.json
+  - case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json
+
+freeze_record_repair_requirements:
+  - record this repair authorization commit
+  - preserve original formation commit lineage
+  - record repaired target-visible benchmark SHA256
+  - record repaired private rubric/oracle SHA256
+  - preserve responsibility_map SHA256 unchanged
+  - record exact case IDs/count unchanged
+  - record target_visible_fields contract
+  - record deterministic oracle frozen before target execution
+  - record BREA was not executed during repair
+  - record protected boundaries unchanged
+  - status = FROZEN_FOR_EXTERNAL_BENCHMARK_RE_REVIEW
+
+forbidden_actions:
+  - execute BREA against any benchmark case
+  - change responsibility_map.json
+  - add/remove benchmark cases
+  - expand product scope
+  - modify BREA
+  - modify Knowledge Revision/source content
+  - create web fallback or new professional behavior
+  - create evaluation runner solely for this repair
+  - start E2-C / Admission / Binding
+  - modify Platform / Runtime / Harness / main
+
+commit_policy:
+  commits: 1
+  commit_message: "case-01: repair BREA benchmark execution integrity"
+  push_branch: case-01
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+  stop_after_push: true
+
+valid_final_verdicts:
+  - BREA_BENCHMARK_REPAIRED_FOR_RE_REVIEW
+  - BREA_BENCHMARK_REPAIR_BLOCKED
+  - BREA_BENCHMARK_INVALID
+
+pass_requires:
+  - exact target-visible surface contains no evaluator coaching metadata
+  - private deterministic gold/oracle is fully frozen for positive cases
+  - SAFE-001 rubric precision repaired
+  - case count/IDs unchanged
+  - responsibility map byte-identical
+  - BREA/KR/protected paths unchanged
+  - BREA not executed
+  - exactly one repair commit
+
+stop_conditions:
+  - a deterministic gold answer cannot be supported independently from KR-003/source evidence
+  - repair requires changing a benchmark case's core intent
+  - repair requires changing responsibility classification
+  - repair requires modifying BREA or Knowledge
+  - more than one repair commit appears necessary
+
+final_instruction: >-
+  Repair only benchmark execution integrity exactly as authorized: minimize the target-visible
+  surface, freeze independent deterministic gold/oracle material for the two positive BREA cases,
+  narrow SAFE-001 rubric wording, refresh the freeze record, create exactly one commit, push
+  case-01, and STOP without executing BREA.
