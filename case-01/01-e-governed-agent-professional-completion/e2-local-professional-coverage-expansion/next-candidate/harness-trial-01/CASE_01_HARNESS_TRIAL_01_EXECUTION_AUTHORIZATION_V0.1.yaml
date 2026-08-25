@@ -1,6 +1,8 @@
 record_type: catalyst_case01_harness_trial_execution_authorization
 record_version: "0.1"
 status: AUTHORIZED_FOR_ONE_EXECUTION
+supersedes_authorization_commit: 4801ca4464e8b446685bf51ce5172a2989223789
+supersession_reason: PRE_EXECUTION_VERIFIER_HARDENING_ONLY
 
 project: Catalyst
 case: CASE-01
@@ -15,8 +17,12 @@ stage_spec:
 
 pre_authorization_verifier:
   path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/harness-trial-01/verify_knowledge_hash_hardening.py
-  freeze_commit: 74740e9025da8baab2bf72142195083064eb7ca6
+  freeze_commit: 46d9fe5b3464eefcec1b8777aea550e7363f1339
   model_may_modify: false
+  hardening_note: >-
+    H-11 was strengthened before execution so Trial PASS requires both candidate
+    diff isolation and representative v0.8 professional behavior/regression under
+    the new canonical Knowledge binding identity.
 
 case_reference:
   historical_frozen_baseline_commit: 30e85a917535773844df8f8af20f579ee2538f50
@@ -113,7 +119,7 @@ required_verification_contract:
   H-08: wrong_expected_canonical_sha_fails_closed
   H-09: malformed_identity_mismatch_nonstandard_numbers_fail_closed
   H-10: source_content_sha_integrity_remains_independent
-  H-11: only_knowledge_py_candidate_diff_and_relevant_v08_boundary_preserved
+  H-11: only_knowledge_py_candidate_diff_and_representative_v08_behavior_preserved
 
 persistent_mutation_boundary:
   authorized_product_file:
@@ -172,6 +178,8 @@ required_post_run_evidence:
     - Harness trace sufficient to prove authorized read/write/verification sequence
     - deterministic verifier exit status
     - H-01 through H-11 statuses
+    - representative v0.8 positive and fail-closed regression status
+    - T-C01 / T-C02 / T-C03 regression status
     - persistent git changed-file set
     - main unchanged observation
     - case-01 unchanged observation after trial branch creation
@@ -201,6 +209,8 @@ pass_requires:
   knowledge_hash_hardening_proof: PASS
   harness_practical_use_proof: PASS
   verifier: PASS
+  representative_v08_behavior: PASS
+  T-C01_T-C02_T-C03_regression: PASS
   persistent_changed_files_exactly_authorized: true
   main_unchanged: true
   case_01_branch_unchanged_after_trial_branch_creation: true
