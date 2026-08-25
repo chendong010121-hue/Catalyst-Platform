@@ -14,12 +14,12 @@
     },
     {
       "case_id": "BREA-E2E-001",
-      "public_task_statement": "杭州市某商业综合体建筑面积 9000 m²，规划人口大于 20 万的城市。请依据已绑定的浙江省地方标准，说明机动车配建停车位指标的适用结果、计算依据和出处，并保留项目归属信息。",
+      "public_task_statement": "杭州市某商业综合体建筑面积 9000 m²，规划人口大于20万人、不大于50万人的城市。请依据已绑定的浙江省地方标准，说明机动车配建停车位指标的适用结果、计算依据和出处，并保留项目归属信息。",
       "provided_project_context": {
         "jurisdiction": "浙江省·杭州市",
         "building_category": "商业综合体",
         "floor_area_m2": 9000,
-        "city_class": "规划人口大于20万人"
+        "city_class": "规划人口大于20万人、不大于50万人的城市"
       },
       "provided_regulation_context": {"standard_hint": "DBJ33/T1021-2023"},
       "available_source_scope": ["KR-003", "DBJ33/T1021-2023 local read-only source"]

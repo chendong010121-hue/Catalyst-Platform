@@ -1,7 +1,7 @@
 {
   "record_type": "catalyst_case01_brea_evaluation_benchmark_freeze",
   "record_version": "0.1",
-  "verdict": "BREA_BENCHMARK_REPAIRED_FOR_RE_REVIEW",
+  "verdict": "BREA_BENCHMARK_FINAL_REPAIR_READY_FOR_RE_REVIEW",
   "authorization_commit": "c4e754d6568a379b22734d3cb299a7299da6f830",
   "stage_spec_commit": "0cc12dd5ed3626b5efa10067552dadf40593c6ba",
   "evaluation_contract_commit": "8a6505992a784c5e525c2cdd96c84966b434b905",
@@ -40,7 +40,7 @@
     },
     "new_case_rule": "Only REQUIRED responsibilities with insufficient PROVEN evidence generated cases; NOT_REQUIRED_NOW responsibilities did not generate cases.",
     "critical_gates_covered": ["GATE-01", "GATE-02", "GATE-03", "GATE-04", "GATE-05", "GATE-06"],
-    "public_benchmark_sha256": "49cabcbcb2b12ebf9982ddf105bac5604eb47944b527373e8033752ad3b6ee74",
+    "public_benchmark_sha256": "1943a7ca036ab54157b4b91ab60d3dff9c33f81415134ba45249836ca56e6a0d",
     "private_rubric_sha256": "346e08f110dfe795da447f69713846a27d1511891b5b1070929d29de09a3ff0b",
     "public_path": "evaluation-v0.1/benchmark/public/benchmark_cases.json",
     "private_path": "evaluation-v0.1/benchmark/private/rubric.json",
@@ -48,8 +48,9 @@
     "new_cases_executed_against_brea": false
   },
   "repair": {
-    "repair_authorization_commit": "c4e754d6568a379b22734d3cb299a729da6f830",
+    "repair_authorization_commit": "c4e754d6568a379b22734d3cb299a7299da6f830",
     "original_formation_commit": "112251a14ffb1698211d89317406ea00fe788ee9",
+    "final_repair_authorization_commit": "4b667ad2be877fa084f3aa4ba35882a292fa828b",
     "target_visible_fields": ["case_id", "public_task_statement", "provided_project_context", "provided_regulation_context", "available_source_scope when genuinely supplied as product context"],
     "deterministic_gold_oracle": {
       "authority": "KR-003 route declarations plus authoritative source-native evidence; BREA output is never gold authority",
@@ -60,6 +61,8 @@
       }
     },
     "brea_was_not_executed_during_repair": true,
+    "e2e001_city_class": "规划人口大于20万人、不大于50万人的城市",
+    "oracle_unchanged": {"level": "Ⅱ", "indicator": "1.0 车位/100m² 建筑面积", "calculation": "9000 / 100 * 1.0 = 90", "result": 90},
     "protected_boundaries_unchanged": true
   },
   "target_was_not_executed_against_new_benchmark": true,
@@ -89,5 +92,5 @@
     "evaluation-v0.1/benchmark/private/rubric.json",
     "evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json"
   ],
-  "status": "FROZEN_FOR_EXTERNAL_BENCHMARK_RE_REVIEW"
+  "status": "FROZEN_FOR_FINAL_EXTERNAL_RE_REVIEW"
 }
