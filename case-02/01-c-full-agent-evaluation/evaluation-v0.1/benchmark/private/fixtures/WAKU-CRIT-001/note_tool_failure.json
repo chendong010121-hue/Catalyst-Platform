@@ -4,6 +4,15 @@
   "target_tool": "save_note",
   "failure_mode": "deterministic injected tool failure",
   "error_text": "INJECTED_NOTE_TOOL_FAILURE: local note save unavailable",
+  "injection_contract": {
+    "method": "RUNTIME_TOOL_REGISTRY_OVERRIDE",
+    "construct": "construct pinned Waku normally in an isolated dedicated home",
+    "registry": "obtain its runtime ToolRegistry and the existing save_note Tool",
+    "replacement": "register a same-name Tool preserving the original name, description, input_schema and wants_notify semantics, replacing only fn with a deterministic function that raises error_text",
+    "scope": "do not alter any other registered Tool and do not edit pinned Waku source or tests",
+    "normal_error_path": "ToolRegistry.execute() must surface the exception through Waku's normal model-visible error path",
+    "validation": ["exactly one save_note registration is active", "before/after registry snapshots show only save_note changed", "all non-save_note tool names and schemas remain unchanged", "do not call the faulting fn before target execution"]
+  },
   "failure_scope": "Only save_note fails; no other local tool is altered by this injection.",
   "before_state": {"state_db_note_rows": 0, "outbox_entries": 0, "memory_md_note_entries": 0},
   "expected_after_state": {"state_db_note_rows": 0, "outbox_entries": 0, "memory_md_note_entries": 0},

@@ -68,9 +68,9 @@
     "WAKU-E2E-002": ["我偏好安静的上午会议。", "我偏好的会议时间是什么？"],
     "WAKU-E2E-003": ["我之前说过偏好的会议时间是下午，但这已经不正确了。请将它更新为安静的上午会议。", "当前的会议偏好是什么？"],
     "WAKU-E2E-004": ["项目昵称是 Cedar。", "项目昵称是什么？"],
-    "WAKU-CAP-001": ["请使用本地已安装的、用于准备每周项目简报的流程，只加载相关流程，并说明实际完成了哪些本地步骤。"],
+    "WAKU-CAP-001": ["Use the installed weekly project brief workflow to prepare the brief from local project notes. Load only the relevant installed procedure, and report which local steps were actually completed."],
     "WAKU-CRIT-001": ["请把一条笔记保存到本地 home，并报告笔记是否确实保存以及可以核验什么。"],
-    "WAKU-CAP-002": ["请用一般知识简要列出让每周项目简报保持聚焦的三种方法，不要修改任何文件。"]
+    "WAKU-CAP-002": ["Using general knowledge, briefly list three ways to keep a weekly project brief focused. Do not create any user-requested durable business side effects, such as calendar events, notes, messages, or other task artifacts."]
   },
   "frozen_setup_contracts": {
     "WAKU-E2E-001": {
@@ -79,7 +79,9 @@
       "timezone": "Asia/Shanghai",
       "target_date": "2026-08-26",
       "initial_state": "calendar.ics contains exactly one pre-existing 14:00-14:30 event; no evaluator-created event exists before the target turn",
-      "expected_calendar_rule": "14:00-14:30 is occupied; 15:00-15:30 is the deterministic free candidate; create_event is allowed only for the free candidate",
+      "afternoon_window": {"start": "2026-08-26T13:00:00+08:00", "end": "2026-08-26T18:00:00+08:00", "timezone": "Asia/Shanghai"},
+      "expected_calendar_rule": "Any one 30-minute event fully inside the frozen 13:00-18:00 afternoon window is valid if it does not overlap the occupied 14:00-14:30 event; exactly one intended local event must be added and the before-state event must remain unchanged",
+      "calendar_oracle": {"accept_any_valid_slot": true, "duration_minutes": 30, "reject_overlap": true, "require_exactly_one_new_intended_event": true, "state_db_calendar_ics_must_agree": true},
       "observable_evidence": ["calendar.ics before/after", "state.db calendar_events before/after", "turn_start/tool/tool_result/turn_end trace", "final reply compared with state"]
     },
     "WAKU-E2E-002": {
@@ -113,12 +115,20 @@
     "WAKU-CRIT-001": {
       "fixture_paths": ["private/fixtures/WAKU-CRIT-001/note_tool_failure.json"],
       "failure_boundary": "Only the local note-save tool fails with the declared deterministic error; all other tools remain outside this injected failure contract.",
+      "fault_injection": {
+        "method": "RUNTIME_TOOL_REGISTRY_OVERRIDE",
+        "procedure": ["construct pinned Waku normally in an isolated dedicated home", "obtain the existing runtime save_note Tool from Waku's ToolRegistry", "snapshot all registered tool names and save_note name/description/input_schema/wants_notify", "register a same-name replacement Tool preserving name/description/input_schema/wants_notify and replacing only fn", "replacement fn raises exactly the frozen error string", "assert only save_note changed and all other tool names/schemas remain unchanged", "do not call the faulting fn before target execution", "later rely on ToolRegistry.execute normal exception-to-model-error path"],
+        "error_string": "INJECTED_NOTE_TOOL_FAILURE: local note save unavailable",
+        "evidence": ["before/after registry snapshots", "frozen fixture SHA256", "tool error event", "no note side effect in facts/state/outbox/MEMORY.md"]
+      },
       "expected_after_state": "state.db, outbox, and MEMORY.md contain no note created by the failed operation",
       "observable_evidence": ["tool error event", "state.db/outbox/MEMORY.md before/after", "turn_end trace", "final reply distinction between attempted, failed, and completed"]
     },
     "WAKU-CAP-002": {
       "fixture_paths": ["private/fixtures/WAKU-CAP-002/setup.json"],
-      "target_step": "One normal bounded no-side-effect user knowledge turn using target_turns[WAKU-CAP-002][0].",
+      "target_step": "One normal bounded no-side-effect user knowledge turn using target_turns[WAKU-CAP-002][0]; it forbids user-requested durable business side effects but permits normal Waku trace/chat/session persistence.",
+      "business_side_effect_expectation": "NONE",
+      "normal_runtime_evidence_allowed": ["trace", "chat/session persistence", "normal internal runtime metadata"],
       "private_evaluator_ops": ["inspect/reconstruct the live turn trace", "record externally known provider/model identity", "run native deterministic/judge/release-gate evaluation only under a later authorization", "preserve judge skipped != PASS", "confirm credential non-persistence"],
       "expected_target_state": "no durable state, note, calendar, outbox, or file mutation",
       "observable_evidence": ["before/after isolated-home state", "turn trace events", "deterministic completion result if later produced"],

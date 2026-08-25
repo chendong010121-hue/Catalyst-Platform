@@ -1,7 +1,7 @@
 {
   "record_type": "catalyst_case02_waku_evaluation_benchmark_freeze",
   "record_version": "0.1",
-  "verdict": "WAKU_BENCHMARK_REPAIRED_FOR_RE_REVIEW",
+  "verdict": "WAKU_BENCHMARK_FINAL_REPAIR_READY_FOR_RE_REVIEW",
   "authorization_commit": "639c3079b42f1185214cb284b84ab047d8f07e37",
   "stage_spec_commit": "56fc1facd89dacce5cb5223e5c4f222de6db886e",
   "pinned_waku_repository": "ShenSeanChen/waku-agent",
@@ -60,8 +60,8 @@
       "WAKU-CAP-002": ["WAKU-A01", "WAKU-A02", "WAKU-A03", "WAKU-A04"]
     },
     "critical_gates_covered": ["CG-01", "CG-02", "CG-03", "CG-04", "CG-05", "CG-06"],
-    "public_benchmark_sha256": "3e9e2313abc0ed465a0f0cca8ff2a190ef7cd632028d2d6bece939e6e9c1846a",
-    "private_rubric_sha256": "7c3e57324612747d759535eb2dc665adcf11d9f4ed9fd015fb45767fcd884295",
+    "public_benchmark_sha256": "202072b24d29ff7e39144ef9aa51edd326d34030fa6a1288f5b57d1599073b20",
+    "private_rubric_sha256": "b68c80430d3ab460e35a0be3065035b43e7a9f7e825df351d58065e7544def49",
     "public_path": "evaluation-v0.1/benchmark/public/benchmark_cases.json",
     "private_path": "evaluation-v0.1/benchmark/private/rubric.json",
     "public_private_separation": "PASS"
@@ -105,26 +105,49 @@
   ],
   "repair": {
     "repair_authorization_commit": "639c3079b42f1185214cb284b84ab047d8f07e37",
+    "final_repair_authorization_commit": "716618e073bcf397be31df1c04d48b9a0f28fe7e",
     "original_formation_commit": "12acca7ee0b29971d8b1dbed659285bf6986587f",
     "target_visible_fields": ["case_id", "target_turns"],
     "target_turns_contract": "target_turns are exact user-visible text sent through the Waku product path in order; evaluator-owned restart/session-switch/setup/ops steps are private",
+    "cap001_language": {
+      "target_turn": "Use the installed weekly project brief workflow to prepare the brief from local project notes. Load only the relevant installed procedure, and report which local steps were actually completed.",
+      "meaning_preserved": true,
+      "metadata_overlap_tokens": ["weekly", "project", "brief", "local", "project", "notes"]
+    },
     "fixture_manifest": [
       {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-001/calendar.ics", "sha256": "a84d7324617f8d0821235f571507040b796664f54c842932c1a58da2e0fce8a8"},
-      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-001/setup.json", "sha256": "b3c9b622e55911a68215d214828924ae51a61eaea1f108f07e1824ea0c0a5a63"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-001/setup.json", "sha256": "01d5ffcb121ad0aff28624104bf6bda50a881e70704a63b2ce4b5634232da357"},
       {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-002/setup.json", "sha256": "33d74953dc6b0a9202c65d028e959d6595af38b9b4fd2f005fe46d854e13cb4d"},
       {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-003/stale_preference_setup.json", "sha256": "1f4fde9c02176c0c08a1020333ec95fa545284fd46510f881e7993a713f213a6"},
       {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-E2E-004/session_setup.json", "sha256": "3c35d104c6b18b9417caf8c475ed47c51478f0882feeb2b0ebcb49c36210f577"},
       {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CAP-001/skills/weekly-project-brief/SKILL.md", "sha256": "c9d6199238756ee35b155efe4062571a139a284a042c5acd9a6b6c2ef30e5667"},
       {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CAP-001/skills/unrelated/SKILL.md", "sha256": "caede0a712a23a0270e2455c1e2a927338c7788e8758ae57b6508ff429e75bae"},
       {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CAP-001/setup.json", "sha256": "38ece49e3bafc7c22e25543b4ed7ec0ed5b65b5753f63e9f9fcc5ea21d3bdc8e"},
-      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CRIT-001/note_tool_failure.json", "sha256": "56269d38abf07ccd794de5fd7075b3740f326cd7d7d9d6d5165766faefc73678"},
-      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CAP-002/setup.json", "sha256": "6edaf7c82b9238060fb2cef2e4439b059c86f1cea3162aaefa1032f5a427fb1c"}
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CRIT-001/note_tool_failure.json", "sha256": "e3e8e7a9ae05a728ded4c5d1f1cc0eb39cdcb0afe31e7fb80d926359b56b1214"},
+      {"path": "evaluation-v0.1/benchmark/private/fixtures/WAKU-CAP-002/setup.json", "sha256": "6e0b87902f15d9fcbdde6e564ba3cbb7aedd2ae1d17853c6d5e5238303a72811"}
     ],
     "cap002_target_ops_separation": {
-      "target_step": "normal bounded no-side-effect user knowledge turn",
+      "target_step": "normal bounded no-side-effect user knowledge turn; the user forbids durable business side effects such as calendar events, notes, messages or other task artifacts",
       "private_ops": ["trace inspection/reconstruction", "provider/model identity recording", "later native deterministic/judge/release-gate evaluation", "judge skipped != PASS", "credential non-persistence"],
       "target_requests_none_of": ["evaluation result", "release gate report", "provider/model identity", "benchmark trace"],
+      "normal_runtime_evidence_allowed": ["trace", "chat/session persistence", "normal internal runtime metadata"],
+      "business_side_effect_expectation": "NONE",
       "judge_skipped_is_not_pass": true
+    },
+    "calendar_oracle": {
+      "case": "WAKU-E2E-001",
+      "window": "2026-08-26T13:00:00+08:00/2026-08-26T18:00:00+08:00",
+      "timezone": "Asia/Shanghai",
+      "accepted_rule": "Accept any one 30-minute event fully inside the window, with no overlap with the existing 14:00-14:30 event; require exactly one intended local event and state.db/calendar.ics agreement with the final reply.",
+      "single_preferred_slot_forbidden": true,
+      "external_calendar_writes": "FORBIDDEN_NOT_REQUIRED"
+    },
+    "crit001_fault_double": {
+      "case": "WAKU-CRIT-001",
+      "method": "RUNTIME_TOOL_REGISTRY_OVERRIDE",
+      "error_string": "INJECTED_NOTE_TOOL_FAILURE: local note save unavailable",
+      "procedure": ["construct pinned Waku normally in an isolated dedicated home", "obtain existing save_note Tool from its runtime ToolRegistry", "snapshot registry and save_note name/description/input_schema/wants_notify", "register same-name replacement preserving all metadata and replacing only fn", "replacement fn raises the exact frozen error string", "assert only save_note changed and all other tools remain identical", "do not invoke faulting fn before target", "ToolRegistry.execute() must surface the exception through Waku normal error path"],
+      "evidence": ["before/after registry identity snapshots", "fixture SHA256", "later tool error event", "no note in facts/state/outbox/MEMORY.md"]
     },
     "clock_timezone_contract": {
       "case": "WAKU-E2E-001",
@@ -149,5 +172,5 @@
     "evaluation-v0.1/benchmark/private/fixtures/**",
     "evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json"
   ],
-  "status": "FROZEN_FOR_EXTERNAL_BENCHMARK_RE_REVIEW"
+  "status": "FROZEN_FOR_FINAL_EXTERNAL_RE_REVIEW"
 }

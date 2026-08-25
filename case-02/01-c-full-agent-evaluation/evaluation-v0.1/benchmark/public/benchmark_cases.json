@@ -30,7 +30,7 @@
     {
       "case_id": "WAKU-CAP-001",
       "target_turns": [
-        "请使用本地已安装的、用于准备每周项目简报的流程，只加载相关流程，并说明实际完成了哪些本地步骤。"
+        "Use the installed weekly project brief workflow to prepare the brief from local project notes. Load only the relevant installed procedure, and report which local steps were actually completed."
       ]
     },
     {
@@ -42,7 +42,7 @@
     {
       "case_id": "WAKU-CAP-002",
       "target_turns": [
-        "请用一般知识简要列出让每周项目简报保持聚焦的三种方法，不要修改任何文件。"
+        "Using general knowledge, briefly list three ways to keep a weekly project brief focused. Do not create any user-requested durable business side effects, such as calendar events, notes, messages, or other task artifacts."
       ]
     }
   ]
