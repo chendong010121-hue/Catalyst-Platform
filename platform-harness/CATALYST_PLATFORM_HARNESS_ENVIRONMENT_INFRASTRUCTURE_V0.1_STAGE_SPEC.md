@@ -1,14 +1,15 @@
 # CATALYST PLATFORM — HARNESS ENVIRONMENT INFRASTRUCTURE V0.1 STAGE SPEC
 
-> **Stage Spec Version:** V0.1
-> **Status:** STAGE SPEC
+> **Stage Spec Version:** **V0.2**
+> **Status:** STAGE SPEC — TARGETED SAFETY / PROOF REPAIR COMPLETE
+> **Supersedes:** Stage Spec V0.1 at commit `24a4d32458f47382319e260f0e5b17b236172251`
 > **Implementation Authorization:** **NO**
 > **Platform Integration Authorization:** **NO**
 > **Branch:** `platform-harness`
-> **Expected Base:** `8cf775a045c626d3b0a5b22daf52648a251e1db8`
 > **Source Review:** `platform-harness/HARNESS_INFRASTRUCTURE_GAP_REVIEW_V0.1.md`
 > **Frozen Source Harness:** `platform-harness/minimum-harness-v0.1/** @ 3ec8cfe2c1d2ebba60aaf1ef5331ae025f347be6`
-> **Purpose:** complete the minimum execution-environment infrastructure required before the first real Case 01 Harness trial, without expanding Catalyst into a general coding Harness.
+> **Implementation Base:** must be the exact Stage-Spec commit named by a later Authorization Record
+> **Purpose:** complete the minimum execution-environment infrastructure required before the first real Case 01 Harness trial, without expanding Catalyst into a general coding Harness or claiming security properties not actually enforced.
 
 ---
 
@@ -16,7 +17,7 @@
 
 This Stage answers one question:
 
-> Can Catalyst form a new Harness Candidate that preserves the proven Minimum Harness V0.1 behavior while adding stable credential resolution, environment preflight, secret-isolated tool execution, explicit execution policy and reproducible non-secret environment identity?
+> Can Catalyst form a new Harness Candidate that preserves the proven Minimum Harness V0.1 behavior while adding stable credential resolution, environment preflight, provider-secret-sanitized tool subprocess environments, explicit execution policy and reproducible non-secret environment identity?
 
 The Stage exists because Minimum Harness V0.1 proved the execution loop, but the live proof exposed real infrastructure gaps around process-local credentials and execution environment boundaries.
 
@@ -135,18 +136,20 @@ CredentialSource(s)
 
 ## 4.2 Minimum source chain
 
-V0.1 environment infrastructure must support exactly these source classes:
+This Candidate must support exactly these source classes:
 
 ```text
 1. ProcessEnvironmentCredentialSource
 2. UserLocalCredentialSource
 ```
 
+These are V0.2-candidate implementation options, not permanent Platform credential-source standards.
+
 Resolution priority may be explicit configuration or a small deterministic order, but it must be observable by source **type**, never by secret value.
 
 ## 4.3 User-local credential store
 
-The first durable local source is intentionally local-development infrastructure, not an enterprise secret manager.
+The first durable local source is intentionally **local-development convenience infrastructure**, not an enterprise secret manager and not a strong sandbox boundary.
 
 Recommended default location:
 
@@ -155,9 +158,9 @@ Windows: %USERPROFILE%\.catalyst\credentials.json
 POSIX:   ~/.catalyst/credentials.json
 ```
 
-The location should be overridable for deterministic tests.
+The location must be overridable for deterministic tests.
 
-Minimum conceptual content:
+Minimum conceptual content may be equivalent to:
 
 ```json
 {
@@ -165,12 +168,13 @@ Minimum conceptual content:
 }
 ```
 
-The exact file representation is private implementation HOW and is **not** a Platform standard.
+The exact path, file name and representation are private implementation HOW and are **not** Platform standards.
 
 Requirements:
 
 ```text
 outside repository by default
+never copied into Workspace
 never included in model context
 never included in trace/results/review
 never printed by describe/preflight
@@ -178,19 +182,42 @@ best-effort owner-only file permissions
 invalid / missing store fails explicitly
 ```
 
+### Security limitation — must remain explicit
+
+Without an OS/container sandbox, a local credential file owned by the same OS user is **not proven inaccessible to arbitrary same-user code**.
+
+Therefore this Stage proves:
+
+```text
+credential values are not intentionally passed into model context
+credential values are not intentionally passed into tool subprocess ENVIRONMENT
+```
+
+It does NOT prove:
+
+```text
+a malicious same-user process cannot discover/read the local credential store
+filesystem-level secret isolation
+enterprise-grade secret protection
+```
+
+This limitation is acceptable only while the next proof keeps command execution Stage-declared, bounded and non-general-shell. Before arbitrary model-authored shell or broader untrusted code execution is introduced, an actual sandbox / stronger secret boundary must be separately justified.
+
 ## 4.4 One-time interactive setup
 
-The Candidate should provide one tiny local setup entry point using hidden input (for example Python `getpass`) so the user can configure a credential once without pasting it into chat or command arguments.
+The Candidate should provide one tiny **human-boundary** local setup entry point using hidden input (for example Python `getpass`) so the user can configure a credential once without pasting it into chat or command arguments.
 
 Required UX behavior:
 
 ```text
-user runs credential setup
+human runs credential setup
 → secret entered with echo disabled
 → store written outside repo
 → confirmation prints credential ref + source type only
 → later Harness process resolves it without depending on the PowerShell that originally entered it
 ```
+
+The credential-setup entry point must NOT be exposed as a model-callable Harness tool in this Stage.
 
 Do not build a general settings UI.
 
@@ -201,7 +228,7 @@ Credential resolution grants only model-provider use.
 It does not grant:
 
 ```text
-tool subprocess access
+tool subprocess environment access
 model-visible secret text
 task-visible secret text
 Git access
@@ -212,7 +239,7 @@ Platform authority
 
 # 5. I-03 — SanitizedToolEnvironment
 
-Model-provider credentials and model-authored tool subprocesses are separate trust boundaries.
+Model-provider credentials and model-authored tool subprocess environments are separate trust boundaries.
 
 Required invariant:
 
@@ -245,7 +272,7 @@ Exact allowlist is implementation HOW and must be justified by tests.
 Default rule:
 
 ```text
-API keys / tokens / credentials / secret values are absent
+provider API keys / tokens / credential values are absent from subprocess environment
 ```
 
 At minimum the proof must show that when the Harness host process can resolve a DeepSeek credential:
@@ -254,15 +281,17 @@ At minimum the proof must show that when the Harness host process can resolve a 
 DEEPSEEK_API_KEY
 ```
 
-is not visible inside the verification subprocess.
+is not present in the verification subprocess environment.
 
 The same test must also cover a representative synthetic secret variable.
 
-## 5.2 No secret-by-pattern claim
+## 5.2 No overclaim
 
 The Stage does not need a universal secret detector.
 
 Security comes from constructing a small positive environment allowlist, not from claiming every possible secret name can be recognized.
+
+This Stage proves **environment sanitization only**. It does not claim filesystem sandboxing of same-user processes.
 
 ---
 
@@ -275,8 +304,7 @@ V0.1 used task path allowlists plus an approval callback. The new Candidate must
 ```text
 allowed read paths
 allowed write paths
-allowed command identities / argv
-network posture
+allowed Stage-declared command identities / argv
 command timeout
 model-attempt budget
 repair-cycle budget
@@ -286,11 +314,23 @@ explicit task-owned non-secret environment values
 For this Stage:
 
 ```text
-network posture = DENY / NOT EXPOSED
 arbitrary model-authored shell = FORBIDDEN
+network-specific Harness tool = NOT EXPOSED
 ```
 
 Only Stage-declared command specifications may execute.
+
+### Network boundary precision
+
+This Stage does NOT claim OS-level network denial for an otherwise executable process.
+
+```text
+NO NETWORK TOOL EXPOSED
+!=
+OS NETWORK SANDBOX
+```
+
+Actual filesystem/network sandboxing remains deferred until a broader shell/tool surface is justified.
 
 ## ApprovalPolicy owns
 
@@ -341,7 +381,7 @@ Rules:
 ```text
 credential value = NEVER
 full environment dump = FORBIDDEN
-user secret paths/content = FORBIDDEN
+user secret file path/content = FORBIDDEN
 ```
 
 Git/source revision lookup may degrade to `UNKNOWN` when unavailable. Do not make Git presence a runtime requirement merely for identity reporting.
@@ -400,20 +440,25 @@ verification executable unavailable or policy-disallowed
 
 No mutation or model call may begin after BLOCKED.
 
-## E-03 — Durable Local Credential Resolution
+## E-03 — Durable Local Credential Resolution Across Fresh Process
 
-A credential configured in the user-local credential store must be resolvable by a fresh Harness process even when the corresponding provider environment variable is absent.
+A credential configured in the user-local credential store must be resolvable by a **fresh separately launched Harness proof process** when the corresponding provider environment variable is explicitly absent from that process.
 
 This is the proof that closes the process-inheritance problem observed during H-03.
 
-Final evidence records:
+Required evidence:
 
 ```text
-credential_ref
+fresh_process = true
+DEEPSEEK_API_KEY_in_process_env = false
+credential_ref = deepseek.default
 credential_source_type = USER_LOCAL
+credential_resolved = true
 ```
 
-Never the credential value.
+Never record the credential value.
+
+The proof must not simulate freshness merely by mutating `os.environ` and continuing inside the same long-lived HarnessSession process.
 
 ## E-04 — Process Environment Source Still Works
 
@@ -423,15 +468,17 @@ A deterministic test may use a synthetic credential value.
 
 This proves local persistent storage is not hard-coded as the only possible future source.
 
-## E-05 — Provider Secret Isolated From Tool Process
+## E-05 — Provider Secret Absent From Tool Process Environment
 
 With a model credential resolvable by the Harness, a verification subprocess must prove:
 
 ```text
-DEEPSEEK_API_KEY absent
-synthetic secret absent
+DEEPSEEK_API_KEY absent from subprocess environment
+synthetic secret absent from subprocess environment
 required safe runtime variables sufficient for command execution
 ```
+
+This proof is strictly about the subprocess **environment**. It does not claim the same-user process cannot access the filesystem credential store through other OS mechanisms.
 
 ## E-06 — ExecutionPolicy Cannot Be Widened by Approval
 
@@ -469,24 +516,26 @@ governance non-inheritance
 
 Do not rewrite the old V0.1 evidence. Run equivalent regression proofs against the new Candidate.
 
-## E-09 — Live DeepSeek Through User-Local Credential
+## E-09 — Live DeepSeek Through User-Local Credential From Fresh Process
 
-Final Stage PASS requires one real live DeepSeek-driven bounded fixture task where:
+Final Stage PASS requires one real live DeepSeek-driven bounded fixture task executed from a **fresh separate proof process** where:
 
 ```text
-DEEPSEEK_API_KEY is absent from the Harness process environment
+DEEPSEEK_API_KEY is explicitly absent from the fresh process environment
 credential is resolved from UserLocalCredentialSource
 preflight = READY
 provider invocation succeeds
-tool subprocess does not receive the credential
+tool subprocess environment does not contain the credential
 verification passes
 ```
 
-If the local credential is unavailable, deterministic proofs may complete but final verdict remains TARGETED_REPAIR / BLOCKED, not PASS.
+The external launcher may inherit ordinary non-secret runtime variables, but it must construct the fresh proof process environment with `DEEPSEEK_API_KEY` removed.
+
+If the user-local credential is unavailable, deterministic proofs may complete but final verdict remains TARGETED_REPAIR / BLOCKED, not PASS.
 
 ## E-10 — Identity Snapshot
 
-Results must contain the required non-secret identity fields and no environment dump or secret value.
+Results must contain the required non-secret identity fields and no environment dump, secret value, or credential-store content/path.
 
 ---
 
@@ -500,7 +549,7 @@ Expected flow:
 
 ```text
 executor says credential ref is missing
-→ user runs local setup entry point
+→ human runs local setup entry point
 → terminal requests hidden secret input
 → setup confirms ref configured without showing value
 → fresh proof process runs
@@ -561,7 +610,8 @@ subagents
 background job manager
 arbitrary model-authored shell
 OS/container sandbox
-network escalation
+filesystem secret sandbox
+network sandbox / escalation
 MCP
 plugin ecosystem
 Skill Builder
@@ -652,20 +702,23 @@ frozen Minimum Harness V0.1 unchanged
 no protected-boundary mutation
 no repository-stored credential
 no credential value in trace/results/review
-no provider credential in tool subprocess
+no provider credential in tool subprocess environment
+no false claim of filesystem/network sandboxing
 no general-shell expansion
 no Platform integration
 ```
 
 Passing proves only:
 
-> Catalyst has an environment-complete Harness Candidate suitable for the first separately-authorized low-risk Case 01 trial.
+> Catalyst has an environment-complete Harness Candidate suitable for the first separately-authorized low-risk Case 01 trial under the bounded execution assumptions of this Stage.
 
 It does not prove:
 
 ```text
 enterprise-grade secret storage
+filesystem-level secret isolation
 OS-level sandbox security
+network isolation
 durable long-running development sessions
 multi-provider portability
 full Agent construction
