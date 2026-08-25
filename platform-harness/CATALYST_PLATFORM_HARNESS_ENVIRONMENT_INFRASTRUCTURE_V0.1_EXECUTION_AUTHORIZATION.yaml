@@ -1,0 +1,274 @@
+authorization_id: CATALYST_PLATFORM_HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0_1_EXECUTION_AUTHORIZATION
+record_version: "0.1"
+status: AUTHORIZED
+
+branch: platform-harness
+expected_base_commit: ae92ce8b415149b67108b4afd5c00e947607927d
+stage_spec:
+  path: platform-harness/CATALYST_PLATFORM_HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0.1_STAGE_SPEC.md
+  version: V0.2
+  commit: ae92ce8b415149b67108b4afd5c00e947607927d
+source_review:
+  path: platform-harness/HARNESS_INFRASTRUCTURE_GAP_REVIEW_V0.1.md
+  commit: 8cf775a045c626d3b0a5b22daf52648a251e1db8
+frozen_minimum_harness:
+  root: platform-harness/minimum-harness-v0.1
+  proven_commit: 3ec8cfe2c1d2ebba60aaf1ef5331ae025f347be6
+  mutation: FORBIDDEN
+
+purpose: >-
+  Authorize exactly one isolated implementation/evidence proof that forms an
+  environment-complete Catalyst Harness 0.2-candidate by adding only I-01..I-05:
+  environment preflight, replaceable credential resolution, sanitized tool
+  subprocess environment, explicit ExecutionPolicy vs ApprovalPolicy, and
+  non-secret environment/harness identity. This authorization does not authorize
+  Case 01 execution or Platform integration.
+
+candidate:
+  identity: CATALYST_PLATFORM_HARNESS_0_2_CANDIDATE
+  scope: ENVIRONMENT_INFRASTRUCTURE_ONLY
+  write_root: platform-harness/harness-v0.2-candidate
+  status_after_success: FROZEN_FOR_CASE_TRIAL_REVIEW
+
+required_proofs:
+  - E-01_PREFLIGHT_READY
+  - E-02_PREFLIGHT_BLOCKED
+  - E-03_FRESH_PROCESS_USER_LOCAL_CREDENTIAL_RESOLUTION
+  - E-04_PROCESS_ENV_CREDENTIAL_SOURCE
+  - E-05_PROVIDER_SECRET_ABSENT_FROM_TOOL_SUBPROCESS_ENV
+  - E-06_EXECUTION_POLICY_NOT_WIDENED_BY_APPROVAL
+  - E-07_APPROVAL_GOVERNS_ALLOWED_MUTATION
+  - E-08_MINIMUM_HARNESS_BEHAVIOR_REGRESSION
+  - E-09_LIVE_DEEPSEEK_FROM_USER_LOCAL_CREDENTIAL_FRESH_PROCESS
+  - E-10_NON_SECRET_ENVIRONMENT_IDENTITY
+
+read_scope:
+  required:
+    - platform-harness/CATALYST_PLATFORM_HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0.1_STAGE_SPEC.md
+    - platform-harness/HARNESS_INFRASTRUCTURE_GAP_REVIEW_V0.1.md
+  allowed:
+    - platform-harness/minimum-harness-v0.1/harness/**
+    - platform-harness/minimum-harness-v0.1/fixture/**
+    - platform-harness/minimum-harness-v0.1/tests/**
+    - agent_runtime/contracts/**
+    - agent_runtime/providers/deepseek.py
+    - pyproject.toml
+  forbidden:
+    - case-01/**
+    - case-02/**
+    - external Penguin local clone
+    - external Waku local clone
+    - unrelated repository history
+
+write_scope:
+  allowed:
+    - platform-harness/harness-v0.2-candidate/**
+  forbidden:
+    - platform-harness/minimum-harness-v0.1/**
+    - agent_runtime/**
+    - platform_standard/**
+    - runtime_adapter/**
+    - case-01/**
+    - case-02/**
+    - ARCHITECTURE.md
+    - README.md
+    - pyproject.toml
+    - any path outside platform-harness/harness-v0.2-candidate/**
+
+implementation_constraints:
+  language: Python
+  dependencies: EXISTING_OR_STDLIB_ONLY
+  new_dependency_installation: FORBIDDEN
+  platform_integration: FORBIDDEN
+  runtime_modification: FORBIDDEN
+  minimum_harness_v0_1_mutation: FORBIDDEN
+  arbitrary_model_authored_shell: FORBIDDEN
+  os_or_container_sandbox: NOT_AUTHORIZED
+  filesystem_secret_sandbox: NOT_AUTHORIZED
+  network_sandbox: NOT_AUTHORIZED
+  mcp: FORBIDDEN
+  multi_agent: FORBIDDEN
+  subagents: FORBIDDEN
+  durable_session_resume: FORBIDDEN
+  context_compaction: FORBIDDEN
+  agent_builder: FORBIDDEN
+  skill_builder: FORBIDDEN
+  capability_registry: FORBIDDEN
+  git_authority_inside_harness: FORBIDDEN
+
+infrastructure_scope:
+  I_01_preflight:
+    required: true
+    result_states:
+      - READY
+      - BLOCKED
+    minimum_block_reasons:
+      - CREDENTIAL_UNAVAILABLE
+      - WORKSPACE_INVALID
+      - EXECUTABLE_UNAVAILABLE
+      - POLICY_INVALID
+      - PROVIDER_BINDING_INVALID
+    model_call_during_preflight: FORBIDDEN
+
+  I_02_credentials:
+    required_sources:
+      - PROCESS_ENVIRONMENT
+      - USER_LOCAL
+    credential_ref_required: true
+    literal_secret_in_task_or_binding: FORBIDDEN
+    recommended_ref: deepseek.default
+    user_local_store:
+      default_outside_repo: true
+      test_path_override: REQUIRED
+      credential_value_logging: FORBIDDEN
+      credential_value_trace: FORBIDDEN
+      credential_value_results: FORBIDDEN
+      credential_value_model_context: FORBIDDEN
+      best_effort_owner_only_permissions: REQUIRED
+      human_hidden_input_setup: REQUIRED
+      model_callable_setup_tool: FORBIDDEN
+    security_claim_limit: >-
+      The proof covers credential resolution, redaction, non-model exposure and
+      non-inheritance into tool subprocess ENVIRONMENT. It does not prove that
+      arbitrary same-user code cannot read the local credential file.
+
+  I_03_tool_environment:
+    explicit_subprocess_env_required: true
+    implicit_parent_env_inheritance: FORBIDDEN
+    positive_allowlist_direction: REQUIRED
+    deepseek_api_key_in_tool_env: FORBIDDEN
+    representative_synthetic_secret_in_tool_env: FORBIDDEN
+    filesystem_isolation_claim: FORBIDDEN
+
+  I_04_policy_split:
+    ExecutionPolicy_owns:
+      - allowed_reads
+      - allowed_writes
+      - allowed_stage_declared_commands
+      - command_timeout
+      - model_attempt_budget
+      - repair_cycle_budget
+      - explicit_non_secret_task_env
+    ApprovalPolicy_owns:
+      - allow_or_deny_already_policy_permitted_action
+    approval_can_widen_execution_policy: false
+    network_tool_exposed: false
+    os_network_isolation_claim: false
+
+  I_05_identity:
+    minimum_fields:
+      - harness_implementation_version
+      - harness_source_revision_or_unknown
+      - python_version
+      - os_name
+      - os_release_or_platform_family
+      - architecture
+      - workspace_root
+      - provider_id
+      - model_id
+      - credential_source_type
+      - execution_policy_identity
+      - preflight_status
+    full_environment_dump: FORBIDDEN
+    credential_store_path_or_content_in_results: FORBIDDEN
+
+fresh_process_proof:
+  required_for_E03: true
+  required_for_E09: true
+  same_process_os_environ_mutation_only: INSUFFICIENT
+  deepseek_api_key_explicitly_absent_from_fresh_process_env: REQUIRED
+
+live_proof:
+  required_for_final_pass: true
+  provider: DeepSeekModelProvider
+  credential_source_required: USER_LOCAL
+  credential_ref: deepseek.default
+  process_env_DEEPSEEK_API_KEY: MUST_BE_ABSENT
+  preflight: READY_REQUIRED
+  tool_subprocess_DEEPSEEK_API_KEY: MUST_BE_ABSENT
+  provider_request_must_succeed: true
+  deterministic_verification_must_pass: true
+  max_model_attempts: 6
+  max_repair_cycles: 1
+
+credential_setup_rule:
+  if_user_local_credential_missing: >-
+    STOP implementation execution at the live-proof boundary and ask the human to
+    run the Candidate's hidden-input credential setup entry point locally. Do not
+    ask for the secret in chat, command arguments, files, or executor text.
+  implementation_can_complete_before_live_setup: true
+  final_pass_without_live_E09: false
+
+required_outputs:
+  implementation_root: platform-harness/harness-v0.2-candidate/harness
+  fixture_root: platform-harness/harness-v0.2-candidate/fixture
+  tests_root: platform-harness/harness-v0.2-candidate/tests
+  results: platform-harness/harness-v0.2-candidate/V0_2_RESULTS.json
+  review: platform-harness/harness-v0.2-candidate/V0_2_REVIEW.md
+  freeze_record: platform-harness/harness-v0.2-candidate/V0_2_FREEZE_RECORD.json
+
+artifact_minimum_rule:
+  separate_E_reports: FORBIDDEN
+  new_architecture_document: FORBIDDEN
+  evidence_index: FORBIDDEN
+  provider_registry: FORBIDDEN
+  credential_standard_document: FORBIDDEN
+  summary_of_summary: FORBIDDEN
+
+execution_sequence:
+  - verify branch platform-harness and HEAD equals this Authorization commit
+  - verify working tree clean
+  - read only authorized context
+  - form harness-v0.2-candidate under authorized root
+  - implement deterministic E-01..E-08 and E-10 proofs
+  - run deterministic proofs
+  - if user-local deepseek.default credential is not configured, STOP at live-proof boundary and report setup entry point; do not commit partial final PASS evidence
+  - after human credential setup, launch a fresh proof process with DEEPSEEK_API_KEY explicitly removed from its environment
+  - run E-09 live DeepSeek proof through UserLocalCredentialSource
+  - verify tool subprocess environment does not contain provider credential
+  - write V0_2_RESULTS.json, V0_2_REVIEW.md and V0_2_FREEZE_RECORD.json
+  - verify frozen V0.1 and all protected boundaries unchanged
+  - create exactly one implementation_plus_evidence commit
+  - push platform-harness
+  - STOP
+
+failure_and_stop_rules:
+  - if a new dependency becomes necessary: STOP
+  - if existing Runtime or frozen V0.1 must be modified: STOP
+  - if a general shell or sandbox appears necessary: STOP
+  - if E-09 exposes provider/Harness incompatibility: STOP; do not opportunistically expand scope
+  - if any secret appears in trace/results/review/diff: STOP and sanitize generated evidence before commit without changing architecture scope
+  - if any write outside authorized root appears necessary: STOP
+
+commit_policy:
+  implementation_plus_evidence_commits: 1
+  suggested_message: "platform-harness: prove environment-complete harness candidate"
+  push_required: true
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+
+final_verdict_vocabulary:
+  - HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0_1_PASS
+  - HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0_1_TARGETED_REPAIR
+  - HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0_1_FAIL
+
+successful_final_state:
+  verdict: HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0_1_PASS
+  candidate_status: FROZEN_FOR_CASE_TRIAL_REVIEW
+  case01_trial: NOT_AUTHORIZED
+  platform_integration: NOT_AUTHORIZED
+
+explicitly_not_authorized:
+  - Case 01 mutation or execution
+  - Case 02 work
+  - Platform integration
+  - merge to main
+  - general shell
+  - OS/container sandbox
+  - enterprise secret manager
+  - OS keyring integration
+  - multi-provider routing
+  - durable Harness session resume
+  - Agent Builder
+  - Skill Builder
+  - Capability Registry
