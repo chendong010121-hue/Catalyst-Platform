@@ -1,0 +1,230 @@
+record_type: catalyst_case02_waku_benchmark_targeted_repair_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_BENCHMARK_REPAIR_ONLY
+
+project: Catalyst
+case: CASE-02
+external_agent: waku-agent
+
+external_review:
+  path: case-02/01-c-full-agent-evaluation/evaluation-v0.1/WAKU_BENCHMARK_EXTERNAL_REVIEW_V0.1.md
+  commit: 9bec394c1a2bcf3979f7adf4ab298ce58d79654e
+  verdict: TARGETED_REPAIR_BEFORE_EXECUTION
+
+execution_base:
+  required_case02_head_before_work: AUTHORIZATION_COMMIT
+  review_parent_commit: 9bec394c1a2bcf3979f7adf4ab298ce58d79654e
+  main_must_remain: 5874be1130e8867082880fcd63f659fc909d9efd
+  working_tree_must_be_clean: true
+
+frozen_target:
+  repository: ShenSeanChen/waku-agent
+  pinned_commit: 8328f567ab52d07921445cb40feed23cbc5ea2ad
+  mutation: FORBIDDEN
+  live_execution: FORBIDDEN
+
+frozen_benchmark_identity_before_repair:
+  formation_commit: 12acca7ee0b29971d8b1dbed659285bf6986587f
+  case_ids:
+    - WAKU-E2E-001
+    - WAKU-E2E-002
+    - WAKU-E2E-003
+    - WAKU-E2E-004
+    - WAKU-CAP-001
+    - WAKU-CRIT-001
+    - WAKU-CAP-002
+  case_count: 7
+  responsibility_map_sha256: 2a691724c72c7fbd1e57e92a867024ff5ee05f85a1c464d8885cf4c590c4377f
+
+repair_scope:
+  - TARGET_VISIBLE_PRIVATE_SEPARATION
+  - EXECUTABLE_FIXTURE_FREEZE
+  - WAKU_CAP_002_RESPONSIBILITY_SEPARATION
+  - TRACE_STATE_CHECK_OBSERVABILITY_PRECISION
+
+required_repair_1_target_visible_surface:
+  public_file: case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/public/benchmark_cases.json
+  rule: >-
+    Rewrite public benchmark content so it contains only target-visible user turn sequence
+    and product-visible context. Evaluator setup, expected outcome, gates, state checks,
+    trajectory constraints, partial credit, failure attribution, and internal asset/responsibility
+    metadata must not be target-visible.
+  allowed_target_visible_fields_per_case:
+    - case_id
+    - target_turns
+  target_turns_contract: >-
+    Each target_turn is exact user-visible text sent through the Waku product path in order.
+    If a process restart/session switch occurs between turns, that operation is evaluator-owned
+    and must live in private setup/execution metadata, not as hidden coaching text to the model.
+  evaluator_only_fields_must_move_private:
+    - suite
+    - product_responsibilities_tested
+    - related_asset_ids_if_any
+    - setup_state
+    - isolated_world_requirements
+    - expected_observable_outcome
+    - hidden_rubric_or_deterministic_checks
+    - critical_gate_conditions
+    - acceptable_partial_credit_if_any
+    - forbidden_shortcuts
+    - required_trace_or_state_evidence
+    - trajectory_constraints_if_any
+    - failure_attribution_hints
+  requirement: >-
+    The repaired public file is the exact target-visible prompt/turn projection. No undocumented
+    runtime filter may be relied upon to hide evaluator metadata.
+
+required_repair_2_executable_fixtures:
+  private_fixture_root: case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/private/fixtures
+  rule: >-
+    Freeze concrete evaluator-owned initial-state and failure/setup fixtures needed by the seven
+    Cases. Later execution may materialize them into a fresh temporary WAKU_HOME, but may not
+    improvise benchmark-critical initial state after Waku execution starts.
+  minimum_fixture_material:
+    WAKU-E2E-001:
+      - exact pre-existing local calendar event fixture with deterministic absolute date/time
+      - timezone/clock assumption for the target turn
+      - expected non-overlap rule and before-state identity
+    WAKU-E2E-002:
+      - explicit clean memory/session initial-state contract
+      - restart boundary contract
+    WAKU-E2E-003:
+      - exact stale preference fixture using Waku-supported state semantics or a reproducible setup operation
+      - restart boundary contract
+    WAKU-E2E-004:
+      - exact session identifiers/setup contract
+      - explicit session switch/reload sequence owned by evaluator
+    WAKU-CAP-001:
+      - exact matching SKILL.md fixture
+      - exact unrelated SKILL.md fixture
+      - expected install/location contract
+    WAKU-CRIT-001:
+      - deterministic controlled note-tool failure injection contract
+      - exact failure boundary and proof that only the target tool is affected
+    WAKU-CAP-002:
+      - clean no-side-effect home contract
+      - ops-step contract for later native eval/release checks
+  fixture_hash_rule: >-
+    BENCHMARK_FREEZE_RECORD must list every benchmark-critical fixture path and SHA256.
+  observability_rule: >-
+    If a fixture or required assertion cannot be reliably materialized/observed against the pinned
+    Waku without source modification, STOP and record the limitation instead of inventing fields.
+
+required_repair_3_cap002_responsibility_separation:
+  case: WAKU-CAP-002
+  target_step: >-
+    Replace current target-visible instruction with a normal bounded no-side-effect user knowledge turn.
+    The user must not ask Waku to produce its own evaluation result, release gate report, provider identity,
+    or benchmark trace.
+  evaluator_ops_step_must_be_private:
+    - inspect/reconstruct the live turn trace
+    - record externally known provider/model identity
+    - execute or inspect applicable native deterministic/judge/release-gate behavior only in later authorized execution
+    - preserve native semantic rule that judge skipped is not PASS
+    - confirm credentials are not persisted
+  case_id_must_remain: WAKU-CAP-002
+  case_count_must_remain: 7
+
+required_repair_4_time_and_observability_precision:
+  time_relative_cases:
+    - WAKU-E2E-001
+  rule: >-
+    Freeze a deterministic evaluation clock/timezone in private fixture/setup metadata and either
+    convert the target turn to an absolute product-natural date/time or explicitly guarantee the later
+    runner supplies the frozen clock semantics. Avoid a benchmark whose expected calendar world drifts
+    merely because execution happens on another day.
+  trace_check_rule: >-
+    Review desired trace/state checks against pinned Waku observability. Use only fields/events/artifacts
+    that actually exist or can be externally verified without modifying Waku. If exact skill-match metadata,
+    reload event, correlation id, or another desired signal is unavailable, replace it with the strongest
+    valid external observable evidence and document the limitation.
+
+must_remain_unchanged:
+  - case IDs and case count
+  - core user-loop intent of all seven cases
+  - WR-01..WR-22 responsibility identities
+  - responsibility_map.json contents/classifications
+  - REQUIRED / NOT_REQUIRED_NOW classifications
+  - WAKU-A01..WAKU-A06 identities
+  - CG-01..CG-06 semantics
+  - pinned Waku source
+  - Waku native tests/evals/release implementation
+  - Case02-A / Case02-B frozen evidence
+  - optional integrations remain not required
+  - Platform / Runtime / RuntimeAdapter / Harness
+  - main
+
+allowed_persistent_changes:
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/public/benchmark_cases.json
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/private/rubric.json
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/benchmark/private/fixtures/**
+  - case-02/01-c-full-agent-evaluation/evaluation-v0.1/BENCHMARK_FREEZE_RECORD.json
+
+freeze_record_repair_requirements:
+  - record this repair authorization commit
+  - preserve original formation commit lineage
+  - record repaired exact target-visible benchmark SHA256
+  - record repaired private rubric SHA256
+  - record fixture manifest with path + SHA256 for every benchmark-critical fixture
+  - preserve responsibility_map SHA256 unchanged
+  - preserve exact case IDs/count
+  - record target_visible_fields/target_turns contract
+  - record WAKU-CAP-002 target-vs-ops separation
+  - record evaluation clock/timezone contract where relevant
+  - record Waku was not executed during repair
+  - record provider invocation = NONE
+  - record protected boundaries unchanged
+  - status = FROZEN_FOR_EXTERNAL_BENCHMARK_RE_REVIEW
+
+forbidden_actions:
+  - execute Waku against any Catalyst benchmark case
+  - invoke provider/model to validate the benchmark
+  - run native judge/release gate as live product evaluation
+  - modify/fork Waku
+  - patch Waku tests or instrumentation
+  - use user's existing .waku state
+  - add/remove cases
+  - change responsibility_map.json
+  - promote optional integrations
+  - modify Case02-A/B evidence
+  - create Catalyst adapter/integration
+  - modify Platform / Runtime / Harness / main
+
+commit_policy:
+  commits: 1
+  commit_message: "case-02: repair Waku benchmark execution integrity"
+  push_branch: case-02
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+  stop_after_push: true
+
+valid_final_verdicts:
+  - WAKU_BENCHMARK_REPAIRED_FOR_RE_REVIEW
+  - WAKU_BENCHMARK_REPAIR_BLOCKED
+  - WAKU_BENCHMARK_INVALID
+
+pass_requires:
+  - target-visible surface contains only exact user-facing turns
+  - evaluator metadata is private
+  - benchmark-critical fixtures and hashes are frozen
+  - relative time is deterministic
+  - WAKU-CAP-002 target/ops ownership repaired
+  - all required trace/state checks are actually observable without Waku mutation
+  - case IDs/count unchanged
+  - responsibility map byte-identical
+  - pinned Waku/source/evidence/protected paths unchanged
+  - Waku not executed and provider not invoked
+  - exactly one repair commit
+
+stop_conditions:
+  - fixture semantics cannot be made faithful to pinned Waku without source modification
+  - a required observable signal does not exist and no honest external verification is possible
+  - repair requires changing a Case's core product intent
+  - repair requires responsibility reclassification
+  - more than one repair commit appears necessary
+
+final_instruction: >-
+  Repair only Waku benchmark execution integrity exactly as authorized: minimize the exact target-visible
+  user turns, freeze reproducible evaluator fixtures/world state, separate WAKU-CAP-002 Agent turn from
+  evaluator LLM-Ops duties, repair time/observability precision, refresh the freeze record, create exactly
+  one commit, push case-02, and STOP without executing Waku or invoking a provider.
