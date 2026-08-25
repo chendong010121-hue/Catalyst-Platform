@@ -1,0 +1,217 @@
+record_type: catalyst_case01_brea_v010_professional_product_loop_repair_authorization
+record_version: "0.1"
+status: AUTHORIZED_FOR_TARGETED_CANDIDATE_REPAIR_ONLY
+
+project: Catalyst
+case: CASE-01
+agent: BREA
+
+source_evaluation:
+  execution_commit: d108ced4056be51a007fc249c4dbfc39b96a79f7
+  interpretation_correction_commit: 734f3b75e9b99bced63dc81532f423b2eff009b2
+  machine_verdict: PRODUCT_CRITICAL_GAP_REMAINS
+  single_material_gap: >-
+    Natural-language professional-intent routing and complete applicability/evidence
+    binding are not yet proven for normal user tasks, while regression stability and
+    bounded fail-closed numeric safety remain intact.
+
+purpose: >-
+  Create Candidate N+1 from frozen BREA v0.9 and repair only the proven product-loop
+  gap: normal professional user language must reach the existing professional route,
+  resolve missing/applicable facts correctly, bind existing KR-003 evidence, and return
+  a bounded professional result without weakening fail-closed safety.
+
+candidate_lifecycle:
+  source_candidate: case-01.brea@0.9-candidate
+  source_candidate_freeze_commit: c6393d4210708400b492ad9e531002e29fe3635e
+  source_candidate_mutation: FORBIDDEN
+  new_candidate: case-01.brea@0.10-candidate
+  new_candidate_path: case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/candidate/brea-v0.10
+  creation_rule: complete_copy_of_v0.9_then_targeted_changes_only
+  lineage_parent: case-01.brea@0.9-candidate
+  admission_after_execution: FORBIDDEN
+  binding_after_execution: FORBIDDEN
+
+knowledge_boundary:
+  required_revision: KR-003
+  canonical_sha256: 4049f7f00e709fd0d97fb30df2a5f59e3073448ad06ad4afa471babbe45a21d2
+  mutation: FORBIDDEN
+  create_KR_004: FORBIDDEN
+  add_source: FORBIDDEN
+  add_route: FORBIDDEN
+  add_professional_fact: FORBIDDEN
+  rule: >-
+    This repair must use the already-declared KR-003 routes, source identities,
+    fact descriptors, locators and professional semantics. If the product gap cannot
+    be repaired without changing Knowledge meaning, STOP and report that as a new
+    material decision instead of editing KR-003.
+
+proven_root_causes:
+  professional_vs_retrieval_classification:
+    evidence: >-
+      query.classify_query currently routes standard-resolved questions containing
+      broad retrieval markers such as 条款/查/关于 to QMODE-03 before the professional
+      path. This caused normal product requests asking for a professional conclusion
+      plus evidence to be treated as retrieval-only questions.
+    required_direction: >-
+      Separate retrieval-only intent from professional-outcome intent. A request for
+      applicability, a normative value, calculation, decision, missing facts, or a
+      bounded professional conclusion must reach QMODE-05 even when it also asks for
+      evidence/source/条款. Explicit requests whose actual goal is only locating original
+      text/evidence remain QMODE-01..04.
+    anti_overfit: >-
+      Do not branch on benchmark Case IDs, exact benchmark sentences, exact numerical
+      values, or fixture filenames. Implement a general deterministic intent precedence.
+
+  professional_route_resolution:
+    evidence: >-
+      domain_data.match_route currently uses simple substring intent matching and takes
+      candidates[0]. The repair must ensure a normal professional task resolves one
+      existing declarative route or fails closed when genuinely ambiguous.
+    required_direction: >-
+      Use existing route intent_terms plus supplied project facts/regulation context in
+      a deterministic, declarative-compatible way. Missing required facts must not make
+      the route disappear: once the professional subject is recognized, the Agent should
+      return the route-specific missing-fact boundary instead of falling back to topic
+      retrieval or generic no-evidence behavior.
+    no_family_dispatch: true
+    no_benchmark_dispatch: true
+
+  existing_route_evidence_binding:
+    evidence: >-
+      BREA-E2E-001 reached QMODE-05 but did not bind the existing DBJ33/T1021-2023
+      parking route to reliable table evidence; applicability remained unresolved and
+      numeric/table evidence was null.
+    required_direction: >-
+      Diagnose and repair the generic existing table-route binding path. Prefer using
+      the route's already-declared semantic aliases/scope_terms and source-native table
+      structure rather than exact user labels. Row selection must remain source-derived;
+      no implementation-generated numeric authority and no hard-coded 90/1.0/II values.
+    source_authority_must_remain: admitted_corpus_only
+
+required_behavior_after_repair:
+  - professional question + request for evidence must not automatically become retrieval-only
+  - explicit evidence/original-text lookup must continue to use retrieval modes
+  - recognized professional route with missing required facts returns explicit missing facts and next action
+  - valid existing fire-compartment route can produce bounded accepted_with_evidence result from KR-003
+  - valid existing parking-table route can resolve the existing source level/row and source-bound numeric result from KR-003
+  - out-of-jurisdiction residential route remains fail-closed
+  - unbound/unavailable source request remains fail-closed and makes no web/upstream claim
+  - no unsupported normative numeric result is emitted
+  - enterprise attribution remains preserved
+
+allowed_implementation_surface:
+  candidate_only:
+    - brea/query.py
+    - brea/domain_data.py
+    - brea/professional.py
+    - brea/evidence.py
+    - brea/applicability.py only_if_required_by_existing_route_resolution
+    - brea/facts.py only_if_required_to_preserve_existing_declared_fact_semantics
+    - brea/identity.py for version/lineage identity only
+    - README.md for candidate identity/status only
+    - tests/** for targeted product-loop tests and inherited regression compatibility
+  rule: >-
+    Keep changes minimal. Do not touch files merely for cleanup. Any additional
+    implementation file requires a concrete explanation in the execution summary.
+
+required_tests:
+  inherited_regression:
+    - python tests/run_all.py
+    - python tests/test_v07_source_structure.py
+    - python tests/test_v08_residential_slice.py
+    - python tests/test_v09_knowledge_identity.py
+  new_product_loop_tests:
+    minimum_properties:
+      - professional outcome intent outranks incidental evidence words
+      - retrieval-only intent remains retrieval-only
+      - fire-compartment professional task with complete facts reaches QMODE-05 and binds source-backed numeric result
+      - same professional subject with missing facts returns explicit missing facts/next action without numeric conclusion
+      - parking professional task with valid existing KR-003 facts binds source-native level/table evidence and numeric result
+      - out-of-jurisdiction residential task remains fail-closed
+      - unavailable source/web request remains fail-closed
+    paraphrase_rule: >-
+      New tests must include at least one natural-language paraphrase that is not the
+      exact frozen benchmark sentence for each repaired positive professional route.
+    anti_hardcode_checks:
+      - no benchmark Case IDs inside candidate implementation
+      - no exact frozen answer values used as routing authority
+      - no private rubric import/read
+      - no source numeric value hardcoded as authority
+
+frozen_benchmark_policy:
+  may_be_used_after_implementation_as_acceptance_probe: true
+  benchmark_files_mutation: FORBIDDEN
+  rule: >-
+    The frozen five-Case benchmark may be rerun against v0.10 only after all candidate
+    tests pass. It remains evaluator evidence, not implementation input. Private rubric
+    must never be read by Candidate code.
+
+success_definition:
+  minimum: >-
+    Existing regression remains green; new general product-loop tests pass; the frozen
+    product cases no longer fail because of professional-vs-retrieval routing or existing
+    route evidence binding; all critical safety gates remain preserved.
+  harvest_effect: >-
+    This Stage does not automatically Harvest FN-04/FN-05/SEAM-03. A later evaluation
+    must provide independent evidence before changing DO_NOT_HARVEST_YET.
+
+stop_conditions:
+  - repair requires changing KR-003 professional meaning, routes, facts or source authority
+  - repair requires adding an LLM/model/provider
+  - repair requires new web/upstream retrieval
+  - repair requires benchmark-specific routing/hardcoding
+  - repair requires Platform/Runtime/Harness changes
+  - source table cannot be bound generically from the existing admitted source and route declarations
+  - more than one materially distinct product gap is discovered
+
+forbidden_actions:
+  - mutate brea-v0.9
+  - mutate KR-003
+  - create KR-004
+  - add professional scope/source
+  - add LLM/RAG/vector DB/web
+  - modify benchmark/rubric/responsibility map
+  - modify evaluation historical results
+  - modify Platform/Runtime/RuntimeAdapter/Harness/main
+  - start Human Review/E2-C/Admission/Binding
+  - promote Evaluation runner or Harvest logic to Platform
+
+persistent_artifacts:
+  allowed:
+    - candidate/brea-v0.10/**
+    - BREA_V0_10_PRODUCT_LOOP_REPAIR_RESULT_V0.1.json
+  result_record_must_include:
+    - source_candidate_identity
+    - changed_files
+    - diagnosed_root_causes
+    - implementation_mechanism
+    - inherited_regression_results
+    - new_product_loop_test_results
+    - frozen_benchmark_probe_results_if_executed
+    - critical_safety_result
+    - anti_hardcode_check
+    - protected_boundaries
+    - final_verdict
+
+commit_policy:
+  required_case01_head_before_work: AUTHORIZATION_COMMIT
+  commits: 1
+  commit_message: "case-01: repair BREA professional product loop v0.10"
+  push_branch: case-01
+  merge: FORBIDDEN
+  pull_request: FORBIDDEN
+  stop_after_push: true
+
+valid_final_verdicts:
+  - BREA_V0_10_PRODUCT_LOOP_REPAIR_PASS
+  - BREA_V0_10_PRODUCT_LOOP_REPAIR_PARTIAL
+  - BREA_V0_10_PRODUCT_LOOP_REPAIR_BLOCKED
+
+final_instruction: >-
+  Build v0.10 as one targeted Candidate N+1 from frozen v0.9. Repair only the
+  evaluation-proven professional product-loop gap using existing KR-003 meaning:
+  deterministic professional-intent precedence, declarative route resolution, and
+  source-native evidence binding. Preserve fail-closed safety and all inherited
+  regressions. Do not broaden scope. Create exactly one implementation commit, push
+  case-01, and STOP.
