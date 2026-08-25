@@ -12,7 +12,7 @@ Execution technologies should be free to evolve. Runtimes, providers, agents, ad
 
 Catalyst is not intended to preserve a specific Agent, Harness, Runtime, provider, framework, or implementation. Its direction is to make valuable capability increasingly understandable, evaluable, preservable, reusable, recomposable, and evolvable as technology changes.
 
-Useful capability may come from people, Agents, tools, workflows, or external systems. It becomes a durable organizational asset only when it is sufficiently understood and supported by evidence. In this explanatory sense, **Harvest** names the selective lifecycle act of preserving such capability; it is not a Platform object. See [Catalyst Capability Harvest Philosophy V0.1](docs/CATALYST_CAPABILITY_HARVEST_PHILOSOPHY_V0.1.md).
+Useful capability may come from people, Agents, tools, workflows, or external systems. It becomes a durable organizational asset only when it is sufficiently understood and supported by evidence. In this explanatory sense, **Harvest** names the selective lifecycle act of preserving such capability; it is not a Platform object. See [Catalyst Capability Harvest — Design Philosophy V0.1](docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md).
 
 > [!IMPORTANT]
 > **Current evidence state:** Minimum Architectural Framework v1 is **PROVEN / ACCEPTED**.
