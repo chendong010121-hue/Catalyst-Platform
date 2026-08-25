@@ -1,0 +1,59 @@
+{
+  "record": "V0_2_FREEZE_RECORD",
+  "stage": "CATALYST_PLATFORM_HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0_1",
+  "candidate_identity": "CATALYST_PLATFORM_HARNESS_0_2_CANDIDATE",
+  "candidate_status": "FROZEN_FOR_CASE_TRIAL_REVIEW",
+  "verdict": "HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0_1_PASS",
+  "branch": "platform-harness",
+  "source_head": "7d801bb7d84b34fb52900f58b27e9a0d1cbb1c07",
+  "frozen_minimum_harness_v01": {
+    "root": "platform-harness/minimum-harness-v0.1",
+    "proven_commit": "3ec8cfe2c1d2ebba60aaf1ef5331ae025f347be6",
+    "unchanged": true
+  },
+  "scope": {
+    "write_root": "platform-harness/harness-v0.2-candidate",
+    "implementation_scope": "I-01..I-05 plus the authorized I-04 mapping repair",
+    "protected_boundaries_unchanged": true,
+    "runtime_modified": false,
+    "platform_integrated": false,
+    "case01_started": false,
+    "case02_started": false,
+    "general_shell_enabled": false
+  },
+  "proofs": {
+    "E-01": "PASS",
+    "E-02": "PASS",
+    "E-03": "PASS",
+    "E-04": "PASS",
+    "E-05": "PASS",
+    "E-06": "PASS",
+    "E-07": "PASS",
+    "E-08": "PASS",
+    "E-09": "PASS",
+    "E-10": "PASS"
+  },
+  "security_invariants": {
+    "credential_source_type": "USER_LOCAL",
+    "credential_value_recorded": false,
+    "credential_store_recorded": false,
+    "fresh_process_provider_env_key_absent": true,
+    "tool_subprocess_provider_env_key_absent": true,
+    "execution_policy_widened": false,
+    "approval_policy_bypassed": false,
+    "filesystem_or_network_sandbox_claimed": false
+  },
+  "authorized_artifacts_only": [
+    "V0_2_RESULTS.json",
+    "V0_2_REVIEW.md",
+    "V0_2_FREEZE_RECORD.json"
+  ],
+  "commit_policy": {
+    "required_commit_count": 1,
+    "required_message": "platform-harness: prove environment-complete harness candidate",
+    "push_required": true,
+    "merge": false,
+    "pull_request": false
+  },
+  "next_step": "separate Case 01 authorization required; stop after authorized push"
+}

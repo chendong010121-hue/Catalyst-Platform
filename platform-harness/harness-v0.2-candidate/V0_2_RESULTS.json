@@ -1,0 +1,82 @@
+{
+  "artifact": "V0_2_RESULTS",
+  "stage": "CATALYST_PLATFORM_HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0_1",
+  "stage_spec_version": "V0.2",
+  "candidate_identity": "CATALYST_PLATFORM_HARNESS_0_2_CANDIDATE",
+  "branch": "platform-harness",
+  "head_at_execution": "7d801bb7d84b34fb52900f58b27e9a0d1cbb1c07",
+  "verdict": "HARNESS_ENVIRONMENT_INFRASTRUCTURE_V0_1_PASS",
+  "deterministic_suite": {
+    "command": "python -m unittest discover -s tests -p 'test_*.py' -v",
+    "status": "PASS",
+    "tests_run": 11,
+    "failures": 0,
+    "errors": 0
+  },
+  "proofs": {
+    "E-01": {"status": "PASS", "evidence": "READY preflight completes without a model call"},
+    "E-02": {"status": "PASS", "evidence": "blocked preflight reasons remain distinguishable"},
+    "E-03": {"status": "PASS", "fresh_process": true, "credential_source_type": "USER_LOCAL", "process_env_deepseek_api_key": false},
+    "E-04": {"status": "PASS", "evidence": "PROCESS_ENVIRONMENT source resolves in the isolated deterministic proof"},
+    "E-05": {"status": "PASS", "tool_subprocess_deepseek_api_key": false, "tool_subprocess_synthetic_secret": false, "positive_allowlist": true},
+    "E-06": {"status": "PASS", "authorized_command_identity": "verify", "forbidden_command": "EXECUTION_POLICY_DENIED", "approval_cannot_widen_execution_policy": true},
+    "E-07": {"status": "PASS", "approval_deny_prevents_allowed_mutation": true, "approval_allow_preserves_execution": true},
+    "E-08": {"status": "PASS", "bounded_v01_behavior_regression": true, "repair_cycles": 1, "model_attempts_within_budget": true},
+    "E-09": {
+      "status": "PASS",
+      "fresh_process": true,
+      "credential_ref": "deepseek.default",
+      "credential_source_type": "USER_LOCAL",
+      "process_env_deepseek_api_key": false,
+      "preflight": "READY",
+      "provider": "DeepSeekModelProvider",
+      "provider_id": "deepseek",
+      "model_id": "deepseek-v4-flash",
+      "model_attempts": 2,
+      "repair_cycles": 0,
+      "authorized_command_identity": "verify",
+      "approval": "ALLOW",
+      "tool_subprocess_deepseek_api_key": false,
+      "deterministic_verification": "PASS"
+    },
+    "E-10": {
+      "status": "PASS",
+      "identity_fields_present": [
+        "harness_implementation_version",
+        "harness_source_revision_or_unknown",
+        "python_version",
+        "os_name",
+        "os_release_or_platform_family",
+        "architecture",
+        "workspace_root",
+        "provider_id",
+        "model_id",
+        "credential_source_type",
+        "execution_policy_identity",
+        "preflight_status"
+      ],
+      "full_environment_dump": false,
+      "credential_store_content_or_path": false
+    }
+  },
+  "i04_repair": {
+    "classification": "F",
+    "mechanism": "B/C",
+    "finding": "The command tool accepted an unconstrained string while Session compared it as a fixed ExecutionPolicy command identity.",
+    "repair": "Bind the model-visible command schema to the task verification_command_id using a single-value enum; retain ExecutionPolicy lookup and ApprovalPolicy enforcement.",
+    "arbitrary_shell_enabled": false,
+    "execution_policy_widened": false,
+    "approval_policy_bypassed": false,
+    "new_tools": false
+  },
+  "boundary_checks": {
+    "frozen_minimum_harness_v01_unchanged": true,
+    "protected_boundaries_unchanged": true,
+    "repository_stored_credential": false,
+    "credential_value_in_results_or_trace": false,
+    "provider_credential_in_tool_subprocess_environment": false,
+    "filesystem_or_network_sandbox_claim": false,
+    "platform_integration": false,
+    "case01_execution": false
+  }
+}
