@@ -1,6 +1,6 @@
 # Catalyst Platform Minimum Harness V0.1 — Integrated Review
 
-Final verdict: **MINIMUM_HARNESS_V0_1_TARGETED_REPAIR**
+Final verdict: **MINIMUM_HARNESS_V0_1_PASS**
 
 ## Proof status
 
@@ -9,7 +9,7 @@ Final verdict: **MINIMUM_HARNESS_V0_1_TARGETED_REPAIR**
 | H-00 | PASS | Harness development responsibilities are explicitly separated from Runtime loop/session/capability semantics. |
 | H-01 | PASS | Session/task/workspace/model identity and start/final status are bound in result and trace. |
 | H-02 | PASS | Traversal, absolute outside paths, and symlink escape are rejected; symlink test is skipped only when the host cannot create symlinks. |
-| H-03 | TARGETED_REPAIR | Scripted provider uses the same ModelProvider request path; live status is `UNAVAILABLE` with provider `DeepSeekModelProvider`. |
+| H-03 | PASS | Scripted provider uses the same ModelProvider request path; live status is `PASS` with provider `DeepSeekModelProvider`. |
 | H-04 | PASS | Only read, write, and command are model-visible; all are Workspace/task bounded. |
 | H-05 | PASS | External approval allow/deny paths are tested; the model has no approval field or authority. |
 | H-06 | PASS | The supplied unittest command actually runs; model text alone cannot complete a task. |
@@ -32,7 +32,7 @@ The Harness does not wrap or alias the accepted Runtime loop, Runtime Session, A
 
 - Deterministic test command: `python -m unittest discover -s tests -p 'test_*.py' -v`
 - Deterministic result: 8 passed, 1 skipped, 0 failed, 0 errors.
-- Live proof: `UNAVAILABLE`; provider identity: `DeepSeekModelProvider`.
+- Live proof: `PASS`; provider identity: `DeepSeekModelProvider`.
 - Credential source is `DEEPSEEK_API_KEY` only; the key is not stored, traced, or printed.
 - Changed-path boundary: PASS; protected boundary: UNCHANGED.
 
@@ -40,4 +40,4 @@ The Harness does not wrap or alias the accepted Runtime loop, Runtime Session, A
 
 The implementation keeps TASK_INVALID, WORKSPACE_VIOLATION, APPROVAL_DENIED, MODEL_FAILED, TOOL_FAILED, COMMAND_TIMEOUT, VERIFICATION_FAILED, REPAIR_EXHAUSTED, and TRACE_INCOMPLETE distinguishable. These are Harness-stage classes and do not redefine Runtime execution-certainty semantics.
 
-**MINIMUM_HARNESS_V0_1_TARGETED_REPAIR**
+**MINIMUM_HARNESS_V0_1_PASS**

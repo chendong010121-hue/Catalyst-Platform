@@ -1,11 +1,11 @@
 {
   "artifact": "CATALYST_PLATFORM_MINIMUM_HARNESS_V0_1",
-  "verdict": "MINIMUM_HARNESS_V0_1_TARGETED_REPAIR",
+  "verdict": "MINIMUM_HARNESS_V0_1_PASS",
   "proof_status": {
     "H-00": "PASS",
     "H-01": "PASS",
     "H-02": "PASS",
-    "H-03": "TARGETED_REPAIR",
+    "H-03": "PASS",
     "H-04": "PASS",
     "H-05": "PASS",
     "H-06": "PASS",
@@ -23,10 +23,12 @@
     "passed": 8
   },
   "live_proof": {
-    "available": false,
-    "status": "UNAVAILABLE",
+    "available": true,
+    "status": "PASS",
     "provider": "DeepSeekModelProvider",
-    "reason": "DEEPSEEK_API_KEY is unavailable"
+    "failure_class": null,
+    "model_attempts": 2,
+    "repair_cycles": 0
   },
   "failure_classes": [
     "TASK_INVALID",
@@ -42,13 +44,13 @@
   "representative_trace": [
     {
       "event": "task_start",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "status": "RUNNING"
     },
     {
       "event": "model_turn",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "attempt": 1,
       "status": "RECEIVED",
@@ -56,14 +58,14 @@
     },
     {
       "event": "tool_proposed",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "tool": "read",
       "call_id": "read-proof"
     },
     {
       "event": "tool_result",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "tool": "read",
       "status": "PASS",
@@ -71,7 +73,7 @@
     },
     {
       "event": "model_turn",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "attempt": 2,
       "status": "RECEIVED",
@@ -79,20 +81,20 @@
     },
     {
       "event": "tool_proposed",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "tool": "write",
       "call_id": "write-proof-1"
     },
     {
       "event": "mutation_proposed",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "path": "guard.py"
     },
     {
       "event": "approval",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "tool": "write",
       "call_id": "write-proof-1",
@@ -100,14 +102,14 @@
     },
     {
       "event": "mutation_result",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "status": "PASS",
       "path": "guard.py"
     },
     {
       "event": "approval",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "tool": "command",
       "call_id": "verify",
@@ -115,7 +117,7 @@
     },
     {
       "event": "verification",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "status": "FAIL",
       "exit_code": 1,
@@ -124,14 +126,14 @@
     },
     {
       "event": "repair_requested",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "cycle": 1,
       "evidence": "Actual deterministic verification evidence:\n{\"exit_code\": 1, \"status\": \"FAIL\", \"stderr\": \"F\\n======================================================================\\nFAIL: test_invalid_input_fails_closed (test_guard.GuardTests.test_invalid_input_fails_closed)\\n----------------------------------------------------------------------\\nTraceback (most recent call last):\\n  File \\\"E:\\\\试验场地\\\\Agent Harness\\\\platform-harness\\\\minimum-harness-v0.1\\\\fixture\\\\test_guard.py\\\", line 8, in test_invalid_input_fails_closed\\n    self.assertFalse(is_valid_identifier(None))\\nAssertionError: True is not false\\n\\n----------------------------------------------------------------------\\nRan 1 test in 0.000s\\n\\nFAILED (failures=1)\\n\", \"stdout\": \"\"}"
     },
     {
       "event": "model_turn",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "attempt": 3,
       "status": "RECEIVED",
@@ -139,20 +141,20 @@
     },
     {
       "event": "tool_proposed",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "tool": "write",
       "call_id": "write-proof-2"
     },
     {
       "event": "mutation_proposed",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "path": "guard.py"
     },
     {
       "event": "approval",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "tool": "write",
       "call_id": "write-proof-2",
@@ -160,14 +162,14 @@
     },
     {
       "event": "mutation_result",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "status": "PASS",
       "path": "guard.py"
     },
     {
       "event": "approval",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "tool": "command",
       "call_id": "verify",
@@ -175,7 +177,7 @@
     },
     {
       "event": "verification",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "status": "PASS",
       "exit_code": 0,
@@ -184,7 +186,7 @@
     },
     {
       "event": "final_result",
-      "session_id": "bec5571a8eb74289a9aed5a2e55bf29a",
+      "session_id": "c7d6be1a253442678cd7d36d5ef9442e",
       "task_id": "fixture-invalid-input-fail-closed",
       "status": "PASS",
       "failure_class": null
@@ -195,15 +197,7 @@
     "changed_files": [
       "platform-harness/minimum-harness-v0.1/V0_1_RESULTS.json",
       "platform-harness/minimum-harness-v0.1/V0_1_REVIEW.md",
-      "platform-harness/minimum-harness-v0.1/fixture/TASK.md",
-      "platform-harness/minimum-harness-v0.1/fixture/guard.py",
-      "platform-harness/minimum-harness-v0.1/fixture/test_guard.py",
-      "platform-harness/minimum-harness-v0.1/harness/__init__.py",
-      "platform-harness/minimum-harness-v0.1/harness/session.py",
-      "platform-harness/minimum-harness-v0.1/harness/workspace.py",
-      "platform-harness/minimum-harness-v0.1/tests/live_proof.py",
-      "platform-harness/minimum-harness-v0.1/tests/record_results.py",
-      "platform-harness/minimum-harness-v0.1/tests/test_harness.py"
+      "platform-harness/minimum-harness-v0.1/fixture/guard.py"
     ],
     "all_changed_paths_inside_allowed_root": true
   },
