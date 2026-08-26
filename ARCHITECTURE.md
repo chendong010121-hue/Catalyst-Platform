@@ -165,7 +165,7 @@ Meaning:
 
 - no implementation is permanently privileged;
 - replacement is allowed only if required architectural obligations remain satisfied or are explicitly migrated;
-- repair of the current implementation has no automatic priority over rebuild, replacement, recomposition, external adoption, or retirement;
+- repair of the current implementation has no automatic priority over other justified evolution paths;
 - implementation evolution is evidence-governed rather than driven by code ownership or sunk cost;
 - the more downstream assets depend on a boundary, the more carefully that boundary must evolve.
 
@@ -450,7 +450,7 @@ at owner          │
                                          candidate
 ```
 
-This requirement-routing model and the implementation-evolution model in Section 12 solve different questions:
+This requirement-routing model and the implementation-evolution rule in Section 12 solve different questions:
 
 ```text
 new or newly expressed need
@@ -558,117 +558,33 @@ For the broader explanatory interpretation of capability preservation and Harves
 
 > **Repair is not the default. Evolution decision comes first.**
 
-When an observed failure or maintenance problem occurs, first determine:
-
-```text
-WHERE did the failure occur?
-WHO owns the responsibility?
-WHAT capability / Contract / evidence / semantic value must survive?
-Is responsibility wrong?
-Is the Contract wrong or insufficient?
-Is implementation locally defective?
-Is the implementation built on an obsolete assumption?
-Is the problem caused by composition?
-Is a mature internal/external alternative available?
-```
-
-Only after that diagnosis should an implementation action be selected.
-
-Relevant candidates may include:
-
-```text
-REPAIR / PATCH
-LOCAL REPLACE / REPLACE COMPONENT
-REBUILD COMPONENT
-RECOMPOSE
-REPLACE SUBSYSTEM
-EXTERNAL ADOPT / ADAPT
-RETIRE / REMOVE
-```
-
-These labels are decision vocabulary, not Platform ontology, schema enums, or mandatory lifecycle states. No action has automatic priority.
+When an observed failure or maintenance problem occurs, first identify the owning responsibility and the Capability, Contract, evidence, semantic meaning, and other obligations that must survive. Only then select an implementation path.
 
 The stable architectural rule is:
 
 > **Preserve the required organizational capability and proven obligations; let implementation compete for the right to remain.**
 
-A change may replace more code than a patch and still be the lower-cost architectural decision if it removes obsolete assumptions, compatibility debt, hidden coupling, or future maintenance burden.
+Architecture does not prescribe one preferred repair/rebuild/replace procedure or define implementation-evolution actions as Platform ontology. The detailed candidate vocabulary and decision procedure belong to a replaceable method such as `platform-harness/skills/capability-optimization/SKILL.md`.
 
-## 12.5 Evidence-governed selection and Total Evolution Cost
+## 12.5 Evidence-governed selection
 
-Selection should consider the **total evolution cost**, not only current diff size:
+Implementation evolution must be justified by evidence and by **total evolution cost**, not merely current diff size or sunk investment in the existing code.
 
-```text
-immediate change effort
-legacy-understanding cost
-future maintenance burden
-compatibility-patch debt
-regression risk
-migration risk
-rollback difficulty
-hidden coupling
-pressure to pollute Runtime / Platform Core
-future replaceability cost
-loss of proven semantics/evidence
-opportunity cost versus mature external alternatives
-```
-
-A replacement or rebuild is justified only when the preserved obligations remain satisfied or have an explicit migration path and the evidence supports the decision.
-
-Architecture defines this obligation. The detailed candidate-comparison procedure belongs to a replaceable Harness-side method such as `platform-harness/skills/capability-optimization/SKILL.md`; it does not belong in Platform Core.
+A replacement or rebuild is legitimate only when the required obligations remain satisfied or have an explicit migration path. The detailed comparison dimensions belong to the replaceable Optimization method, not to Architecture or Platform Core.
 
 ## 12.6 Self-observability, independent evaluation, and Evolution Lineage
 
-Replaceability requires enough evidence to localize a failure. The accepted separation is:
-
-```text
-component / Provider / Harness / Runtime / Capability
-→ report bounded facts about what happened
-
-independent Evaluation
-→ attribute and judge those facts against the tested capability
-
-Optimization / implementation owner
-→ compare bounded evolution candidates
-```
+Replaceability requires enough evidence to localize a failure. Components may report bounded facts about their own behavior; independent Evaluation attributes and judges those facts; the responsible implementation owner may then compare bounded evolution candidates.
 
 A component does not gain authority to certify itself merely because it reports its own facts.
 
-Implementation evolution should also preserve enough lineage, when material, to recover:
-
-```text
-Reference implementation/revision
-triggering failure or limitation
-owning responsibility
-preserved obligations/value
-considered candidates
-accept/reject rationale
-benchmark/evidence identity
-migration / rollback implications
-known unproven limits
-new current implementation/revision
-```
+Implementation evolution should preserve enough lineage to recover the Reference, triggering evidence, owning responsibility, preserved obligations, decision rationale, evidence identity, migration/rollback implications, remaining limits, and resulting implementation when those facts are material.
 
 This does **not** create a Monitoring Service, Self-Healing Engine, Evolution Engine, Lineage Service, or universal schema. Git history, evidence artifacts, Stage reviews, and other authoritative references may carry the lineage.
 
 ## 12.7 External mechanisms are first-class HOW candidates
 
-Catalyst does not need to own source code for every mechanism.
-
-A mature external Harness, Runtime, provider, retrieval mechanism, orchestration tool, or other implementation may be adopted when it can satisfy the required Catalyst responsibility/evidence boundary through an acceptable seam.
-
-Where material, admissibility may depend on preserving obligations such as:
-
-```text
-public/semantic responsibility
-execution identity / certainty
-policy boundary
-tool/result correlation
-recovery semantics
-evidence availability
-failure attribution
-Domain / Enterprise separation
-```
+Catalyst does not need to own source code for every mechanism. A mature external Harness, Runtime, provider, retrieval mechanism, orchestration tool, or other implementation may be adopted when it satisfies the applicable Catalyst responsibility, evidence, and replacement obligations through an acceptable seam.
 
 Do not clone mature machinery merely so Catalyst can claim authorship.
 
@@ -716,7 +632,7 @@ one vendor-specific limitation forces a new Platform Core concept
 an obsolete implementation assumption is repeatedly preserved through compatibility patches because repair is treated as mandatory
 ```
 
-→ possible implementation-evolution failure; compare rebuild/replacement alternatives before adding more debt
+→ possible implementation-evolution failure; compare alternatives before adding more debt
 
 ## Boundary smell F
 
@@ -821,8 +737,8 @@ This `ARCHITECTURE.md` is acceptable when a future developer can answer YES to:
 5. Is replaceability defined by preserved obligations, not arbitrary replacement?
 6. Is Repair clearly not an automatic default after failure?
 7. Is it clear what organizational Capability value should survive implementation churn?
-8. Can implementation-evolution candidates be compared without creating Platform ontology?
-9. Is Total Evolution Cost distinguished from current diff size?
+8. Is implementation evolution evidence-governed rather than implementation-privileged?
+9. Is total evolution cost distinguished from current diff size without duplicating the detailed method here?
 10. Is independent Evaluation separated from component self-observation/self-certification?
 11. Is Evolution Lineage preserved without requiring a new service/schema?
 12. Are mature external mechanisms admissible HOW when obligations are preserved?
@@ -854,7 +770,7 @@ After this update: **STOP.** Do not implement Role / Authority / Policy / Approv
 >
 > **Capability and proven organizational value should survive implementation churn; implementation has no permanent privilege.**
 >
-> **Repair is not the default. Replacement, rebuild, recomposition, external adoption, and retirement are legitimate evidence-governed evolution paths.**
+> **Repair is not the default; implementation evolution must be evidence-governed and obligation-preserving.**
 >
 > **The long-term product is an Organization-AI Operating Model, not a larger Runtime.**
 >
