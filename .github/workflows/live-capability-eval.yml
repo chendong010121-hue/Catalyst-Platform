@@ -10,12 +10,13 @@ permissions:
 
 jobs:
   live-user-capability:
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.CATALYST_LIVE_AUTO == '1' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      EXTERNAL_LIVE_API_KEY: ${{ secrets.CATALYST_LIVE_API_KEY || secrets.DEEPSEEK_API_KEY }}
-      EXTERNAL_LIVE_BASE_URL: ${{ vars.CATALYST_LIVE_BASE_URL || 'https://api.deepseek.com' }}
-      EXTERNAL_LIVE_MODEL: ${{ vars.CATALYST_LIVE_MODEL || 'deepseek-v4-flash' }}
+      CATALYST_LIVE_API_KEY: ${{ secrets.CATALYST_LIVE_API_KEY || secrets.DEEPSEEK_API_KEY }}
+      CATALYST_LIVE_BASE_URL: ${{ vars.CATALYST_LIVE_BASE_URL || 'https://api.deepseek.com' }}
+      CATALYST_LIVE_MODEL: ${{ vars.CATALYST_LIVE_MODEL || 'deepseek-v4-flash' }}
       CATALYST_LIVE_OUTPUT_DIR: live_evidence_v0_2
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -33,33 +34,24 @@ jobs:
           git rev-parse HEAD | tee live_evidence_v0_2/tested_sha.txt
           git rev-parse HEAD^{tree} | tee live_evidence_v0_2/tested_tree.txt
 
-      - name: Resolve a real model API
+      - name: Require explicitly selected real model API
         shell: bash
         run: |
           set -euo pipefail
-          if [ -n "$EXTERNAL_LIVE_API_KEY" ]; then
-            echo "CATALYST_LIVE_API_KEY=$EXTERNAL_LIVE_API_KEY" >> "$GITHUB_ENV"
-            echo "CATALYST_LIVE_BASE_URL=$EXTERNAL_LIVE_BASE_URL" >> "$GITHUB_ENV"
-            echo "CATALYST_LIVE_MODEL=$EXTERNAL_LIVE_MODEL" >> "$GITHUB_ENV"
-            echo "provider_mode=external_openai_compatible" | tee live_evidence_v0_2/provider_mode.txt
-            echo "External live model credential present; value intentionally not printed." >> live_evidence_v0_2/provider_mode.txt
-          else
-            echo "No external model credential configured; provisioning a real local Ollama HTTP API (not a fake provider)." | tee live_evidence_v0_2/provider_mode.txt
-            curl -fsSL https://ollama.com/install.sh | sh
-            nohup ollama serve > live_evidence_v0_2/ollama_server.log 2>&1 &
-            for i in $(seq 1 30); do
-              if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
-                break
-              fi
-              sleep 1
-            done
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
-            ollama pull qwen3:1.7b 2>&1 | tee live_evidence_v0_2/ollama_pull.log
-            echo "CATALYST_LIVE_API_KEY=ollama-local-real-model" >> "$GITHUB_ENV"
-            echo "CATALYST_LIVE_BASE_URL=http://127.0.0.1:11434/v1" >> "$GITHUB_ENV"
-            echo "CATALYST_LIVE_MODEL=qwen3:1.7b" >> "$GITHUB_ENV"
-            echo "provider_mode=local_ollama_real_model_api" >> live_evidence_v0_2/provider_mode.txt
+          if [ -z "$CATALYST_LIVE_API_KEY" ]; then
+            cat > live_evidence_v0_2/LIVE_GATE_BLOCKED.json <<'JSON'
+          {
+            "status": "LIVE_GATE_BLOCKED",
+            "reason": "No CATALYST_LIVE_API_KEY/DEEPSEEK_API_KEY is configured. Formal live capability evaluation requires an explicitly selected real provider/model and must not auto-substitute another model."
+          }
+          JSON
+            echo "Formal live-use proof is BLOCKED: explicit model credential missing. Automatic model substitution is forbidden."
+            exit 2
           fi
+          echo "provider_mode=explicit_external_openai_compatible" | tee live_evidence_v0_2/provider_mode.txt
+          echo "base_url=$CATALYST_LIVE_BASE_URL" >> live_evidence_v0_2/provider_mode.txt
+          echo "model=$CATALYST_LIVE_MODEL" >> live_evidence_v0_2/provider_mode.txt
+          echo "credential present; value intentionally not printed" >> live_evidence_v0_2/provider_mode.txt
 
       - name: Prove model API is live before benchmark
         shell: bash
