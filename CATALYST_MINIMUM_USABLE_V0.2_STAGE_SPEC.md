@@ -64,7 +64,8 @@ At least one accepted live campaign must use:
 2. a real external read-only API invoked by the running solution when local evidence is insufficient;
 3. real provider/model identity and token usage when the provider returns usage;
 4. persisted per-case outputs and step/tool evidence;
-5. no fallback from missing credentials to a fake provider.
+5. an explicitly selected and frozen provider/model configuration for the campaign;
+6. no automatic substitution of a different model when the selected provider credential is unavailable.
 
 Default supported live configuration:
 
@@ -75,6 +76,10 @@ CATALYST_LIVE_MODEL
 ```
 
 A repository may map these to DeepSeek or another OpenAI-compatible provider. Credentials are never committed.
+
+Missing credentials mean the formal live gate is **BLOCKED**, not silently replaced by a fake provider, a local model, or another provider/model. A local Ollama endpoint may be used as a separately identified plumbing/diagnostic run when deliberately selected, but an automatically provisioned local fallback cannot establish the Formal Baseline for a different intended provider/model.
+
+The live workflow is opt-in. Normal deterministic CI must remain runnable without model credentials. A PR may not be accepted as V0.2 complete until at least one explicit live campaign has been separately verified.
 
 ## 4. First real-user capability probe
 
@@ -97,10 +102,13 @@ The remote authority in the first probe is the repository's own current README r
 V0.2 may claim MINIMUM USABLE only if:
 
 - deterministic regression stays green;
-- live model execution actually occurs;
+- an explicitly identified live provider/model campaign actually executes;
 - at least one case actually invokes the real external API;
 - outputs are saved as evidence artifacts;
 - critical gates distinguish execution success from answer quality;
+- infrastructure failure is distinguishable from capability/product failure;
+- a Formal Baseline is established from a valid frozen campaign;
+- at least one bounded evidence-driven Candidate is re-evaluated against the frozen benchmark and accepted or rolled back;
 - no architecture expansion is required to make the proof pass.
 
 It may NOT claim:
