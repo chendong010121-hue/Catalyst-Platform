@@ -297,6 +297,123 @@ def test_v2_009_recovery_continues_unstarted_sibling_without_replaying_settled_c
     assert final.native_tools_v2_turns[0].status == "completed"
 
 
+def test_v2_009b_crash_window_recovers_settled_history_without_replay():
+    provider = ScriptedModelProvider([ModelResponse(content="done")])
+    first = CountingCapability("a", result="A")
+    second = CountingCapability("b", result="B")
+    runtime = _runtime(provider, {"a": first, "b": second})
+    model_call = ModelCallRecord(
+        finish_reason="tool_calls",
+        tool_calls=(_tool("call-a", "a"), _tool("call-b", "b")),
+        assistant_message=Message(
+            role="assistant",
+            content=None,
+            tool_calls=(_tool("call-a", "a"), _tool("call-b", "b")),
+        ),
+    )
+    batch = NativeToolsV2Turn(
+        turn_id="turn-crash-window",
+        model_call=model_call,
+        calls=(
+            NativeToolsV2Call(
+                tool_call_id="call-a",
+                name="a",
+                arguments="{}",
+                action=Action("a", {}),
+                status="pending",
+                policy_verdict=Allow(),
+                execution_id="exec-A",
+            ),
+            NativeToolsV2Call(
+                tool_call_id="call-b",
+                name="b",
+                arguments="{}",
+                action=Action("b", {}),
+            ),
+        ),
+        next_index=0,
+        status="executing",
+    )
+    runtime._state_store.commit(
+        SessionSnapshot(
+            "recover-crash-window",
+            Goal("recover crash window"),
+            {},
+            (
+                StepRecord(
+                    0,
+                    Act(Action("a", {})),
+                    Allow(),
+                    Success("A"),
+                    execution_id="exec-A",
+                ),
+            ),
+            pending_execution=None,
+            native_tools_v2_turns=(batch,),
+        )
+    )
+
+    final = runtime.resume("recover-crash-window")
+
+    assert first.calls == []
+    assert second.calls == [{}]
+    recovered, executed = final.native_tools_v2_turns[0].calls
+    assert recovered.status == "settled"
+    assert recovered.execution_id == "exec-A"
+    assert recovered.observation == Success("A")
+    assert executed.status == "settled"
+    evidence = final.native_tools_v2_turns[0].recovery_evidence
+    assert len(evidence) == 1
+    assert evidence[0].kind == "settled_history_recovered"
+    assert evidence[0].execution_id == "exec-A"
+    assert evidence[0].replayed is False
+
+
+def test_v2_009c_execution_id_action_mismatch_fails_closed_without_execution():
+    provider = ScriptedModelProvider([ModelResponse(content="unreachable")])
+    capability = CountingCapability("a")
+    runtime = _runtime(provider, {"a": capability})
+    model_call = ModelCallRecord(
+        finish_reason="tool_calls",
+        tool_calls=(_tool("call-a", "a"),),
+        assistant_message=Message(
+            role="assistant",
+            content=None,
+            tool_calls=(_tool("call-a", "a"),),
+        ),
+    )
+    batch = NativeToolsV2Turn(
+        turn_id="turn-mismatch",
+        model_call=model_call,
+        calls=(
+            NativeToolsV2Call(
+                tool_call_id="call-a",
+                name="a",
+                arguments="{}",
+                action=Action("a", {}),
+                execution_id="exec-A",
+            ),
+        ),
+    )
+    runtime._state_store.commit(
+        SessionSnapshot(
+            "recover-mismatch",
+            Goal("recover mismatch"),
+            {},
+            (StepRecord(0, Act(Action("other", {})), Allow(), Success("other"), execution_id="exec-A"),),
+            native_tools_v2_turns=(batch,),
+        )
+    )
+
+    exc = _raised(NativeToolsV2ProtocolError, lambda: runtime.resume("recover-mismatch"))
+
+    assert capability.calls == []
+    assert exc.attribution.failure_type == "execution_id_action_mismatch"
+    stored = runtime._state_store.load("recover-mismatch")
+    assert stored.native_tools_v2_turns[0].status == "failed"
+    assert stored.native_tools_v2_turns[0].failure_attribution.observed_fact
+
+
 def test_v2_010_history_reconstructs_one_full_assistant_batch_and_results():
     provider = ScriptedModelProvider(
         [_response(_tool("call-a", "a"), _tool("call-b", "b")), ModelResponse(content="done")]
@@ -323,6 +440,8 @@ def main() -> None:
         test_v2_007_known_capability_failure_is_not_infrastructure_uncertainty,
         test_v2_008_exception_leaves_existing_pending_uncertainty_semantics,
         test_v2_009_recovery_continues_unstarted_sibling_without_replaying_settled_call,
+        test_v2_009b_crash_window_recovers_settled_history_without_replay,
+        test_v2_009c_execution_id_action_mismatch_fails_closed_without_execution,
         test_v2_010_history_reconstructs_one_full_assistant_batch_and_results,
     ]
     failed = []

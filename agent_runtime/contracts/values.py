@@ -456,6 +456,34 @@ class NativeToolsV2FailureAttribution:
 
 
 @dataclass(frozen=True)
+class NativeToolsV2RecoveryEvidence:
+    """Durable bounded fact about a v2 recovery decision."""
+
+    kind: Literal["settled_history_recovered"]
+    tool_call_id: str
+    execution_id: str
+    source: Literal["authoritative_history"]
+    replayed: bool
+    observed_fact: str
+
+    def __post_init__(self) -> None:
+        if self.kind != "settled_history_recovered":
+            raise ValueError(f"invalid NativeToolsV2RecoveryEvidence.kind: {self.kind!r}")
+        if not isinstance(self.tool_call_id, str) or not self.tool_call_id:
+            raise ValueError("NativeToolsV2RecoveryEvidence.tool_call_id must be a non-empty str")
+        if not isinstance(self.execution_id, str) or not self.execution_id:
+            raise ValueError("NativeToolsV2RecoveryEvidence.execution_id must be a non-empty str")
+        if self.source != "authoritative_history":
+            raise ValueError(f"invalid NativeToolsV2RecoveryEvidence.source: {self.source!r}")
+        if type(self.replayed) is not bool:
+            raise ValueError("NativeToolsV2RecoveryEvidence.replayed must be bool")
+        if not isinstance(self.observed_fact, str) or not self.observed_fact:
+            raise ValueError(
+                "NativeToolsV2RecoveryEvidence.observed_fact must be a non-empty str"
+            )
+
+
+@dataclass(frozen=True)
 class NativeToolsV2Call:
     """Durable progress for one provider-neutral tool-call intent."""
 
@@ -508,6 +536,7 @@ class NativeToolsV2Turn:
     next_index: int = 0
     status: Literal["executing", "completed", "failed", "blocked"] = "executing"
     failure_attribution: NativeToolsV2FailureAttribution | None = None
+    recovery_evidence: tuple[NativeToolsV2RecoveryEvidence, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.turn_id, str) or not self.turn_id:
@@ -529,6 +558,16 @@ class NativeToolsV2Turn:
             raise ValueError(
                 "NativeToolsV2Turn.failure_attribution must be None or NativeToolsV2FailureAttribution"
             )
+        if not isinstance(self.recovery_evidence, (tuple, list)):
+            raise ValueError("NativeToolsV2Turn.recovery_evidence must be a tuple/list")
+        if not all(
+            isinstance(event, NativeToolsV2RecoveryEvidence) for event in self.recovery_evidence
+        ):
+            raise ValueError(
+                "NativeToolsV2Turn.recovery_evidence must contain "
+                "NativeToolsV2RecoveryEvidence values"
+            )
+        object.__setattr__(self, "recovery_evidence", tuple(self.recovery_evidence))
         ids = [call.tool_call_id for call in self.calls]
         if len(ids) != len(set(ids)):
             raise ValueError("NativeToolsV2Turn.call tool_call_id values must be unique")
@@ -719,6 +758,10 @@ __all__ = [
     "ModelUsage",
     "ModelResponse",
     "ModelCallRecord",
+    "NativeToolsV2Call",
+    "NativeToolsV2FailureAttribution",
+    "NativeToolsV2RecoveryEvidence",
+    "NativeToolsV2Turn",
     "ReasoningResult",
     # Policy 前置校验联合
     "Allow",

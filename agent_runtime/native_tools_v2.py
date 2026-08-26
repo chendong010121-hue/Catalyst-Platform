@@ -31,6 +31,7 @@ from .contracts import (
     ModelToolDefinition,
     NativeToolsV2Call,
     NativeToolsV2FailureAttribution,
+    NativeToolsV2RecoveryEvidence,
     NativeToolsV2Turn,
     SessionSnapshot,
     State,
@@ -39,7 +40,7 @@ from .contracts import (
 )
 from .errors import UnresolvedExecutionError
 from .runtime import Runtime
-from .snapshot import snapshot_action, validate_session_snapshot
+from .snapshot import json_value_equal, snapshot_action, validate_session_snapshot
 
 
 _NATIVE_SYSTEM_PROMPT = (
@@ -388,9 +389,72 @@ class NativeToolsV2Runtime(Runtime):
                 ),
             )
 
+        if call.execution_id is not None:
+            settled_step = next(
+                (
+                    step
+                    for step in snapshot.history
+                    if step.execution_id == call.execution_id
+                ),
+                None,
+            )
+            if settled_step is not None:
+                if not isinstance(settled_step.decision, Act) or not self._same_action(
+                    call.action, settled_step.decision.action
+                ):
+                    return self._fail_recovery(
+                        snapshot,
+                        turn,
+                        index,
+                        "execution_id_action_mismatch",
+                        (
+                            f"execution_id {call.execution_id!r} is already present in "
+                            "authoritative history but its Action identity does not match "
+                            f"tool_call_id {call.tool_call_id!r}"
+                        ),
+                    )
+                if not isinstance(settled_step.policy_verdict, Allow) or not isinstance(
+                    settled_step.observation, (Success, Failure)
+                ):
+                    return self._fail_recovery(
+                        snapshot,
+                        turn,
+                        index,
+                        "invalid_settled_history_for_recovery",
+                        (
+                            f"execution_id {call.execution_id!r} matched Action identity but "
+                            "the settled StepRecord lacks an Allow verdict or Observation"
+                        ),
+                    )
+                recovered_call = replace(
+                    call,
+                    status="settled",
+                    policy_verdict=Allow(),
+                    observation=settled_step.observation,
+                    uncertainty=None,
+                )
+                recovery = NativeToolsV2RecoveryEvidence(
+                    kind="settled_history_recovered",
+                    tool_call_id=call.tool_call_id,
+                    execution_id=call.execution_id,
+                    source="authoritative_history",
+                    replayed=False,
+                    observed_fact=(
+                        "v2 pending call recovered from matching settled Core history; "
+                        "Capability was not replayed"
+                    ),
+                )
+                recovered_turn = self._replace_call(turn, index, recovered_call)
+                recovered_turn = replace(
+                    recovered_turn,
+                    next_index=index + 1,
+                    recovery_evidence=turn.recovery_evidence + (recovery,),
+                )
+                return self._commit(self._replace_turn(snapshot, recovered_turn))
+
         verdict = self._policy.check_action(snapshot_action(call.action), snapshot.state)
         if isinstance(verdict, Allow):
-            execution_id = uuid.uuid4().hex
+            execution_id = call.execution_id or uuid.uuid4().hex
             prepared_call = replace(call, policy_verdict=Allow(), execution_id=execution_id)
             prepared_turn = self._replace_call(turn, index, prepared_call)
             prepared_snapshot = self._commit(self._replace_turn(snapshot, prepared_turn))
@@ -437,6 +501,42 @@ class NativeToolsV2Runtime(Runtime):
                 "policy Deny halted later sibling calls in this v2 batch",
             )
         raise TypeError(f"invalid policy verdict: {type(verdict).__name__}")
+
+    @staticmethod
+    def _same_action(left: Action, right: Action) -> bool:
+        return left.capability_id == right.capability_id and json_value_equal(
+            left.parameters, right.parameters
+        )
+
+    def _fail_recovery(
+        self,
+        snapshot: SessionSnapshot,
+        turn: NativeToolsV2Turn,
+        index: int,
+        failure_type: str,
+        observed_fact: str,
+    ):
+        attribution = NativeToolsV2FailureAttribution(
+            stage="native_tool_batch_recovery",
+            owner="Harness native-tools v2 recovery",
+            failure_type=failure_type,
+            observed_fact=observed_fact,
+            provider_completed=True,
+            downstream_tool_execution_started=False,
+            side_effect_certainty="authoritative history was not safely reusable",
+            unproven_downstream_boundary="Capability execution for the mismatched call",
+        )
+        failed_turn = replace(
+            turn,
+            next_index=index,
+            status="failed",
+            failure_attribution=attribution,
+        )
+        self._commit(self._replace_turn(snapshot, failed_turn))
+        raise NativeToolsV2ProtocolError(
+            "v2 execution recovery failed closed: " + observed_fact,
+            attribution,
+        )
 
     def _halt_batch(self, snapshot, turn, failure_type: str, observed_fact: str):
         calls = [

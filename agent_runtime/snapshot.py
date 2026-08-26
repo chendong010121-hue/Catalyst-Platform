@@ -26,6 +26,7 @@ from .contracts import (
     ModelUsage,
     NativeToolsV2Call,
     NativeToolsV2FailureAttribution,
+    NativeToolsV2RecoveryEvidence,
     NativeToolsV2Turn,
     PendingExecution,
     SessionSnapshot,
@@ -166,6 +167,21 @@ def snapshot_native_tools_v2_attribution(attribution):
     )
 
 
+def snapshot_native_tools_v2_recovery_evidence(event):
+    if not isinstance(event, NativeToolsV2RecoveryEvidence):
+        raise CapabilityContractError(
+            "native_tools_v2 recovery evidence must be a NativeToolsV2RecoveryEvidence"
+        )
+    return NativeToolsV2RecoveryEvidence(
+        kind=event.kind,
+        tool_call_id=event.tool_call_id,
+        execution_id=event.execution_id,
+        source=event.source,
+        replayed=event.replayed,
+        observed_fact=event.observed_fact,
+    )
+
+
 def snapshot_native_tools_v2_call(call):
     if not isinstance(call, NativeToolsV2Call):
         raise CapabilityContractError("native_tools_v2 call must be a NativeToolsV2Call")
@@ -199,6 +215,10 @@ def snapshot_native_tools_v2_turn(turn):
         next_index=turn.next_index,
         status=turn.status,
         failure_attribution=snapshot_native_tools_v2_attribution(turn.failure_attribution),
+        recovery_evidence=tuple(
+            snapshot_native_tools_v2_recovery_evidence(event)
+            for event in turn.recovery_evidence
+        ),
     )
 
 

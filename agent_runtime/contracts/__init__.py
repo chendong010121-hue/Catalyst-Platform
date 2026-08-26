@@ -37,6 +37,7 @@ from .values import (
     ModelUsage,
     NativeToolsV2Call,
     NativeToolsV2FailureAttribution,
+    NativeToolsV2RecoveryEvidence,
     NativeToolsV2Turn,
     Observation,
     Parameters,
@@ -77,6 +78,7 @@ __all__ = [
     "NativeToolsV2Call",
     "NativeToolsV2Turn",
     "NativeToolsV2FailureAttribution",
+    "NativeToolsV2RecoveryEvidence",
     "ReasoningResult",
     # Policy 前置校验联合
     "Allow",

@@ -186,6 +186,7 @@ def _tool_calls(snapshot) -> list[dict[str, Any]]:
                     "observation": _jsonable(call.observation),
                     "uncertainty": call.uncertainty,
                     "execution_id": call.execution_id,
+                    "recovery_evidence": _jsonable(turn.recovery_evidence),
                 }
             )
     return calls
@@ -250,6 +251,11 @@ def _failure_snapshot(store: InMemoryStateStore, session_id: str | None) -> dict
             if snapshot.native_tools_v2_turns
             else None
         ),
+        "native_tools_v2_recovery_evidence": [
+            _jsonable(event)
+            for turn in snapshot.native_tools_v2_turns
+            for event in turn.recovery_evidence
+        ],
     }
 
 
