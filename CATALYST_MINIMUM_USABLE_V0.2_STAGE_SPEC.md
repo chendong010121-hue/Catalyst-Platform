@@ -97,7 +97,25 @@ fail closed when the authoritative evidence does not establish the claim
 
 The remote authority in the first probe is the repository's own current README reached through the real GitHub REST API. This proves the machinery before applying it to professional-regulation web sources.
 
-## 5. Acceptance boundary
+## 5. Formal Baseline freeze
+
+Before a campaign may become the V0.2 Formal Baseline, freeze and record together:
+
+```text
+branch / tested SHA
+benchmark id + public-case revision + private-rubric revision
+target solution revision
+provider base + exact model id
+external-tool identity
+source / knowledge revision used by the cases
+execution/evaluation method revision
+```
+
+A run with an automatically substituted provider/model, changed benchmark, unknown target revision, or incomplete evidence is diagnostic evidence only.
+
+The first valid frozen campaign becomes the **Reference**, even if some Cases fail. Do not repair the target before preserving that Reference. Capability failure is the evidence needed to justify the first bounded optimization Candidate.
+
+## 6. Acceptance boundary
 
 V0.2 may claim MINIMUM USABLE only if:
 
