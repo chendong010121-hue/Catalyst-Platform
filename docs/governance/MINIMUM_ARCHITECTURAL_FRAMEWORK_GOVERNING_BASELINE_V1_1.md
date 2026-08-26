@@ -9,7 +9,7 @@
 
 This repository packages Governing Baseline v1.1 as two files for maintainability. The split is packaging, not a second governance layer.
 
-1. [`MINIMUM_ARCHITECTURAL_FRAMEWORK_GOVERNING_BASELINE_V1_1_PART_A.md`](./MINIMUM_ARCHITECTURAL_FRAMEWORK_GOVERNING_BASELINE_V1_1_PART_A.md) — **Stable Governing Core**. Its durable principles remain active unless superseded by an explicitly accepted governance/architecture change.
+1. [`MINIMUM_ARCHITECTURAL_FRAMEWORK_GOVERNING_BASELINE_V1_1_PART_A.md`](./MINIMUM_ARCHITECTURAL_FRAMEWORK_GOVERNING_BASELINE_V1_1_PART_A.md) — **Stable Governing Core**. Its durable governance disciplines remain active unless superseded by an explicitly accepted governance/architecture change.
 2. [`MINIMUM_ARCHITECTURAL_FRAMEWORK_GOVERNING_BASELINE_V1_1_PART_B.md`](./MINIMUM_ARCHITECTURAL_FRAMEWORK_GOVERNING_BASELINE_V1_1_PART_B.md) — **Historical v1 Decision Snapshot**. Its old `current`, Stage, and Risk Queue wording records the v1 closure moment and is not current-state authority.
 
 ## Activation history
@@ -42,7 +42,21 @@ explicit Stop Condition
 Risk Queue != roadmap
 ```
 
-Where Part A or Part B uses old phrases such as `current project goal`, `current stage`, `current risk queue`, old repository names, or old Architecture version references, interpret those as the v1 governance context in which this baseline was activated.
+### North Star terminology
+
+Part A was activated when the project still used **Enterprise Agent Operating Model** as its long-term framing. The accepted Design Philosophy and Architecture later generalized that framing.
+
+For current long-term product meaning, the authoritative term is now:
+
+> **Organization–AI Capability Operating Model**
+
+as defined by `ARCHITECTURE.md` v2.5 and explained by `docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md`.
+
+This supersedes the old **name / framing**, not the durable Part A discipline that long-term architecture is a responsibility map rather than a feature backlog, that Production Exists is not implied, and that implementation requires evidence.
+
+### Historical status wording
+
+Where Part A or Part B uses old phrases such as `current project goal`, `current stage`, `current risk queue`, old repository names, old Architecture version references, or old implementation baselines, interpret those as the v1 governance context in which this baseline was activated.
 
 For **current state and current operating mode**, use:
 
