@@ -58,8 +58,8 @@ Catalyst Minimum Usable V0.2
 → real model API
 → real external API / tool
 → benchmark + raw evidence + Evaluation
-→ frozen Reference + bounded Candidate
-→ same-benchmark re-evaluation
+→ frozen Reference
+→ bounded Candidate + same-benchmark re-evaluation
 → accept / rollback
 → PASS / MERGED
 
