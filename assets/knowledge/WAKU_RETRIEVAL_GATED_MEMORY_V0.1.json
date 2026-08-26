@@ -1,0 +1,47 @@
+{
+  "asset_id": "WAKU_RETRIEVAL_GATED_MEMORY_V0.1",
+  "asset_type": "governed_mechanism_knowledge",
+  "title": "Retrieval-gated memory query selection",
+  "problem_solved": "Avoid querying long-term memory on every turn when the current request does not justify retrieval.",
+  "responsibility_boundary": "Own the pre-retrieval retrieve/skip decision and explicit query/reason handoff. It does not own memory stores, ranking, prompt assembly, durable writes, or downstream answer quality.",
+  "mechanism": {
+    "summary": "A bounded decision path receives the current message and emits retrieve/skip plus a search query and short reason. Downstream memory is queried only when retrieval is selected. If the gate itself cannot be trusted or executed, the source mechanism fails open to retrieval using the original message.",
+    "portable_obligations": [
+      "explicit retrieve/skip decision",
+      "explicit search-query handoff when retrieving",
+      "observable decision reason",
+      "bounded decision cost",
+      "declared failure behavior rather than silent retrieval suppression"
+    ]
+  },
+  "replaceability": "The original Waku gate, its model, prompt, memory stores, and Agent runtime are not privileged. Another deterministic or model-based mechanism may replace it if the selected case preserves the required decision/query/failure obligations and re-evaluates them.",
+  "reuse_preconditions": [
+    "a case-specific retrieval policy and downstream store/query contract exist",
+    "the cost and false-positive consequences of retrieval are understood",
+    "the gate failure policy is explicitly chosen for the target case",
+    "decisions can be observed for later evaluation"
+  ],
+  "known_limits": [
+    "the source model decision is not deterministic quality proof",
+    "fail-open behavior increases retrieval rather than proving retrieval was necessary",
+    "the original prompt contains personal-assistant assumptions and is not portable authority",
+    "this mechanism does not solve ranking, memory correctness, write policy, or answer quality",
+    "this asset has structural/source evidence; target-context reuse still requires evaluation"
+  ],
+  "evidence_state": "STRUCTURAL_SOURCE_EVIDENCE_HIGH; NOT UNIVERSAL LIVE QUALITY PROOF",
+  "lineage": [
+    {
+      "kind": "Catalyst Case02 harvested source",
+      "repository": "chendong010121-hue/agent-runtime",
+      "ref": "336f8e6f28c1569e5c53f245daaa3ee8a197f33d",
+      "path": "case-02/01-a-waku-understanding/CASE_02_WAKU_ASSET_CATALOG_V0.1.json",
+      "anchor": "WAKU-A01"
+    },
+    {
+      "kind": "external source implementation",
+      "repository": "ShenSeanChen/waku-agent",
+      "ref": "8328f567ab52d07921445cb40feed23cbc5ea2ad"
+    }
+  ],
+  "governance_note": "This asset preserves mechanism knowledge, not the Waku Agent. It is not a Platform Capability identity and does not authorize a memory subsystem, gate service, or Platform Core field."
+}

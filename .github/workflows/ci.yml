@@ -1,4 +1,4 @@
-name: agent-runtime-ci
+name: catalyst-platform-ci
 
 on:
   pull_request:
@@ -73,6 +73,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: agent-runtime-ci-evidence
+          name: catalyst-platform-ci-evidence
           path: audit_artifacts/
           if-no-files-found: error

@@ -1,0 +1,53 @@
+{
+  "asset_id": "FAIL_CLOSED_NUMERIC_SAFETY_V0.1",
+  "asset_type": "evidence_backed_safety_knowledge",
+  "title": "Bounded fail-closed numeric safety",
+  "problem_solved": "Prevent unsupported, unavailable, or out-of-scope evidence from becoming an accepted normative numeric conclusion.",
+  "responsibility_boundary": "Own the safety obligation that evidence-sensitive numeric/normative claims must be traceable to sufficient applicable evidence, and that insufficient evidence must produce an explicit bounded outcome rather than invented certainty. It does not own domain applicability rules, source acquisition, retrieval architecture, or a universal semantic validator.",
+  "portable_obligations": [
+    "every accepted normative or quantitative conclusion is linked to sufficient evidence",
+    "evidence has an inspectable source/locator identity when the domain requires it",
+    "missing or unreliable evidence does not silently become a numeric conclusion",
+    "insufficient-context cases fail closed explicitly",
+    "known applicability and evidence limits remain visible"
+  ],
+  "accepted_evidence": {
+    "phase_2_closure": "docs/governance/CATALYST_PHASE_2_CLOSURE_REVIEW_V0.1.md",
+    "post_close_recertification_manifest_sha256": "cd8c28b58a563ea7d16e8711eb44076f70fde4d146f742c0be6bd6cc9bd06759",
+    "professional_result": {
+      "case_A": "PASS",
+      "case_B": "PASS",
+      "case_C_fail_closed": "PASS",
+      "normative_quantitative_evidence_coverage": "100%",
+      "unsupported_regulatory_numeric_claims": 0,
+      "source_locator_discipline": "PASS"
+    }
+  },
+  "replaceability": "The safety obligation may be realized by deterministic checks, structured evidence binding, Domain-specific evaluation, model behavior, human review, or a composition of mechanisms. No current implementation has permanent privilege.",
+  "reuse_preconditions": [
+    "the target domain defines what counts as sufficient/applicable evidence",
+    "the benchmark includes both positive and insufficient-evidence cases",
+    "numeric/normative claims can be traced to evidence at the target responsibility boundary",
+    "target-context evaluation is run before broader safety claims are made"
+  ],
+  "known_limits": [
+    "this is not a universal semantic truth validator",
+    "the proven professional evidence scope is bounded to the Phase 2 Building Regulation pilot",
+    "reuse in another domain requires its own evidence sufficiency and applicability rules",
+    "this asset does not justify new Platform Core policy fields or a generic Evidence Engine"
+  ],
+  "lineage": [
+    {
+      "kind": "earlier Case01 harvest candidate",
+      "repository": "chendong010121-hue/agent-runtime",
+      "ref": "232d6837647c68670fba3f3b2faf7ec1fac73f0a",
+      "path": "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_E2_BREA_PRODUCT_CAPABILITY_EVALUATION_V0.1.md",
+      "anchor": "OBL-03/OBL-04"
+    },
+    {
+      "kind": "independent real professional capability validation",
+      "path": "docs/governance/CATALYST_PHASE_2_CLOSURE_REVIEW_V0.1.md"
+    }
+  ],
+  "governance_note": "This is governed safety knowledge, not a Platform Capability identity, Platform policy object, or universal domain rule."
+}

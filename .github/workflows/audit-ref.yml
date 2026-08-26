@@ -1,4 +1,4 @@
-name: agent-runtime-audit-ref
+name: catalyst-platform-audit-ref
 
 on:
   workflow_dispatch:
@@ -63,6 +63,12 @@ jobs:
           set -o pipefail
           python tests/test_platform_standard_core.py 2>&1 | tee audit_artifacts/platform_standard.log
 
+      - name: Run Capability Contract Conformance Pilot tests (CC)
+        shell: bash
+        run: |
+          set -o pipefail
+          python tests/test_capability_contract_conformance_pilot.py 2>&1 | tee audit_artifacts/capability_contract_conformance.log
+
       - name: Run Enterprise Extension tests (EE-1..EE-12)
         shell: bash
         run: |
@@ -73,6 +79,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: agent-runtime-audit-ref-evidence
+          name: catalyst-platform-audit-ref-evidence
           path: audit_artifacts/
           if-no-files-found: error
