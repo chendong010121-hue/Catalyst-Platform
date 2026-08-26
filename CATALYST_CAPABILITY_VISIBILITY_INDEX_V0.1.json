@@ -6,7 +6,7 @@
       "summary": "Create a report from structured input.",
       "authority_ref": {
         "repository": "chendong010121-hue/agent-runtime",
-        "ref": "19f0d7701ff849bd837bd5c2c4aba16ad5914968",
+        "ref": "main",
         "path": "examples/platform_standard_reference.py",
         "anchor": "compose_report_descriptor"
       },
@@ -17,61 +17,86 @@
       "asset_refs": [
         {
           "repository": "chendong010121-hue/agent-runtime",
-          "ref": "19f0d7701ff849bd837bd5c2c4aba16ad5914968",
+          "ref": "main",
           "path": "examples/platform_standard_reference.py",
           "anchor": "ComposeReportCapability"
-        },
-        {
-          "repository": "chendong010121-hue/agent-runtime",
-          "ref": "19f0d7701ff849bd837bd5c2c4aba16ad5914968",
-          "path": "examples/platform_standard_reference.py",
-          "anchor": "make_stack"
         }
       ],
       "evidence_refs": [
         {
           "repository": "chendong010121-hue/agent-runtime",
-          "ref": "19f0d7701ff849bd837bd5c2c4aba16ad5914968",
+          "ref": "main",
           "path": "tests/test_capability_contract_conformance_pilot.py"
         }
       ]
     },
     {
-      "summary": "Retrieval-gated memory query selection that avoids querying long-term memory on every turn while preserving explicit fail-open behavior.",
+      "summary": "Retrieval-gated memory query selection: decide whether long-term memory should be queried, preserve an explicit query/reason handoff, and fail open when the gate itself is unavailable.",
       "authority_ref": {
         "repository": "chendong010121-hue/agent-runtime",
-        "ref": "336f8e6f28c1569e5c53f245daaa3ee8a197f33d",
-        "path": "case-02/01-a-waku-understanding/CASE_02_WAKU_ASSET_CATALOG_V0.1.json",
-        "anchor": "WAKU-A01"
+        "ref": "main",
+        "path": "assets/knowledge/WAKU_RETRIEVAL_GATED_MEMORY_V0.1.json"
       },
+      "asset_refs": [
+        {
+          "repository": "chendong010121-hue/agent-runtime",
+          "ref": "main",
+          "path": "assets/knowledge/WAKU_RETRIEVAL_GATED_MEMORY_V0.1.json"
+        }
+      ],
       "lineage_refs": [
+        {
+          "repository": "chendong010121-hue/agent-runtime",
+          "ref": "336f8e6f28c1569e5c53f245daaa3ee8a197f33d",
+          "path": "case-02/01-a-waku-understanding/CASE_02_WAKU_ASSET_CATALOG_V0.1.json",
+          "anchor": "WAKU-A01"
+        },
         {
           "repository": "ShenSeanChen/waku-agent",
           "ref": "8328f567ab52d07921445cb40feed23cbc5ea2ad"
         }
-      ]
+      ],
+      "known_limits_ref": {
+        "repository": "chendong010121-hue/agent-runtime",
+        "ref": "main",
+        "path": "assets/knowledge/WAKU_RETRIEVAL_GATED_MEMORY_V0.1.json",
+        "anchor": "known_limits"
+      }
     },
     {
-      "summary": "Bounded fail-closed numeric safety candidate: unsupported, unavailable, or out-of-scope evidence must not become an accepted normative numeric conclusion.",
+      "summary": "Bounded fail-closed numeric safety: unsupported, unavailable, or out-of-scope evidence must not become an accepted normative numeric conclusion.",
       "authority_ref": {
         "repository": "chendong010121-hue/agent-runtime",
-        "ref": "232d6837647c68670fba3f3b2faf7ec1fac73f0a",
-        "path": "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_E2_BREA_PRODUCT_CAPABILITY_EVALUATION_V0.1.md",
-        "anchor": "OBL-03/OBL-04"
+        "ref": "main",
+        "path": "assets/knowledge/FAIL_CLOSED_NUMERIC_SAFETY_V0.1.json"
       },
+      "asset_refs": [
+        {
+          "repository": "chendong010121-hue/agent-runtime",
+          "ref": "main",
+          "path": "assets/knowledge/FAIL_CLOSED_NUMERIC_SAFETY_V0.1.json"
+        }
+      ],
       "evidence_refs": [
         {
           "repository": "chendong010121-hue/agent-runtime",
+          "ref": "main",
+          "path": "docs/governance/CATALYST_PHASE_2_CLOSURE_REVIEW_V0.1.md"
+        }
+      ],
+      "lineage_refs": [
+        {
+          "repository": "chendong010121-hue/agent-runtime",
           "ref": "232d6837647c68670fba3f3b2faf7ec1fac73f0a",
-          "path": "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/PRODUCT_CAPABILITY_EVALUATION_REPORT.md",
-          "anchor": "OBL-03/OBL-04 fail-closed numeric safety"
+          "path": "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_E2_BREA_PRODUCT_CAPABILITY_EVALUATION_V0.1.md",
+          "anchor": "OBL-03/OBL-04"
         }
       ],
       "known_limits_ref": {
         "repository": "chendong010121-hue/agent-runtime",
-        "ref": "232d6837647c68670fba3f3b2faf7ec1fac73f0a",
-        "path": "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/PRODUCT_CAPABILITY_EVALUATION_REPORT.md",
-        "anchor": "Explicitly unproven boundaries"
+        "ref": "main",
+        "path": "assets/knowledge/FAIL_CLOSED_NUMERIC_SAFETY_V0.1.json",
+        "anchor": "known_limits"
       }
     }
   ]
