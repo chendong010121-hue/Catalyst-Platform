@@ -1,0 +1,126 @@
+{
+  "index_version": "0.2",
+  "purpose": "Repository-native navigation index for rediscovering governed Catalyst capability and method value. This file is not a Capability contract, Registry, health model, dependency graph, evidence database, or source of truth. Follow referenced authorities and evidence.",
+  "operational_rule": "References over copied authority. Missing evidence remains missing; the index must not infer health, production readiness, or semantic truth.",
+  "entries": [
+    {
+      "kind": "capability",
+      "summary": "Create a report from structured input.",
+      "capability_ref": {
+        "id": "compose_report",
+        "version": "1.0.0"
+      },
+      "authority_ref": {
+        "repository": "chendong010121-hue/agent-runtime",
+        "ref": "19f0d7701ff849bd837bd5c2c4aba16ad5914968",
+        "path": "examples/platform_standard_reference.py",
+        "anchor": "compose_report_descriptor"
+      },
+      "asset_refs": [
+        {
+          "repository": "chendong010121-hue/agent-runtime",
+          "ref": "19f0d7701ff849bd837bd5c2c4aba16ad5914968",
+          "path": "examples/platform_standard_reference.py",
+          "anchor": "ComposeReportCapability"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "repository": "chendong010121-hue/agent-runtime",
+          "ref": "19f0d7701ff849bd837bd5c2c4aba16ad5914968",
+          "path": "tests/test_capability_contract_conformance_pilot.py"
+        }
+      ],
+      "evidence_level": "evidence-backed reference capability"
+    },
+    {
+      "kind": "method_capability",
+      "summary": "Retrieval-gated memory query selection that avoids querying long-term memory on every turn while preserving explicit fail-open behavior.",
+      "authority_ref": {
+        "repository": "chendong010121-hue/agent-runtime",
+        "ref": "336f8e6f28c1569e5c53f245daaa3ee8a197f33d",
+        "path": "case-02/01-a-waku-understanding/CASE_02_WAKU_ASSET_CATALOG_V0.1.json",
+        "anchor": "WAKU-A01"
+      },
+      "lineage_refs": [
+        {
+          "repository": "ShenSeanChen/waku-agent",
+          "ref": "8328f567ab52d07921445cb40feed23cbc5ea2ad"
+        }
+      ],
+      "evidence_level": "harvested external capability evidence"
+    },
+    {
+      "kind": "method_capability",
+      "summary": "Bounded fail-closed numeric safety: unsupported, unavailable, or out-of-scope evidence must not become an accepted normative numeric conclusion.",
+      "responsibility": "Prevent unsupported normative numeric conclusions from being accepted when evidence or applicability is insufficient.",
+      "authority_ref": {
+        "repository": "chendong010121-hue/agent-runtime",
+        "ref": "232d6837647c68670fba3f3b2faf7ec1fac73f0a",
+        "path": "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/CASE_01_E2_BREA_PRODUCT_CAPABILITY_EVALUATION_V0.1.md",
+        "anchor": "OBL-03/OBL-04"
+      },
+      "evidence_refs": [
+        {
+          "repository": "chendong010121-hue/agent-runtime",
+          "ref": "232d6837647c68670fba3f3b2faf7ec1fac73f0a",
+          "path": "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/PRODUCT_CAPABILITY_EVALUATION_REPORT.md",
+          "anchor": "OBL-03/OBL-04 fail-closed numeric safety"
+        }
+      ],
+      "known_limits_ref": {
+        "repository": "chendong010121-hue/agent-runtime",
+        "ref": "232d6837647c68670fba3f3b2faf7ec1fac73f0a",
+        "path": "case-01/01-e-governed-agent-professional-completion/e2-local-professional-coverage-expansion/next-candidate/evaluation-v0.1/PRODUCT_CAPABILITY_EVALUATION_REPORT.md",
+        "anchor": "Explicitly unproven boundaries"
+      },
+      "evidence_level": "evidence-backed method capability"
+    },
+    {
+      "kind": "method",
+      "summary": "Capability-first, solution-form-neutral construction: understand the need, search reusable capability value, then choose the simplest justified implementation form.",
+      "responsibility": "Avoid unnecessary new construction by rediscovering governed capability/evidence value before selecting HOW.",
+      "authority_ref": {
+        "repository": "chendong010121-hue/agent-runtime",
+        "ref": "1e9c4554747a4959f78fbde1399151554f088ec2",
+        "path": "platform-harness/skills/agent-construction/SKILL.md"
+      },
+      "evidence_refs": [
+        {
+          "repository": "chendong010121-hue/agent-runtime",
+          "ref": "1e9c4554747a4959f78fbde1399151554f088ec2",
+          "path": "CATALYST_PLATFORM_ASSET_CENSUS_V0.1.md",
+          "anchor": "Capability Search before construction"
+        }
+      ],
+      "evidence_level": "replaceable Harness-side method candidate"
+    },
+    {
+      "kind": "local_professional_capability",
+      "summary": "Building Regulation Evidence Capability proven at Phase 2 Local Pilot scope: source-linked professional regulation conclusions with applicability discipline and fail-closed behavior when reliable evidence/context is insufficient.",
+      "responsibility": "Produce inspectable building-regulation evidence conclusions without unsupported normative numeric claims.",
+      "authority_ref": {
+        "repository": "chendong010121-hue/agent-runtime",
+        "ref": "1e9c4554747a4959f78fbde1399151554f088ec2",
+        "path": "docs/governance/CATALYST_PHASE_2_CLOSURE_REVIEW_V0.1.md"
+      },
+      "local_evidence_identity": {
+        "type": "post_close_recertification_manifest_sha256",
+        "sha256": "cd8c28b58a563ea7d16e8711eb44076f70fde4d146f742c0be6bd6cc9bd06759"
+      },
+      "lineage_refs": [
+        {
+          "description": "Historical Building Regulation Agent 2.0 was reference-only; implementation selection was independently recertified as REBUILD.",
+          "recertification_sha256": "e14fc4f8641cf95a1193d9124ef266bb6dc55a80c66965439f43fb8cce1ff21f"
+        }
+      ],
+      "known_limits_ref": {
+        "repository": "chendong010121-hue/agent-runtime",
+        "ref": "1e9c4554747a4959f78fbde1399151554f088ec2",
+        "path": "docs/governance/CATALYST_PHASE_2_CLOSURE_REVIEW_V0.1.md",
+        "anchor": "Architecture verdict / Closure lesson"
+      },
+      "evidence_level": "Phase 2 evidence-backed local capability; not generalized Platform capability"
+    }
+  ]
+}
