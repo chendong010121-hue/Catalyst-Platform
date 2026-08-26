@@ -1,0 +1,50 @@
+{
+  "status": "TEST_FIXTURE_NOT_PLATFORM_STANDARD",
+  "test_id": "IT-03",
+  "need": {
+    "purpose_or_required_outcome": "Research an open evidence question where the next search/tool action must change based on intermediate evidence conflicts and gaps."
+  },
+  "responsibility": {
+    "responsibilities": [
+      "inspect current evidence",
+      "decide whether evidence is sufficient",
+      "choose the next tool/query based on observed gap",
+      "stop when evidence criteria are satisfied"
+    ],
+    "material_uncertainties": [],
+    "material_task_characteristics": {
+      "path_predictability": "LOW",
+      "knowledge_boundary": "OPEN_KNOWLEDGE",
+      "action_boundary": "READ_ONLY",
+      "state_horizon": "multi-turn session"
+    }
+  },
+  "capability_search": {
+    "reused_capability_refs": [],
+    "reused_asset_or_evidence_refs": [],
+    "missing_or_unproven_capability_needs": [
+      "adaptive evidence-seeking control"
+    ]
+  },
+  "solution": {
+    "selected_solution_form": "Agent",
+    "selected_pattern_if_useful": "bounded Agent loop",
+    "mechanism_or_implementation_candidate": "replaceable agent runtime with bounded tools and stop criteria",
+    "short_rationale": "The next action cannot be fixed in advance because it materially depends on intermediate observations."
+  },
+  "proof": {
+    "evidence_requirements": [
+      "trajectory shows observation-dependent action choice",
+      "tool boundary evidence",
+      "stop criteria respected",
+      "same task cannot be represented as a known fixed path without losing required adaptivity"
+    ],
+    "not_required_now": [
+      "Multi-Agent",
+      "new Platform Core object"
+    ]
+  },
+  "governance": {
+    "stop_condition": "Stop at one bounded Agent when adaptive control is proven; do not add subagents without separate need."
+  }
+}

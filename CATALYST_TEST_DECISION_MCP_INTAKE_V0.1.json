@@ -1,0 +1,44 @@
+{
+  "status": "TEST_FIXTURE_NOT_PLATFORM_STANDARD",
+  "test_id": "ET-03",
+  "external_reference": "https://modelcontextprotocol.io/specification/2025-06-18/index",
+  "need": {
+    "purpose_or_required_outcome": "Use an external MCP server that exposes resources and tools while preserving Catalyst responsibility and Capability identity boundaries."
+  },
+  "responsibility": {
+    "responsibilities": [
+      "connect to an interoperable external tool/context surface",
+      "preserve user/application/model control semantics",
+      "map only proven organizational responsibilities into Catalyst Capability identities"
+    ],
+    "material_uncertainties": []
+  },
+  "capability_search": {
+    "reused_capability_refs": [],
+    "reused_asset_or_evidence_refs": [
+      "MCP protocol/tool/resource surface"
+    ],
+    "missing_or_unproven_capability_needs": []
+  },
+  "solution": {
+    "selected_solution_form": "Service / Adapter",
+    "selected_pattern_if_useful": "protocol adapter",
+    "mechanism_or_implementation_candidate": "MCP adapter at the interoperability boundary",
+    "short_rationale": "MCP provides transport/control primitives. A tool name or resource URI is not automatically a Catalyst semantic Capability."
+  },
+  "proof": {
+    "evidence_requirements": [
+      "tool/resource/prompt controls remain distinguishable",
+      "no automatic Capability id is minted per MCP tool",
+      "MCP implementation can be replaced without redefining Catalyst public WHAT"
+    ],
+    "not_required_now": [
+      "Catalyst-native MCP clone",
+      "Capability per MCP tool",
+      "new tool protocol"
+    ]
+  },
+  "governance": {
+    "stop_condition": "Stop at the adapter boundary unless a real cross-system semantic gap is observed."
+  }
+}
