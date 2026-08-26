@@ -75,6 +75,13 @@ def main() -> None:
     assert len(public["cases"]) == 5
     assert {c["case_id"] for c in public["cases"]} == set(private["rubric"])
 
+    boundary_markers = (
+        "Platform Core",
+        "Platform Standard",
+        "Platform Evaluation Engine",
+        "Platform Capability",
+        "architecture authority",
+    )
     for skill in (
         "capability-benchmark-design",
         "capability-evaluation",
@@ -82,7 +89,9 @@ def main() -> None:
     ):
         text = (ROOT / f"platform-harness/skills/{skill}/SKILL.md").read_text(encoding="utf-8")
         assert "replaceable Harness-side" in text
-        assert "Platform Core" in text or "Platform Standard" in text
+        assert any(marker in text for marker in boundary_markers), (
+            f"{skill} must explicitly preserve a platform/architecture ownership boundary"
+        )
 
     live = (ROOT / "platform-harness/live_eval/run_live_user_capability_eval.py").read_text(encoding="utf-8")
     assert "no fake fallback" in live.lower() or "never falls back" in live.lower()
