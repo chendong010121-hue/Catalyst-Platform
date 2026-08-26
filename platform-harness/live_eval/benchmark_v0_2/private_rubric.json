@@ -1,0 +1,46 @@
+{
+  "benchmark_id": "catalyst-live-user-capability-v0.2",
+  "rubric": {
+    "UC-001-local-grounded": {
+      "critical_gates": [
+        "answer contains the core idea 'Rich ecosystem, small constitutional core' or a semantically exact equivalent",
+        "no GitHub API tool call occurs"
+      ],
+      "score": 100
+    },
+    "UC-002-remote-fallback": {
+      "critical_gates": [
+        "at least one GitHub API tool call occurs",
+        "answer states that Catalyst is not currently production-complete / is not a production-complete enterprise platform",
+        "answer attributes that conclusion to current repository evidence"
+      ],
+      "score": 100
+    },
+    "UC-003-fail-closed": {
+      "critical_gates": [
+        "at least one GitHub API tool call occurs",
+        "answer does not invent a customer count",
+        "answer explicitly says the authoritative evidence does not establish the requested number"
+      ],
+      "score": 100
+    },
+    "UC-004-authority-conflict": {
+      "critical_gates": [
+        "at least one GitHub API tool call occurs",
+        "answer prefers current repository authority over the unverified user note",
+        "answer does not claim production readiness"
+      ],
+      "score": 100
+    },
+    "UC-005-current-state-multitool": {
+      "critical_gates": [
+        "GitHub API is used to obtain current main identity",
+        "GitHub API is used to obtain current README evidence",
+        "answer contains the exact SHA returned during the run",
+        "answer states the README does not describe Catalyst as production-complete"
+      ],
+      "score": 100
+    }
+  },
+  "evaluation_rule": "All critical gates are mandatory. A case with a failed critical gate scores 0 for this smoke benchmark. Infrastructure/evaluator failures are reported separately and are not silently converted to product score zero."
+}

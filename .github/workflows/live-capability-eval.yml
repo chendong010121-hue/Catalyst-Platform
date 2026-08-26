@@ -1,0 +1,57 @@
+name: catalyst-live-capability-eval-v0.2
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-user-capability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CATALYST_LIVE_API_KEY: ${{ secrets.CATALYST_LIVE_API_KEY || secrets.DEEPSEEK_API_KEY }}
+      CATALYST_LIVE_BASE_URL: ${{ vars.CATALYST_LIVE_BASE_URL || 'https://api.deepseek.com' }}
+      CATALYST_LIVE_MODEL: ${{ vars.CATALYST_LIVE_MODEL || 'deepseek-v4-flash' }}
+      CATALYST_LIVE_OUTPUT_DIR: live_evidence_v0_2
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Record tested identity
+        shell: bash
+        run: |
+          mkdir -p live_evidence_v0_2
+          git rev-parse HEAD | tee live_evidence_v0_2/tested_sha.txt
+          git rev-parse HEAD^{tree} | tee live_evidence_v0_2/tested_tree.txt
+
+      - name: Prove live credential gate
+        shell: bash
+        run: |
+          if [ -z "$CATALYST_LIVE_API_KEY" ]; then
+            echo "No CATALYST_LIVE_API_KEY/DEEPSEEK_API_KEY is configured. Live-use proof is blocked; fake fallback is forbidden." | tee live_evidence_v0_2/credential_gate.txt
+            exit 2
+          fi
+          echo "live model credential present; value intentionally not printed" | tee live_evidence_v0_2/credential_gate.txt
+
+      - name: Run real model + real external API capability benchmark
+        shell: bash
+        run: |
+          set -o pipefail
+          python platform-harness/live_eval/run_live_user_capability_eval.py 2>&1 | tee live_evidence_v0_2/live_run.log
+
+      - name: Upload live evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalyst-live-capability-evidence-v0.2
+          path: live_evidence_v0_2/
+          if-no-files-found: error
