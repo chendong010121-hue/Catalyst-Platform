@@ -1,0 +1,55 @@
+{
+  "status": "INTEGRATION_PROOF_FIXTURE_NOT_PLATFORM_STANDARD",
+  "need": {
+    "input_kind": "user_requirement",
+    "purpose_or_required_outcome": "Create a Markdown report from supplied structured content and preserve observable artifact provenance."
+  },
+  "responsibility": {
+    "responsibilities": [
+      "compose supplied title and sections into a report",
+      "return a successful Platform Result",
+      "expose the produced report as an attributed artifact"
+    ],
+    "material_uncertainties": [],
+    "material_task_characteristics": {
+      "path_predictability": "HIGH",
+      "knowledge_boundary": "IN_CONTEXT",
+      "action_boundary": "READ_ONLY",
+      "state_horizon": "one-shot"
+    }
+  },
+  "capability_search": {
+    "reused_capability_refs": [{"id": "compose_report", "version": "1.0.0"}],
+    "reused_asset_or_evidence_refs": ["CATALYST_CAPABILITY_VISIBILITY_INDEX_V0.1.json"],
+    "missing_or_unproven_capability_needs": []
+  },
+  "solution": {
+    "selected_solution_form": "Deterministic implementation",
+    "selected_pattern_if_useful": "existing Capability reuse",
+    "mechanism_or_implementation_candidate": "existing compose_report@1.0.0 Platform binding",
+    "short_rationale": "The responsibility is fixed and already satisfied by an admitted Capability; an Agent or new Workflow would add no value."
+  },
+  "boundaries": {
+    "runtime_execution_requirements_if_material": ["current Runtime baseline sufficient"],
+    "material_risks": []
+  },
+  "proof": {
+    "evidence_requirements": [
+      "registered Capability identity resolves",
+      "execution returns success",
+      "artifact producer retains compose_report Capability identity and invocation identity",
+      "trace contains invocation start/completion and artifact creation",
+      "unknown Capability fails at the Adapter resolution boundary without changing Runtime semantics"
+    ],
+    "not_required_now": [
+      "Agent loop selected as product solution form",
+      "new Workflow",
+      "new Runtime",
+      "new Registry service",
+      "new Evaluation service"
+    ]
+  },
+  "governance": {
+    "stop_condition": "Stop after existing Capability reuse and boundary attribution are deterministically proven."
+  }
+}
