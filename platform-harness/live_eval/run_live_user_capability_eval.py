@@ -213,6 +213,29 @@ def _answer(snapshot) -> str:
     return ""
 
 
+def _failure_snapshot(store: InMemoryStateStore, session_id: str | None) -> dict[str, Any] | None:
+    """Capture bounded evaluator diagnostics without dumping full evidence payloads."""
+    if not session_id:
+        return None
+    try:
+        snapshot = store.load(session_id)
+    except Exception as exc:
+        return {"snapshot_load_error": f"{type(exc).__name__}: {exc}"}
+
+    last = snapshot.history[-1] if snapshot.history else None
+    model_call = last.model_call if last is not None else None
+    return {
+        "session_id": snapshot.session_id,
+        "history_steps": len(snapshot.history),
+        "pending_execution": snapshot.pending_execution is not None,
+        "last_decision_type": type(last.decision).__name__ if last is not None else None,
+        "last_observation_type": type(last.observation).__name__ if last is not None and last.observation is not None else None,
+        "last_model_finish_reason": model_call.finish_reason if model_call is not None else None,
+        "last_model_tool_call_count": len(model_call.tool_calls) if model_call is not None else 0,
+        "last_model_tool_names": [call.name for call in model_call.tool_calls] if model_call is not None else [],
+    }
+
+
 def _contains_production_not_complete(text: str) -> bool:
     low = text.lower()
     return (
@@ -329,6 +352,17 @@ def _write_markdown(report: dict[str, Any]) -> None:
             lines.append(f"- {'PASS' if gate['pass'] else 'FAIL'} — {gate['gate']}")
         if case.get("error"):
             lines.extend(["", f"Error: `{case['error']}`"])
+        if case.get("failure_snapshot"):
+            lines.extend(
+                [
+                    "",
+                    "### Failure snapshot",
+                    "",
+                    "```json",
+                    json.dumps(case["failure_snapshot"], ensure_ascii=False, indent=2),
+                    "```",
+                ]
+            )
         lines.append("")
     (OUT / "LIVE_CAPABILITY_EVALUATION_REPORT.md").write_text("\n".join(lines), encoding="utf-8")
 
@@ -371,14 +405,18 @@ def main() -> int:
     for case in public["cases"]:
         started = time.time()
         result: dict[str, Any] = {"case_id": case["case_id"]}
+        store = InMemoryStateStore()
+        session_id: str | None = None
         try:
             runtime = Runtime(
                 reasoner=LLMReasoner(provider, decision_protocol="native_tools"),
                 capabilities={"github_repo_read": GitHubRepositoryReadCapability(github_token)},
                 policy=LivePolicy(),
-                state_store=InMemoryStateStore(),
+                state_store=store,
             )
-            final = runtime.start(Goal(_case_goal(case)))
+            created = runtime.create(Goal(_case_goal(case)))
+            session_id = created.session_id
+            final = runtime.run(session_id)
             answer = _answer(final)
             calls = _tool_calls(final.history)
             gates, score = _score(case["case_id"], answer, calls)
@@ -401,6 +439,7 @@ def main() -> int:
                     "score": None,
                     "failure_owner": "live_model_or_external_api_or_runtime",
                     "error": f"{type(exc).__name__}: {exc}",
+                    "failure_snapshot": _failure_snapshot(store, session_id),
                     "duration_ms": round((time.time() - started) * 1000),
                 }
             )
