@@ -2,6 +2,9 @@
 
 This module does NOT claim live usability. The live gate is owned by
 .github/workflows/live-capability-eval.yml and the real API runner.
+
+Historical V0.2 Stage Specs are intentionally not part of the active Operational V1
+surface. Current-state publication is owned by CATALYST_OPERATIONAL_BASELINE_V1.md.
 """
 from __future__ import annotations
 
@@ -108,10 +111,15 @@ def main() -> None:
     assert "Automatic model substitution is forbidden" in workflow
     assert "ollama pull" not in workflow.lower()
 
-    stage_spec = (ROOT / "CATALYST_MINIMUM_USABLE_V0.2_STAGE_SPEC.md").read_text(encoding="utf-8")
-    assert "explicitly selected and frozen provider/model" in stage_spec
-    assert "Formal Baseline" in stage_spec
-    assert "accepted or rolled back" in stage_spec
+    # Operational V1 deliberately retired the V0.2 Stage Spec from the active root.
+    # The current-state front door must preserve the accepted V0.2 evidence identity
+    # without re-promoting a historical Stage document into active authority.
+    assert not (ROOT / "CATALYST_MINIMUM_USABLE_V0.2_STAGE_SPEC.md").exists()
+    baseline = (ROOT / "CATALYST_OPERATIONAL_BASELINE_V1.md").read_text(encoding="utf-8")
+    assert "Catalyst Minimum Usable V0.2" in baseline
+    assert "real model API" in baseline
+    assert "bounded Candidate + same-benchmark re-evaluation" in baseline
+    assert "accept / rollback" in baseline
 
     print("PASS: Catalyst Minimum Usable V0.2 deterministic surface regression")
 
