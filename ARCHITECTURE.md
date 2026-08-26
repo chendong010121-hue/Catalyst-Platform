@@ -1,179 +1,65 @@
-# Agent Runtime + Platform Standard — System Architecture
-## v2.4 FINAL · Responsibility & Capability-Preserving Evolution Model
+# Catalyst Platform — System Architecture
+## v2.5 · Capability-Preserving Operational Architecture
 
-> **Accepted implementation/evidence baseline:** `main @ 763a3777713fd38e6db3c4eeeddcf321506cc20f`  
-> **Current stage:** Architecture / Governance Harvest clarification（v2.4）—— 不授权新的功能实现。  
-> **Role of this file:** 系统 purpose + layer meaning + ownership + boundaries + replacement rules + capability-preserving evolution rules。  
+> **Role of this file:** durable system purpose, layer meaning, responsibility, boundaries, replacement rules, and architecture-level evolution principles.  
+> **Current whole-platform state:** [`CATALYST_OPERATIONAL_BASELINE_V1.md`](CATALYST_OPERATIONAL_BASELINE_V1.md).  
 > **Guiding thesis:** **Everything is replaceable. Nothing is casually replaceable.**
 
----
-
-# 1. Current accepted reality
-
-The repository has already validated several architectural facts:
-
-## 1.1 Runtime（可替换的执行基础设施）
-
-The existing Agent Runtime owns execution concerns:
-
-```text
-Agent Loop
-Reasoner
-ModelProvider seam
-Capability execution
-Session / state lifecycle
-PendingExecution
-execution certainty
-reconciliation
-cancellation / timeout
-Runtime-local execution control
-```
-
-It remains **enterprise-free, domain-free, replaceable infrastructure**. Its fail-closed execution semantics remain valid:
-
-```text
-exception != proof of non-execution
-timeout != failure
-unresolved execution never auto-replays
-reconciliation is explicit
-```
-
-## 1.2 Platform Standard Core v0.1（证据支撑的稳定契约切片）
-
-The validated executable path:
-
-```text
-Capability Descriptor → InMemory Descriptor Registry → Standard Invocation
-  → Validator → Runtime Adapter → Existing Runtime → Standard Result
-    + ArtifactRef(s) + Minimal Trace
-```
-
-Core v0.1 demonstrated:
-
-```text
-one complete Standard → Adapter → Runtime → Result path
-second Capability portability（count_words，零 Core/Runtime/AgentCore 改动）
-same-ID multi-version routing
-Extension support（required=false preserved；required=true fail closed）
-unresolved execution mapping
-```
-
-Core v0.1 is the **first evidence-backed stable slice** of Platform Standard, not a claim that all future Platform semantics are already known.
-
-## 1.3 Enterprise Extension Pilot v0.1（Extension First 的证据）
-
-`enterprise.identity` demonstrated:
-
-```text
-enterprise semantics can enter through Extension
-Core schema unchanged
-generic RuntimeAdapter remains enterprise-agnostic
-agent_runtime/** unchanged
-identity visible in trace attribution（TraceEvent.extensions）
-```
-
-This supports the thesis:
-
-> **Stable Core + Adjustable Semantics / Extension First.**
-
-## 1.4 Catalyst Minimum Usable V0.2（真实 Harness / Evidence / Evolution 证据）
-
-V0.2 added a real operational proof without redefining Capability or expanding Platform Core merely for Harness convenience:
-
-```text
-real model API
-real external tool/API
-multi-case benchmark
-raw execution evidence / failure attribution
-Formal Baseline Reference
-bounded Candidate
-same-benchmark re-evaluation
-accept / rollback decision
-```
-
-A real native-tool incompatibility also demonstrated an implementation-evolution boundary:
-
-```text
-native-tools v1 assumption failed under real multi-tool model behavior
-→ failure owner localized to Harness native-tool interaction
-→ existing per-execution Runtime certainty semantics preserved
-→ PATCH v1 rejected
-→ clean v2 rebuild accepted
-→ whole-Harness replacement rejected for insufficient evidence
-→ external mature tool-loop adoption retained as a conditional candidate
-```
-
-This is evidence for a stronger interpretation of replaceability:
-
-> **Preserve proven responsibility and organizational value; do not grant permanent privilege to the current implementation.**
+This file intentionally does **not** pin the current `main` SHA, active Stage, or release status. Those are current-state facts owned by the Operational Baseline, GitHub `main`, tests, CI, and any explicitly active bounded Stage.
 
 ---
 
-# 2. Long-term system purpose
+# 1. Purpose
 
-The final product is an **Enterprise Agent Operating Model**, not merely an Agent ↔ Tool framework:
+Catalyst is not primarily an Agent framework, Runtime, Harness, or collection of AI features.
 
-```text
-Enterprise Agent Operating Model
-  + Platform Standard
-  + Domain Packages
-  + Enterprise Mapping
-  + Governed Runtime Ecosystem
-```
+Its long-term direction is an **Organization–AI Capability Operating Model**: an architecture in which people and AI systems can create useful capability while the organization keeps the value that should survive model, provider, Agent, Harness, Runtime, framework, and implementation change.
 
-Strategic assets are expected to accumulate mainly in:
-
-```text
-Platform Standard
-Enterprise Mapping
-Domain Packages
-Workflow Patterns
-Governance semantics
-Evaluation / Feedback
-Capability ecosystem
-```
-
-Runtime remains essential infrastructure but stays replaceable.
-
----
-
-# 3. Core architecture principles
-
-> **The project is not building a permanently fixed Runtime or a permanently complete Platform Standard. It is building an evolvable architecture in which implementations, semantics, and standards may be replaced or upgraded while accumulated assets remain as portable as possible.**
-
-Design around:
+Catalyst therefore optimizes for:
 
 ```text
 clear responsibility
-stable boundaries
-replaceable implementations
-extension-first growth
-evidence-based standard evolution
-asset preservation
-capability-preserving implementation evolution
+stable public obligations
+replaceable implementation
+portable organizational capability
+Domain / Enterprise separation
+Evidence and independent Evaluation
+Extension-first growth
+capability-preserving evolution
+real-use-driven architecture change
 ```
 
-Guiding statements:
-
-> **Everything is replaceable. Nothing is casually replaceable.**
->
-> **Stable WHAT / replaceable HOW.**
->
-> **Preserve capability, not implementation privilege.**
-
-Meaning:
-
-- no implementation is permanently privileged;
-- replacement is allowed only if required architectural obligations remain satisfied or are explicitly migrated;
-- repair of the current implementation has no automatic priority over other justified evolution paths;
-- implementation evolution is evidence-governed rather than driven by code ownership or sunk cost;
-- the more downstream assets depend on a boundary, the more carefully that boundary must evolve.
+The strongest Catalyst is not the one that owns the most AI machinery. It is the one that allows machinery to change without forcing the organization to relearn what it already proved.
 
 ---
 
-# 4. Layer model
+# 2. Core architecture principles
 
-`Domain` and `Enterprise` are **different semantic dimensions that may be composed**, not a strict parent/child chain.
+> **Stable WHAT / Replaceable HOW.**
+
+> **Preserve capability, not implementation privilege.**
+
+> **Extension First. Core Promotion Later.**
+
+> **Repair is not the default. Evolution decision comes first.**
+
+> **A component may report facts about itself; it does not certify itself.**
+
+> **The Standard grows from evidence, not from predicting every future need.**
+
+Meaning:
+
+- no implementation has permanent privilege;
+- replacement is legitimate only when required obligations survive or have an explicit migration path;
+- repair, rebuild, replacement, recomposition, external adoption, and retirement are implementation choices, not architecture defaults;
+- real use and evidence determine whether a new shared concept deserves architectural cost;
+- the more durable organizational value depends on a boundary, the more carefully that boundary must evolve.
+
+---
+
+# 3. Layer model
+
+`Domain` and `Enterprise` are different semantic dimensions that compose; neither is a strict parent of the other.
 
 ```text
                     Application Surfaces
@@ -184,83 +70,112 @@ Meaning:
               ┌─────────────┴─────────────┐
               │                           │
               ▼                           ▼
-       Domain Packages            Enterprise Semantics
-   professional meaning        organization-specific meaning
+        Domain Semantics          Enterprise Semantics
+      professional meaning      organization-specific meaning
               │                           │
               └─────────────┬─────────────┘
-                            │
                             ▼
                    Platform Standard
-             stable coordination boundary
+              stable coordination boundary
                             │
                             ▼
                       Runtime Adapter
                             │
                             ▼
                          Runtime
+                 replaceable execution HOW
                             │
                             ▼
                      Infrastructure
 ```
 
-Semantic point:
+Semantic relation:
 
 ```text
 one Enterprise may use multiple Domains
 one Domain may be used by multiple Enterprises
 ```
 
-Do not over-model this; the architecture meaning is what matters.
+Do not over-model this relationship until real use requires more structure.
 
 ---
 
-# 5. Layer responsibilities and boundaries
+# 4. Responsibility model
 
-The system asks first:
+Catalyst asks first:
 
-> **"Which layer owns this problem?"**
+> **Which responsibility owns this problem?**
 
 not:
 
-> "Which file is easiest to edit?"
+> Which file is easiest to edit?
 
 | Problem / change | Default owner |
 |---|---|
-| execution lifecycle, cancellation, timeout, recovery, reconciliation, execution certainty | Runtime |
-| vendor/system/API-specific integration differences | Adapter |
-| concrete implementation of a capability | Capability implementation |
-| shared cross-implementation invocation/result semantics | Platform Standard |
-| professional/domain meaning | Domain Package / Domain Layer |
-| organization-specific structure, policy, approval, vocabulary, risk preference | Enterprise semantics / Enterprise Profile |
-| new requirement local to a small number of contexts | Extension |
-| repeated cross-domain / cross-enterprise / cross-runtime semantic gap | Platform Standard review candidate |
-| current Runtime cannot satisfy required execution semantics | Runtime repair / upgrade / replacement candidate |
-| an implementation fails while its responsibility remains valid | implementation-evolution decision at the owning layer; repair is one candidate, not the default |
-| Runtime must learn enterprise/domain semantics to support a feature | architecture boundary failure candidate |
-| cross-capability sequencing / parallel execution structure / conditional routing / long-running process structure | Workflow / Orchestration Layer |
+| execution lifecycle, cancellation, timeout, recovery, reconciliation, execution certainty | **Runtime** |
+| vendor / provider / API-specific integration difference | **Adapter** |
+| concrete way a capability performs work | **Capability implementation** |
+| portable invocation / result / shared public promise | **Platform Standard** |
+| professional / industry meaning | **Domain** |
+| organization-specific meaning, vocabulary, policy, approval, risk preference | **Enterprise** |
+| local semantic needed by limited contexts | **Extension first** |
+| cross-capability sequencing / conditional / parallel / long-running process structure | **Workflow / Orchestration** |
+| repeated cross-boundary semantic gap harming interoperability / replaceability / portability | **Platform Standard review candidate** |
+| current Runtime cannot satisfy required execution obligations | **Runtime evolution candidate** |
+| Runtime must understand Domain or Enterprise meaning | **architecture boundary failure candidate** |
 
-Workflow / Orchestration relationship:
+> **Change where the responsibility lives.**
 
-```text
-Domain
-→ may provide domain workflow patterns（行业流程模式）
-
-Enterprise
-→ may configure organization-specific process semantics（组织流程语义）
-
-Workflow / Orchestration
-→ expresses / runs cross-capability process structure（跨能力流程结构）
-```
-
-Workflow / Orchestration is a future layer responsibility; no Workflow Engine is implemented in the current stage.
+A local implementation problem is not evidence that Platform Core should grow.
 
 ---
 
-# 6. Platform Standard role and value
+# 5. Capability — the stable WHAT
 
-Platform Standard is the **stable, evolvable coordination boundary** between independently evolving upper-layer assets and replaceable lower-layer execution implementations.
+Capability means **what the system can reliably do**, not the current code object that happens to implement it.
 
-Its three primary responsibilities:
+A durable Capability may carry:
+
+```text
+responsibility / semantic intent
+public or shared Contract obligations
+version / identity relationship
+Domain meaning
+Enterprise meaning
+Evidence
+Evaluation / benchmark knowledge
+known limits
+compatibility / migration knowledge
+Evolution Lineage
+```
+
+A Capability is not identical to:
+
+```text
+Python class
+prompt
+tool function
+Agent
+Skill implementation
+Workflow implementation
+provider SDK
+Runtime object
+framework
+```
+
+Those are possible HOWs.
+
+Understanding, Evaluation, Harvest, and real use should enrich the same Capability / Responsibility identity when evidence supports one stable meaning rather than multiplying artificial `analysis-*`, `eval-*`, and `harvest-*` identities.
+
+For the accepted explanatory philosophy, see [`docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md`](docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md).
+
+---
+
+# 6. Platform Standard
+
+Platform Standard is the stable, evolvable coordination boundary between independently evolving organizational assets and replaceable execution implementations.
+
+It has three durable responsibilities.
 
 ## 6.1 Coordination
 
@@ -268,91 +183,26 @@ Allow independently implemented components to cooperate through shared contracts
 
 ## 6.2 Isolation
 
-Prevent changes in one layer from unnecessarily propagating into unrelated layers:
+Prevent change from spreading into unrelated layers:
 
 ```text
-enterprise policy change      ≠ Runtime rewrite
-domain terminology change     ≠ Platform Core rewrite
-Runtime implementation replacement ≠ rewriting all Domain / Enterprise assets
+enterprise rule change       != Runtime rewrite
+domain terminology change    != Platform Core rewrite
+Runtime replacement          != rewriting all Domain / Enterprise assets
+vendor API difference        != new shared semantic by default
 ```
 
 ## 6.3 Evolution
 
-Provide enough extension, compatibility, versioning and migration semantics so the system can grow without repeatedly collapsing into a new monolith.
-
-Value test:
+Provide enough extension, compatibility, versioning, and migration semantics for the system to evolve without repeatedly collapsing into a new monolith.
 
 > **Platform Standard is valuable when it removes unnecessary coupling while preserving necessary variation.**
 
----
-
-# 7. Runtime role and replacement boundary
-
-Runtime answers: **How does execution run?**
-
-> Runtime is a replaceable execution implementation responsible for reliably turning accepted execution intent into runtime state and execution outcomes.
-
-Runtime owns:
-
-```text
-execution lifecycle
-execution state
-execution certainty
-cancel / timeout
-recovery
-reconciliation
-runtime-local execution control
-capability execution mechanics
-```
-
-Runtime must NOT own semantic meaning:
-
-```text
-company organization
-role meaning
-professional ontology
-approval meaning
-company-specific policy meaning
-domain vocabulary
-```
-
-## 7.1 Runtime Conformance Boundary（替换判据）
-
-A replacement Runtime does **not** need:
-
-```text
-the same classes
-the same internal APIs
-the same Agent Loop
-the same framework
-the same source structure
-```
-
-It must preserve the architectural obligations required by the Standard / Adapter boundary, for example:
-
-```text
-required execution semantics
-standard invocation/result usability
-execution certainty semantics
-required lifecycle guarantees
-required context preservation
-no forced rewrite of upper-layer contracts
-```
-
-This is an architectural criterion, not a conformance-test requirement.
+The accepted executable contract slice is `PLATFORM_STANDARD_CORE_V0.1.md`. It is a proven minimum, not a claim that the final Standard is completely known.
 
 ---
 
-# 8. Domain and Enterprise semantic dimensions
-
-- **Domain Packages** carry professional/industry meaning.
-- **Enterprise Semantics** carry organization-specific meaning.
-
-They compose; neither is a strict parent of the other. Current stage defines no concrete Domain Package or Enterprise Profile; they remain future layers whose meaning is now architecturally explicit.
-
----
-
-# 9. Extension-first evolution model
+# 7. Extension-first growth
 
 > **Extension First. Core Promotion Later.**
 
@@ -360,418 +210,416 @@ Conceptual lifecycle:
 
 ```text
 Observed Need
-    ↓
-Local Solution
-    ↓
-Experimental Extension
-    ↓
-Repeated Real Usage
-    ↓
-Evidence
-    ↓
-RFC Candidate
-    ↓
-Compatibility Review
-    ↓
-Promote / Reject / Remain Extension
-    ↓
-Migration if required
-    ↓
-Deprecation of superseded form
+→ Local Solution / Extension
+→ Real Usage
+→ Evidence
+→ repeated cross-boundary common gap?
+   ├─ NO  → remain local / Domain / Enterprise / Adapter / Extension
+   └─ YES → Platform Standard review candidate
+→ compatibility / portability review
+→ promote / reject / remain extension
+→ migration when required
 ```
 
-> **The Standard grows from evidence, not from trying to predict every future requirement in advance.**
+Repeated usage alone does **not** justify Core promotion.
 
-Extension maturation clarification:
+A Domain Extension, Enterprise Extension, Adapter/Vendor Extension, or Experimental Extension may remain outside Core permanently.
 
-```text
-Repeated usage alone DOES NOT justify Platform Core promotion.
+Platform Standard deserves review only when evidence repeatedly shows a shared semantic gap across independent contexts and promotion would reduce total system coupling more than it increases Core complexity.
 
-An Extension may remain long-term — even permanently — as:
-  Domain Extension
-  Enterprise Extension
-  Adapter / Vendor Extension
-  Experimental Extension
-and may mature and version independently.
-
-Only a repeated cross-boundary common semantic gap — appearing across
-multiple Domains, Enterprises and/or Runtime/Adapter implementations,
-and beginning to affect interoperability / replaceability / asset
-portability — enters the Platform Standard RFC Candidate path.
-
-Core Promotion is optional, not inevitable.
-```
+A concept does not enter Core because it is elegant.
 
 ---
 
-# 10. Change routing model
+# 8. Runtime
 
-Conceptual decision model（不实现为引擎）:
+Runtime answers:
 
-```text
-NEW REQUIREMENT
-      │
-      ▼
-Can existing contracts express it?
-      │
- ┌────┴────┐
- YES       NO
- │          │
- ▼          ▼
-Implement   Is it implementation-specific?
-at owner          │
-             ┌────┴────┐
-            YES        NO
-             │          │
-          Adapter      ▼
-                Is it domain-specific?
-                       │
-                  ┌────┴────┐
-                 YES        NO
-                  │          │
-               Domain       ▼
-                     Is it enterprise-specific?
-                            │
-                       ┌────┴────┐
-                      YES        NO
-                       │          │
-                  Enterprise     ▼
-                           Experimental Extension
-                                   │
-                                   ▼
-                            collect evidence
-                                   │
-                                   ▼
-                         repeated cross-system need?
-                              │             │
-                             NO            YES
-                              │             │
-                      remain Extension   Platform RFC
-                                         candidate
-```
+> **How does accepted execution run reliably?**
 
-This requirement-routing model and the implementation-evolution rule in Section 12 solve different questions:
+The current Runtime implementation owns execution concerns such as:
 
 ```text
-new or newly expressed need
-→ which responsibility layer should own it?
-
-observed failure / obsolete implementation
-→ how should the implementation at that responsibility evolve?
+Agent / reasoning execution mechanics
+Capability execution
+Session / state lifecycle
+PendingExecution
+execution identity and certainty
+cancellation / timeout
+recovery
+reconciliation
+runtime-local execution control
 ```
 
-Do not collapse them into one universal decision engine.
+Accepted fail-closed semantics include:
+
+```text
+exception != proof of non-execution
+timeout != failure
+unresolved execution never auto-replays
+reconciliation is explicit
+```
+
+Runtime must remain free of Domain and Enterprise meaning.
+
+Runtime does **not** own:
+
+```text
+company organization
+professional ontology
+domain vocabulary
+role meaning
+approval meaning
+enterprise policy meaning
+```
+
+## 8.1 Runtime replacement boundary
+
+A replacement Runtime does not need the same classes, APIs, Agent Loop, framework, or source structure.
+
+It must preserve or explicitly migrate the required obligations at the accepted boundary, for example:
+
+```text
+execution certainty semantics
+required lifecycle guarantees
+standard invocation / result usability
+necessary context preservation
+required evidence availability
+no forced rewrite of stable upper-layer contracts
+```
+
+Runtime replaceability is an architecture commitment, not an instruction to build a second Runtime without evidence.
 
 ---
 
-# 11. Platform Standard change criteria
+# 9. Domain and Enterprise
 
-## 11.1 Platform Core must NOT change merely because
+- **Domain** carries professional / industry meaning.
+- **Enterprise** carries organization-specific meaning.
 
-```text
-one enterprise has a unique rule
-one domain introduces a new concept
-one tool/vendor has a special API
-the current Runtime has an implementation limitation
-one project needs an exception
-one experimental idea seems elegant
-a new concept is theoretically "general"
-a current implementation is difficult to repair
-```
+They compose and should remain outside Runtime and generic Platform Core unless repeated cross-boundary evidence proves a genuinely shared coordination semantic.
 
-## 11.2 Platform Standard should be reconsidered when evidence shows
+Current architecture may recognize future responsibilities such as Domain packages, Enterprise profiles, policy, approval, or Workflow without requiring their production implementation.
 
-A review is justified when several of the following are true:
-
-```text
-1. existing contracts cannot express a recurring requirement;
-2. the same semantic gap appears across independent domains / enterprises / implementations;
-3. multiple Extensions duplicate the same meaning or workaround;
-4. interoperability or replaceability is being damaged;
-5. Runtime / Adapter implementations repeatedly require special coupling;
-6. upper-layer assets cannot remain portable because a common semantic is missing;
-7. promoting a shared contract would reduce total system coupling more than it increases Core complexity.
-```
-
-> **A concept does not enter Core because it is elegant. It enters Core because real system evidence reveals a stable shared boundary.**
+> **Architecturally Exists does not mean implementation required.**
 
 ---
 
-# 12. Replacement and asset-preservation principles
+# 10. Workflow / Orchestration
 
-## 12.1 Stable boundary ≠ permanently fixed implementation
-
-```text
-ModelProvider can be replaced
-Capability implementation can be replaced
-Adapter can be replaced
-Runtime can be replaced
-Harness mechanisms can be replaced
-Domain packages can evolve
-Enterprise semantics can evolve
-Platform Standard can version and evolve
-```
-
-Replacement must preserve or explicitly migrate the assets and obligations that depend on the replaced boundary.
-
-## 12.2 Change-rate expectation（stability expectation, not an immutable law）
+Workflow / Orchestration owns process structure across capabilities:
 
 ```text
-fast-changing
-  Model / vendor / tool / adapter
-  Harness / Runtime implementation
-  Capability implementation
-  workflow / domain packages
-  enterprise configuration
-  Platform modules
-  Platform Core contracts
-slow-changing
+sequence
+parallelism
+branching / conditions
+long-running process structure
+cross-capability coordination
 ```
 
-## 12.3 Asset preservation
+Domain may provide professional workflow patterns. Enterprise may configure organization-specific process meaning. Workflow execution must not turn Runtime into a Domain or Enterprise semantic owner.
 
-> **Long-term assets should not be unnecessarily destroyed by short-lived implementation changes.**
+No Workflow Engine is required merely because this responsibility exists architecturally.
 
-Likely long-term assets:
+---
+
+# 11. Evidence, observation, and independent Evaluation
+
+Replaceability requires enough evidence to know where failure occurred.
+
+A useful separation is:
 
 ```text
-Capability responsibility / semantic WHAT
-public/shared Contract obligations
-Domain knowledge
-Enterprise mappings
-Capability descriptors / identity
-Workflow patterns
-Governance semantics
-Evaluation / benchmark knowledge
-Compatibility knowledge
-Migration rules
-operational evidence
-known limits
-Evolution Lineage / decision rationale
+Provider / external system
+→ reports provider facts
+
+Harness / interaction layer
+→ reports protocol / interaction facts
+
+Runtime
+→ reports execution / certainty facts
+
+Capability implementation
+→ reports invocation / observation facts
+
+Independent Evaluation
+→ judges tested capability behavior and attributes failure
 ```
 
-> **Platform Standard protects accumulated upper-layer assets from lower-layer technology churn.**
+> **Self-observation is not self-certification.**
 
-For the broader explanatory interpretation of capability preservation and Harvest, see `docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md`. This Architecture file does not create a Harvest object or duplicate that philosophy.
+Evaluation is not primarily a leaderboard. It establishes what is proven, under what conditions, with what limits, and what responsibility owns a failure.
 
-## 12.4 Capability-preserving implementation evolution
+Benchmark is one evidence mechanism. Real-use evidence remains higher-order reality.
 
-> **Repair is not the default. Evolution decision comes first.**
+---
 
-When an observed failure or maintenance problem occurs, first identify the owning responsibility and the Capability, Contract, evidence, semantic meaning, and other obligations that must survive. Only then select an implementation path.
+# 12. Capability-preserving implementation evolution
 
-The stable architectural rule is:
+When an implementation fails or becomes expensive to maintain, first identify:
 
-> **Preserve the required organizational capability and proven obligations; let implementation compete for the right to remain.**
+```text
+what failed?
+which responsibility owns it?
+what capability / obligation must survive?
+is the responsibility wrong?
+is the Contract wrong?
+is the implementation wrong?
+is an assumption obsolete?
+what internal or external alternatives exist?
+```
 
-Architecture does not prescribe one preferred repair/rebuild/replace procedure or define implementation-evolution actions as Platform ontology. The detailed candidate vocabulary and decision procedure belong to a replaceable method such as `platform-harness/skills/capability-optimization/SKILL.md`.
+Only then choose a bounded implementation path.
 
-## 12.5 Evidence-governed selection
+Possible method-level candidates include:
 
-Implementation evolution must be justified by evidence and by **total evolution cost**, not merely current diff size or sunk investment in the existing code.
+```text
+REPAIR / PATCH
+LOCAL REPLACE
+REBUILD
+RECOMPOSE
+REPLACE SUBSYSTEM
+EXTERNAL ADOPT / ADAPT
+RETIRE / REMOVE
+```
 
-A replacement or rebuild is legitimate only when the required obligations remain satisfied or have an explicit migration path. The detailed comparison dimensions belong to the replaceable Optimization method, not to Architecture or Platform Core.
+These actions are **not Platform ontology** and have no automatic priority.
 
-## 12.6 Self-observability, independent evaluation, and Evolution Lineage
+The detailed, replaceable method lives in:
 
-Replaceability requires enough evidence to localize a failure. Components may report bounded facts about their own behavior; independent Evaluation attributes and judges those facts; the responsible implementation owner may then compare bounded evolution candidates.
+`platform-harness/skills/capability-optimization/SKILL.md`
 
-A component does not gain authority to certify itself merely because it reports its own facts.
+## 12.1 Total evolution cost
 
-Implementation evolution should preserve enough lineage to recover the Reference, triggering evidence, owning responsibility, preserved obligations, decision rationale, evidence identity, migration/rollback implications, remaining limits, and resulting implementation when those facts are material.
+Do not equate smallest diff with cheapest solution.
 
-This does **not** create a Monitoring Service, Self-Healing Engine, Evolution Engine, Lineage Service, or universal schema. Git history, evidence artifacts, Stage reviews, and other authoritative references may carry the lineage.
+Material cost may include:
 
-## 12.7 External mechanisms are first-class HOW candidates
+```text
+implementation effort
+legacy-understanding cost
+maintenance burden
+compatibility debt
+regression / migration risk
+rollback difficulty
+hidden coupling
+pressure to pollute Runtime / Core
+future replaceability cost
+loss of evidence / semantics
+opportunity cost versus mature external alternatives
+```
 
-Catalyst does not need to own source code for every mechanism. A mature external Harness, Runtime, provider, retrieval mechanism, orchestration tool, or other implementation may be adopted when it satisfies the applicable Catalyst responsibility, evidence, and replacement obligations through an acceptable seam.
+## 12.2 Evolution Lineage
+
+Material implementation change should preserve enough lineage to reconstruct:
+
+```text
+Reference
+triggering evidence
+owning responsibility
+preserved obligations
+considered candidates
+accept / reject rationale
+benchmark / evidence identity
+migration / rollback implications
+remaining known limits
+resulting implementation
+```
+
+This does not require a Lineage Service or universal schema. Git history, PRs, evidence artifacts, review records, and bounded Stage records may carry the lineage.
+
+---
+
+# 13. External systems are first-class HOW candidates
+
+Catalyst does not need to own source code for every mechanism.
+
+Pi, Codex, DeepSeek Harness, LangGraph, MCP implementations, retrieval systems, external Runtimes, model providers, or future systems may be:
+
+```text
+knowledge sources
+mechanism references
+implementation candidates
+```
+
+Adopt external machinery when it satisfies the required responsibility, evidence, and replacement obligations through a clean seam with lower justified total cost.
 
 Do not clone mature machinery merely so Catalyst can claim authorship.
 
----
-
-# 13. Architecture failure signals
-
-Diagnostic signals（不是自动授权修改 Core）:
-
-## Boundary smell A
-
-```text
-Runtime must be modified because one enterprise changed a business rule
-```
-
-→ possible enterprise/runtime boundary violation
-
-## Boundary smell B
-
-```text
-a Domain Package must be rewritten for each Runtime implementation
-```
-
-→ possible Platform boundary insufficiency
-
-## Boundary smell C
-
-```text
-many Extensions independently encode the same cross-system semantic
-```
-
-→ possible Platform promotion candidate
-
-## Boundary smell D
-
-```text
-one vendor-specific limitation forces a new Platform Core concept
-```
-
-→ possible Adapter/implementation problem incorrectly promoted upward
-
-## Boundary smell E
-
-```text
-an obsolete implementation assumption is repeatedly preserved through compatibility patches because repair is treated as mandatory
-```
-
-→ possible implementation-evolution failure; compare alternatives before adding more debt
-
-## Boundary smell F
-
-```text
-replacement requires discarding Capability evidence, Domain/Enterprise meaning, benchmark knowledge, or public obligations that should have been portable
-```
-
-→ possible missing stable boundary / migration responsibility
+External systems never become Catalyst identity or architecture authority merely because they are powerful.
 
 ---
 
-# 14. Source authority by question
+# 14. Capability preservation and Harvest
 
-There is **no single globally highest Source of Truth**. Authority depends on the question:
+Short-lived implementation change should not unnecessarily destroy long-lived organizational learning.
 
-```text
-current accepted implementation reality      -> GitHub main
-system purpose / layer meaning / boundaries  -> ARCHITECTURE.md
-Platform Standard v0.1 normative contract    -> PLATFORM_STANDARD_CORE_V0.1.md
-current implementation authorization         -> Stage Spec
-current delivery / review state              -> HANDOFF / current review record
-verification result                          -> Tests / CI / frozen evidence
-replaceable Harness evolution method         -> platform-harness/skills/capability-optimization/SKILL.md
-research / ideas / candidates                -> research / review documents
-```
-
-Conflict semantics:
+Likely durable assets include:
 
 ```text
-Architecture / spec 与 implementation 冲突
-≠ implementation 自动重新定义 Architecture
-
-冲突按问题类别产生并处理：
-  Architecture Conformance Finding   （架构与实现不符）
-  Contract Conformance Finding       （实现不满足契约）
-  Stage Authorization Violation      （超出当前授权）
+Capability / Responsibility
+public Contract obligations
+Domain knowledge
+Enterprise mappings
+workflow / method patterns
+Evaluation / benchmark knowledge
+operational evidence
+known limits
+compatibility / migration knowledge
+Evolution Lineage
 ```
 
-冲突处理责任按 Section 5 responsibility model 路由；不自动修改任何文件。
+`HARVEST` is a lifecycle verb describing selective preservation of sufficiently understood, evidence-backed, repeatedly useful capability.
 
-> A stale status in another document does **not** authorize changing that file in this stage. Inconsistencies are reported as follow-up findings only.
+It does not create a Harvest Engine, Registry, Service, Manager, or Platform layer.
+
+Human expertise and human–AI collaboration can also be capability sources, subject to appropriate consent, attribution, privacy, governance, and evidence.
 
 ---
 
-# 15. Current validated evidence
+# 15. Architecture failure signals
+
+Treat these as review signals, not automatic Core-change authorization.
 
 ```text
-Platform Standard Core v0.1          IMPLEMENTED / VERIFIED / MERGED / ACCEPTED / CLOSED
-  PS-1..PS-14 + AR-1..AR-7 PASS；vertical slice（compose_report）PASS；second capability（count_words）PASS
-Enterprise Extension Pilot v0.1     IMPLEMENTED / VERIFIED / MERGED / ACCEPTED / CLOSED
-  EE-1..EE-12 + ER-1..ER-5 PASS；Org A/Org B portability PASS；trace attribution PASS
-Minimum Architectural Framework v1  PROVEN / ACCEPTED for declared evidence scope
-Catalyst Minimum Usable V0.2        IMPLEMENTED / VERIFIED / MERGED / ACCEPTED
-  real model + real external tool/API + frozen benchmark + Formal Baseline + bounded Candidate + re-evaluation / accept
-Native-tools evolution evidence      v1 multi-tool assumption failure → rebuild v2; Platform Core unchanged
-Runtime                              accepted replaceable execution infrastructure
-Governance                           CI + exact-ref + PR workflow + frozen evidence / review records
-Accepted code baseline               main @ 763a3777713fd38e6db3c4eeeddcf321506cc20f
+Runtime changes because one enterprise changed a business rule
+→ possible Enterprise / Runtime boundary failure
+
+Domain implementation must be rewritten for every Runtime
+→ possible missing stable coordination boundary
+
+many Extensions duplicate the same cross-system meaning
+→ possible Platform Standard review candidate
+
+one vendor limitation forces a new Core concept
+→ likely Adapter / implementation problem promoted upward
+
+obsolete assumptions survive through repeated compatibility patches because repair is treated as mandatory
+→ implementation-evolution failure candidate
+
+replacement destroys Capability evidence, Domain/Enterprise meaning, benchmark knowledge, or public obligations that should be portable
+→ missing preservation / migration boundary candidate
 ```
-
-Current architecture meaning after this update:
-
-```text
-Platform Standard Core v0.1 remains valid
-Minimum Architectural Framework v1 remains valid
-Catalyst Minimum Usable V0.2 evidence remains valid
-Runtime remains replaceable execution infrastructure
-implementation evolution is now explicitly capability-preserving and evidence-governed
-no next feature is automatically authorized
-```
-
-The roadmap `Identity → Role / Authority → Policy → Approval` is **not** automatic next-implementation authorization. The next Stage must still be selected by applying the responsibility/evidence model to actual need.
 
 ---
 
-# 16. Current non-goals / unauthorized work
+# 16. Source authority by question
 
-```text
-Role / Authority / Delegation / Policy Engine / Approval
-Enterprise Profile implementation / Domain Package platform implementation
-Workflow Engine / Control Plane / MCP / A2A / OpenTelemetry integration
-new Registry / new Platform Core fields / new Platform Standard contracts
-second Runtime merely to prove replaceability
-Evolution Engine / Repair Engine / Replacement Service
-Self-Healing / automatic self-modification / Monitoring Platform
-Lineage Service / universal evolution schema
-```
+There is no single globally highest Source of Truth.
 
-These are future possibilities or explicitly rejected expansions, not work authorized by this architecture clarification.
+| Question | Authority |
+|---|---|
+| What is Catalyst now? What is active? | `CATALYST_OPERATIONAL_BASELINE_V1.md` |
+| What code is accepted? | GitHub `main` |
+| What are system purpose, layers, responsibilities, and replacement rules? | `ARCHITECTURE.md` |
+| What stable governance principles constrain growth? | Governing Baseline Part A |
+| What does Platform Standard Core v0.1 promise? | `PLATFORM_STANDARD_CORE_V0.1.md` |
+| What execution behavior exists? | `agent_runtime/**` + active tests / CI |
+| How are needs constructed into solutions? | `agent-construction` Skill |
+| How are benchmarks designed? | `capability-benchmark-design` Skill |
+| How is behavior judged? | `capability-evaluation` Skill |
+| How is implementation evolution decided? | `capability-optimization` Skill |
+| Where is reusable organizational value discoverable? | Capability Visibility Index + referenced authority |
+| How are repository changes governed? | `docs/DEVELOPMENT_WORKFLOW.md` |
+| What historical decision produced the current state? | Git history, closed PRs, evidence, `docs/history/README.md` |
+| What implementation work is currently authorized? | explicit bounded user-approved task / Stage when active |
 
----
+Historical status lines do not redefine current state.
 
-# 17. Architecture acceptance / stop condition
-
-This `ARCHITECTURE.md` is acceptable when a future developer can answer YES to:
-
-```text
-1. Can the default owner of a new problem be identified?
-2. Can Runtime problems be distinguished from Platform Standard problems?
-3. Can Domain semantics be distinguished from Enterprise semantics?
-4. Is it clear that implementations are replaceable?
-5. Is replaceability defined by preserved obligations, not arbitrary replacement?
-6. Is Repair clearly not an automatic default after failure?
-7. Is it clear what organizational Capability value should survive implementation churn?
-8. Is implementation evolution evidence-governed rather than implementation-privileged?
-9. Is total evolution cost distinguished from current diff size without duplicating the detailed method here?
-10. Is independent Evaluation separated from component self-observation/self-certification?
-11. Is Evolution Lineage preserved without requiring a new service/schema?
-12. Are mature external mechanisms admissible HOW when obligations are preserved?
-13. Is it clear when Platform Standard should NOT change?
-14. Is it clear when Platform Standard deserves review?
-15. Is Extension First a first-class principle?
-16. Is evidence required before Core promotion?
-17. Is asset preservation part of architecture value?
-18. Is Runtime replacement defined by obligations rather than internal shape?
-19. Can boundary-failure signals be identified?
-20. Is the Source-of-Truth hierarchy clear?
-21. Are validated Runtime / Platform / Extension / V0.2 facts preserved without inventing new authority?
-22. Is the detailed evolution procedure kept in a replaceable Harness-side method rather than Platform Core?
-```
-
-After this update: **STOP.** Do not implement Role / Authority / Policy / Approval / Domain Package platform / Enterprise Profile / Control Plane / Evolution Engine / new Registry / new Runtime / new Platform Standard contracts from this architecture clarification alone.
+Implementation success does not automatically redefine Architecture or Contract.
 
 ---
 
-# 18. Final statement
+# 17. Current validated architecture evidence
 
-> **Runtime is the execution heart — replaceable infrastructure.**
+Current accepted history has demonstrated, at its declared evidence scopes:
+
+```text
+reliable Runtime execution certainty / reconciliation semantics
+Platform Standard Core v0.1 executable boundary
+second Capability portability without Core/Runtime redesign
+Extension-first enterprise semantics
+Capability Contract conformance on the reference direct-binding path
+real model + external tool/API execution with evidence
+native-tools v1 → v2 capability-preserving evolution
+real Building Regulation professional Capability adoption without Runtime/Core pollution
+Domain × Enterprise separation in the Phase 2 pilot
+post-close evidence recertification and Phase 2 closure
+Capability-Preserving Evolution promotion
+Minimum Operational V1 current surface and CI release gate
+```
+
+These facts do **not** prove Production Enterprise completeness.
+
+---
+
+# 18. Explicit non-goals without new evidence
+
+Do not build these merely to make Catalyst look more complete:
+
+```text
+production Capability Registry / DB
+dependency graph
+monitoring platform
+self-healing / autonomous evolution engine
+Repair / Replacement Service
+universal Lineage Service
+Workflow Engine
+Control Plane
+full Authority / Policy / Approval system
+production IAM / tenant platform
+universal Domain SDK
+universal Enterprise Profile
+second Runtime purely to prove replaceability
+Pi / Codex / DeepSeek dependency as product identity
+```
+
+They may become legitimate bounded work only when real use produces sufficient evidence.
+
+---
+
+# 19. Operational architecture rule
+
+Catalyst Minimum Operational V1 marks the end of planned platform pre-development.
+
+The default operating loop is now:
+
+```text
+REAL USE
+→ OBSERVE
+→ ATTRIBUTE
+→ search existing internal / external capability knowledge
+→ smallest justified bounded change
+→ EVALUATE
+→ ACCEPT / ROLLBACK
+→ HARVEST durable value when earned
+→ REAL USE AGAIN
+```
+
+There is no automatic next Phase.
+
+A new Stage exists only when a real finding cannot be responsibly handled inside current accepted boundaries.
+
+---
+
+# 20. Final statement
+
+> **Catalyst is an Organization–AI Capability Operating Model, not a larger Runtime.**
 >
-> **Platform Standard is the stable shared language — a coordination, isolation and evolution boundary.**
+> **Capability is the durable WHAT; implementation is replaceable HOW.**
 >
-> **Extensions preserve adjustability — Extension First, Core Promotion Later, evidence before promotion.**
+> **Platform Standard protects coordination and portability without absorbing every semantic.**
 >
-> **Domain Layer carries industry meaning; Enterprise Mapping carries organization-specific meaning; they compose.**
+> **Runtime owns reliable execution, not Domain or Enterprise meaning.**
 >
-> **Capability and proven organizational value should survive implementation churn; implementation has no permanent privilege.**
+> **Extensions preserve variation; Core promotion requires repeated cross-boundary evidence.**
 >
-> **Repair is not the default; implementation evolution must be evidence-governed and obligation-preserving.**
+> **Evaluation judges evidence independently; components do not certify themselves.**
 >
-> **The long-term product is an Organization-AI Operating Model, not a larger Runtime.**
+> **Repair is not the default; implementation evolution is evidence-governed.**
+>
+> **External systems are legitimate HOW candidates and knowledge sources.**
+>
+> **Real use, not architecture imagination, decides what grows next.**
 >
 > **Everything is replaceable. Nothing is casually replaceable.**

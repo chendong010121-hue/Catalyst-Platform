@@ -1,7 +1,11 @@
-# PART B — Current Decision Snapshot
+# PART B — Historical v1 Decision Snapshot
 
-> **Snapshot implementation baseline:** `main @ bf65315f25b4f2de975bff386946fb6945eefbdf` — Capability Contract Conformance Pilot v0.1 merged through PR #8.
-> **Snapshot status:** v1 Evidence Scope satisfied; governance closure in progress.
+> **Status:** **HISTORICAL SNAPSHOT — NOT CURRENT-STATE AUTHORITY**  
+> **Original snapshot implementation baseline:** `main @ bf65315f25b4f2de975bff386946fb6945eefbdf` — Capability Contract Conformance Pilot v0.1 merged through PR #8.  
+> **Original snapshot meaning:** v1 Evidence Scope satisfied and Minimum Architectural Framework v1 ready for governance closure.  
+> **Current whole-platform state:** see `CATALYST_OPERATIONAL_BASELINE_V1.md`.
+
+This file remains part of the accepted Governing Baseline v1.1 bundle because it records the decision state that closed Minimum Architectural Framework v1. Its durable findings remain useful; its old `current`, authorization, and next-stage wording is historical.
 
 # 17. Gate 1 Closure
 
@@ -44,7 +48,7 @@ STRUCTURAL DIRECT-BINDING CONFORMANCE
 EVIDENCE-BACKED CLOSED FOR v1
 ```
 
-The evidence establishes that on the current direct-binding reference path:
+The evidence establishes that on the reference direct-binding path:
 
 ```text
 conforming implementation
@@ -58,7 +62,7 @@ clearly incompatible output contract
 → fail closed before normal execution
 ```
 
-The checked Runtime descriptor is frozen and reused during Runtime registration, so the same binding cannot pass preflight with one descriptor and expose a different descriptor during composition.
+The checked Runtime descriptor was frozen and reused during Runtime registration, so the same binding could not pass preflight with one descriptor and expose a different descriptor during composition.
 
 This remains a **reference direct-binding rule**, not a universal future Adapter law.
 
@@ -84,7 +88,7 @@ Capability responsibility split
 Platform / Binding / Implementation / Runtime validation separation
 ```
 
-## Architecturally Exists / PARK / WATCH
+## Architecturally Exists / PARK / WATCH at the time of this snapshot
 
 ```text
 Semantic Context Boundary
@@ -100,13 +104,13 @@ Control Plane
 Production Enterprise System completeness
 ```
 
-These items do not currently contradict the evidence-backed v1 boundaries and therefore do not block v1 closure.
+These items did not contradict the evidence-backed v1 boundaries and therefore did not block v1 closure.
 
 ---
 
-# 20. Refreshed Risk Queue
+# 20. Snapshot Risk Queue
 
-| Status | Architecture question | Current treatment |
+| Status at v1 closure | Architecture question | Snapshot treatment |
 |---|---|---|
 | **CLOSED FOR v1** | Platform Contract Authority | Conceptually Closed |
 | **CLOSED FOR v1** | Structural direct-binding Contract Conformance | Evidence-backed Closed |
@@ -116,9 +120,11 @@ These items do not currently contradict the evidence-backed v1 boundaries and th
 | **PARK** | side-effect implementation conformance | Not a v1 blocker |
 | **WATCH** | Extension Composition / Required Negotiation | Wait for evidence |
 | **PARK** | Workflow / Domain / Authority / Policy / Approval | Architecturally Exists |
-| **OUT OF CURRENT TARGET** | Production Enterprise System completeness | Not current project |
+| **OUT OF v1 TARGET** | Production Enterprise System completeness | Not current project target |
 
-> **This queue is a risk inventory, not a roadmap.**
+> **This queue was a risk inventory, not a roadmap.**
+
+Current work must not be inferred from this historical queue. Use real use, current evidence, Architecture, Operational Baseline, and explicit bounded authorization.
 
 ---
 
@@ -133,50 +139,43 @@ NO NEW BLOCKING ARCHITECTURE CONTRADICTION FOUND
 NO FURTHER IMPLEMENTATION STAGE REQUIRED FOR v1
 ```
 
-When this Governing Baseline bundle is merged to GitHub `main`:
+After this Governing Baseline bundle was merged to GitHub `main`:
 
 ```text
 Minimum Architectural Framework v1
 = PROVEN / ACCEPTED
 ```
 
-This means the first Minimum Architectural Framework is complete **for its declared scope**. It does not mean the long-term Enterprise Agent Operating Model is production-complete.
+This meant the first Minimum Architectural Framework was complete **for its declared scope**. It did not mean the long-term Organization–AI Operating Model was production-complete.
 
 ---
 
-# 22. Current Authorized Work
+# 22. Historical Authorization State
+
+At the time of this snapshot:
 
 ```text
 GOVERNANCE CLOSURE ONLY
 NO NEW IMPLEMENTATION STAGE
 ```
 
-After activation:
+and after activation:
 
 ```text
 STOP
 ```
 
-Do not automatically start:
+This section records the historical authorization that closed v1. It does **not** authorize or prohibit current work by itself.
 
-```text
-Semantic Context
-Runtime replacement
-Authority / Policy / Approval
-Workflow
-Platform Standard v0.2
-Production Enterprise System work
-```
-
-Any future work must re-enter the permanent decision rule from PART A:
+The durable decision rule remains:
 
 ```text
 real need
 → responsibility
 → evidence
-→ minimum stage if justified
+→ minimum bounded change if justified
 → STOP
-→ architecture review
+→ review
 ```
 
 ---
@@ -184,7 +183,7 @@ real need
 # 23. Source / Evidence References for this Snapshot
 
 ```text
-Architecture authority
+Architecture authority at snapshot time
 → ARCHITECTURE.md v2.3
 
 accepted implementation evidence
@@ -194,16 +193,16 @@ reviewed Pilot candidate
 → f680afef5e8d1d4a636267ba0a7d0934aabf7934
 
 Pilot CI evidence
-→ agent-runtime-ci run 32155772303 — SUCCESS
+→ historical CI run 32155772303 — SUCCESS
 
-current governing philosophy
-→ this Governing Baseline v1.1 bundle after merge to main
+current governing meaning
+→ Governing Baseline v1.1 Part A + current Operational Baseline / Architecture
 ```
 
 ---
 
 # 24. Final Snapshot Statement
 
-> **Minimum Architectural Framework v1 has satisfied the evidence scope deliberately selected for v1: reliable Runtime execution semantics, an executable Platform Standard boundary, minimum Capability portability, Extension-first semantic growth, and a real Platform Capability Contract that constrains the current direct-binding implementation seam. Remaining future architecture questions are explicitly PARK / WATCH / Architecturally Exists and do not justify additional v1 implementation.**
+> **Minimum Architectural Framework v1 satisfied the evidence scope deliberately selected for v1: reliable Runtime execution semantics, an executable Platform Standard boundary, minimum Capability portability, Extension-first semantic growth, and a real Platform Capability Contract constraining the reference direct-binding implementation seam. Remaining architecture questions were explicitly PARK / WATCH / Architecturally Exists and did not justify additional v1 implementation.**
 
-> **After this governance bundle is merged to `main`, Minimum Architectural Framework v1 is PROVEN / ACCEPTED and the project must STOP before selecting any new Stage.**
+> **This Part B remains a historical decision snapshot. For current state, current authorization, or current operating mode, use `CATALYST_OPERATIONAL_BASELINE_V1.md`, GitHub `main`, active tests / CI, and any explicitly active bounded Stage.**

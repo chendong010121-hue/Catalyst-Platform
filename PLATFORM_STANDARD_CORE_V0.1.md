@@ -1,8 +1,9 @@
 # PLATFORM_STANDARD_CORE_V0.1.md
 ## FINAL · Minimal Executable Contract
 
-**Status:** ENGINEERING SPEC — **IMPLEMENTED / LOCAL VERIFIED / CI VERIFIED / PR #4 UNDER EXTERNAL REVIEW / NOT YET ACCEPTED INTO MAIN**  
-**Runtime baseline:** `main @ 9b88c26eef8faf2569cce8ffcb1cb3407e27b980`  
+**Status:** **IMPLEMENTED / VERIFIED / MERGED / ACCEPTED / CLOSED**  
+**Current-state authority:** `CATALYST_OPERATIONAL_BASELINE_V1.md` + GitHub `main` + active tests / CI  
+**Historical acceptance lineage:** PR #4 implementation candidate → PR #5 documentation closure  
 **Principle:** **enterprise-extensible, not enterprise-complete**
 
 ---
@@ -203,7 +204,7 @@ trace_id
 
 v0.1 `context` contains only `extensions`.
 
-Future identity, delegation, project, policy, risk and domain context enter here later.
+Future identity, delegation, project, policy, risk and domain context enter here later only if justified by evidence and the applicable architecture decision.
 
 ---
 
@@ -362,7 +363,7 @@ reject duplicate id/version
 
 It stores Standard descriptors only.
 
-It is NOT the future production Registry Service.
+It is NOT a future production Registry Service and does not authorize one.
 
 ---
 
@@ -497,7 +498,7 @@ new Agent Loop
 production Registry Service
 ```
 
-These are future stages.
+These remain absent unless future real use provides evidence and explicit bounded authorization.
 
 ---
 
@@ -526,7 +527,7 @@ Do not add more v0.1 tests unless a current contract requires them.
 
 ---
 
-# 18. Deliverables
+# 18. Accepted deliverables
 
 ```text
 platform_standard/
@@ -538,16 +539,15 @@ platform_standard/
 
 examples/
   run_platform_standard_vertical_slice.py
+  platform_standard_reference.py
 
 tests/
   test_platform_standard_core.py
 
 PLATFORM_STANDARD_CORE_V0.1.md
-ARCHITECTURE.md
-HANDOFF.md
 ```
 
-Reuse existing project dependencies where possible.
+Historical Stage/Handoff files are not required on the current Operational V1 surface.
 
 ---
 
@@ -563,52 +563,33 @@ AgentCore unchanged
 no future enterprise/domain subsystem implemented
 ```
 
-Then stop and review.
+This condition has been satisfied. Core v0.1 is closed.
 
-> **The purpose of Core v0.1 is not to model the whole enterprise. It is to prove one stable, extensible contract above the existing Runtime.**
+> **The purpose of Core v0.1 is not to model the whole enterprise. It is to prove one stable, extensible contract above a replaceable Runtime implementation.**
 
 ---
 
-# 20. v0.1 delivery status
+# 20. Accepted v0.1 evidence status
 
 ```text
-delivered code
-  platform_standard/models.py
-  platform_standard/extensions.py
-  platform_standard/validation.py
-  platform_standard/registry.py
-  platform_standard/runtime_adapter.py
-  examples/run_platform_standard_vertical_slice.py
-  examples/platform_standard_reference.py   (reference capabilities: compose_report, count_words)
-  tests/test_platform_standard_core.py
-
 acceptance results
-  PS-1  valid Capability accepted            PASS
-  PS-2  malformed Capability rejected        PASS
-  PS-3  valid Invocation accepted            PASS
-  PS-4  unknown required Extension rejected  PASS
-  PS-5  unknown optional Extension preserved PASS
-  PS-6  success Result validates             PASS
-  PS-7  failure Result validates             PASS
-  PS-8  unresolved implies no safe retry     PASS
-  PS-9  ArtifactRef validates                PASS
-  PS-10 Trace Event validates                PASS
-  PS-11 duplicate registry id/version rejected PASS
-  PS-12 vertical slice (compose_report)      PASS
-  PS-13 second Capability (count_words) portable, no Core/Runtime/AgentCore change PASS
-  PS-14 uncertain Runtime outcome -> unresolved PASS
+  PS-1..PS-14                                              PASS
 
 audit-repair results
-  AR-1  GitHub CI covers Platform Standard (compile + tests run)    PASS
-  AR-2  same capability ID, V1 vs V2 -> correct implementation      PASS
-  AR-3  generic RuntimeAdapter contains no artifact semantics       PASS
-  AR-4  platform_standard/** has no examples.* dependency           PASS
-  AR-5  extensions=None rejected                                    PASS
-  AR-6  context without valid extensions rejected                   PASS
-  AR-7  NaN / Infinity rejected as non-JSON                         PASS
+  AR-1..AR-7                                               PASS
 
-runtime integrity
-  AgentCore / Runtime / CapabilityExecutor / contracts : UNCHANGED (zero diff)
-  existing regression: 22/22 examples test modules PASS
-  status: PR #4 UNDER EXTERNAL REVIEW — NOT YET ACCEPTED INTO MAIN
+reference execution
+  vertical slice (compose_report)                          PASS
+  second Capability (count_words)                          PASS
+  same-ID multi-version routing                            PASS
+
+runtime integrity at acceptance
+  AgentCore / Runtime / CapabilityExecutor / contracts    UNCHANGED for the v0.1 slice
+
+repository status
+  PR #4 implementation candidate                          MERGED
+  PR #5 documentation closure                             MERGED
+  Platform Standard Core v0.1                             ACCEPTED / CLOSED
 ```
+
+Current implementation truth is GitHub `main`; current operational state is summarized by `CATALYST_OPERATIONAL_BASELINE_V1.md`.
