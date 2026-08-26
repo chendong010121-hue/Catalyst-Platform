@@ -1,3 +1,4 @@
+# Catalyst Platform Minimum Operational V1 release gate
 name: catalyst-platform-ci
 
 on:
