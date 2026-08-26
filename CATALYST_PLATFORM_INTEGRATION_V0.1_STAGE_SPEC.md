@@ -1,13 +1,14 @@
 # CATALYST PLATFORM INTEGRATION V0.1 — STAGE SPEC
 
 > **Status:** AUTHORIZED INTEGRATION STAGE — CONSOLIDATION FIRST
+> **Semantic repair:** solution-form neutrality accepted before Phase II
 > **Implementation scope:** asset consolidation, responsibility/evidence handoff, Harness construction-method integration, cross-component proof
 > **Case01:** PAUSED
 > **Case02:** PAUSED
 > **Platform Core functional expansion:** FORBIDDEN
 > **Runtime functional change:** FORBIDDEN
 > **Generic Registry / DB / Control Plane:** FORBIDDEN
-> **Goal:** turn the already-proven Catalyst parts into one connected, replaceable system before further Agent development.
+> **Goal:** turn the already-proven Catalyst parts into one connected, replaceable system before further solution / capability development.
 
 ---
 
@@ -54,17 +55,31 @@ This Stage therefore prioritizes **consolidation before expansion**.
 
 ## 2. Stable model that MUST be preserved
 
-### 2.1 Agent and Capability are complementary
+### 2.1 Capability is the reusable value unit; solution form is replaceable
 
 ```text
-AGENT
-= primary governed operational / delivery / admission unit
-
 CAPABILITY
-= reusable, composable, replaceable semantic asset unit
+= primary reusable semantic value unit
+
+SKILL / WORKFLOW / AGENT / SERVICE / OTHER COMPOSITION
+= possible solution / delivery / execution forms that may realize one or more Capabilities
 ```
 
-Agent governance MUST NOT be replaced by Capability-first thinking.
+These solution forms are not a hierarchy of organizational value.
+
+A concrete solution form becomes a governed operational unit when it is independently versioned, admitted, executed, delivered, or externally relied upon. That governed unit does **not** have to be an Agent.
+
+Therefore:
+
+```text
+Capability-first search
+!= Agent-first construction
+!= Skill-first construction
+!= erasing operational governance
+```
+
+Catalyst must be able to choose the simplest valid solution form for the responsibility. An Agent is justified only when adaptive runtime control or other real requirements make it the appropriate form.
+
 Capability search MUST NOT collapse into Skill search.
 
 ### 2.2 Shared semantic spine
@@ -76,17 +91,19 @@ REAL NEED
   ↓
 UNDERSTAND / TARGETED CLARIFICATION
   ↓
-AGENT RESPONSIBILITY
+RESPONSIBILITY / CAPABILITY NEED
   ↓
 CAPABILITY SEARCH
   ↓
 REUSE / ADAPT / COMPOSE / RECONSTRUCT / BUILD
   ↓
-HARNESS CONSTRUCTION
+SELECT APPROPRIATE SOLUTION FORM
+  ↓
+HARNESS CONSTRUCTION / INSPECTION WHEN NEEDED
   ↓
 CATALYST CONFORMANCE
   ↓
-RUNTIME EXECUTION
+RUNTIME / EXECUTION PATH WHEN APPLICABLE
   ↓
 RAW EVIDENCE
   ↓
@@ -102,7 +119,7 @@ FUTURE REUSE
 The shared spine is:
 
 ```text
-Agent identity
+Operational solution identity when one exists
 Responsibility
 Capability identity/version
 Evidence
@@ -157,7 +174,7 @@ This Stage must close the visibility/handoff gap with the smallest evidence-back
 
 ## 4. Capability visibility and issue propagation target
 
-The integration target is that any admitted/used Capability can be traced to a single semantic identity and its current evidence, regardless of where the implementation lives.
+The integration target is that any admitted/used Capability can be traced to a single semantic identity and its current evidence, regardless of which solution form or implementation currently realizes it.
 
 Minimum information that must be recoverable:
 
@@ -168,10 +185,11 @@ responsibility boundary
 asset forms that currently exist
   - record / knowledge
   - skill / recipe
-  - implementation
+  - implementation / service
+  - workflow / composition
   - evaluation evidence
 lineage / provenance
-Domain / Enterprise / Agent bindings when applicable
+Domain / Enterprise / operational-solution bindings when applicable
 known limits / unproven boundaries
 current implementation binding(s)
 replacement / migration knowledge when known
@@ -185,7 +203,7 @@ When a material failure is observed in Harness construction, Binding/Conformance
 ```text
 OBSERVED FAILURE
   ↓
-identify affected Agent + Capability identity/version when possible
+identify affected operational solution + Capability identity/version when possible
   ↓
 classify owning responsibility
   ↓
@@ -236,7 +254,7 @@ keep replaceable
 Catalyst-specific authority remains in:
 
 ```text
-Agent identity / responsibility / admission
+Operational solution identity / responsibility / admission when applicable
 Capability semantic identity and public promise
 Domain / Enterprise meaning
 Stage authorization
@@ -261,7 +279,7 @@ Platform Contract
 Runtime implementation/evidence
 Adapter/Binding
 Harness implementation/method
-Agent
+Solution form (Agent / Workflow / Skill / Service / other composition)
 Capability record
 Knowledge
 Skill/Recipe
@@ -290,9 +308,9 @@ Constraints:
 - no production Registry service;
 - no graph DB;
 - no new Platform Core object unless later evidence requires it;
-- must distinguish Agent identity from Capability identity.
+- must distinguish Capability identity from whatever operational solution form currently realizes it.
 
-Representation is selected only after Phase I shows the minimum useful fields.
+Representation is selected only after Phase I and the external comparative audit show the minimum useful fields and prove that an existing external pattern cannot be reused more cheaply.
 
 ### Phase III — Shared Responsibility / Evidence Handoff
 
@@ -302,10 +320,11 @@ It must be able to carry, when relevant:
 
 ```text
 TARGET / NEED
-AGENT PURPOSE
+PURPOSE / DELIVERY CONTEXT
 RESPONSIBILITIES
 DOMAIN / ENTERPRISE CONTEXT
 CAPABILITY CLAIMS / REUSED CAPABILITIES
+SELECTED OR CANDIDATE SOLUTION FORM
 KNOWLEDGE BOUNDARY
 ACTION BOUNDARY
 STATE HORIZON
@@ -330,14 +349,15 @@ UNDERSTAND
 → infer what can be inferred
 → identify material uncertainty
 → targeted clarification only when material
-→ confirm Agent responsibility
+→ confirm responsibility / Capability need
 → Capability Search
 → reuse / adapt / compose / reconstruct / build
 → characterize work
 → select replaceable reference pattern
 → select mechanism
+→ choose the simplest valid solution form
 → invoke/compose relevant Skills/assets
-→ construct bounded Agent/Skill/Workflow/implementation
+→ construct bounded Skill / Workflow / Agent / Service / other implementation only as justified
 → produce Runtime requirements + Evaluation evidence requirements
 → Catalyst conformance handoff
 ```
@@ -346,8 +366,9 @@ Mandatory corrections:
 
 - Capability Search > Skill Search;
 - Pattern list is non-exhaustive / replaceable reference methodology;
-- Agent remains primary governed operational/delivery unit;
-- Capability remains reusable asset unit;
+- Agent is one possible solution form, not the privileged Platform value unit;
+- Capability remains the primary reusable semantic value unit;
+- whichever concrete form is independently operated/delivered may become a governed operational unit;
 - Harness != Runtime;
 - Harness does not own Evaluation/Admission authority;
 - remove Case-specific procedure from the generic Skill.
@@ -357,10 +378,11 @@ Mandatory corrections:
 Before returning to Case01, prove one small end-to-end identity/evidence chain:
 
 ```text
-shared Agent/Capability responsibility
-→ Harness decision / construction evidence
+shared Responsibility / Capability identity
+→ selected operational solution form
+→ Harness decision / construction evidence when Harness is used
 → conformance/binding
-→ Runtime execution
+→ Runtime / execution path when applicable
 → trace/result evidence
 → Evaluation attribution
 → same Capability record/evidence update
@@ -375,9 +397,10 @@ Only after Phases I–V pass:
 - do NOT resume patch-driven BREA history by default;
 - give the real Case01 product need to Catalyst Harness;
 - require Harness to understand/clarify/search existing capabilities first;
+- do not assume the answer must be an Agent merely because historical BREA was an Agent;
 - allow reuse of existing BREA/Knowledge/Evaluation/Harvest evidence;
-- allow an alternative simpler architecture if evidence supports it;
-- construct a new governed Agent Candidate from the real need;
+- allow an alternative simpler architecture or solution form if evidence supports it;
+- construct a new governed solution Candidate (Agent only if justified by the responsibility);
 - then run → evaluate → harvest using the integrated lifecycle.
 
 Case01 is a validation Case, not architecture authority.
@@ -413,14 +436,15 @@ Case02 live evaluation
 This integration Stage succeeds when all are true:
 
 1. A contributor can discover what Catalyst already has before proposing new construction.
-2. Agent and Capability identities are not conflated.
+2. Capability identity is not conflated with Agent / Skill / Workflow / implementation form.
 3. Harness, Runtime and Evaluation refer to compatible Responsibility/Evidence meaning.
-4. A Capability implementation can be replaced without silently changing its public semantic promise.
-5. A material failure can be attributed to its owning layer and attached to the affected Agent/Capability evidence.
+4. A Capability implementation or solution form can be replaced without silently changing its public semantic promise.
+5. A material failure can be attributed to its owning layer and attached to the affected operational solution / Capability evidence.
 6. Existing external ideas retain provenance but do not become architecture authority.
-7. Catalyst-owned meaning/evidence/lineage survives replacement of Harness, Runtime, Skill, model or evaluator implementation.
+7. Catalyst-owned meaning/evidence/lineage survives replacement of Harness, Runtime, Skill, Workflow, Agent implementation, model or evaluator implementation.
 8. No new Core object/service is introduced solely for conceptual neatness.
 9. Case01 can be handed to Catalyst Harness as a real need rather than manually continued as a patch chain.
+10. The selected solution form for a need is justified by responsibility and evidence, not by vocabulary or historical habit.
 
 ---
 
@@ -429,9 +453,10 @@ This integration Stage succeeds when all are true:
 STOP and return to Architecture Review if any of these occur:
 
 - integration requires Runtime to own Domain/Enterprise meaning;
-- Harness must become mandatory for all admitted Agents;
+- Harness must become mandatory for every admitted solution form;
 - Evaluation requires reverse-engineering implementation to define product responsibility;
-- Capability-first design erases Agent admission/execution responsibility;
+- Capability-first design erases governance of the concrete operational solution that is actually versioned/executed/delivered;
+- Agent-first, Skill-first, Workflow-first or Service-first assumptions bypass responsibility analysis;
 - a new Core field/service is proposed without repeated cross-boundary evidence;
 - asset consolidation copies or rewrites authoritative evidence instead of referencing it;
 - repository tidiness is used as justification for semantic migration;
@@ -439,8 +464,35 @@ STOP and return to Architecture Review if any of these occur:
 
 ---
 
-## 10. First authorized action after this Stage Spec
+## 10. Current authorization after the semantic repair
 
-The next action is **Phase I — Asset Census only**.
+Phase I Asset Census is complete.
 
-No functional implementation is authorized by this document until the census is reviewed and the minimum integration gap is confirmed.
+After this targeted Stage Spec repair:
+
+> **STOP functional integration work.**
+
+The next authorized activity is a **comparative external architecture/method audit only**.
+
+Before Phase II or any further implementation, compare Catalyst's purpose, lifecycle, planned phases, abstractions and proposed mechanisms against mature external systems and methods. For every proposed addition classify it as:
+
+```text
+DIRECTLY REUSE / LEARN
+ADAPT
+CATALYST-SPECIFIC NEW BUILD
+DO NOT BUILD
+```
+
+For every `ADAPT` or `CATALYST-SPECIFIC NEW BUILD`, require evidence that:
+
+```text
+1. no already-existing Catalyst asset solves the responsibility;
+2. no simpler mature external mechanism can be reused directly;
+3. the responsibility genuinely belongs in the proposed layer;
+4. the smallest implementation is sufficient;
+5. replacement / migration boundaries remain explicit;
+6. no duplicate Registry / Engine / Service / ontology is introduced;
+7. a concrete proof and STOP condition exist.
+```
+
+Phase II is **NOT YET AUTHORIZED** until this comparative audit is reviewed.
