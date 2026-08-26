@@ -95,7 +95,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          python platform-harness/live_eval/run_live_user_capability_eval.py 2>&1 | tee live_evidence_v0_2/live_run.log
+          PYTHONPATH="$GITHUB_WORKSPACE" python platform-harness/live_eval/run_live_user_capability_eval.py 2>&1 | tee live_evidence_v0_2/live_run.log
 
       - name: Upload live evidence
         if: always()
