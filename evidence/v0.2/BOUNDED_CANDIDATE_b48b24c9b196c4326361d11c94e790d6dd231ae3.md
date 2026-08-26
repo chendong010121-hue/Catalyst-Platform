@@ -56,4 +56,3 @@ basis is:
 |---|---|
 | [live_capability_evaluation.json](immutable/bounded-candidate-b48b24c9b196c4326361d11c94e790d6dd231ae3/live_capability_evaluation.json) | `9f2e123fb124556dd85372d1657507c23b69b1febe440cd4c4697349909c6303` |
 | [LIVE_CAPABILITY_EVALUATION_REPORT.md](immutable/bounded-candidate-b48b24c9b196c4326361d11c94e790d6dd231ae3/LIVE_CAPABILITY_EVALUATION_REPORT.md) | `3a64ece87d9ed79397c9fcd3cb2c77874b135648f916d3760634202b59e05aa0` |
-

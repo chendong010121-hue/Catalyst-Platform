@@ -40,4 +40,3 @@ preserved exactly and is not corrected or beautified.
 |---|---|
 | [live_capability_evaluation.json](immutable/formal-baseline-reference-634cd852ced4ff838f22fb6587dcc5eba6086644/live_capability_evaluation.json) | `5c86c548ecd501042b58aa906d7b494d3b792e334f18ae81ce9e1d6ce7b7b251` |
 | [LIVE_CAPABILITY_EVALUATION_REPORT.md](immutable/formal-baseline-reference-634cd852ced4ff838f22fb6587dcc5eba6086644/LIVE_CAPABILITY_EVALUATION_REPORT.md) | `ba228b18410f7fa5f422ed7536975b87274087f316383d85bf73ed61e1424f70` |
-
