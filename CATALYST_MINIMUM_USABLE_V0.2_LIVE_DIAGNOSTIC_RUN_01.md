@@ -118,9 +118,9 @@ The underlying cause was not preserved. One plausible hypothesis is native multi
 ## 5. Run summary
 
 ```text
-passed:                 1 / 5
+passed:                  1 / 5
 product/capability fail: 1
-infrastructure failed:  3
+infrastructure failed:   3
 ```
 
 The run duration and per-case durations also suggest that the CPU-local diagnostic model is not an appropriate default PR acceptance provider, but performance alone is not the reason this run is excluded from the Formal Baseline. The decisive reason is automatic provider/model substitution.
@@ -148,7 +148,13 @@ Runtime redesign                    NOT AUTHORIZED
 6. Only after the Formal Baseline exists, form a bounded Candidate from observed capability evidence and re-evaluate against the same frozen benchmark.
 7. Accept or rollback the Candidate based on evidence.
 
-## 8. Mainline interpretation
+## 8. Subsequent hardening
+
+After Run 01, the live evaluator was changed to use explicit `Runtime.create → Runtime.run` rather than the convenience `Runtime.start` wrapper. This preserves Runtime semantics while allowing the evaluator to record the underlying exception type and a bounded failure snapshot (session id, history length, pending state, last decision/observation, model finish reason and tool-call names/count) on a future valid campaign.
+
+The deterministic V0.2 regression now also protects the explicit-provider / opt-in live gate and forbids reintroducing an automatic Ollama fallback.
+
+## 9. Mainline interpretation
 
 Run 01 is a successful **diagnostic milestone**, not a failed V0.2 conclusion.
 
