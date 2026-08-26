@@ -1,0 +1,98 @@
+name: catalyst-live-capability-eval-v0.2
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-user-capability:
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.CATALYST_LIVE_AUTO == '1' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CATALYST_LIVE_API_KEY: ${{ secrets.CATALYST_LIVE_API_KEY || secrets.DEEPSEEK_API_KEY }}
+      CATALYST_LIVE_BASE_URL: ${{ vars.CATALYST_LIVE_BASE_URL || 'https://api.deepseek.com' }}
+      CATALYST_LIVE_MODEL: ${{ vars.CATALYST_LIVE_MODEL || 'deepseek-v4-flash' }}
+      CATALYST_LIVE_OUTPUT_DIR: live_evidence_v0_2
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Record tested identity
+        shell: bash
+        run: |
+          mkdir -p live_evidence_v0_2
+          git rev-parse HEAD | tee live_evidence_v0_2/tested_sha.txt
+          git rev-parse HEAD^{tree} | tee live_evidence_v0_2/tested_tree.txt
+
+      - name: Require explicitly selected real model API
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$CATALYST_LIVE_API_KEY" ]; then
+            cat > live_evidence_v0_2/LIVE_GATE_BLOCKED.json <<'JSON'
+          {
+            "status": "LIVE_GATE_BLOCKED",
+            "reason": "No CATALYST_LIVE_API_KEY/DEEPSEEK_API_KEY is configured. Formal live capability evaluation requires an explicitly selected real provider/model and must not auto-substitute another model."
+          }
+          JSON
+            echo "Formal live-use proof is BLOCKED: explicit model credential missing. Automatic model substitution is forbidden."
+            exit 2
+          fi
+          echo "provider_mode=explicit_external_openai_compatible" | tee live_evidence_v0_2/provider_mode.txt
+          echo "base_url=$CATALYST_LIVE_BASE_URL" >> live_evidence_v0_2/provider_mode.txt
+          echo "model=$CATALYST_LIVE_MODEL" >> live_evidence_v0_2/provider_mode.txt
+          echo "credential present; value intentionally not printed" >> live_evidence_v0_2/provider_mode.txt
+
+      - name: Prove model API is live before benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee live_evidence_v0_2/model_api_probe.log
+          import json, os, urllib.request
+          base = os.environ['CATALYST_LIVE_BASE_URL'].rstrip('/')
+          payload = json.dumps({
+              'model': os.environ['CATALYST_LIVE_MODEL'],
+              'messages': [{'role': 'user', 'content': 'Reply with exactly LIVE_API_OK'}],
+              'stream': False,
+          }).encode()
+          req = urllib.request.Request(
+              base + '/chat/completions',
+              data=payload,
+              method='POST',
+              headers={
+                  'Authorization': 'Bearer ' + os.environ['CATALYST_LIVE_API_KEY'],
+                  'Content-Type': 'application/json',
+              },
+          )
+          with urllib.request.urlopen(req, timeout=120) as r:
+              data = json.loads(r.read().decode())
+          text = data['choices'][0]['message'].get('content') or ''
+          print('model=', os.environ['CATALYST_LIVE_MODEL'])
+          print('response=', text[:500])
+          if 'LIVE_API_OK' not in text:
+              raise SystemExit('real model API responded, but probe instruction was not followed')
+          PY
+
+      - name: Run real model + real external API capability benchmark
+        shell: bash
+        run: |
+          set -o pipefail
+          PYTHONPATH="$GITHUB_WORKSPACE" python platform-harness/live_eval/run_live_user_capability_eval.py 2>&1 | tee live_evidence_v0_2/live_run.log
+
+      - name: Upload live evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalyst-live-capability-evidence-v0.2
+          path: live_evidence_v0_2/
+          if-no-files-found: error

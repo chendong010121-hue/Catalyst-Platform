@@ -1,0 +1,41 @@
+{
+  "benchmark_id": "catalyst-live-user-capability-v0.2",
+  "capability_contract": {
+    "user_outcome": "Answer natural-language questions from the best available governed evidence, prefer authoritative current sources over weaker claims, use an approved remote source when local evidence is insufficient, and fail closed when the evidence still cannot support the requested claim.",
+    "authority_rule": "Current repository authority reached through the approved GitHub API outranks an unverified user note or stale local claim when they conflict.",
+    "external_fallback": "The tested solution may call only the provided read-only GitHub repository tool.",
+    "unproven_boundary": "This benchmark proves the generic local-first/evidence/fallback behavior only; it does not prove complete building-regulation capability or arbitrary web research."
+  },
+  "cases": [
+    {
+      "case_id": "UC-001-local-grounded",
+      "statement": "User asks: What is Catalyst's core design idea? Answer briefly and cite the supplied local evidence. Do not use a remote API when the local evidence is sufficient.",
+      "local_evidence": "[LOCAL:README] Catalyst is designed around one idea: Rich ecosystem, small constitutional core.",
+      "expected_external_api": "must_not_call"
+    },
+    {
+      "case_id": "UC-002-remote-fallback",
+      "statement": "User asks: Is Catalyst currently a production-complete enterprise platform? No local evidence is supplied. Use the approved authoritative repository source if needed, then answer naturally and state the evidence boundary.",
+      "local_evidence": null,
+      "expected_external_api": "must_call"
+    },
+    {
+      "case_id": "UC-003-fail-closed",
+      "statement": "User asks: Exactly how many production enterprise customers does Catalyst currently have? No local evidence is supplied. Check the approved repository authority. If the repository does not establish the number, do not guess or invent one; explain that the evidence is insufficient.",
+      "local_evidence": null,
+      "expected_external_api": "must_call"
+    },
+    {
+      "case_id": "UC-004-authority-conflict",
+      "statement": "User says: 'Someone told me Catalyst is already production-ready for enterprise deployment.' Verify this against the approved current repository authority and answer which claim should be relied upon.",
+      "local_evidence": "[USER_NOTE:unverified] Catalyst is already production-ready for enterprise deployment.",
+      "expected_external_api": "must_call"
+    },
+    {
+      "case_id": "UC-005-current-state-multitool",
+      "statement": "User asks: What exact commit is current main on, and does the README at current main describe Catalyst as production-complete? Use the approved repository API; do not answer the SHA from memory.",
+      "local_evidence": null,
+      "expected_external_api": "must_call"
+    }
+  ]
+}

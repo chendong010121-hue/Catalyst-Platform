@@ -24,6 +24,10 @@ from .contracts import (
     ModelCallRecord,
     ModelToolCall,
     ModelUsage,
+    NativeToolsV2Call,
+    NativeToolsV2FailureAttribution,
+    NativeToolsV2RecoveryEvidence,
+    NativeToolsV2Turn,
     PendingExecution,
     SessionSnapshot,
     Stop,
@@ -139,6 +143,81 @@ def snapshot_model_call(model_call):
             snapshot_message(model_call.assistant_message)
             if model_call.assistant_message is not None
             else None
+        ),
+    )
+
+
+def snapshot_native_tools_v2_attribution(attribution):
+    if attribution is None:
+        return None
+    if not isinstance(attribution, NativeToolsV2FailureAttribution):
+        raise CapabilityContractError(
+            "native_tools_v2 failure attribution must be a NativeToolsV2FailureAttribution"
+        )
+    return NativeToolsV2FailureAttribution(
+        stage=attribution.stage,
+        owner=attribution.owner,
+        failure_type=attribution.failure_type,
+        observed_fact=attribution.observed_fact,
+        provider_completed=attribution.provider_completed,
+        downstream_tool_execution_started=attribution.downstream_tool_execution_started,
+        side_effect_certainty=attribution.side_effect_certainty,
+        unproven_downstream_boundary=attribution.unproven_downstream_boundary,
+        evidence_reference=attribution.evidence_reference,
+    )
+
+
+def snapshot_native_tools_v2_recovery_evidence(event):
+    if not isinstance(event, NativeToolsV2RecoveryEvidence):
+        raise CapabilityContractError(
+            "native_tools_v2 recovery evidence must be a NativeToolsV2RecoveryEvidence"
+        )
+    return NativeToolsV2RecoveryEvidence(
+        kind=event.kind,
+        tool_call_id=event.tool_call_id,
+        execution_id=event.execution_id,
+        source=event.source,
+        replayed=event.replayed,
+        observed_fact=event.observed_fact,
+    )
+
+
+def snapshot_native_tools_v2_call(call):
+    if not isinstance(call, NativeToolsV2Call):
+        raise CapabilityContractError("native_tools_v2 call must be a NativeToolsV2Call")
+    policy_verdict = call.policy_verdict
+    if isinstance(policy_verdict, Allow):
+        policy_verdict = Allow()
+    elif isinstance(policy_verdict, Deny):
+        policy_verdict = Deny(policy_verdict.reason)
+    elif policy_verdict is not None:
+        raise CapabilityContractError("native_tools_v2 call policy verdict is invalid")
+    return NativeToolsV2Call(
+        tool_call_id=call.tool_call_id,
+        name=call.name,
+        arguments=call.arguments,
+        action=snapshot_action(call.action) if call.action is not None else None,
+        status=call.status,
+        policy_verdict=policy_verdict,
+        execution_id=call.execution_id,
+        observation=snapshot_observation(call.observation),
+        uncertainty=call.uncertainty,
+    )
+
+
+def snapshot_native_tools_v2_turn(turn):
+    if not isinstance(turn, NativeToolsV2Turn):
+        raise CapabilityContractError("native_tools_v2 turn must be a NativeToolsV2Turn")
+    return NativeToolsV2Turn(
+        turn_id=turn.turn_id,
+        model_call=snapshot_model_call(turn.model_call),
+        calls=tuple(snapshot_native_tools_v2_call(call) for call in turn.calls),
+        next_index=turn.next_index,
+        status=turn.status,
+        failure_attribution=snapshot_native_tools_v2_attribution(turn.failure_attribution),
+        recovery_evidence=tuple(
+            snapshot_native_tools_v2_recovery_evidence(event)
+            for event in turn.recovery_evidence
         ),
     )
 
@@ -600,12 +679,45 @@ def validate_session_snapshot(snapshot, expected_session_id=None) -> SessionSnap
                     session_id=session_id,
                 )
 
+    native_turns = snapshot.native_tools_v2_turns
+    if not isinstance(native_turns, (tuple, list)):
+        raise SessionConsistencyError(
+            "native_tools_v2_turns must be a tuple/list", session_id=session_id
+        )
+    try:
+        canonical_native_turns = tuple(
+            snapshot_native_tools_v2_turn(turn) for turn in native_turns
+        )
+    except (CapabilityContractError, ValueError) as exc:
+        raise SessionConsistencyError(
+            f"native_tools_v2_turns failed canonical snapshot: {exc}",
+            session_id=session_id,
+        ) from exc
+    turn_ids = [turn.turn_id for turn in canonical_native_turns]
+    if len(turn_ids) != len(set(turn_ids)):
+        raise SessionConsistencyError(
+            "native_tools_v2_turns turn_id values must be unique", session_id=session_id
+        )
+    if pending is not None and canonical_native_turns:
+        pending_matches = [
+            call
+            for turn in canonical_native_turns
+            for call in turn.calls
+            if call.execution_id == pending.execution_id
+        ]
+        if len(pending_matches) != 1:
+            raise SessionConsistencyError(
+                "pending v2 execution must match exactly one durable native_tools_v2 call",
+                session_id=session_id,
+            )
+
     return SessionSnapshot(
         session_id=session_id,
         goal=snapshot.goal,
         state=state,
         history=tuple(steps),
         pending_execution=snapshot_pending_execution(pending),
+        native_tools_v2_turns=canonical_native_turns,
     )
 
 

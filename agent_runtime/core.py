@@ -180,18 +180,47 @@ class AgentCore:
             )
             return self._commit(snapshot, step)
 
+    def execute_action(
+        self,
+        snapshot: SessionSnapshot,
+        action: Action,
+        *,
+        policy_verdict=None,
+        execution_id: str | None = None,
+    ) -> SessionSnapshot:
+        """Run one concrete Action through the existing v0.1 lifecycle.
+
+        Native-tools v2 uses this narrow shared seam for each sibling call.  The
+        method does not broaden the v0.1 Reasoner/Decision protocol; it only
+        exposes the already-tested single-Action lifecycle to a v2 batch host.
+        """
+        return self._advance(
+            snapshot,
+            Act(snapshot_action(action)),
+            None,
+            prechecked_verdict=policy_verdict,
+            execution_id=execution_id,
+        )
+
     def _advance(
         self,
         snapshot: SessionSnapshot,
         decision: Act,
         model_call: ModelCallRecord | None,
+        *,
+        prechecked_verdict=None,
+        execution_id: str | None = None,
     ) -> SessionSnapshot:
         """执行一次 Act：Policy 校验 → (Allow) prepare → execute → settle。"""
         canonical_action = snapshot_action(decision.action)
         index = len(snapshot.history)
-        verdict = self._policy.check_action(
-            snapshot_action(canonical_action),
-            snapshot_state(snapshot.state),
+        verdict = (
+            prechecked_verdict
+            if prechecked_verdict is not None
+            else self._policy.check_action(
+                snapshot_action(canonical_action),
+                snapshot_state(snapshot.state),
+            )
         )
 
         if isinstance(verdict, Deny):
@@ -205,7 +234,7 @@ class AgentCore:
             return self._finalize(snapshot, step)
 
         if isinstance(verdict, Allow):
-            execution_id = self._execution_id_factory()
+            execution_id = execution_id or self._execution_id_factory()
             self._validate_execution_id(snapshot, execution_id)
             pending = PendingExecution(
                 execution_id=execution_id,
@@ -270,6 +299,7 @@ class AgentCore:
             state=snapshot.state,
             history=snapshot.history,
             pending_execution=snapshot_pending_execution(pending),
+            native_tools_v2_turns=snapshot.native_tools_v2_turns,
         )
 
     def _append(
@@ -281,6 +311,7 @@ class AgentCore:
             goal=snapshot.goal,
             state=snapshot.state,
             history=snapshot.history + (step,),
+            native_tools_v2_turns=snapshot.native_tools_v2_turns,
         )
 
     def _commit(

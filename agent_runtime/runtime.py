@@ -245,6 +245,7 @@ class Runtime:
             state=snapshot.state,
             history=snapshot.history + (step,),
             pending_execution=None,
+            native_tools_v2_turns=snapshot.native_tools_v2_turns,
         )
         # canonical commit boundary：reconcile 的 settled snapshot 也必须先 validate，再 commit
         settled = validate_session_snapshot(settled)
