@@ -97,6 +97,21 @@ def main() -> None:
     assert "no fake fallback" in live.lower() or "never falls back" in live.lower()
     assert "api.github.com" in live
     assert "OpenAICompatibleModelProvider" in live
+    assert "runtime.create(" in live and "runtime.run(" in live
+    assert "failure_snapshot" in live
+
+    workflow = (ROOT / ".github/workflows/live-capability-eval.yml").read_text(encoding="utf-8")
+    assert "workflow_dispatch" in workflow
+    assert "CATALYST_LIVE_AUTO" in workflow
+    assert "CATALYST_LIVE_API_KEY" in workflow
+    assert "Formal live-use proof is BLOCKED" in workflow
+    assert "Automatic model substitution is forbidden" in workflow
+    assert "ollama pull" not in workflow.lower()
+
+    stage_spec = (ROOT / "CATALYST_MINIMUM_USABLE_V0.2_STAGE_SPEC.md").read_text(encoding="utf-8")
+    assert "explicitly selected and frozen provider/model" in stage_spec
+    assert "Formal Baseline" in stage_spec
+    assert "accepted or rolled back" in stage_spec
 
     print("PASS: Catalyst Minimum Usable V0.2 deterministic surface regression")
 
