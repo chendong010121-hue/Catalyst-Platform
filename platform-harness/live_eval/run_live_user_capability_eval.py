@@ -30,9 +30,8 @@ from agent_runtime.contracts import (
     Stop,
     Success,
 )
-from agent_runtime.llm_reasoner import LLMReasoner
+from agent_runtime.native_tools_v2 import NativeToolsV2Reasoner, NativeToolsV2Runtime
 from agent_runtime.providers import OpenAICompatibleModelProvider
-from agent_runtime.runtime import Runtime
 from examples.fakes import InMemoryStateStore
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -171,26 +170,38 @@ def _case_goal(case: dict[str, Any]) -> str:
     return "\n".join(parts)
 
 
-def _tool_calls(history) -> list[dict[str, Any]]:
+def _tool_calls(snapshot) -> list[dict[str, Any]]:
     calls = []
-    for step in history:
-        if isinstance(step.decision, Act):
+    for turn in snapshot.native_tools_v2_turns:
+        for call in turn.calls:
             calls.append(
                 {
-                    "capability_id": step.decision.action.capability_id,
-                    "parameters": _jsonable(step.decision.action.parameters),
-                    "observation": _jsonable(step.observation),
-                    "execution_id": step.execution_id,
+                    "turn_id": turn.turn_id,
+                    "tool_call_id": call.tool_call_id,
+                    "capability_id": call.action.capability_id if call.action else call.name,
+                    "parameters": _jsonable(call.action.parameters) if call.action else None,
+                    "arguments": call.arguments,
+                    "policy_verdict": _jsonable(call.policy_verdict),
+                    "status": call.status,
+                    "observation": _jsonable(call.observation),
+                    "uncertainty": call.uncertainty,
+                    "execution_id": call.execution_id,
                 }
             )
     return calls
 
 
-def _usage(history) -> dict[str, int]:
+def _usage(snapshot) -> dict[str, int]:
     input_tokens = 0
     output_tokens = 0
     known = False
-    for step in history:
+    for turn in snapshot.native_tools_v2_turns:
+        record = turn.model_call
+        if record.usage is not None:
+            known = True
+            input_tokens += record.usage.input_tokens
+            output_tokens += record.usage.output_tokens
+    for step in snapshot.history:
         record = step.model_call
         if record is not None and record.usage is not None:
             known = True
@@ -233,6 +244,12 @@ def _failure_snapshot(store: InMemoryStateStore, session_id: str | None) -> dict
         "last_model_finish_reason": model_call.finish_reason if model_call is not None else None,
         "last_model_tool_call_count": len(model_call.tool_calls) if model_call is not None else 0,
         "last_model_tool_names": [call.name for call in model_call.tool_calls] if model_call is not None else [],
+        "native_tools_v2_turns": len(snapshot.native_tools_v2_turns),
+        "native_tools_v2_last_turn_status": (
+            snapshot.native_tools_v2_turns[-1].status
+            if snapshot.native_tools_v2_turns
+            else None
+        ),
     }
 
 
@@ -408,8 +425,8 @@ def main() -> int:
         store = InMemoryStateStore()
         session_id: str | None = None
         try:
-            runtime = Runtime(
-                reasoner=LLMReasoner(provider, decision_protocol="native_tools"),
+            runtime = NativeToolsV2Runtime(
+                reasoner=NativeToolsV2Reasoner(provider),
                 capabilities={"github_repo_read": GitHubRepositoryReadCapability(github_token)},
                 policy=LivePolicy(),
                 state_store=store,
@@ -418,7 +435,7 @@ def main() -> int:
             session_id = created.session_id
             final = runtime.run(session_id)
             answer = _answer(final)
-            calls = _tool_calls(final.history)
+            calls = _tool_calls(final)
             gates, score = _score(case["case_id"], answer, calls)
             result.update(
                 {
@@ -426,7 +443,7 @@ def main() -> int:
                     "score": score,
                     "answer": answer,
                     "tool_calls": calls,
-                    "usage": _usage(final.history),
+                    "usage": _usage(final),
                     "step_count": len(final.history),
                     "critical_gates": gates,
                     "duration_ms": round((time.time() - started) * 1000),
@@ -443,6 +460,9 @@ def main() -> int:
                     "duration_ms": round((time.time() - started) * 1000),
                 }
             )
+            attribution = getattr(exc, "attribution", None)
+            if attribution is not None:
+                result["failure_attribution"] = _jsonable(attribution)
         report["cases"].append(result)
 
     passed = sum(1 for c in report["cases"] if c["status"] == "PASS")

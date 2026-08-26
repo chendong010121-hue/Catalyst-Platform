@@ -415,6 +415,129 @@ PolicyVerdict = Allow | Deny
 
 
 # ---------------------------------------------------------------------------
+# Native tools v2：model-turn batch progress（独立于 v0.1 Act/PendingExecution）
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class NativeToolsV2FailureAttribution:
+    """Bounded Harness-side attribution fact for one v2 model-turn failure."""
+
+    stage: str
+    owner: str
+    failure_type: str
+    observed_fact: str
+    provider_completed: bool
+    downstream_tool_execution_started: bool
+    side_effect_certainty: str
+    unproven_downstream_boundary: str
+    evidence_reference: str | None = None
+
+    def __post_init__(self) -> None:
+        for name in (
+            "stage",
+            "owner",
+            "failure_type",
+            "observed_fact",
+            "side_effect_certainty",
+            "unproven_downstream_boundary",
+        ):
+            if not isinstance(getattr(self, name), str) or not getattr(self, name):
+                raise ValueError(f"NativeToolsV2FailureAttribution.{name} must be a non-empty str")
+        if type(self.provider_completed) is not bool:
+            raise ValueError("NativeToolsV2FailureAttribution.provider_completed must be bool")
+        if type(self.downstream_tool_execution_started) is not bool:
+            raise ValueError(
+                "NativeToolsV2FailureAttribution.downstream_tool_execution_started must be bool"
+            )
+        if self.evidence_reference is not None and not isinstance(self.evidence_reference, str):
+            raise ValueError(
+                "NativeToolsV2FailureAttribution.evidence_reference must be None or str"
+            )
+
+
+@dataclass(frozen=True)
+class NativeToolsV2Call:
+    """Durable progress for one provider-neutral tool-call intent."""
+
+    tool_call_id: str
+    name: str
+    arguments: str
+    action: Action | None = None
+    status: Literal["pending", "settled", "denied", "skipped", "invalid"] = "pending"
+    policy_verdict: PolicyVerdict | None = None
+    execution_id: str | None = None
+    observation: Observation | None = None
+    uncertainty: str | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.tool_call_id, str) or not self.tool_call_id:
+            raise ValueError("NativeToolsV2Call.tool_call_id must be a non-empty str")
+        if not isinstance(self.name, str) or not self.name:
+            raise ValueError("NativeToolsV2Call.name must be a non-empty str")
+        if not isinstance(self.arguments, str):
+            raise ValueError("NativeToolsV2Call.arguments must be a str")
+        if self.action is not None and not isinstance(self.action, Action):
+            raise ValueError("NativeToolsV2Call.action must be None or Action")
+        if self.status not in ("pending", "settled", "denied", "skipped", "invalid"):
+            raise ValueError(f"invalid NativeToolsV2Call.status: {self.status!r}")
+        if self.policy_verdict is not None and not isinstance(self.policy_verdict, (Allow, Deny)):
+            raise ValueError("NativeToolsV2Call.policy_verdict must be None, Allow, or Deny")
+        if self.execution_id is not None and (
+            not isinstance(self.execution_id, str) or not self.execution_id
+        ):
+            raise ValueError("NativeToolsV2Call.execution_id must be None or non-empty str")
+        if self.observation is not None and not isinstance(self.observation, (Success, Failure)):
+            raise ValueError("NativeToolsV2Call.observation must be None or Observation")
+        if self.uncertainty is not None and not isinstance(self.uncertainty, str):
+            raise ValueError("NativeToolsV2Call.uncertainty must be None or str")
+        if self.status == "settled" and self.execution_id is None:
+            raise ValueError("settled NativeToolsV2Call requires execution_id")
+        if self.status == "denied" and not isinstance(self.policy_verdict, Deny):
+            raise ValueError("denied NativeToolsV2Call requires Deny policy_verdict")
+        if self.status in ("settled", "denied") and self.uncertainty is not None:
+            raise ValueError("settled/denied NativeToolsV2Call must not carry uncertainty")
+
+
+@dataclass(frozen=True)
+class NativeToolsV2Turn:
+    """Durable model-turn batch; one turn owns zero or more correlated calls."""
+
+    turn_id: str
+    model_call: ModelCallRecord
+    calls: tuple[NativeToolsV2Call, ...] = ()
+    next_index: int = 0
+    status: Literal["executing", "completed", "failed", "blocked"] = "executing"
+    failure_attribution: NativeToolsV2FailureAttribution | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.turn_id, str) or not self.turn_id:
+            raise ValueError("NativeToolsV2Turn.turn_id must be a non-empty str")
+        if not isinstance(self.model_call, ModelCallRecord):
+            raise ValueError("NativeToolsV2Turn.model_call must be ModelCallRecord")
+        if not isinstance(self.calls, (tuple, list)):
+            raise ValueError("NativeToolsV2Turn.calls must be a tuple/list")
+        if not all(isinstance(call, NativeToolsV2Call) for call in self.calls):
+            raise ValueError("NativeToolsV2Turn.calls must contain NativeToolsV2Call values")
+        object.__setattr__(self, "calls", tuple(self.calls))
+        if type(self.next_index) is not int or self.next_index < 0 or self.next_index > len(self.calls):
+            raise ValueError("NativeToolsV2Turn.next_index must point inside calls")
+        if self.status not in ("executing", "completed", "failed", "blocked"):
+            raise ValueError(f"invalid NativeToolsV2Turn.status: {self.status!r}")
+        if self.failure_attribution is not None and not isinstance(
+            self.failure_attribution, NativeToolsV2FailureAttribution
+        ):
+            raise ValueError(
+                "NativeToolsV2Turn.failure_attribution must be None or NativeToolsV2FailureAttribution"
+            )
+        ids = [call.tool_call_id for call in self.calls]
+        if len(ids) != len(set(ids)):
+            raise ValueError("NativeToolsV2Turn.call tool_call_id values must be unique")
+        model_ids = [call.id for call in self.model_call.tool_calls]
+        if tuple(ids) != tuple(model_ids):
+            raise ValueError("NativeToolsV2Turn.calls must match model_call.tool_calls")
+
+
+# ---------------------------------------------------------------------------
 # Execution reconciliation：resolution 类型 + durable audit fact
 # ---------------------------------------------------------------------------
 
@@ -546,6 +669,7 @@ class SessionSnapshot:
     state: State
     history: tuple[StepRecord, ...] = ()
     pending_execution: PendingExecution | None = None
+    native_tools_v2_turns: tuple[NativeToolsV2Turn, ...] = ()
 
 
 # ---------------------------------------------------------------------------
