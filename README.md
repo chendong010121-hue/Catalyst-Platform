@@ -1,110 +1,182 @@
 # Catalyst Platform
 
-**Keep what an organization has learned, even when the AI underneath changes.**
+**An operating model for preserving and growing organizational capability in the AI era.**
 
-Catalyst is a small, capability-first architecture for building and evolving AI work without tying organizational knowledge to one Agent, model, Harness, Runtime, provider, or framework.
+Models, Agents, tools, providers, and frameworks will keep changing. The harder organizational problem is continuity: **how do you keep what people and AI have genuinely learned to do through real work when the machinery underneath changes?**
 
-The core idea is simple:
+Catalyst is designed for that problem.
 
-> **Preserve capability, not implementation privilege.**
+It provides a small architecture for making useful capability understandable, evidenced, reusable, and evolvable without making any one Agent, Runtime, Harness, provider, framework, or codebase permanent.
 
-An Agent may be replaced. A Runtime may be rebuilt. A better external Harness may arrive tomorrow. Catalyst is designed so the valuable part — what the organization knows how to do, why it trusts that ability, where its limits are, and what was learned from previous failures — does not have to disappear with the implementation.
+In architecture terms, Catalyst is an **Organization–AI Capability Operating Model**.
 
-> **Current state:** **Catalyst Minimum Operational V1 — accepted for controlled real use.**  
-> Planned platform pre-development is stopped. New platform work should now come from real use or a concrete failure.
+> **Current state:** Catalyst Minimum Operational V1 is accepted for controlled real use. Planned platform pre-development is stopped; new platform work should come from real use or a concrete failure. See [`CATALYST_OPERATIONAL_BASELINE_V1.md`](CATALYST_OPERATIONAL_BASELINE_V1.md) for the current whole-platform state.
 
 ---
 
 ## Why Catalyst exists
 
-AI systems are getting better very quickly. That is good news — but it creates a different problem for teams and organizations.
+Organizations do not learn only through software.
 
-If every useful workflow is trapped inside a particular Agent, prompt, provider, framework, or project, then every technology change risks throwing away accumulated learning.
+Useful capability may emerge from:
 
-Catalyst treats the durable asset as the **Capability**, not the container that happened to implement it.
+- a person’s professional judgment or working method;
+- a team process that repeatedly produces a good result;
+- a human–AI collaboration pattern;
+- an Agent, Skill, Workflow, service, or tool;
+- an external product or open-source mechanism;
+- a project that exposes a better way to work;
+- an evaluation or failure that clarifies what really matters.
 
-A useful capability may carry:
+The problem is that this learning is often trapped inside temporary containers: one project, one prompt, one Agent, one provider, one team member, or one implementation.
 
-- a clear responsibility and observable promise;
-- domain or enterprise meaning;
-- evidence showing that it really works;
-- benchmarks and evaluation knowledge;
-- known limits and failure modes;
-- compatibility and migration knowledge;
-- the history of why one implementation was repaired, rebuilt, replaced, adopted, or retired.
+When the container changes, the organization can end up relearning the same thing.
 
-That leads to three design rules:
+Catalyst tries to separate the **durable value** from the **temporary machinery**.
 
-> **Stable WHAT / Replaceable HOW.**  
-> **Everything is replaceable. Nothing is casually replaceable.**  
-> **Real use and evidence decide what deserves to survive.**
-
-For the fuller design philosophy, read [`Catalyst Capability Harvest — Design Philosophy`](docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md).
+The goal is not to freeze technology. It is to make technology easier to replace **without forcing the organization to forget what it already proved**.
 
 ---
 
-## What Catalyst does today
+## What Catalyst means by Capability
 
-Operational V1 provides a small, working capability lifecycle:
+A **Capability** is what the system, person, team, or human–AI combination can reliably do — together with enough meaning and evidence to understand what that claim actually covers.
+
+A durable Capability may include:
 
 ```text
-REAL NEED
-→ identify the responsibility / capability need
-→ discover what the organization already knows
-→ reuse / adapt / compose / reconstruct before building new
-→ choose the simplest valid implementation
-→ execute through the applicable boundary
-→ preserve evidence
-→ evaluate and attribute failures
-→ repair / rebuild / replace / adopt / retire when justified
-→ preserve useful learning
-→ reuse it again
+responsibility / semantic intent
+public or shared obligations
+Domain meaning
+Enterprise meaning
+Evidence
+Evaluation / benchmark knowledge
+known limits and failure modes
+compatibility / migration knowledge
+Evolution Lineage
 ```
 
-No single Engine owns this loop. The pieces remain independently replaceable.
+A Capability is not the same thing as the implementation currently carrying it.
 
-Catalyst has already demonstrated this with:
+```text
+Capability / Responsibility    = durable WHAT
+Agent / Skill / Workflow       = possible HOW
+Runtime / Harness / provider   = possible HOW
+framework / prompt / code      = possible HOW
+```
 
-- a real Platform Standard → Adapter → Runtime execution path;
-- multiple capabilities without redesigning Runtime/Core;
-- Extension-first enterprise semantics;
-- real model and external-tool execution with evidence and evaluation;
-- a professional Building Regulation capability pilot with fail-closed evidence discipline;
-- two independent cases where capability value was preserved while implementation strategy changed;
-- harvested knowledge that remains usable after the original Case/Agent is no longer part of the active platform.
+For example, a building-regulation capability is not simply “the Agent that answers regulation questions.” The durable value is the ability to answer within a defined professional responsibility: use the right sources, preserve locators, check applicability, fail closed when context is insufficient, expose known limits, and retain evidence about what was proven. The retrieval stack, model, Agent shape, or Runtime may later change without erasing that capability.
 
-Catalyst is **not** claiming to be a production-complete enterprise portal, a universal Agent framework, or a feature-complete replacement for Pi, Codex, DeepSeek Harness, LangGraph, or other execution systems.
-
-Those systems can be knowledge sources or implementation candidates. Catalyst does not need to own every HOW.
+That distinction is the center of Catalyst.
 
 ---
 
-## Five-minute mental model
+## How capability grows
 
-Catalyst separates **organizational meaning** from **replaceable execution**.
+Catalyst is built around real work rather than endless platform design.
 
 ```text
-                  Application / Agent / Workflow
-                              │
-                ┌─────────────┴─────────────┐
-                │                           │
-                ▼                           ▼
-          Domain meaning             Enterprise meaning
-                │                           │
-                └─────────────┬─────────────┘
-                              ▼
-                     Platform Standard
-                  stable coordination boundary
-                              ▼
-                        Runtime Adapter
-                              ▼
-                           Runtime
-                    replaceable execution HOW
-                              ▼
-                        Infrastructure
+REAL WORK
+   ↓
+UNDERSTAND
+what problem is actually being solved?
+what responsibility exists?
+   ↓
+EVIDENCE
+what happened, under what conditions?
+   ↓
+EVALUATE
+what is actually proven, limited, or failing?
+   ↓
+HARVEST
+preserve only durable value that has earned it
+   ↓
+REUSE / ADAPT / RECONSTRUCT / COMPOSE
+use what the organization already knows
+   ↓
+EVOLVE
+repair, rebuild, replace, adopt, or retire when justified
+   ↓
+REAL WORK AGAIN
 ```
 
-A second view is the capability boundary:
+`HARVEST` is a lifecycle verb, not a Platform object. Catalyst does not create a Harvest Engine, Harvest Service, or universal Harvest Registry. The point is selective preservation: keep what is sufficiently understood, evidenced, and useful; leave the rest local, provisional, or disposable.
+
+Benchmarking is part of this loop, but it is not the destination. **Real use remains the higher-order reality.** A benchmark is valuable when it helps reproduce a failure, compare alternatives, or clarify whether a capability is actually present.
+
+The accepted explanatory philosophy is documented in [`Catalyst Capability Harvest — Design Philosophy`](docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md).
+
+---
+
+## Design principles
+
+Catalyst keeps the formal architecture small. A few principles do most of the work.
+
+### Stable WHAT / Replaceable HOW
+
+The responsibility and public obligation should be more stable than the current implementation. Agents, providers, Harnesses, Runtimes, frameworks, and internal mechanisms remain replaceable where the required obligations can be preserved or explicitly migrated.
+
+### Preserve capability, not implementation privilege
+
+The current implementation has no automatic right to survive because it already exists. What deserves preservation is the capability, evidence, meaning, and learning that should remain valuable after the implementation changes.
+
+### Everything is replaceable. Nothing is casually replaceable.
+
+Replaceability is not churn. A replacement must respect the obligations, evidence, migration cost, and organizational value attached to the boundary being changed.
+
+### Extension First. Core Promotion Later.
+
+A useful idea does not enter Platform Core because it looks elegant or general. Local needs stay local until repeated evidence shows a shared cross-boundary responsibility that is worth the permanent architectural cost.
+
+### Observation is not certification
+
+A component may report facts about itself. It does not certify itself. Independent Evaluation owns judgment and failure attribution.
+
+### Repair is not the default
+
+When an implementation fails, Catalyst first asks what responsibility failed and what must survive. Repair, local replacement, rebuild, recomposition, subsystem replacement, external adoption, and retirement are all legitimate implementation choices. No action has automatic priority.
+
+### The Standard grows from evidence
+
+Platform Standard should stabilize only what repeated real use proves needs a shared coordination boundary. Architecturally imaginable does not mean implementation required.
+
+---
+
+## Architecture in one view
+
+Catalyst separates organizational meaning from replaceable execution.
+
+```text
+                    Application Surfaces
+                            │
+                            ▼
+                  Agent / Workflow Layer
+                            │
+              ┌─────────────┴─────────────┐
+              │                           │
+              ▼                           ▼
+        Domain Semantics          Enterprise Semantics
+      professional meaning      organization-specific meaning
+              │                           │
+              └─────────────┬─────────────┘
+                            ▼
+                   Platform Standard
+              stable coordination boundary
+                            │
+                            ▼
+                      Runtime Adapter
+                            │
+                            ▼
+                         Runtime
+                 replaceable execution HOW
+                            │
+                            ▼
+                     Infrastructure
+```
+
+`Domain` and `Enterprise` are different semantic dimensions that compose. Runtime remains execution infrastructure and should not learn professional or organization-specific meaning merely to make one feature convenient.
+
+A second useful view is the capability boundary:
 
 ```text
 Capability / Responsibility
@@ -118,11 +190,66 @@ replaceable implementation
 Runtime / external machinery
 ```
 
-The important part is not that every box must be Catalyst-owned. The important part is that the responsibility and evidence remain clear enough for implementations to change without losing organizational value.
+The important point is not that every box must be implemented by Catalyst. External systems may be better at particular mechanisms. Catalyst can learn from them, adopt them, or use them as replaceable HOW candidates without turning them into Catalyst’s identity or architecture authority.
+
+For the complete responsibility and replacement model, read [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ---
 
-## Try the accepted system
+## What Operational V1 has actually proven
+
+Catalyst is intentionally not presented as production-complete enterprise software. Operational V1 is a **minimum operational architecture**: enough real implementation and evidence to begin controlled use without pretending that every future Platform responsibility is already known.
+
+Accepted history has demonstrated, within its declared scopes:
+
+- Runtime execution certainty, recovery, reconciliation, cancellation, and timeout semantics;
+- a working Platform Standard → Adapter → Runtime → Result path;
+- more than one Capability passing through the accepted boundary without redesigning Runtime/Core;
+- Extension-first enterprise semantics without teaching generic Runtime enterprise meaning;
+- real model and external-tool execution with preserved evidence and failure attribution;
+- capability-preserving implementation evolution from a failed tool-interaction assumption to a rebuilt candidate;
+- a real Building Regulation professional Capability pilot with evidence discipline and fail-closed behavior;
+- Domain × Enterprise separation in real capability adoption;
+- harvested mechanism knowledge that remains useful after the original Case or source Agent leaves the active platform;
+- a consolidated Operational V1 repository surface with an accepted CI release gate.
+
+These facts prove that the architecture can operate. They do not prove universal Domain coverage, a production Capability Registry, a finished end-user portal, or a complete enterprise operating system.
+
+---
+
+## How to use Catalyst today
+
+Catalyst today is an operating model and governed repository, not a single universal chat or task UI.
+
+A controlled real-use task should begin with a real need, not with a request to add a Platform feature.
+
+```text
+real need
+→ identify the responsibility / capability need
+→ search existing Catalyst capability value
+→ reuse / adapt / compose / reconstruct where possible
+→ use the simplest justified implementation
+→ execute through an appropriate Runtime / Harness / external system
+→ preserve evidence
+→ evaluate the result and attribute failure correctly
+→ evolve only where evidence justifies change
+→ preserve durable learning
+```
+
+The operator surface is intentionally replaceable. A suitable external coding or Agent Harness may be used to perform work without becoming Catalyst Core. Catalyst owns the responsibility, evidence, and governance boundaries that must remain stable; it does not need to own every execution interface.
+
+The four current operating methods are:
+
+- [`agent-construction`](platform-harness/skills/agent-construction/SKILL.md) — understand the real need, search existing capability value first, and choose the simplest justified solution form;
+- [`capability-benchmark-design`](platform-harness/skills/capability-benchmark-design/SKILL.md) — design benchmarks around real user capability rather than implementation trivia;
+- [`capability-evaluation`](platform-harness/skills/capability-evaluation/SKILL.md) — preserve evidence and attribute success or failure to the responsible boundary;
+- [`capability-optimization`](platform-harness/skills/capability-optimization/SKILL.md) — compare implementation-evolution candidates while preserving durable capability value.
+
+These are methods, not Engines or Platform services.
+
+---
+
+## Verify the accepted system
 
 Python 3.12 is the current CI reference.
 
@@ -132,7 +259,7 @@ From the repository root:
 python -m examples.run_minimal_loop
 ```
 
-Run the current Operational V1 proof:
+Run the Operational V1 proof:
 
 ```bash
 python -m examples.test_catalyst_operational_v1
@@ -146,79 +273,9 @@ python tests/test_capability_contract_conformance_pilot.py
 python tests/test_enterprise_extension_pilot.py
 ```
 
-The complete active regression gate is defined in:
+The complete active regression gate is defined in `.github/workflows/ci.yml`.
 
-```text
-.github/workflows/ci.yml
-```
-
-This Quick Start verifies the accepted platform baseline. Catalyst is not yet a polished end-user application with a single universal task UI; controlled real use may currently be driven through a suitable coding/agent Harness or the repository's reference surfaces. The operator surface is intentionally not promoted into Core before repeated real-use evidence justifies it.
-
----
-
-## How Catalyst decides what to build
-
-Catalyst starts with responsibility, not with the easiest file to edit.
-
-| Need | Default owner |
-|---|---|
-| execution lifecycle, timeout, recovery, reconciliation, certainty | **Runtime** |
-| vendor / provider / API-specific difference | **Adapter** |
-| concrete way a capability performs work | **Capability implementation** |
-| portable invocation / result promise | **Platform Standard** |
-| professional / industry meaning | **Domain** |
-| organization-specific meaning | **Enterprise** |
-| cross-capability process structure | **Workflow / Orchestration** |
-| local semantic not owned by Core | **Extension first** |
-
-A new idea does not enter Platform Core because it looks general or elegant. It earns a stable boundary only when repeated real evidence shows that the shared gap is real.
-
-> **Extension First. Core Promotion Later.**
-
----
-
-## How Catalyst handles failure
-
-A failure does not automatically mean “repair the current code.”
-
-Catalyst first asks:
-
-```text
-What failed?
-Which responsibility owns it?
-What capability / evidence / meaning must survive?
-Is the responsibility wrong, the contract wrong, or only the implementation wrong?
-Is there already a better internal or external mechanism?
-```
-
-Then the implementation may be:
-
-```text
-REPAIRED
-LOCALLY REPLACED
-REBUILT
-RECOMPOSED
-REPLACED AS A SUBSYSTEM
-EXTERNALLY ADOPTED / ADAPTED
-RETIRED
-```
-
-No action has automatic priority. The current implementation must earn the right to remain through evidence and total evolution cost.
-
-The replaceable method is [`capability-optimization`](platform-harness/skills/capability-optimization/SKILL.md).
-
----
-
-## Current operating methods
-
-Catalyst deliberately keeps the formal method set small:
-
-- [`agent-construction`](platform-harness/skills/agent-construction/SKILL.md) — understand the real need, search existing capability value first, choose the simplest justified solution form.
-- [`capability-benchmark-design`](platform-harness/skills/capability-benchmark-design/SKILL.md) — design benchmarks that test the real user capability rather than implementation trivia.
-- [`capability-evaluation`](platform-harness/skills/capability-evaluation/SKILL.md) — preserve evidence and attribute success/failure to the responsible boundary.
-- [`capability-optimization`](platform-harness/skills/capability-optimization/SKILL.md) — compare implementation-evolution candidates without sacrificing durable capability value.
-
-These are methods, not Engines or Platform services.
+These commands verify the accepted platform baseline. They are not intended to pretend that Catalyst already has a polished universal end-user application.
 
 ---
 
@@ -232,7 +289,7 @@ Catalyst Platform
 ├── ARCHITECTURE.md                   purpose, layers, boundaries
 ├── PLATFORM_STANDARD_CORE_V0.1.md    accepted public contract slice
 ├── CATALYST_CAPABILITY_VISIBILITY_INDEX_V0.1.json
-│                                     tiny capability-value navigation
+│                                     thin capability-value navigation
 ├── platform_standard/                public coordination implementation
 ├── agent_runtime/                    one replaceable Runtime implementation
 ├── platform-harness/                 replaceable operating methods
@@ -247,19 +304,22 @@ Catalyst Platform
 
 ---
 
-## Where to read next
+## Where authority lives
 
 There is no single document that is authoritative for every question.
 
-1. **What is Catalyst now? What is active?** → [`CATALYST_OPERATIONAL_BASELINE_V1.md`](CATALYST_OPERATIONAL_BASELINE_V1.md)
-2. **Why does Catalyst exist? What owns what?** → [`ARCHITECTURE.md`](ARCHITECTURE.md)
-3. **Why preserve capability / Harvest?** → [`Capability Harvest Design Philosophy`](docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md)
-4. **What stable governance constrains growth?** → [`Governing Baseline — Part A`](docs/governance/MINIMUM_ARCHITECTURAL_FRAMEWORK_GOVERNING_BASELINE_V1_1_PART_A.md)
-5. **What does Platform Standard Core v0.1 promise?** → [`PLATFORM_STANDARD_CORE_V0.1.md`](PLATFORM_STANDARD_CORE_V0.1.md)
-6. **How is repository work governed?** → [`docs/DEVELOPMENT_WORKFLOW.md`](docs/DEVELOPMENT_WORKFLOW.md)
-7. **Where is historical Case / Stage evidence?** → [`docs/history/README.md`](docs/history/README.md)
+| Question | Authority |
+|---|---|
+| What is Catalyst now? What is active? | [`CATALYST_OPERATIONAL_BASELINE_V1.md`](CATALYST_OPERATIONAL_BASELINE_V1.md) |
+| Why does Catalyst exist? What owns what? | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| Why preserve capability / Harvest? | [`Capability Harvest Design Philosophy`](docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md) |
+| What stable governance constrains growth? | [`Governing Baseline — Part A`](docs/governance/MINIMUM_ARCHITECTURAL_FRAMEWORK_GOVERNING_BASELINE_V1_1_PART_A.md) |
+| What does Platform Standard Core v0.1 promise? | [`PLATFORM_STANDARD_CORE_V0.1.md`](PLATFORM_STANDARD_CORE_V0.1.md) |
+| How is repository work governed? | [`docs/DEVELOPMENT_WORKFLOW.md`](docs/DEVELOPMENT_WORKFLOW.md) |
+| Where is historical Case / Stage evidence? | [`docs/history/README.md`](docs/history/README.md) |
+| What code is accepted? | GitHub `main` + active tests / CI |
 
-Accepted code truth remains GitHub `main` plus active tests and CI.
+Historical status lines, branch names, or old Stage files do not redefine current authority.
 
 ---
 
@@ -267,9 +327,7 @@ Accepted code truth remains GitHub `main` plus active tests and CI.
 
 Catalyst has reached its planned pre-development stopping point.
 
-> # **STOP PLANNED PLATFORM PRE-DEVELOPMENT**
-
-The next source of change is real use:
+The next source of architectural change is **real use**.
 
 ```text
 USE
@@ -277,13 +335,14 @@ USE
 → ATTRIBUTE
 → search existing internal / external capability knowledge
 → make the smallest justified change
-→ evaluate against the same responsibility / evidence boundary
-→ preserve useful learning
+→ EVALUATE
+→ ACCEPT / ROLLBACK
+→ HARVEST durable value when earned
 → USE AGAIN
 ```
 
-Do not add a Registry, graph, monitoring layer, Workflow Engine, memory platform, Authority/Policy system, second Runtime, or new Core concept simply to make the platform look more complete.
+Do not add a Registry, graph, monitoring layer, Workflow Engine, memory platform, Authority/Policy system, second Runtime, or new Core concept simply to make the repository look more complete.
 
-The goal is not to own the most AI machinery.
+Catalyst does not become stronger by owning more AI machinery.
 
-The goal is for an organization to keep what it has genuinely learned while the machinery keeps changing.
+It becomes stronger when people, teams, and AI systems can keep building on what the organization has genuinely learned while the machinery continues to change.
