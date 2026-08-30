@@ -1,14 +1,14 @@
 # PART A — Stable Governing Core
 
-> 本部分定义当前阶段应长期保持稳定的治理原则。除非新的已接受 Evidence 改变项目目标、责任边界或核心演进方法，否则不应因单次 Gate、Stage 或状态变化而修改。
+> 本部分定义应长期保持稳定的治理原则。它形成于 Minimum Architectural Framework 阶段，但当前产品状态由 `CATALYST_OPERATIONAL_BASELINE_V1.md` 统一说明；当前架构身份与责任模型以 `ARCHITECTURE.md`（Architecture v2.5）为准。除非新的已接受 Evidence 改变项目目标、责任边界或核心演进方法，否则不应因单次 Gate、Stage 或状态变化而修改这些稳定原则。
 
 # 0. How this baseline must be used
 
 从本文件生效开始，任何新的讨论、实现建议、Stage Spec、代码变更或架构扩展，都必须先回答：
 
 ```text
-1. 是否符合本文件定义的当前项目目标？
-2. 是否尊重 ARCHITECTURE v2.3 的层级责任？
+1. 是否符合当前 CATALYST_OPERATIONAL_BASELINE_V1 定义的项目状态与目标？
+2. 是否尊重当前 ARCHITECTURE.md 的层级责任？
 3. 这是 Architecturally Exists、Evidence-backed Exists，还是 Production Exists？
 4. 当前是否真的存在足够证据值得实现？
 5. 这个问题属于哪一层？
@@ -25,9 +25,9 @@
 
 # 1. Long-term North Star
 
-项目长期方向仍然是：
+项目长期方向是：
 
-> **Enterprise Agent Operating Model**
+> **Organization–AI Capability Operating Model**
 
 长期来看，系统可能包含：
 
@@ -52,14 +52,22 @@ Architecture 是长期责任地图，不是 Feature Backlog。
 
 ---
 
-# 2. Current Project Goal
+# 2. Governing Origin — Minimum Architectural Framework
 
-当前项目真正要完成的不是一个完整企业系统。
-
-当前项目目标正式定义为：
+本文件的治理原则起源于：
 
 # Minimum Architectural Framework
 # 最小架构证明框架
+
+当前产品状态已经进入：
+
+```text
+Catalyst Minimum Operational V1
+→ accepted for controlled real use
+→ planned platform pre-development STOP
+```
+
+下面保留的 Minimum Architectural Framework 定义用于说明这些稳定治理原则的来源，不再作为当前产品状态标签。
 
 定义：
 
