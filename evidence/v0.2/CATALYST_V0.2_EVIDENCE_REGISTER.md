@@ -1,5 +1,8 @@
 # Catalyst V0.2 Evidence Register
 
+> **HISTORICAL EVIDENCE NOTICE**  
+> This register preserves V0.2 evidence at the identities and assumptions that existed when those campaigns were accepted. The registered campaign files were not rerun for Operational V1. This register is not current-state authority and does not claim continuous recertification. For current state, use `CATALYST_OPERATIONAL_BASELINE_V1.md`, GitHub `main`, and the current `catalyst-platform-ci` workflow.
+
 This register freezes two already-produced local live campaigns. The raw
 campaign files under `immutable/` are copied byte-for-byte from their original
 local evidence directories. No campaign was rerun or reconstructed for this
