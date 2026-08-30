@@ -155,6 +155,25 @@ For **current-state questions only**, those old snapshot lines are superseded by
 
 Their durable evidence and decision history remain historical truth.
 
+### Verification and evidence identities
+
+The repository deliberately separates four different identities:
+
+| Identity | Meaning |
+|---|---|
+| **Current state** | this Operational Baseline + accepted GitHub `main` |
+| **Current contract / architecture** | `PLATFORM_STANDARD_CORE_V0.1.md` + `ARCHITECTURE.md` |
+| **Current deterministic verification** | active tests + `.github/workflows/ci.yml` (`catalyst-platform-ci`) |
+| **Historical evidence** | preserved V0.2 live campaigns, older Case / Stage evidence, frozen refs, and other immutable historical records |
+
+The active `Protect main` repository ruleset targets the default branch and currently enforces PR-based changes, deletion protection, and non-fast-forward protection. **Catalyst CI is not currently configured as a GitHub-required status check**, so “current main is green” must not be read as “GitHub blocks every merge unless CI is green.”
+
+The visible `.github/workflows/live-capability-eval.yml` and `platform-harness/live_eval/**` belong to the **historical Catalyst Minimum Usable V0.2 live-model evidence lineage**. They remain legitimate historical evidence at their tested identities, but they are not the current Operational V1 deterministic gate and do not provide continuous current recertification.
+
+Likewise, `evidence/v0.2/**` contains registered immutable historical evidence. Registration preserves the accepted evidence chain; it does **not** mean the campaigns are automatically rerun, rewritten, or continuously recertified on current commits.
+
+Current platform health should therefore be read from the current accepted `main` plus the current active deterministic CI for that commit. Historical failed or superseded runs remain legitimate development history and must not be rewritten as current release state.
+
 ---
 
 ## 5. Active platform surface
@@ -185,10 +204,14 @@ CURRENT METHODS
 CURRENT ORGANIZATIONAL ASSETS
   assets/**
 
-CURRENT EVIDENCE
-  evidence/**
-  active tests / CI
+CURRENT EVIDENCE / VERIFICATION
+  active tests / current deterministic CI
   accepted closure/evaluation records referenced by current assets
+
+HISTORICAL EVIDENCE
+  evidence/v0.2/**
+  historical live-model campaigns / evaluator infrastructure
+  closed Case / Stage records and frozen refs
 
 CURRENT PHILOSOPHY / GOVERNANCE
   docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md
@@ -346,6 +369,8 @@ O-7  Phase 2 closure remains traceable
 O-8  Runtime / Core remain free of Case / Domain / Enterprise-specific pollution
 O-9  consolidation introduces no new Registry / Engine / Service / ontology
 ```
+
+This is the accepted Catalyst release criterion. It does not imply that GitHub's branch ruleset currently enforces `catalyst-platform-ci` as a required merge status check.
 
 If one fails, repair only the owning boundary. Do not expand the Platform to compensate.
 
