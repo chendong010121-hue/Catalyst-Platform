@@ -12,6 +12,21 @@ In architecture terms, Catalyst is an **Organization–AI Capability Operating M
 
 > **Current state:** Catalyst Minimum Operational V1 is accepted for controlled real use. Planned platform pre-development is stopped; new platform work should come from real use or a concrete failure. See [`CATALYST_OPERATIONAL_BASELINE_V1.md`](CATALYST_OPERATIONAL_BASELINE_V1.md) for the current whole-platform state.
 
+### Repository status and evidence roles
+
+| Identity | Current meaning |
+|---|---|
+| **Current state** | `CATALYST_OPERATIONAL_BASELINE_V1.md` + accepted GitHub `main` |
+| **Current architecture / contract** | `ARCHITECTURE.md` + `PLATFORM_STANDARD_CORE_V0.1.md` |
+| **Current deterministic verification** | active tests + `.github/workflows/ci.yml` (`catalyst-platform-ci`) |
+| **Historical evidence** | `evidence/v0.2/**`, historical Case / Stage records, and frozen refs |
+
+The public `main` branch is PR-gated, deletion-protected, and non-fast-forward / force-push protected. **Catalyst CI is currently not configured as a GitHub-required merge status check**, so repository text must not imply that GitHub blocks every merge unless CI is green.
+
+The visible `live-capability-eval.yml` workflow and `platform-harness/live_eval/**` belong to the **historical Catalyst Minimum Usable V0.2 live-model evidence lineage**. They remain legitimate historical proof at their tested identities, but they are not current Operational V1 continuous recertification. Registered historical evidence is preserved evidence; it is not automatically rerun or written back on every current commit.
+
+No reuse license has yet been granted for this public repository.
+
 ---
 
 ## Why Catalyst exists
@@ -313,13 +328,13 @@ There is no single document that is authoritative for every question.
 | What is Catalyst now? What is active? | [`CATALYST_OPERATIONAL_BASELINE_V1.md`](CATALYST_OPERATIONAL_BASELINE_V1.md) |
 | Why does Catalyst exist? What owns what? | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | Why preserve capability / Harvest? | [`Capability Harvest Design Philosophy`](docs/CATALYST_CAPABILITY_HARVEST_DESIGN_PHILOSOPHY_V0.1.md) |
-| What stable governance constrains growth? | [`Governing Baseline — Part A`](docs/governance/MINIMUM_ARCHITECTURAL_FRAMEWORK_GOVERNING_BASELINE_V1_1_PART_A.md) |
+| What stable governance constrains growth? | [`Governing Baseline — Part A`](docs/governance/MINIMUM_ARCHITECTURAL_FRAMEWORK_GOVERNING_BASELINE_V1_1_PART_A.md) — stable governing core; current product/architecture identity is supplied by Operational V1 + `ARCHITECTURE.md` |
 | What does Platform Standard Core v0.1 promise? | [`PLATFORM_STANDARD_CORE_V0.1.md`](PLATFORM_STANDARD_CORE_V0.1.md) |
 | How is repository work governed? | [`docs/DEVELOPMENT_WORKFLOW.md`](docs/DEVELOPMENT_WORKFLOW.md) |
 | Where is historical Case / Stage evidence? | [`docs/history/README.md`](docs/history/README.md) |
 | What code is accepted? | GitHub `main` + active tests / CI |
 
-Historical status lines, branch names, or old Stage files do not redefine current authority.
+Historical status lines, branch names, old Stage files, and historical evidence do not redefine current authority.
 
 ---
 
