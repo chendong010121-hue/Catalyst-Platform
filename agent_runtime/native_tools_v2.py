@@ -73,6 +73,18 @@ def _tool_result_text(call: NativeToolsV2Call) -> str:
     if isinstance(call.observation, Failure):
         return f"Tool execution failed: {call.observation.error}"
     if isinstance(call.observation, Success):
+        if call.observation.provenance is not None:
+            provenance = call.observation.provenance
+            return _render_json(
+                {
+                    "data": call.observation.data,
+                    "provenance": {
+                        "source_id": provenance.source_id,
+                        "source_revision": provenance.source_revision,
+                        "locator": provenance.locator,
+                    },
+                }
+            )
         return _render_json(call.observation.data)
     return "null"
 

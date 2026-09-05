@@ -30,6 +30,7 @@ from .contracts import (
     NativeToolsV2Turn,
     PendingExecution,
     SessionSnapshot,
+    SourceObservationProvenance,
     Stop,
     StepRecord,
     Success,
@@ -75,7 +76,18 @@ def snapshot_observation(observation):
     if observation is None:
         return None
     if isinstance(observation, Success):
-        return Success(snapshot_value(observation.data))
+        provenance = observation.provenance
+        if provenance is not None:
+            if not isinstance(provenance, SourceObservationProvenance):
+                raise CapabilityContractError(
+                    "Success.provenance must be SourceObservationProvenance or None"
+                )
+            provenance = SourceObservationProvenance(
+                source_id=provenance.source_id,
+                source_revision=provenance.source_revision,
+                locator=provenance.locator,
+            )
+        return Success(snapshot_value(observation.data), provenance=provenance)
     if isinstance(observation, Failure):
         if not isinstance(observation.error, str):
             raise CapabilityContractError(

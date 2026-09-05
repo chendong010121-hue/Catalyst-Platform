@@ -113,10 +113,43 @@ Decision = Act | Complete | Fail | Blocked
 # ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
+class SourceIdentity:
+    """不可变的来源身份；revision 绑定一次 source observation scope。"""
+
+    source_id: str
+    revision: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.source_id, str) or not self.source_id:
+            raise ValueError("source_id must be a non-empty string")
+        if not isinstance(self.revision, str) or not self.revision:
+            raise ValueError("revision must be a non-empty string")
+
+
+@dataclass(frozen=True)
+class SourceObservationProvenance:
+    """由成功 source observation 产生、可随 Observation 持久化的事实标记。"""
+
+    source_id: str
+    source_revision: str
+    locator: str
+
+    def __post_init__(self) -> None:
+        for name, value in (
+            ("source_id", self.source_id),
+            ("source_revision", self.source_revision),
+            ("locator", self.locator),
+        ):
+            if not isinstance(value, str) or not value:
+                raise ValueError(f"{name} must be a non-empty string")
+
+
+@dataclass(frozen=True)
 class Success:
     """调用成功，data 携带返回负载。"""
 
     data: Any = None
+    provenance: SourceObservationProvenance | None = None
 
 
 @dataclass(frozen=True)

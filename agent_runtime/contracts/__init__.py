@@ -45,6 +45,8 @@ from .values import (
     PolicyVerdict,
     ReasoningResult,
     SessionSnapshot,
+    SourceIdentity,
+    SourceObservationProvenance,
     State,
     StepRecord,
     Stop,
@@ -67,6 +69,8 @@ __all__ = [
     "Success",
     "Failure",
     "Observation",
+    "SourceIdentity",
+    "SourceObservationProvenance",
     # Model
     "Message",
     "ModelToolDefinition",
