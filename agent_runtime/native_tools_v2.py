@@ -337,7 +337,7 @@ class NativeToolsV2Runtime(Runtime):
             if active is not None:
                 if active.status == "executing":
                     snapshot = self._execute_next_call(snapshot, active)
-                    if snapshot.history and isinstance(snapshot.history[-1].decision, (Fail, Blocked)):
+                    if _is_terminal(snapshot):
                         return snapshot
                     continue
             result = self._v2_reasoner.decide_turn(
@@ -476,6 +476,8 @@ class NativeToolsV2Runtime(Runtime):
                 settled_call,
             )
             settled_turn = replace(settled_turn, next_index=index + 1)
+            if settled_snapshot.history and settled_snapshot.history[-1].termination is not None:
+                return self._stop_batch(settled_snapshot, settled_turn)
             if isinstance(observation, Failure):
                 return self._halt_batch(
                     settled_snapshot,
@@ -501,6 +503,19 @@ class NativeToolsV2Runtime(Runtime):
                 "policy Deny halted later sibling calls in this v2 batch",
             )
         raise TypeError(f"invalid policy verdict: {type(verdict).__name__}")
+
+    def _stop_batch(self, snapshot, turn):
+        calls = [
+            replace(call, status="skipped") if call.status == "pending" else call
+            for call in turn.calls
+        ]
+        stopped = replace(
+            turn,
+            calls=tuple(calls),
+            next_index=len(calls),
+            status="completed",
+        )
+        return self._commit(self._replace_turn(snapshot, stopped))
 
     @staticmethod
     def _same_action(left: Action, right: Action) -> bool:

@@ -23,6 +23,7 @@ from agent_runtime.contracts import (
     NativeToolsV2Call,
     NativeToolsV2Turn,
     SessionSnapshot,
+    Stop,
     StepRecord,
     Success,
 )
@@ -32,6 +33,7 @@ from agent_runtime.native_tools_v2 import (
     NativeToolsV2Reasoner,
     NativeToolsV2Runtime,
 )
+from agent_runtime.snapshot import validate_session_snapshot
 
 from .fakes import InMemoryStateStore, ScriptedModelProvider
 
@@ -73,6 +75,16 @@ class AllowAllPolicy:
         return Allow()
 
     def should_stop(self, state, history):
+        return Continue()
+
+
+class StopAfterPolicy(AllowAllPolicy):
+    def __init__(self, stop_after: int):
+        self.stop_after = stop_after
+
+    def should_stop(self, state, history):
+        if len(history) >= self.stop_after:
+            return Stop("v2 test stop")
         return Continue()
 
 
@@ -175,6 +187,89 @@ def test_v2_004_different_tools_keep_capability_and_arguments_correlated():
     assert first.calls == [{"value": 1}]
     assert second.calls == [{"value": 2}]
     assert [call.action.capability_id for call in final.native_tools_v2_turns[0].calls] == ["a", "b"]
+
+
+def test_v2_011_terminal_stop_settles_and_skips_remaining_siblings():
+    provider = ScriptedModelProvider(
+        [_response(_tool("call-a", "a"), _tool("call-b", "b"), _tool("call-c", "c"))]
+    )
+    first = CountingCapability("a")
+    later = CountingCapability("b")
+    last = CountingCapability("c")
+    runtime = _runtime(
+        provider,
+        {"a": first, "b": later, "c": last},
+        policy=StopAfterPolicy(stop_after=1),
+    )
+
+    created = runtime.create(Goal("terminal stop batch"))
+    final = runtime.run(created.session_id)
+
+    turn = final.native_tools_v2_turns[0]
+    assert first.calls == [{}]
+    assert later.calls == []
+    assert last.calls == []
+    assert [call.status for call in turn.calls] == ["settled", "skipped", "skipped"]
+    assert turn.status == "completed"
+    assert final.pending_execution is None
+    assert isinstance(final.history[-1].termination, Stop)
+    assert validate_session_snapshot(final) == final
+    assert len(provider.requests) == 1
+
+
+def _run_terminal_stop_position(stop_after: int):
+    provider = ScriptedModelProvider(
+        [_response(_tool("call-a", "a"), _tool("call-b", "b"), _tool("call-c", "c"))]
+    )
+    capabilities = {name: CountingCapability(name) for name in ("a", "b", "c")}
+    runtime = _runtime(
+        provider,
+        capabilities,
+        policy=StopAfterPolicy(stop_after=stop_after),
+    )
+
+    created = runtime.create(Goal(f"terminal stop position {stop_after}"))
+    final = runtime.run(created.session_id)
+    return final, provider, capabilities
+
+
+def test_v2_012_terminal_stop_on_first_sibling_skips_the_rest():
+    final, provider, capabilities = _run_terminal_stop_position(stop_after=1)
+
+    assert [capabilities[name].calls for name in ("a", "b", "c")] == [[{}], [], []]
+    assert [call.status for call in final.native_tools_v2_turns[0].calls] == [
+        "settled",
+        "skipped",
+        "skipped",
+    ]
+    assert isinstance(final.history[-1].termination, Stop)
+    assert len(provider.requests) == 1
+
+
+def test_v2_013_terminal_stop_on_middle_sibling_skips_the_tail():
+    final, provider, capabilities = _run_terminal_stop_position(stop_after=2)
+
+    assert [capabilities[name].calls for name in ("a", "b", "c")] == [[{}], [{}], []]
+    assert [call.status for call in final.native_tools_v2_turns[0].calls] == [
+        "settled",
+        "settled",
+        "skipped",
+    ]
+    assert isinstance(final.history[-1].termination, Stop)
+    assert len(provider.requests) == 1
+
+
+def test_v2_014_terminal_stop_on_last_sibling_settles_the_full_batch():
+    final, provider, capabilities = _run_terminal_stop_position(stop_after=3)
+
+    assert [capabilities[name].calls for name in ("a", "b", "c")] == [[{}], [{}], [{}]]
+    assert [call.status for call in final.native_tools_v2_turns[0].calls] == [
+        "settled",
+        "settled",
+        "settled",
+    ]
+    assert isinstance(final.history[-1].termination, Stop)
+    assert len(provider.requests) == 1
 
 
 def test_v2_005_malformed_call_fails_closed_before_any_execution():
@@ -435,6 +530,10 @@ def main() -> None:
         test_v2_002_one_tool_call_reuses_execution_lifecycle,
         test_v2_003_two_tool_calls_execute_in_order_and_correlate_results,
         test_v2_004_different_tools_keep_capability_and_arguments_correlated,
+        test_v2_011_terminal_stop_settles_and_skips_remaining_siblings,
+        test_v2_012_terminal_stop_on_first_sibling_skips_the_rest,
+        test_v2_013_terminal_stop_on_middle_sibling_skips_the_tail,
+        test_v2_014_terminal_stop_on_last_sibling_settles_the_full_batch,
         test_v2_005_malformed_call_fails_closed_before_any_execution,
         test_v2_006_policy_deny_stops_later_siblings_only_as_v2_fail_closed_strategy,
         test_v2_007_known_capability_failure_is_not_infrastructure_uncertainty,
