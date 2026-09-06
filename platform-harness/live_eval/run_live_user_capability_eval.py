@@ -436,6 +436,8 @@ def main() -> int:
                 capabilities={"github_repo_read": GitHubRepositoryReadCapability(github_token)},
                 policy=LivePolicy(),
                 state_store=store,
+                action_safety_limit=8,
+                finalization_threshold=7,
             )
             created = runtime.create(Goal(_case_goal(case)))
             session_id = created.session_id

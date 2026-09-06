@@ -14,6 +14,7 @@ from agent_runtime.contracts import (
     Complete,
     Continue,
     Deny,
+    Fail,
     Failure,
     Goal,
     Message,
@@ -112,6 +113,8 @@ def _runtime(provider, capabilities, policy=None, store=None):
         capabilities=capabilities,
         policy=policy or AllowAllPolicy(),
         state_store=store or InMemoryStateStore(),
+        action_safety_limit=100,
+        finalization_threshold=99,
     )
 
 
@@ -187,6 +190,104 @@ def test_v2_004_different_tools_keep_capability_and_arguments_correlated():
     assert first.calls == [{"value": 1}]
     assert second.calls == [{"value": 2}]
     assert [call.action.capability_id for call in final.native_tools_v2_turns[0].calls] == ["a", "b"]
+
+
+def test_h1_finalization_reserve_closes_siblings_and_disables_tools():
+    provider = ScriptedModelProvider(
+        [
+            _response(_tool("call-a", "a"), _tool("call-b", "b"), _tool("call-c", "c")),
+            ModelResponse(content="final", finish_reason="stop"),
+        ]
+    )
+    capabilities = {name: CountingCapability(name) for name in ("a", "b", "c")}
+    runtime = NativeToolsV2Runtime(
+        reasoner=NativeToolsV2Reasoner(provider),
+        capabilities=capabilities,
+        policy=AllowAllPolicy(),
+        state_store=InMemoryStateStore(),
+        action_safety_limit=3,
+        finalization_threshold=2,
+    )
+
+    final = runtime.start(Goal("finalize before the action safety limit"))
+
+    assert [capabilities[name].calls for name in ("a", "b", "c")] == [[{}], [{}], []]
+    assert [call.status for call in final.native_tools_v2_turns[0].calls] == [
+        "settled",
+        "settled",
+        "skipped",
+    ]
+    assert [call.observation for call in final.native_tools_v2_turns[0].calls] == [
+        Success({"capability": "a"}),
+        Success({"capability": "b"}),
+        None,
+    ]
+    assert [step.observation for step in final.history[:2]] == [
+        Success({"capability": "a"}),
+        Success({"capability": "b"}),
+    ]
+    assert isinstance(final.history[-1].decision, Complete)
+    assert final.history[-1].decision.reason == "final"
+    assert final.pending_execution is None
+    assert validate_session_snapshot(final) == final
+    assert provider.requests[1].tools == ()
+    assert provider.requests[1].tool_choice is None
+    assert len(provider.requests) == 2
+
+
+def test_h1_invalid_finalization_fails_closed_without_retry_or_tools():
+    provider = ScriptedModelProvider(
+        [
+            _response(_tool("call-a", "a"), _tool("call-b", "b")),
+            _response(_tool("call-final", "a")),
+        ]
+    )
+    first = CountingCapability("a")
+    later = CountingCapability("b")
+    runtime = NativeToolsV2Runtime(
+        reasoner=NativeToolsV2Reasoner(provider),
+        capabilities={"a": first, "b": later},
+        policy=AllowAllPolicy(),
+        state_store=InMemoryStateStore(),
+        action_safety_limit=2,
+        finalization_threshold=1,
+    )
+    created = runtime.create(Goal("reject tool calls during finalization"))
+
+    final = runtime.run(created.session_id)
+
+    assert first.calls == [{}]
+    assert later.calls == []
+    assert [call.status for call in final.native_tools_v2_turns[0].calls] == [
+        "settled",
+        "skipped",
+    ]
+    assert isinstance(final.history[-1].decision, Fail)
+    assert "failed closed" in final.history[-1].decision.reason
+    assert final.history[-1].model_call is None
+    assert provider.requests[1].tools == ()
+    assert provider.requests[1].tool_choice is None
+    assert len(provider.requests) == 2
+    assert runtime.run(created.session_id) == final
+    assert len(provider.requests) == 2
+    assert validate_session_snapshot(final) == final
+
+
+def test_h1_finalization_configuration_requires_reserve_inside_action_bound():
+    provider = ScriptedModelProvider([])
+
+    _raised(
+        ValueError,
+        lambda: NativeToolsV2Runtime(
+            reasoner=NativeToolsV2Reasoner(provider),
+            capabilities={},
+            policy=AllowAllPolicy(),
+            state_store=InMemoryStateStore(),
+            action_safety_limit=2,
+            finalization_threshold=2,
+        ),
+    )
+    assert provider.requests == []
 
 
 def test_v2_011_terminal_stop_settles_and_skips_remaining_siblings():

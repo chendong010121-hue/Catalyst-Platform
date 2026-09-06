@@ -196,20 +196,70 @@ class NativeToolsV2Reasoner:
             protocol_error=protocol_error,
         )
 
+    def finalize_turn(
+        self,
+        goal: Goal,
+        state: State,
+        history: Sequence[StepRecord],
+        turns: Sequence[NativeToolsV2Turn],
+    ) -> NativeToolsV2TurnResult:
+        """Give the model one provider-neutral, tool-free finalization turn."""
+        request = self._build_request(goal, history, (), turns, include_tools=False)
+        response = self._model_provider.request(request)
+        model_call = self._model_call(response)
+
+        if response.tool_calls:
+            return NativeToolsV2TurnResult(
+                model_call=model_call,
+                protocol_error=self._finalization_error(
+                    "finalization-only model turn returned tool calls",
+                    f"tool_calls returned during finalization: {len(response.tool_calls)}",
+                    "finalization_tool_call_unsupported",
+                ),
+            )
+        if not response.content or not response.content.strip():
+            return NativeToolsV2TurnResult(
+                model_call=model_call,
+                protocol_error=self._finalization_error(
+                    "finalization-only model turn returned no content",
+                    "provider completed finalization without content",
+                    "finalization_content_missing",
+                ),
+            )
+        if response.finish_reason not in (None, "stop"):
+            return NativeToolsV2TurnResult(
+                model_call=model_call,
+                protocol_error=self._finalization_error(
+                    "finalization-only model turn did not finish normally",
+                    f"finalization finish_reason={response.finish_reason!r}",
+                    "finalization_finish_reason_invalid",
+                ),
+            )
+        return NativeToolsV2TurnResult(
+            model_call=model_call,
+            decision=Complete(response.content),
+        )
+
     def _build_request(
         self,
         goal: Goal,
         history: Sequence[StepRecord],
         capabilities: Sequence[CapabilityDescriptor],
         turns: Sequence[NativeToolsV2Turn],
+        *,
+        include_tools: bool = True,
     ) -> ModelRequest:
-        tools = tuple(
-            ModelToolDefinition(
-                name=capability.id,
-                description=capability.description,
-                parameters=dict(capability.input_schema),
+        tools = (
+            tuple(
+                ModelToolDefinition(
+                    name=capability.id,
+                    description=capability.description,
+                    parameters=dict(capability.input_schema),
+                )
+                for capability in capabilities
             )
-            for capability in capabilities
+            if include_tools
+            else ()
         )
         messages = [
             Message(role="system", content=_NATIVE_SYSTEM_PROMPT),
@@ -270,13 +320,49 @@ class NativeToolsV2Reasoner:
         )
         return NativeToolsV2ProtocolError(message, attribution)
 
+    @staticmethod
+    def _finalization_error(
+        message: str,
+        observed_fact: str,
+        failure_type: str,
+    ) -> NativeToolsV2ProtocolError:
+        attribution = NativeToolsV2FailureAttribution(
+            stage="native_finalization",
+            owner="Harness native-tools v2 finalization",
+            failure_type=failure_type,
+            observed_fact=observed_fact,
+            provider_completed=True,
+            downstream_tool_execution_started=False,
+            side_effect_certainty="none",
+            unproven_downstream_boundary="Capability execution",
+        )
+        return NativeToolsV2ProtocolError(message, attribution)
+
 
 class NativeToolsV2Runtime(Runtime):
     """Runtime host for v2 model-turn batches; v0.1 Runtime path remains selectable."""
 
-    def __init__(self, reasoner, capabilities, policy, state_store, *, timeout_config=None):
+    def __init__(
+        self,
+        reasoner,
+        capabilities,
+        policy,
+        state_store,
+        *,
+        timeout_config=None,
+        action_safety_limit: int,
+        finalization_threshold: int,
+    ):
         if not isinstance(reasoner, NativeToolsV2Reasoner):
             raise TypeError("NativeToolsV2Runtime requires NativeToolsV2Reasoner")
+        if type(action_safety_limit) is not int or action_safety_limit < 1:
+            raise ValueError("action_safety_limit must be a positive int")
+        if type(finalization_threshold) is not int or finalization_threshold < 1:
+            raise ValueError("finalization_threshold must be a positive int")
+        if finalization_threshold >= action_safety_limit:
+            raise ValueError(
+                "finalization_threshold must leave one step inside action_safety_limit"
+            )
         super().__init__(
             reasoner=reasoner,
             capabilities=capabilities,
@@ -285,6 +371,8 @@ class NativeToolsV2Runtime(Runtime):
             timeout_config=timeout_config,
         )
         self._v2_reasoner = reasoner
+        self._action_safety_limit = action_safety_limit
+        self._finalization_threshold = finalization_threshold
 
     def run(self, session_id: str) -> SessionSnapshot:
         snapshot = validate_session_snapshot(
@@ -346,6 +434,9 @@ class NativeToolsV2Runtime(Runtime):
                 self._state_store.load(session_id), expected_session_id=session_id
             )
             active = self._active_turn(snapshot)
+            if self._finalization_due(snapshot):
+                snapshot = self._close_turn_for_finalization(snapshot, active)
+                return self._run_finalization(snapshot)
             if active is not None:
                 if active.status == "executing":
                     snapshot = self._execute_next_call(snapshot, active)
@@ -375,6 +466,74 @@ class NativeToolsV2Runtime(Runtime):
             )
             snapshot = replace(snapshot, history=snapshot.history + (step,))
             return self._commit(snapshot)
+
+    def _finalization_due(self, snapshot: SessionSnapshot) -> bool:
+        return (
+            not _is_terminal(snapshot)
+            and self._finalization_threshold <= len(snapshot.history)
+            and len(snapshot.history) < self._action_safety_limit
+        )
+
+    def _close_turn_for_finalization(self, snapshot, turn):
+        if turn is None:
+            return snapshot
+        pending_exists = any(call.status == "pending" for call in turn.calls)
+        calls = [
+            replace(call, status="skipped") if call.status == "pending" else call
+            for call in turn.calls
+        ]
+        attribution = turn.failure_attribution
+        if pending_exists:
+            attribution = NativeToolsV2FailureAttribution(
+                stage="native_finalization",
+                owner="Harness native-tools v2 finalization",
+                failure_type="finalization_reserve_reached",
+                observed_fact=(
+                    "finalization reserve reached; unexecuted sibling calls were skipped"
+                ),
+                provider_completed=True,
+                downstream_tool_execution_started=any(
+                    call.execution_id is not None for call in calls
+                ),
+                side_effect_certainty="known for settled calls",
+                unproven_downstream_boundary="skipped sibling calls",
+            )
+        closed = replace(
+            turn,
+            calls=tuple(calls),
+            next_index=len(calls),
+            status="completed",
+            failure_attribution=attribution,
+        )
+        return self._commit(self._replace_turn(snapshot, closed))
+
+    def _run_finalization(self, snapshot):
+        result = self._v2_reasoner.finalize_turn(
+            snapshot.goal,
+            snapshot.state,
+            snapshot.history,
+            snapshot.native_tools_v2_turns,
+        )
+        if result.protocol_error is not None:
+            model_call = (
+                None if result.model_call.tool_calls else result.model_call
+            )
+            decision = Fail(
+                "finalization-only model opportunity failed closed: "
+                + str(result.protocol_error)
+            )
+        elif isinstance(result.decision, Complete):
+            model_call = result.model_call
+            decision = result.decision
+        else:
+            model_call = result.model_call
+            decision = Fail("finalization-only model opportunity returned no decision")
+        step = StepRecord(
+            index=len(snapshot.history),
+            decision=decision,
+            model_call=model_call,
+        )
+        return self._commit(replace(snapshot, history=snapshot.history + (step,)))
 
     def _execute_next_call(self, snapshot: SessionSnapshot, turn: NativeToolsV2Turn):
         index = next(
