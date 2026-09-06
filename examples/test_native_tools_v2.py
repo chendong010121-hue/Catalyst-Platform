@@ -235,6 +235,50 @@ def test_h1_finalization_reserve_closes_siblings_and_disables_tools():
     assert len(provider.requests) == 2
 
 
+def test_h1_1_finalization_directive_preserves_goal_and_observations():
+    provider = ScriptedModelProvider(
+        [_response(_tool("call-a", "a")), ModelResponse(content="final", finish_reason="stop")]
+    )
+    runtime = NativeToolsV2Runtime(
+        reasoner=NativeToolsV2Reasoner(provider),
+        capabilities={"a": CountingCapability("a")},
+        policy=AllowAllPolicy(),
+        state_store=InMemoryStateStore(),
+        action_safety_limit=2,
+        finalization_threshold=1,
+    )
+    goal = Goal("Return the required final answer format")
+
+    final = runtime.start(goal)
+
+    assert isinstance(final.history[-1].decision, Complete)
+    assert len(provider.requests) == 2
+    request = provider.requests[1]
+    assert request.tools == ()
+    assert request.tool_choice is None
+    assert [message.content for message in request.messages if message.role == "user"] == [
+        goal.description
+    ]
+    assert any(
+        message.role == "tool" and '"capability": "a"' in message.content
+        for message in request.messages
+    )
+    directives = [
+        message.content
+        for message in request.messages
+        if message.role == "system" and "finalization phase" in message.content.lower()
+    ]
+    assert directives == [
+        "You are now in the finalization phase. "
+        "No tools or capability calls are available. "
+        "Do not request or describe additional tool calls. "
+        "Using only the observations already available, produce the best final answer now. "
+        "Follow the original goal's required output format exactly."
+    ]
+    forbidden = ("waku", "u1", "deepseek", "dsml", "schema", "repository_inspect")
+    assert not any(term in directives[0].lower() for term in forbidden)
+
+
 def test_h1_invalid_finalization_fails_closed_without_retry_or_tools():
     provider = ScriptedModelProvider(
         [

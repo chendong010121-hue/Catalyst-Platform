@@ -48,6 +48,13 @@ _NATIVE_SYSTEM_PROMPT = (
     "When a tool result gives you enough information, answer directly. "
     "Do not invent tool results."
 )
+_FINALIZATION_DIRECTIVE = (
+    "You are now in the finalization phase. "
+    "No tools or capability calls are available. "
+    "Do not request or describe additional tool calls. "
+    "Using only the observations already available, produce the best final answer now. "
+    "Follow the original goal's required output format exactly."
+)
 
 
 def _render_json(value) -> str:
@@ -204,7 +211,9 @@ class NativeToolsV2Reasoner:
         turns: Sequence[NativeToolsV2Turn],
     ) -> NativeToolsV2TurnResult:
         """Give the model one provider-neutral, tool-free finalization turn."""
-        request = self._build_request(goal, history, (), turns, include_tools=False)
+        request = self._build_request(
+            goal, history, (), turns, include_tools=False, finalization=True
+        )
         response = self._model_provider.request(request)
         model_call = self._model_call(response)
 
@@ -248,6 +257,7 @@ class NativeToolsV2Reasoner:
         turns: Sequence[NativeToolsV2Turn],
         *,
         include_tools: bool = True,
+        finalization: bool = False,
     ) -> ModelRequest:
         tools = (
             tuple(
@@ -261,10 +271,10 @@ class NativeToolsV2Reasoner:
             if include_tools
             else ()
         )
-        messages = [
-            Message(role="system", content=_NATIVE_SYSTEM_PROMPT),
-            Message(role="user", content=goal.description),
-        ]
+        messages = [Message(role="system", content=_NATIVE_SYSTEM_PROMPT)]
+        if finalization:
+            messages.append(Message(role="system", content=_FINALIZATION_DIRECTIVE))
+        messages.append(Message(role="user", content=goal.description))
         for turn in turns:
             if turn.status not in ("completed", "blocked", "failed"):
                 continue
