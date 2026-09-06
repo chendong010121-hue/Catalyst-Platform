@@ -26,6 +26,7 @@ from .contracts import (
     ModelUsage,
     NativeToolsV2Call,
     NativeToolsV2FailureAttribution,
+    NativeToolsV2FinalizationEvidence,
     NativeToolsV2RecoveryEvidence,
     NativeToolsV2Turn,
     PendingExecution,
@@ -156,6 +157,26 @@ def snapshot_model_call(model_call):
             if model_call.assistant_message is not None
             else None
         ),
+    )
+
+
+def snapshot_native_tools_v2_finalization(evidence):
+    if not isinstance(evidence, NativeToolsV2FinalizationEvidence):
+        raise CapabilityContractError(
+            "native_tools_v2 finalization evidence must be a "
+            "NativeToolsV2FinalizationEvidence"
+        )
+    return NativeToolsV2FinalizationEvidence(
+        model_call=snapshot_model_call(evidence.model_call),
+        raw_content=evidence.raw_content,
+        parsed_result=(
+            snapshot_value(evidence.parsed_result)
+            if evidence.parsed_result is not None
+            else None
+        ),
+        parse_error=evidence.parse_error,
+        validation_errors=tuple(evidence.validation_errors),
+        accepted=evidence.accepted,
     )
 
 
@@ -311,7 +332,12 @@ def decision_model_call_mismatch(decision, model_call):
 def snapshot_decision(decision):
     if isinstance(decision, Act):
         return Act(snapshot_action(decision.action))
-    return decision  # Complete / Fail / Blocked：reason 为 str
+    if isinstance(decision, Complete):
+        return Complete(
+            reason=decision.reason,
+            result=(snapshot_value(decision.result) if decision.result is not None else None),
+        )
+    return decision  # Fail / Blocked：reason 为 str
 
 
 def snapshot_pending_execution(pending):
@@ -437,6 +463,14 @@ def _validate_step(step, position, session_id, settled_execution_ids):
                 f"history[{position}].decision(Complete).reason must be None or str",
                 session_id=session_id,
             )
+        try:
+            if decision.result is not None:
+                snapshot_value(decision.result)
+        except CapabilityContractError as exc:
+            raise SessionConsistencyError(
+                f"history[{position}].decision(Complete).result is not a valid JsonValue: {exc}",
+                session_id=session_id,
+            ) from exc
     else:  # Fail / Blocked
         if not isinstance(decision.reason, str):
             raise SessionConsistencyError(
@@ -723,6 +757,18 @@ def validate_session_snapshot(snapshot, expected_session_id=None) -> SessionSnap
                 session_id=session_id,
             )
 
+    finalization = snapshot.native_tools_v2_finalization
+    if finalization is not None:
+        try:
+            canonical_finalization = snapshot_native_tools_v2_finalization(finalization)
+        except (CapabilityContractError, ValueError) as exc:
+            raise SessionConsistencyError(
+                f"native_tools_v2_finalization failed canonical snapshot: {exc}",
+                session_id=session_id,
+            ) from exc
+    else:
+        canonical_finalization = None
+
     return SessionSnapshot(
         session_id=session_id,
         goal=snapshot.goal,
@@ -730,6 +776,7 @@ def validate_session_snapshot(snapshot, expected_session_id=None) -> SessionSnap
         history=tuple(steps),
         pending_execution=snapshot_pending_execution(pending),
         native_tools_v2_turns=canonical_native_turns,
+        native_tools_v2_finalization=canonical_finalization,
     )
 
 

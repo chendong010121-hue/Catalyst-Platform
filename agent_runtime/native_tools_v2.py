@@ -20,6 +20,7 @@ from .contracts import (
     Complete,
     Deny,
     Fail,
+    FinalOutputContract,
     Failure,
     Goal,
     Message,
@@ -31,6 +32,7 @@ from .contracts import (
     ModelToolDefinition,
     NativeToolsV2Call,
     NativeToolsV2FailureAttribution,
+    NativeToolsV2FinalizationEvidence,
     NativeToolsV2RecoveryEvidence,
     NativeToolsV2Turn,
     SessionSnapshot,
@@ -53,6 +55,14 @@ _FINALIZATION_DIRECTIVE = (
     "No tools or capability calls are available. "
     "Do not request or describe additional tool calls. "
     "Using only the observations already available, produce the best final answer now. "
+    "Follow the original goal's required output format exactly."
+)
+_STRUCTURED_FINALIZATION_DIRECTIVE = (
+    "You are now in the finalization phase. "
+    "No further tools or capability calls are available except the single terminal result channel. "
+    "Do not request or describe additional capability calls. "
+    "Using only the observations already available, use the terminal result channel exactly once "
+    "to submit the best final answer now. "
     "Follow the original goal's required output format exactly."
 )
 
@@ -102,6 +112,7 @@ class NativeToolsV2TurnResult:
     turn: NativeToolsV2Turn | None = None
     decision: Complete | None = None
     protocol_error: "NativeToolsV2ProtocolError | None" = None
+    finalization_evidence: NativeToolsV2FinalizationEvidence | None = None
 
 
 class NativeToolsV2ProtocolError(Exception):
@@ -115,8 +126,14 @@ class NativeToolsV2ProtocolError(Exception):
 class NativeToolsV2Reasoner:
     """Provider-neutral model-turn parser accepting zero or more tool calls."""
 
-    def __init__(self, model_provider: ModelProvider):
+    def __init__(
+        self,
+        model_provider: ModelProvider,
+        *,
+        final_output_contract: FinalOutputContract | None = None,
+    ):
         self._model_provider = model_provider
+        self._final_output_contract = final_output_contract
 
     def decide_turn(
         self,
@@ -210,12 +227,15 @@ class NativeToolsV2Reasoner:
         history: Sequence[StepRecord],
         turns: Sequence[NativeToolsV2Turn],
     ) -> NativeToolsV2TurnResult:
-        """Give the model one provider-neutral, tool-free finalization turn."""
+        """Give the model one provider-neutral finalization turn."""
         request = self._build_request(
             goal, history, (), turns, include_tools=False, finalization=True
         )
         response = self._model_provider.request(request)
         model_call = self._model_call(response)
+
+        if self._final_output_contract is not None:
+            return self._finalize_structured_output(response, model_call)
 
         if response.tool_calls:
             return NativeToolsV2TurnResult(
@@ -249,6 +269,123 @@ class NativeToolsV2Reasoner:
             decision=Complete(response.content),
         )
 
+    def _finalize_structured_output(
+        self,
+        response: ModelResponse,
+        model_call: ModelCallRecord,
+    ) -> NativeToolsV2TurnResult:
+        """Validate the single synthetic terminal submission without execution."""
+        contract = self._final_output_contract
+        assert contract is not None
+        evidence_kwargs = {
+            "model_call": model_call,
+            "raw_content": response.content,
+        }
+
+        if len(response.tool_calls) != 1:
+            evidence = NativeToolsV2FinalizationEvidence(
+                **evidence_kwargs,
+                validation_errors=(
+                    "exactly one terminal result submission is required",
+                ),
+            )
+            return NativeToolsV2TurnResult(
+                model_call=model_call,
+                finalization_evidence=evidence,
+                protocol_error=self._finalization_error(
+                    "structured finalization requires exactly one terminal submission",
+                    f"terminal tool call count={len(response.tool_calls)}",
+                    "finalization_terminal_submission_count_invalid",
+                ),
+            )
+
+        submission = response.tool_calls[0]
+        if submission.name != "structured_output":
+            evidence = NativeToolsV2FinalizationEvidence(
+                **evidence_kwargs,
+                validation_errors=("terminal submission used an unexpected tool name",),
+            )
+            return NativeToolsV2TurnResult(
+                model_call=model_call,
+                finalization_evidence=evidence,
+                protocol_error=self._finalization_error(
+                    "structured finalization returned the wrong terminal tool",
+                    f"terminal tool name={submission.name!r}",
+                    "finalization_terminal_tool_invalid",
+                ),
+            )
+
+        try:
+            parsed = json.loads(submission.arguments)
+        except json.JSONDecodeError as exc:
+            evidence = NativeToolsV2FinalizationEvidence(
+                **evidence_kwargs,
+                parse_error=str(exc),
+                validation_errors=("terminal submission arguments are not valid JSON",),
+            )
+            return NativeToolsV2TurnResult(
+                model_call=model_call,
+                finalization_evidence=evidence,
+                protocol_error=self._finalization_error(
+                    "structured finalization arguments are malformed",
+                    f"terminal submission JSON parse error: {exc}",
+                    "finalization_terminal_arguments_invalid",
+                ),
+            )
+
+        if not isinstance(parsed, dict):
+            validation_errors = ("terminal submission must be a JSON object",)
+        else:
+            try:
+                validation_errors = tuple(contract.validate(parsed))
+            except Exception as exc:
+                validation_errors = (f"terminal submission validation failed: {exc}",)
+        if not all(isinstance(error, str) for error in validation_errors):
+            validation_errors = ("terminal submission validator returned invalid errors",)
+
+        if validation_errors:
+            evidence = NativeToolsV2FinalizationEvidence(
+                **evidence_kwargs,
+                parsed_result=parsed,
+                validation_errors=validation_errors,
+            )
+            return NativeToolsV2TurnResult(
+                model_call=model_call,
+                finalization_evidence=evidence,
+                protocol_error=self._finalization_error(
+                    "structured finalization result failed its contract",
+                    "; ".join(validation_errors),
+                    "finalization_terminal_shape_invalid",
+                ),
+            )
+
+        if response.finish_reason not in (None, "tool_calls", "stop"):
+            evidence = NativeToolsV2FinalizationEvidence(
+                **evidence_kwargs,
+                parsed_result=parsed,
+                validation_errors=("terminal submission finish reason is invalid",),
+            )
+            return NativeToolsV2TurnResult(
+                model_call=model_call,
+                finalization_evidence=evidence,
+                protocol_error=self._finalization_error(
+                    "structured finalization did not finish normally",
+                    f"finalization finish_reason={response.finish_reason!r}",
+                    "finalization_finish_reason_invalid",
+                ),
+            )
+
+        evidence = NativeToolsV2FinalizationEvidence(
+            **evidence_kwargs,
+            parsed_result=parsed,
+            accepted=True,
+        )
+        return NativeToolsV2TurnResult(
+            model_call=model_call,
+            decision=Complete(result=parsed),
+            finalization_evidence=evidence,
+        )
+
     def _build_request(
         self,
         goal: Goal,
@@ -259,8 +396,16 @@ class NativeToolsV2Reasoner:
         include_tools: bool = True,
         finalization: bool = False,
     ) -> ModelRequest:
-        tools = (
-            tuple(
+        if finalization and self._final_output_contract is not None:
+            tools = (
+                ModelToolDefinition(
+                    name="structured_output",
+                    description="Submit the final result through this terminal channel.",
+                    parameters=dict(self._final_output_contract.schema),
+                ),
+            )
+        elif include_tools:
+            tools = tuple(
                 ModelToolDefinition(
                     name=capability.id,
                     description=capability.description,
@@ -268,12 +413,16 @@ class NativeToolsV2Reasoner:
                 )
                 for capability in capabilities
             )
-            if include_tools
-            else ()
-        )
+        else:
+            tools = ()
         messages = [Message(role="system", content=_NATIVE_SYSTEM_PROMPT)]
         if finalization:
-            messages.append(Message(role="system", content=_FINALIZATION_DIRECTIVE))
+            directive = (
+                _STRUCTURED_FINALIZATION_DIRECTIVE
+                if self._final_output_contract is not None
+                else _FINALIZATION_DIRECTIVE
+            )
+            messages.append(Message(role="system", content=directive))
         messages.append(Message(role="user", content=goal.description))
         for turn in turns:
             if turn.status not in ("completed", "blocked", "failed"):
@@ -524,6 +673,7 @@ class NativeToolsV2Runtime(Runtime):
             snapshot.history,
             snapshot.native_tools_v2_turns,
         )
+        evidence = result.finalization_evidence
         if result.protocol_error is not None:
             model_call = (
                 None if result.model_call.tool_calls else result.model_call
@@ -533,7 +683,10 @@ class NativeToolsV2Runtime(Runtime):
                 + str(result.protocol_error)
             )
         elif isinstance(result.decision, Complete):
-            model_call = result.model_call
+            # A synthetic terminal submission is Harness evidence, not a
+            # Capability call. Keep generic model-call consistency intact by
+            # storing its raw call in the NativeToolsV2-specific evidence.
+            model_call = None if evidence is not None and result.model_call.tool_calls else result.model_call
             decision = result.decision
         else:
             model_call = result.model_call
@@ -543,7 +696,13 @@ class NativeToolsV2Runtime(Runtime):
             decision=decision,
             model_call=model_call,
         )
-        return self._commit(replace(snapshot, history=snapshot.history + (step,)))
+        return self._commit(
+            replace(
+                snapshot,
+                history=snapshot.history + (step,),
+                native_tools_v2_finalization=evidence,
+            )
+        )
 
     def _execute_next_call(self, snapshot: SessionSnapshot, turn: NativeToolsV2Turn):
         index = next(

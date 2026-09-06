@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from typing import Protocol, Sequence
+from typing import Any, Mapping, Protocol, Sequence
 
 from .values import (
     Action,
@@ -24,7 +24,15 @@ from .values import (
     Termination,
 )
 
-__all__ = ["Reasoner", "ModelProvider", "Capability", "CapabilityExecutor", "Policy", "StateStore"]
+__all__ = [
+    "Reasoner",
+    "ModelProvider",
+    "FinalOutputContract",
+    "Capability",
+    "CapabilityExecutor",
+    "Policy",
+    "StateStore",
+]
 
 
 class Reasoner(Protocol):
@@ -57,6 +65,19 @@ class ModelProvider(Protocol):
 
     def request(self, request: ModelRequest) -> ModelResponse:
         """发送模型请求，返回归一化响应。"""
+        ...
+
+
+class FinalOutputContract(Protocol):
+    """Provider-neutral contract for one model-visible terminal submission."""
+
+    @property
+    def schema(self) -> Mapping[str, Any]:
+        """Return the JSON-object schema exposed on the terminal channel."""
+        ...
+
+    def validate(self, value: Any) -> Sequence[str]:
+        """Return deterministic shape errors; empty means valid."""
         ...
 
 

@@ -14,6 +14,7 @@ from agent_runtime.contracts import (
     Complete,
     Continue,
     Deny,
+    FinalOutputContract,
     Fail,
     Failure,
     Goal,
@@ -99,12 +100,38 @@ class DenyOnePolicy(AllowAllPolicy):
         return Allow()
 
 
+class AnswerObjectContract:
+    schema = {
+        "type": "object",
+        "properties": {"answer": {"type": "string"}},
+        "required": ["answer"],
+        "additionalProperties": False,
+    }
+
+    def validate(self, value):
+        if not isinstance(value, dict):
+            return ("result must be a JSON object",)
+        if set(value) != {"answer"}:
+            return ("result must contain only answer",)
+        if not isinstance(value["answer"], str) or not value["answer"]:
+            return ("answer must be a non-empty string",)
+        return ()
+
+
+def _answer_contract() -> FinalOutputContract:
+    return AnswerObjectContract()
+
+
 def _tool(call_id: str, name: str, arguments: str = "{}") -> ModelToolCall:
     return ModelToolCall(call_id, name, arguments)
 
 
 def _response(*calls: ModelToolCall) -> ModelResponse:
     return ModelResponse(content=None, tool_calls=calls, finish_reason="tool_calls")
+
+
+def _structured_response(arguments: str = '{"answer":"final"}') -> ModelResponse:
+    return _response(_tool("terminal-1", "structured_output", arguments))
 
 
 def _runtime(provider, capabilities, policy=None, store=None):
@@ -669,6 +696,122 @@ def test_v2_010_history_reconstructs_one_full_assistant_batch_and_results():
     assert [message.tool_call_id for message in results] == ["call-a", "call-b"]
 
 
+def test_h2_1_structured_terminal_submission_completes_and_reloads_durably():
+    provider = ScriptedModelProvider(
+        [_response(_tool("call-a", "a")), _structured_response()]
+    )
+    capability = CountingCapability("a")
+    store = InMemoryStateStore()
+    runtime = NativeToolsV2Runtime(
+        reasoner=NativeToolsV2Reasoner(provider, final_output_contract=_answer_contract()),
+        capabilities={"a": capability},
+        policy=AllowAllPolicy(),
+        state_store=store,
+        action_safety_limit=3,
+        finalization_threshold=1,
+    )
+
+    final = runtime.start(Goal("original goal"))
+
+    assert len(provider.requests) == 2
+    request = provider.requests[1]
+    assert len(request.tools) == 1
+    assert request.tools[0].name == "structured_output"
+    assert request.tools[0].parameters == _answer_contract().schema
+    assert request.tool_choice == "auto"
+    assert any(message.role == "user" and message.content == "original goal" for message in request.messages)
+    assert any(message.role == "tool" and "capability" in (message.content or "") for message in request.messages)
+    structured_directive = " ".join(
+        message.content or "" for message in request.messages if message.role == "system"
+    )
+    assert "No further tools or capability calls are available except the single terminal result channel." in structured_directive
+    assert not any(token in structured_directive for token in ("Waku", "U1", "DeepSeek", "DSML"))
+
+    assert capability.calls == [{}]
+    assert isinstance(final.history[-1].decision, Complete)
+    assert final.history[-1].decision.result == {"answer": "final"}
+    assert final.history[-1].model_call is None
+    evidence = final.native_tools_v2_finalization
+    assert evidence is not None
+    assert evidence.accepted is True
+    assert evidence.model_call.tool_calls[0].name == "structured_output"
+    assert evidence.model_call.tool_calls[0].arguments == '{"answer":"final"}'
+    assert evidence.parsed_result == {"answer": "final"}
+    assert evidence.parse_error is None
+    assert evidence.validation_errors == ()
+    assert final.pending_execution is None
+
+    stored = store.load(final.session_id)
+    assert stored == final
+    calls_before_resume = len(provider.requests)
+    assert runtime.resume(final.session_id) == final
+    assert len(provider.requests) == calls_before_resume
+
+
+def test_h2_1_no_contract_keeps_h1_1_tool_free_finalization():
+    provider = ScriptedModelProvider(
+        [_response(_tool("call-a", "a")), ModelResponse(content="plain", finish_reason="stop")]
+    )
+    runtime = NativeToolsV2Runtime(
+        reasoner=NativeToolsV2Reasoner(provider),
+        capabilities={"a": CountingCapability("a")},
+        policy=AllowAllPolicy(),
+        state_store=InMemoryStateStore(),
+        action_safety_limit=3,
+        finalization_threshold=1,
+    )
+
+    final = runtime.start(Goal("plain goal"))
+
+    request = provider.requests[1]
+    assert request.tools == ()
+    assert request.tool_choice is None
+    assert final.native_tools_v2_finalization is None
+    assert isinstance(final.history[-1].decision, Complete)
+    assert final.history[-1].decision.reason == "plain"
+    assert "No tools or capability calls are available." in " ".join(
+        message.content or "" for message in request.messages if message.role == "system"
+    )
+
+
+def test_h2_1_invalid_terminal_submissions_fail_closed_without_retry():
+    cases = (
+        ModelResponse(content="plain", finish_reason="stop"),
+        _response(_tool("wrong", "other", '{"answer":"final"}')),
+        _response(
+            _tool("one", "structured_output", '{"answer":"one"}'),
+            _tool("two", "structured_output", '{"answer":"two"}'),
+        ),
+        _structured_response("not-json"),
+        _structured_response('{"answer":""}'),
+        ModelResponse(content=None, finish_reason="stop"),
+    )
+
+    for response in cases:
+        provider = ScriptedModelProvider([response])
+        reasoner = NativeToolsV2Reasoner(provider, final_output_contract=_answer_contract())
+        result = reasoner.finalize_turn(Goal("original goal"), {}, (), ())
+
+        assert result.decision is None
+        assert result.protocol_error is not None
+        assert result.finalization_evidence is not None
+        assert result.finalization_evidence.accepted is False
+        assert len(provider.requests) == 1
+
+
+def test_h2_1_structured_submission_is_not_a_capability_call():
+    provider = ScriptedModelProvider([_structured_response()])
+    capability = CountingCapability("structured_output")
+    reasoner = NativeToolsV2Reasoner(provider, final_output_contract=_answer_contract())
+    result = reasoner.finalize_turn(Goal("goal"), {}, (), ())
+
+    assert result.protocol_error is None
+    assert isinstance(result.decision, Complete)
+    assert result.decision.result == {"answer": "final"}
+    assert capability.calls == []
+    assert result.model_call.tool_calls[0].name == "structured_output"
+
+
 def main() -> None:
     tests = [
         test_v2_001_zero_tool_calls_final_answer,
@@ -687,6 +830,10 @@ def main() -> None:
         test_v2_009b_crash_window_recovers_settled_history_without_replay,
         test_v2_009c_execution_id_action_mismatch_fails_closed_without_execution,
         test_v2_010_history_reconstructs_one_full_assistant_batch_and_results,
+        test_h2_1_structured_terminal_submission_completes_and_reloads_durably,
+        test_h2_1_no_contract_keeps_h1_1_tool_free_finalization,
+        test_h2_1_invalid_terminal_submissions_fail_closed_without_retry,
+        test_h2_1_structured_submission_is_not_a_capability_call,
     ]
     failed = []
     for test in tests:

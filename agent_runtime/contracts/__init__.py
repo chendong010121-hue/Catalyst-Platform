@@ -6,6 +6,7 @@
 from .interfaces import (
     Capability,
     CapabilityExecutor,
+    FinalOutputContract,
     ModelProvider,
     Policy,
     Reasoner,
@@ -37,6 +38,7 @@ from .values import (
     ModelUsage,
     NativeToolsV2Call,
     NativeToolsV2FailureAttribution,
+    NativeToolsV2FinalizationEvidence,
     NativeToolsV2RecoveryEvidence,
     NativeToolsV2Turn,
     Observation,
@@ -82,6 +84,7 @@ __all__ = [
     "NativeToolsV2Call",
     "NativeToolsV2Turn",
     "NativeToolsV2FailureAttribution",
+    "NativeToolsV2FinalizationEvidence",
     "NativeToolsV2RecoveryEvidence",
     "ReasoningResult",
     # Policy 前置校验联合
@@ -107,6 +110,7 @@ __all__ = [
     # 抽象接口
     "Reasoner",
     "ModelProvider",
+    "FinalOutputContract",
     "Capability",
     "CapabilityExecutor",
     "Policy",

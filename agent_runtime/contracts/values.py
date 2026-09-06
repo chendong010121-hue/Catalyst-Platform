@@ -87,6 +87,11 @@ class Complete:
     """目标已完成。reason 为可选的完成说明（仅供人读，不用于判断类型）。"""
 
     reason: str | None = None
+    result: Any = None
+
+    def __post_init__(self) -> None:
+        if self.result is not None and not _is_json_value(self.result):
+            raise ValueError("Complete.result must be a JSON-native value")
 
 
 @dataclass(frozen=True)
@@ -517,6 +522,41 @@ class NativeToolsV2RecoveryEvidence:
 
 
 @dataclass(frozen=True)
+class NativeToolsV2FinalizationEvidence:
+    """Durable raw/parsed evidence for one structured terminal submission."""
+
+    model_call: ModelCallRecord
+    raw_content: str | None = None
+    parsed_result: Any = None
+    parse_error: str | None = None
+    validation_errors: tuple[str, ...] = ()
+    accepted: bool = False
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.model_call, ModelCallRecord):
+            raise ValueError("NativeToolsV2FinalizationEvidence.model_call must be ModelCallRecord")
+        if self.raw_content is not None and not isinstance(self.raw_content, str):
+            raise ValueError("NativeToolsV2FinalizationEvidence.raw_content must be None or str")
+        if self.parsed_result is not None and not _is_json_value(self.parsed_result):
+            raise ValueError(
+                "NativeToolsV2FinalizationEvidence.parsed_result must be a JSON-native value"
+            )
+        if self.parse_error is not None and not isinstance(self.parse_error, str):
+            raise ValueError("NativeToolsV2FinalizationEvidence.parse_error must be None or str")
+        if not isinstance(self.validation_errors, (tuple, list)):
+            raise ValueError(
+                "NativeToolsV2FinalizationEvidence.validation_errors must be a tuple/list"
+            )
+        if not all(isinstance(error, str) for error in self.validation_errors):
+            raise ValueError(
+                "NativeToolsV2FinalizationEvidence.validation_errors must contain strings"
+            )
+        object.__setattr__(self, "validation_errors", tuple(self.validation_errors))
+        if type(self.accepted) is not bool:
+            raise ValueError("NativeToolsV2FinalizationEvidence.accepted must be bool")
+
+
+@dataclass(frozen=True)
 class NativeToolsV2Call:
     """Durable progress for one provider-neutral tool-call intent."""
 
@@ -742,6 +782,7 @@ class SessionSnapshot:
     history: tuple[StepRecord, ...] = ()
     pending_execution: PendingExecution | None = None
     native_tools_v2_turns: tuple[NativeToolsV2Turn, ...] = ()
+    native_tools_v2_finalization: NativeToolsV2FinalizationEvidence | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -794,6 +835,7 @@ __all__ = [
     "NativeToolsV2Call",
     "NativeToolsV2FailureAttribution",
     "NativeToolsV2RecoveryEvidence",
+    "NativeToolsV2FinalizationEvidence",
     "NativeToolsV2Turn",
     "ReasoningResult",
     # Policy 前置校验联合
