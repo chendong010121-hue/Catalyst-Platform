@@ -280,6 +280,47 @@ def json_value_equal(a, b) -> bool:
     return False
 
 
+def _validate_native_tools_v2_finalization_coherence(finalization, history, session_id):
+    """Bind durable H2.1 finalization evidence to the terminal history fact."""
+    if finalization is None:
+        return
+    if not history:
+        raise SessionConsistencyError(
+            "native_tools_v2_finalization requires a terminal history tail",
+            session_id=session_id,
+        )
+
+    tail = history[-1]
+    if finalization.accepted:
+        if not isinstance(tail.decision, Complete):
+            raise SessionConsistencyError(
+                "accepted native_tools_v2_finalization requires a Complete terminal tail",
+                session_id=session_id,
+            )
+        if tail.decision.result is None:
+            raise SessionConsistencyError(
+                "accepted native_tools_v2_finalization requires Complete.result",
+                session_id=session_id,
+            )
+        if not json_value_equal(tail.decision.result, finalization.parsed_result):
+            raise SessionConsistencyError(
+                "Complete.result does not match native_tools_v2_finalization.parsed_result",
+                session_id=session_id,
+            )
+        if tail.model_call is not None and tail.model_call.tool_calls:
+            raise SessionConsistencyError(
+                "accepted native_tools_v2_finalization must not be stored as an executable model_call",
+                session_id=session_id,
+            )
+        return
+
+    if not isinstance(tail.decision, Fail):
+        raise SessionConsistencyError(
+            "rejected native_tools_v2_finalization requires a Fail terminal tail",
+            session_id=session_id,
+        )
+
+
 def observation_equal(a, b) -> bool:
     """Observation 的 JsonValue-aware equality（Success/Failure）。
 
@@ -768,6 +809,12 @@ def validate_session_snapshot(snapshot, expected_session_id=None) -> SessionSnap
             ) from exc
     else:
         canonical_finalization = None
+
+    _validate_native_tools_v2_finalization_coherence(
+        canonical_finalization,
+        tuple(steps),
+        session_id,
+    )
 
     return SessionSnapshot(
         session_id=session_id,

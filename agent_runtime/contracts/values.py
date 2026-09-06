@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 import re
 from dataclasses import dataclass, field
@@ -31,6 +32,28 @@ def _is_json_value(value) -> bool:
         return all(isinstance(k, str) and _is_json_value(v) for k, v in value.items())
     if isinstance(value, list):
         return all(_is_json_value(v) for v in value)
+    return False
+
+
+def _json_value_equal(left, right) -> bool:
+    """Type-aware equality for the durable JSON value subset."""
+    if isinstance(left, bool) or isinstance(right, bool):
+        return isinstance(left, bool) and isinstance(right, bool) and left == right
+    if left is None or right is None:
+        return left is None and right is None
+    if isinstance(left, (int, float)) and isinstance(right, (int, float)):
+        return left == right
+    if isinstance(left, str) and isinstance(right, str):
+        return left == right
+    if isinstance(left, Mapping) and isinstance(right, Mapping):
+        return len(left) == len(right) and all(
+            key in right and _json_value_equal(value, right[key])
+            for key, value in left.items()
+        )
+    if isinstance(left, list) and isinstance(right, list):
+        return len(left) == len(right) and all(
+            _json_value_equal(a, b) for a, b in zip(left, right)
+        )
     return False
 
 # ---------------------------------------------------------------------------
@@ -554,6 +577,42 @@ class NativeToolsV2FinalizationEvidence:
         object.__setattr__(self, "validation_errors", tuple(self.validation_errors))
         if type(self.accepted) is not bool:
             raise ValueError("NativeToolsV2FinalizationEvidence.accepted must be bool")
+        if self.accepted:
+            if not isinstance(self.parsed_result, Mapping):
+                raise ValueError(
+                    "accepted finalization evidence requires a JSON object parsed_result"
+                )
+            if self.parse_error is not None:
+                raise ValueError(
+                    "accepted finalization evidence must not contain parse_error"
+                )
+            if self.validation_errors:
+                raise ValueError(
+                    "accepted finalization evidence must not contain validation_errors"
+                )
+            if len(self.model_call.tool_calls) != 1:
+                raise ValueError(
+                    "accepted finalization evidence requires exactly one model tool call"
+                )
+            submission = self.model_call.tool_calls[0]
+            if submission.name != "structured_output":
+                raise ValueError(
+                    "accepted finalization evidence requires the structured_output tool"
+                )
+            try:
+                raw_value = json.loads(submission.arguments)
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    "accepted finalization evidence requires valid JSON arguments"
+                ) from exc
+            if not isinstance(raw_value, dict):
+                raise ValueError(
+                    "accepted finalization evidence requires JSON-object arguments"
+                )
+            if not _json_value_equal(raw_value, self.parsed_result):
+                raise ValueError(
+                    "accepted finalization evidence raw arguments do not match parsed_result"
+                )
 
 
 @dataclass(frozen=True)

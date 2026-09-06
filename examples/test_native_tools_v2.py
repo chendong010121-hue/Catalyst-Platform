@@ -6,6 +6,8 @@ the frozen v0.1 test module remains untouched.
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from agent_runtime.contracts import (
     Action,
     Act,
@@ -29,7 +31,11 @@ from agent_runtime.contracts import (
     StepRecord,
     Success,
 )
-from agent_runtime.errors import CapabilityExecutionError, UnresolvedExecutionError
+from agent_runtime.errors import (
+    CapabilityExecutionError,
+    SessionConsistencyError,
+    UnresolvedExecutionError,
+)
 from agent_runtime.native_tools_v2 import (
     NativeToolsV2ProtocolError,
     NativeToolsV2Reasoner,
@@ -132,6 +138,29 @@ def _response(*calls: ModelToolCall) -> ModelResponse:
 
 def _structured_response(arguments: str = '{"answer":"final"}') -> ModelResponse:
     return _response(_tool("terminal-1", "structured_output", arguments))
+
+
+def _structured_snapshot():
+    provider = ScriptedModelProvider(
+        [_response(_tool("call-a", "a")), _structured_response()]
+    )
+    runtime = NativeToolsV2Runtime(
+        reasoner=NativeToolsV2Reasoner(provider, final_output_contract=_answer_contract()),
+        capabilities={"a": CountingCapability("a")},
+        policy=AllowAllPolicy(),
+        state_store=InMemoryStateStore(),
+        action_safety_limit=3,
+        finalization_threshold=1,
+    )
+    return runtime.start(Goal("original goal"))
+
+
+def _model_call_for_terminal(arguments: str, name: str = "structured_output"):
+    call = _tool("terminal-1", name, arguments)
+    return ModelCallRecord(
+        tool_calls=(call,),
+        assistant_message=Message(role="assistant", content=None, tool_calls=(call,)),
+    )
 
 
 def _runtime(provider, capabilities, policy=None, store=None):
@@ -812,6 +841,90 @@ def test_h2_1_structured_submission_is_not_a_capability_call():
     assert result.model_call.tool_calls[0].name == "structured_output"
 
 
+def test_h2_1_coherence_rejects_accepted_evidence_contradictions():
+    final = _structured_snapshot()
+    evidence = final.native_tools_v2_finalization
+    assert evidence is not None
+
+    for mutation in (
+        {"parse_error": "unexpected"},
+        {"validation_errors": ("shape error",)},
+        {"parsed_result": None},
+        {"model_call": _model_call_for_terminal('{"answer":"final"}', "other")},
+        {
+            "model_call": ModelCallRecord(
+                tool_calls=(
+                    _tool("terminal-1", "structured_output", '{"answer":"final"}'),
+                    _tool("terminal-2", "structured_output", '{"answer":"final"}'),
+                ),
+                assistant_message=Message(
+                    role="assistant",
+                    content=None,
+                    tool_calls=(
+                        _tool("terminal-1", "structured_output", '{"answer":"final"}'),
+                        _tool("terminal-2", "structured_output", '{"answer":"final"}'),
+                    ),
+                ),
+            )
+        },
+    ):
+        _raised(ValueError, lambda mutation=mutation: replace(evidence, **mutation))
+
+
+def test_h2_1_coherence_rejects_complete_result_and_evidence_mismatch():
+    final = _structured_snapshot()
+    evidence = final.native_tools_v2_finalization
+    assert evidence is not None
+    mismatched = replace(
+        evidence,
+        model_call=_model_call_for_terminal('{"answer":"other"}'),
+        parsed_result={"answer": "other"},
+    )
+    corrupted = replace(final, native_tools_v2_finalization=mismatched)
+
+    _raised(SessionConsistencyError, lambda: validate_session_snapshot(corrupted))
+
+
+def test_h2_1_coherence_rejects_accepted_evidence_without_complete_tail():
+    final = _structured_snapshot()
+    evidence = final.native_tools_v2_finalization
+    assert evidence is not None
+    corrupted = replace(
+        final,
+        history=(StepRecord(index=0, decision=Fail("not complete")),),
+    )
+
+    _raised(SessionConsistencyError, lambda: validate_session_snapshot(corrupted))
+
+
+def test_h2_1_coherence_rejects_rejected_evidence_with_successful_complete():
+    final = _structured_snapshot()
+    evidence = final.native_tools_v2_finalization
+    assert evidence is not None
+    rejected = replace(
+        evidence,
+        accepted=False,
+        validation_errors=("rejected",),
+    )
+    corrupted = replace(final, native_tools_v2_finalization=rejected)
+
+    _raised(SessionConsistencyError, lambda: validate_session_snapshot(corrupted))
+
+
+def test_h2_1_legacy_complete_without_finalization_evidence_remains_valid():
+    legacy = SessionSnapshot(
+        "legacy-complete",
+        Goal("legacy"),
+        {},
+        (StepRecord(index=0, decision=Complete(reason="done")),),
+    )
+
+    canonical = validate_session_snapshot(legacy)
+
+    assert canonical.native_tools_v2_finalization is None
+    assert canonical.history[-1].decision == Complete(reason="done")
+
+
 def main() -> None:
     tests = [
         test_v2_001_zero_tool_calls_final_answer,
@@ -834,6 +947,11 @@ def main() -> None:
         test_h2_1_no_contract_keeps_h1_1_tool_free_finalization,
         test_h2_1_invalid_terminal_submissions_fail_closed_without_retry,
         test_h2_1_structured_submission_is_not_a_capability_call,
+        test_h2_1_coherence_rejects_accepted_evidence_contradictions,
+        test_h2_1_coherence_rejects_complete_result_and_evidence_mismatch,
+        test_h2_1_coherence_rejects_accepted_evidence_without_complete_tail,
+        test_h2_1_coherence_rejects_rejected_evidence_with_successful_complete,
+        test_h2_1_legacy_complete_without_finalization_evidence_remains_valid,
     ]
     failed = []
     for test in tests:
