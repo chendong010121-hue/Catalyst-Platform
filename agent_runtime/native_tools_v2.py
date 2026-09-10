@@ -40,7 +40,7 @@ from .contracts import (
 )
 from .errors import UnresolvedExecutionError
 from .runtime import Runtime
-from .snapshot import json_value_equal, snapshot_action, validate_session_snapshot
+from .snapshot import json_value_equal, snapshot_action
 
 
 _NATIVE_SYSTEM_PROMPT = (
@@ -275,9 +275,7 @@ class NativeToolsV2Runtime(Runtime):
         self._v2_reasoner = reasoner
 
     def run(self, session_id: str) -> SessionSnapshot:
-        snapshot = validate_session_snapshot(
-            self._state_store.load(session_id), expected_session_id=session_id
-        )
+        snapshot = self._load_snapshot(session_id)
         if snapshot.pending_execution is not None:
             pending = snapshot.pending_execution
             raise UnresolvedExecutionError(
@@ -330,9 +328,7 @@ class NativeToolsV2Runtime(Runtime):
 
     def _run_v2(self, session_id: str) -> SessionSnapshot:
         while True:
-            snapshot = validate_session_snapshot(
-                self._state_store.load(session_id), expected_session_id=session_id
-            )
+            snapshot = self._load_snapshot(session_id)
             active = self._active_turn(snapshot)
             if active is not None:
                 if active.status == "executing":
@@ -344,7 +340,7 @@ class NativeToolsV2Runtime(Runtime):
                 snapshot.goal,
                 snapshot.state,
                 snapshot.history,
-                self._core._capability_executor.descriptors(),
+                self.capability_descriptors(),
                 snapshot.native_tools_v2_turns,
             )
             if result.turn is not None:
@@ -590,9 +586,7 @@ class NativeToolsV2Runtime(Runtime):
         return replace(turn, calls=tuple(calls))
 
     def _commit(self, snapshot):
-        canonical = validate_session_snapshot(snapshot)
-        self._state_store.commit(canonical)
-        return canonical
+        return self._commit_snapshot(snapshot)
 
 
 __all__ = [

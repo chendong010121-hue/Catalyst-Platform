@@ -114,20 +114,36 @@ class Runtime:
         """
         return self._control_plane
 
+    def capability_descriptors(self):
+        """Expose capability descriptors through the Runtime/Core owner seam."""
+        return self._core.capability_descriptors()
+
+    def _load_snapshot(self, session_id: str) -> SessionSnapshot:
+        """Load and validate one authoritative session snapshot."""
+        return validate_session_snapshot(
+            self._state_store.load(session_id), expected_session_id=session_id
+        )
+
+    def _commit_snapshot(
+        self, snapshot: SessionSnapshot, *, expected_session_id: str | None = None
+    ) -> SessionSnapshot:
+        """Validate before the single canonical authoritative Store commit."""
+        canonical = validate_session_snapshot(
+            snapshot, expected_session_id=expected_session_id
+        )
+        self._state_store.commit(canonical)
+        return canonical
+
     def create(self, goal: Goal) -> SessionSnapshot:
         """创建新 Session（唯一 id）并持久化初始快照；不调用 AgentCore。"""
         session_id = uuid.uuid4().hex
         snapshot = SessionSnapshot(session_id, goal, {}, ())
-        # canonical authoritative commit boundary：validate-before-commit，不依赖 Store 兜底
-        canonical = validate_session_snapshot(snapshot, expected_session_id=session_id)
-        self._state_store.commit(canonical)
-        return canonical
+        return self._commit_snapshot(snapshot, expected_session_id=session_id)
 
     def run(self, session_id: str) -> SessionSnapshot:
         """在已存在的 session 上运行；terminal 直接返回，否则交 Core 继续。"""
-        snapshot = self._state_store.load(session_id)
+        snapshot = self._load_snapshot(session_id)
         # recovery 结构/身份校验必须先于任何 pending/terminal/Reasoner 行为
-        snapshot = validate_session_snapshot(snapshot, expected_session_id=session_id)
         # pending gate 优先于 terminal fast-path：unresolved 绝不能因 terminal 被隐藏
         if snapshot.pending_execution is not None:
             pending = snapshot.pending_execution
@@ -161,9 +177,8 @@ class Runtime:
         但会调用 Policy.should_stop（复用 resolve_step_termination，保持 post-step termination parity）。
         成功返回 settled snapshot，不自动 resume。
         """
-        snapshot = self._state_store.load(session_id)
+        snapshot = self._load_snapshot(session_id)
         # recovery 结构/身份校验：malformed/跨 Session pending 必须 fail-closed，不能 settle 进 history
-        snapshot = validate_session_snapshot(snapshot, expected_session_id=session_id)
         pending = snapshot.pending_execution
         if pending is None:
             raise ReconciliationError("session has no pending execution")
@@ -248,8 +263,7 @@ class Runtime:
             native_tools_v2_turns=snapshot.native_tools_v2_turns,
         )
         # canonical commit boundary：reconcile 的 settled snapshot 也必须先 validate，再 commit
-        settled = validate_session_snapshot(settled)
-        self._state_store.commit(settled)
+        settled = self._commit_snapshot(settled)
         # evidence cleanup 只在 durable commit 成功之后（commit 失败则 pending+evidence 都保留）
         self._control_plane.evidence.remove(session_id, execution_id)
         return settled

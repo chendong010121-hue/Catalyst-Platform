@@ -26,7 +26,11 @@ from agent_runtime.contracts import (
     StepRecord,
     Success,
 )
-from agent_runtime.errors import CapabilityExecutionError, UnresolvedExecutionError
+from agent_runtime.errors import (
+    CapabilityExecutionError,
+    SessionConsistencyError,
+    UnresolvedExecutionError,
+)
 from agent_runtime.native_tools_v2 import (
     NativeToolsV2ProtocolError,
     NativeToolsV2Reasoner,
@@ -101,6 +105,66 @@ def _runtime(provider, capabilities, policy=None, store=None):
         policy=policy or AllowAllPolicy(),
         state_store=store or InMemoryStateStore(),
     )
+
+
+class SeamTrackingNativeRuntime(NativeToolsV2Runtime):
+    """Observe the promoted lifecycle seams without changing v0.1 behavior."""
+
+    def __init__(self, *args, **kwargs):
+        self.load_calls = 0
+        self.commit_calls = 0
+        self.descriptor_calls = 0
+        super().__init__(*args, **kwargs)
+
+    def _load_snapshot(self, session_id):
+        self.load_calls += 1
+        return super()._load_snapshot(session_id)
+
+    def _commit_snapshot(self, snapshot, **kwargs):
+        self.commit_calls += 1
+        return super()._commit_snapshot(snapshot, **kwargs)
+
+    def capability_descriptors(self):
+        self.descriptor_calls += 1
+        return super().capability_descriptors()
+
+
+def test_v2_consumes_runtime_owned_descriptor_and_snapshot_seams():
+    provider = ScriptedModelProvider([ModelResponse(content="done")])
+    runtime = SeamTrackingNativeRuntime(
+        reasoner=NativeToolsV2Reasoner(provider),
+        capabilities={"a": CountingCapability("a")},
+        policy=AllowAllPolicy(),
+        state_store=InMemoryStateStore(),
+    )
+
+    final = runtime.start(Goal("seam ownership"))
+
+    assert final.history[-1].decision == Complete("done")
+    assert runtime.load_calls >= 1
+    assert runtime.commit_calls >= 1
+    assert runtime.descriptor_calls == 1
+    assert [tool.name for tool in provider.requests[0].tools] == ["a"]
+
+
+def test_v2_checkpoint_seam_still_fails_closed_before_store_commit():
+    store = InMemoryStateStore()
+    runtime = SeamTrackingNativeRuntime(
+        reasoner=NativeToolsV2Reasoner(ScriptedModelProvider([])),
+        capabilities={},
+        policy=AllowAllPolicy(),
+        state_store=store,
+    )
+    invalid = SessionSnapshot("invalid", Goal("invalid"), {"bad": object()}, ())
+
+    try:
+        runtime._commit_snapshot(invalid)
+    except SessionConsistencyError:
+        pass
+    else:
+        raise AssertionError("invalid checkpoint must fail closed")
+
+    assert store._snapshots == {}
 
 
 def _raised(expected_type, operation):
@@ -431,6 +495,8 @@ def test_v2_010_history_reconstructs_one_full_assistant_batch_and_results():
 
 def main() -> None:
     tests = [
+        test_v2_consumes_runtime_owned_descriptor_and_snapshot_seams,
+        test_v2_checkpoint_seam_still_fails_closed_before_store_commit,
         test_v2_001_zero_tool_calls_final_answer,
         test_v2_002_one_tool_call_reuses_execution_lifecycle,
         test_v2_003_two_tool_calls_execute_in_order_and_correlate_results,
