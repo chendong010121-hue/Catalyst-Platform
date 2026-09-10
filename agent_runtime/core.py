@@ -97,6 +97,10 @@ class AgentCore:
         self._state_store = state_store
         self._execution_id_factory = execution_id_factory or (lambda: uuid.uuid4().hex)
 
+    def capability_descriptors(self):
+        """Return the executor's public capability descriptor seam."""
+        return self._capability_executor.descriptors()
+
     @staticmethod
     def _validate_reasoning_result(result) -> None:
         """Reasoner 输出 fail-closed：result/decision/terminal payload 必须符合契约。"""
@@ -161,7 +165,7 @@ class AgentCore:
                 snapshot.goal,
                 snapshot_state(snapshot.state),
                 snapshot_history(snapshot.history),
-                self._capability_executor.descriptors(),
+                self.capability_descriptors(),
             )
             self._validate_reasoning_result(result)
             decision = result.decision
