@@ -76,11 +76,18 @@ class CapabilityRegistrationError(RuntimeError):
 class RuntimeExecutionError(RuntimeError):
     """Runtime.start 的 run 阶段失败，但 session 已创建；携带 session_id 供恢复。"""
 
-    def __init__(self, session_id: str, message: str | None = None) -> None:
+    def __init__(
+        self,
+        session_id: str,
+        message: str | None = None,
+        *,
+        execution_id: str | None = None,
+    ) -> None:
         super().__init__(
             message or f"runtime execution failed for session {session_id!r}"
         )
         self.session_id = session_id
+        self.execution_id = execution_id
 
 
 class ModelProviderError(RuntimeError):

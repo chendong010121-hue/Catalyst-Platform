@@ -274,4 +274,15 @@ class Runtime:
         try:
             return self.run(snapshot.session_id)
         except Exception as exc:
-            raise RuntimeExecutionError(session_id=snapshot.session_id) from exc
+            execution_id = None
+            try:
+                recovered = self._load_snapshot(snapshot.session_id)
+                if recovered.pending_execution is not None:
+                    execution_id = recovered.pending_execution.execution_id
+            except Exception:
+                # Do not mask the original run failure or fabricate identity.
+                execution_id = None
+            raise RuntimeExecutionError(
+                session_id=snapshot.session_id,
+                execution_id=execution_id,
+            ) from exc
