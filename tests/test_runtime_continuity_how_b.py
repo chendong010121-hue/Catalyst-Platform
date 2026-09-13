@@ -20,6 +20,7 @@ from agent_runtime.contracts import (
     Allow,
     Blocked,
     CapabilityDescriptor as RuntimeCapabilityDescriptor,
+    ConfirmedExecuted,
     Failure,
     Goal,
     PendingExecution,
@@ -28,6 +29,7 @@ from agent_runtime.contracts import (
     Success,
 )
 from agent_runtime.errors import RuntimeExecutionError
+from agent_runtime.execution import CancellationSource
 from agent_runtime.runtime import Runtime
 from examples.fakes import AllowAllPolicy, FakeCapability, FakeReasoner, InMemoryStateStore
 from examples.platform_standard_reference import (
@@ -137,6 +139,30 @@ def _pending_snapshot(session_id: str, execution_id: str) -> SessionSnapshot:
             execution_id=execution_id,
             step_index=0,
             action=Action("add", {"a": 20, "b": 22}),
+        ),
+    )
+
+
+def _multi_settled_snapshot(session_id: str) -> SessionSnapshot:
+    return SessionSnapshot(
+        session_id=session_id,
+        goal=Goal("conflict"),
+        state={},
+        history=(
+            StepRecord(
+                index=0,
+                decision=Act(Action("add", {"a": 1, "b": 1})),
+                policy_verdict=Allow(),
+                observation=Success(2),
+                execution_id="exec_first",
+            ),
+            StepRecord(
+                index=1,
+                decision=Act(Action("add", {"a": 2, "b": 2})),
+                policy_verdict=Allow(),
+                observation=Success(4),
+                execution_id="exec_second",
+            ),
         ),
     )
 
@@ -340,6 +366,19 @@ def test_f_conflicting_ids_emit_no_carrier_and_select_no_identity():
     assert _project(fact, expected_session_id="s_f") == {}
 
 
+def test_f_runtime_owner_rejects_multiple_settled_ids_without_selecting_one():
+    runtime, store = _runtime_with_store()
+    session_id = _commit(store, _multi_settled_snapshot("s_runtime_conflict"))
+
+    fact = _read_fact(runtime, session_id)
+
+    assert fact.execution_id is None
+    assert fact.execution_started is True
+    assert fact.certainty == "UNRESOLVED"
+    assert fact.identity_status == "CONFLICTING"
+    assert _project(fact, expected_session_id=session_id) == {}
+
+
 def test_wrong_or_synthetic_settled_id_is_rejected_against_returned_snapshot_identity():
     fact = _fact(
         session_id="s_wrong",
@@ -388,6 +427,109 @@ def test_read_outcome_fact_is_read_only_for_a1_b_and_d():
         _read_fact(runtime, snapshot.session_id)
         after = store.load(snapshot.session_id)
         assert after == before
+
+
+def test_reconciliation_preserves_owner_identity_and_projection():
+    runtime, store = _runtime_with_store()
+    session_id = _commit(store, _pending_snapshot("s_reconcile", "exec_reconcile"))
+
+    settled = runtime.reconcile(
+        session_id,
+        "exec_reconcile",
+        ConfirmedExecuted(Success(42)),
+    )
+    fact = _read_fact(runtime, session_id)
+
+    assert settled.pending_execution is None
+    assert settled.history[-1].execution_id == "exec_reconcile"
+    assert fact.execution_id == "exec_reconcile"
+    assert fact.certainty == "CONFIRMED_EXECUTED"
+    projected = _project(
+        fact,
+        expected_session_id=session_id,
+        settled_execution_id="exec_reconcile",
+    )
+    assert projected["interop.execution_continuity"]["payload"]["execution_id"] == "exec_reconcile"
+
+
+def test_cancellation_does_not_clear_pending_or_change_owner_identity():
+    runtime, store = _runtime_with_store()
+    session_id = _commit(store, _pending_snapshot("s_cancel", "exec_cancel"))
+    before = store.load(session_id)
+    source = CancellationSource()
+    runtime.control_plane.active.register(session_id, "exec_cancel", source)
+
+    cancel_result = runtime.cancel(session_id)
+    fact = _read_fact(runtime, session_id)
+    after = store.load(session_id)
+    runtime.control_plane.active.remove(session_id, "exec_cancel")
+
+    assert cancel_result.requested is True
+    assert cancel_result.execution_id == "exec_cancel"
+    assert source.is_cancel_requested() is True
+    assert before == after
+    assert after.pending_execution.execution_id == "exec_cancel"
+    assert fact.execution_id == "exec_cancel"
+    assert fact.certainty == "UNRESOLVED"
+
+
+def test_unrecoverable_owner_fact_through_adapter_keeps_unresolved_base_semantics():
+    class UnrecoverableRuntime:
+        def start(self, goal):
+            raise RuntimeExecutionError("s_unrecoverable")
+
+        def read_outcome_fact(self, session_id):
+            return _fact(
+                session_id=session_id,
+                execution_id=None,
+                execution_started=True,
+                certainty="UNRESOLVED",
+                identity_status="UNRECOVERABLE",
+            )
+
+    registry = InMemoryDescriptorRegistry()
+    registry.register(compose_report_descriptor())
+    adapter = RuntimeAdapter(
+        registry,
+        bindings={("compose_report", "1.0.0"): ComposeReportCapability()},
+        runtime_factory=lambda capabilities, reasoner: UnrecoverableRuntime(),
+    )
+
+    result = adapter.execute(
+        make_report_invocation({"title": "E"}, invocation_id="inv_e")
+    )
+
+    assert result.status == "unresolved"
+    assert result.error["code"] == "runtime_outcome_uncertain"
+    assert result.extensions == {}
+    assert "session_id" not in result.to_dict().get("extensions", {})
+    PlatformValidator().validate_result(result)
+
+
+def test_no_authoritative_fact_through_adapter_keeps_settled_base_result():
+    class NoFactRuntime:
+        def start(self, goal):
+            return _settled_snapshot("s_no_fact", "exec_no_fact", Success({"ok": True}))
+
+        def read_outcome_fact(self, session_id):
+            return None
+
+    registry = InMemoryDescriptorRegistry()
+    registry.register(compose_report_descriptor())
+    adapter = RuntimeAdapter(
+        registry,
+        bindings={("compose_report", "1.0.0"): ComposeReportCapability()},
+        runtime_factory=lambda capabilities, reasoner: NoFactRuntime(),
+    )
+
+    result = adapter.execute(
+        make_report_invocation({"title": "No Fact"}, invocation_id="inv_no_fact")
+    )
+
+    assert result.status == "success"
+    assert result.output == {"ok": True}
+    assert result.extensions == {}
+    PlatformValidator().validate_result(result)
 
 
 def test_runtime_owner_facts_cover_settled_success_failure_and_unresolved():

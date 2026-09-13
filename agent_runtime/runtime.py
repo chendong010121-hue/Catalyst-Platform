@@ -142,14 +142,25 @@ class Runtime:
         if not snapshot.history:
             return None
 
-        last_execution_step = next(
-            (step for step in reversed(snapshot.history) if step.execution_id is not None),
-            None,
-        )
-        if last_execution_step is not None:
+        settled_execution_ids = {
+            step.execution_id
+            for step in snapshot.history
+            if step.execution_id is not None
+        }
+        if len(settled_execution_ids) > 1:
             return RuntimeOutcomeFact(
                 session_id=snapshot.session_id,
-                execution_id=last_execution_step.execution_id,
+                execution_id=None,
+                execution_started=True,
+                certainty="UNRESOLVED",
+                identity_status="CONFLICTING",
+            )
+
+        if settled_execution_ids:
+            execution_id = next(iter(settled_execution_ids))
+            return RuntimeOutcomeFact(
+                session_id=snapshot.session_id,
+                execution_id=execution_id,
                 execution_started=True,
                 certainty="CONFIRMED_EXECUTED",
                 identity_status="AUTHORITATIVE",
