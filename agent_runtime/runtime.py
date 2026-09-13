@@ -47,6 +47,7 @@ from .contracts import (
     StepRecord,
     Stop,
 )
+from .contracts.values import RuntimeOutcomeFact
 from .core import AgentCore, resolve_step_termination
 from .errors import (
     ExecutionStillLiveError,
@@ -117,6 +118,50 @@ class Runtime:
     def capability_descriptors(self):
         """Expose capability descriptors through the Runtime/Core owner seam."""
         return self._core.capability_descriptors()
+
+    def read_outcome_fact(self, session_id: str) -> RuntimeOutcomeFact | None:
+        """Read the Runtime-owned execution identity/certainty fact.
+
+        This method is deliberately read-only: it loads and validates the
+        authoritative session snapshot, but never executes a Capability,
+        invokes a Reasoner, commits/clears state, reconciles, cancels, or
+        changes Runtime-local control-plane state.  A session with no history
+        has not established a Runtime-owned outcome fact and returns ``None``.
+        """
+        snapshot = self._load_snapshot(session_id)
+        if snapshot.pending_execution is not None:
+            pending = snapshot.pending_execution
+            return RuntimeOutcomeFact(
+                session_id=snapshot.session_id,
+                execution_id=pending.execution_id,
+                execution_started=True,
+                certainty="UNRESOLVED",
+                identity_status="AUTHORITATIVE",
+            )
+
+        if not snapshot.history:
+            return None
+
+        last_execution_step = next(
+            (step for step in reversed(snapshot.history) if step.execution_id is not None),
+            None,
+        )
+        if last_execution_step is not None:
+            return RuntimeOutcomeFact(
+                session_id=snapshot.session_id,
+                execution_id=last_execution_step.execution_id,
+                execution_started=True,
+                certainty="CONFIRMED_EXECUTED",
+                identity_status="AUTHORITATIVE",
+            )
+
+        return RuntimeOutcomeFact(
+            session_id=snapshot.session_id,
+            execution_id=None,
+            execution_started=False,
+            certainty="NOT_STARTED",
+            identity_status="ABSENT",
+        )
 
     def _load_snapshot(self, session_id: str) -> SessionSnapshot:
         """Load and validate one authoritative session snapshot."""

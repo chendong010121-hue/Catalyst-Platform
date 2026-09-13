@@ -637,6 +637,45 @@ class ExecutionReconciliation:
 # ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
+class RuntimeOutcomeFact:
+    """Runtime-owned execution identity/certainty projection fact.
+
+    This is an immutable read-only value.  ``UNRECOVERABLE`` and
+    ``CONFLICTING`` are internal/proof states; the Platform Adapter must not
+    serialize either state as an outward continuity carrier.
+    """
+
+    session_id: str
+    execution_id: str | None
+    execution_started: bool
+    certainty: Literal["NOT_STARTED", "CONFIRMED_EXECUTED", "UNRESOLVED"]
+    identity_status: Literal[
+        "ABSENT", "AUTHORITATIVE", "UNRECOVERABLE", "CONFLICTING"
+    ]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.session_id, str) or not self.session_id:
+            raise ValueError("RuntimeOutcomeFact.session_id must be a non-empty str")
+        if self.execution_id is not None and (
+            not isinstance(self.execution_id, str) or not self.execution_id
+        ):
+            raise ValueError(
+                "RuntimeOutcomeFact.execution_id must be None or a non-empty str"
+            )
+        if not isinstance(self.execution_started, bool):
+            raise ValueError("RuntimeOutcomeFact.execution_started must be a bool")
+        if self.certainty not in ("NOT_STARTED", "CONFIRMED_EXECUTED", "UNRESOLVED"):
+            raise ValueError("RuntimeOutcomeFact.certainty is invalid")
+        if self.identity_status not in (
+            "ABSENT",
+            "AUTHORITATIVE",
+            "UNRECOVERABLE",
+            "CONFLICTING",
+        ):
+            raise ValueError("RuntimeOutcomeFact.identity_status is invalid")
+
+
+@dataclass(frozen=True)
 class StepRecord:
     """一次 Agent step 的记录。
 
@@ -773,6 +812,7 @@ __all__ = [
     "ExecutionResolution",
     "ExecutionReconciliation",
     # Session 快照
+    "RuntimeOutcomeFact",
     "PendingExecution",
     "SessionSnapshot",
     # Policy 终止联合

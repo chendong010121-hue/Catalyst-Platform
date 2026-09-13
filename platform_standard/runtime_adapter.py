@@ -48,6 +48,7 @@ from agent_runtime.contracts import (
     Success,
 )
 from agent_runtime.errors import RuntimeExecutionError
+from agent_runtime.contracts.values import RuntimeOutcomeFact
 from agent_runtime.runtime import Runtime
 
 from .models import ArtifactRef, CapabilityDescriptor, Invocation, Result, TraceEvent
@@ -176,6 +177,67 @@ def _new_id(prefix: str) -> str:
     return f"{prefix}_{uuid.uuid4().hex[:12]}"
 
 
+def _continuity_extension(
+    fact: RuntimeOutcomeFact | None,
+    *,
+    expected_session_id: str | None = None,
+    settled_execution_id: str | None = None,
+) -> dict[str, Any]:
+    """Project one authoritative Runtime fact into the optional carrier.
+
+    The Adapter performs only candidate-local invariant checks.  It never
+    chooses an identity: settled identity may be cross-checked against the
+    authoritative Runtime-returned snapshot, while unresolved identity comes
+    from Runtime.read_outcome_fact.  Missing or non-outward states produce no
+    carrier and close the continuity claim.
+    """
+    if fact is None or not isinstance(fact, RuntimeOutcomeFact):
+        return {}
+    if expected_session_id is not None and fact.session_id != expected_session_id:
+        return {}
+    if settled_execution_id is not None and fact.execution_id != settled_execution_id:
+        return {}
+
+    payload: dict[str, Any]
+    if fact.certainty == "NOT_STARTED":
+        if (
+            fact.execution_started is not False
+            or fact.execution_id is not None
+            or fact.identity_status != "ABSENT"
+        ):
+            return {}
+        payload = {
+            "execution_id": None,
+            "execution_started": False,
+            "certainty": "NOT_STARTED",
+            "identity_status": "ABSENT",
+        }
+    elif fact.certainty in ("CONFIRMED_EXECUTED", "UNRESOLVED"):
+        if (
+            fact.execution_started is not True
+            or not isinstance(fact.execution_id, str)
+            or not fact.execution_id
+            or fact.identity_status != "AUTHORITATIVE"
+        ):
+            return {}
+        payload = {
+            "execution_id": fact.execution_id,
+            "execution_started": True,
+            "certainty": fact.certainty,
+            "identity_status": "AUTHORITATIVE",
+        }
+    else:
+        return {}
+
+    return {
+        "interop.execution_continuity": {
+            "version": "1",
+            "required": False,
+            "payload": payload,
+        }
+    }
+
+
 class RuntimeAdapter:
     """Executes Standard Invocations through an existing Agent Runtime.
 
@@ -296,7 +358,7 @@ class RuntimeAdapter:
         self._reasoner.pending_action = Action(key, invocation.input)
         try:
             snapshot = self._runtime.start(Goal(invocation.capability_id))
-        except RuntimeExecutionError:
+        except RuntimeExecutionError as exc:
             # execution certainty not closed: exception / timeout / cancellation
             # after a possible side effect -> unresolved (NOT did-not-execute,
             # NOT safe-to-retry)
@@ -307,6 +369,10 @@ class RuntimeAdapter:
                 status="unresolved",
                 output=None,
                 artifacts=(),
+                extensions=_continuity_extension(
+                    self._runtime.read_outcome_fact(exc.session_id),
+                    expected_session_id=exc.session_id,
+                ),
                 error={
                     "code": "runtime_outcome_uncertain",
                     "message": (
@@ -318,6 +384,11 @@ class RuntimeAdapter:
 
         # 6. map settled outcome (semantics, not exception names)
         observation = snapshot.history[0].observation
+        continuity_extensions = _continuity_extension(
+            self._runtime.read_outcome_fact(snapshot.session_id),
+            expected_session_id=snapshot.session_id,
+            settled_execution_id=snapshot.history[0].execution_id,
+        )
         if isinstance(observation, Success):
             output = observation.data
             mapper = self._artifact_mappers.get(
@@ -333,6 +404,7 @@ class RuntimeAdapter:
                 status="success",
                 output=output,
                 artifacts=artifacts,
+                extensions=continuity_extensions,
                 error=None,
             )
         if isinstance(observation, Failure):
@@ -343,6 +415,7 @@ class RuntimeAdapter:
                 status="failure",
                 output=None,
                 artifacts=(),
+                extensions=continuity_extensions,
                 error={
                     "code": "capability_failed",
                     "message": observation.error or "capability returned a terminal failure",
@@ -356,6 +429,7 @@ class RuntimeAdapter:
             status="failure",
             output=None,
             artifacts=(),
+            extensions=continuity_extensions,
             error={
                 "code": "runtime_contract_violation",
                 "message": "settled execution step has no observation",
