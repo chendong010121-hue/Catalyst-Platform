@@ -129,6 +129,24 @@ class Runtime:
         has not established a Runtime-owned outcome fact and returns ``None``.
         """
         snapshot = self._load_snapshot(session_id)
+
+        settled_execution_ids = {
+            step.execution_id
+            for step in snapshot.history
+            if step.execution_id is not None
+        }
+        relevant_execution_ids = set(settled_execution_ids)
+        if snapshot.pending_execution is not None:
+            relevant_execution_ids.add(snapshot.pending_execution.execution_id)
+        if len(relevant_execution_ids) > 1:
+            return RuntimeOutcomeFact(
+                session_id=snapshot.session_id,
+                execution_id=None,
+                execution_started=True,
+                certainty="UNRESOLVED",
+                identity_status="CONFLICTING",
+            )
+
         if snapshot.pending_execution is not None:
             pending = snapshot.pending_execution
             return RuntimeOutcomeFact(
@@ -141,20 +159,6 @@ class Runtime:
 
         if not snapshot.history:
             return None
-
-        settled_execution_ids = {
-            step.execution_id
-            for step in snapshot.history
-            if step.execution_id is not None
-        }
-        if len(settled_execution_ids) > 1:
-            return RuntimeOutcomeFact(
-                session_id=snapshot.session_id,
-                execution_id=None,
-                execution_started=True,
-                certainty="UNRESOLVED",
-                identity_status="CONFLICTING",
-            )
 
         if settled_execution_ids:
             execution_id = next(iter(settled_execution_ids))

@@ -167,6 +167,28 @@ def _multi_settled_snapshot(session_id: str) -> SessionSnapshot:
     )
 
 
+def _settled_and_pending_snapshot(session_id: str) -> SessionSnapshot:
+    return SessionSnapshot(
+        session_id=session_id,
+        goal=Goal("settled plus pending conflict"),
+        state={},
+        history=(
+            StepRecord(
+                index=0,
+                decision=Act(Action("add", {"a": 1, "b": 1})),
+                policy_verdict=Allow(),
+                observation=Success(2),
+                execution_id="exec_old",
+            ),
+        ),
+        pending_execution=PendingExecution(
+            execution_id="exec_new",
+            step_index=1,
+            action=Action("add", {"a": 2, "b": 2}),
+        ),
+    )
+
+
 class FailureCapability:
     def describe(self) -> RuntimeCapabilityDescriptor:
         return RuntimeCapabilityDescriptor(
@@ -369,6 +391,19 @@ def test_f_conflicting_ids_emit_no_carrier_and_select_no_identity():
 def test_f_runtime_owner_rejects_multiple_settled_ids_without_selecting_one():
     runtime, store = _runtime_with_store()
     session_id = _commit(store, _multi_settled_snapshot("s_runtime_conflict"))
+
+    fact = _read_fact(runtime, session_id)
+
+    assert fact.execution_id is None
+    assert fact.execution_started is True
+    assert fact.certainty == "UNRESOLVED"
+    assert fact.identity_status == "CONFLICTING"
+    assert _project(fact, expected_session_id=session_id) == {}
+
+
+def test_f_runtime_owner_rejects_settled_plus_pending_ids_without_selecting_one():
+    runtime, store = _runtime_with_store()
+    session_id = _commit(store, _settled_and_pending_snapshot("s_pending_conflict"))
 
     fact = _read_fact(runtime, session_id)
 
