@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import os
 import sys
+from dataclasses import replace
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -295,6 +296,38 @@ def test_er5_conflicting_trace_identity_rejected():
         raise AssertionError("conflicting trace identity must fail closed")
 
 
+def test_er6_reused_adapter_returns_only_current_identity_events():
+    _, adapter = make_stack()
+    first = _invocation_with_identity({"organization_id": "org_alpha", "user_id": "u1"})
+    second = replace(
+        _invocation_with_identity({"organization_id": "org_beta", "user_id": "u2"}),
+        id="inv_second",
+    )
+    # A trace can group multiple invocations; trace_id alone is not isolation.
+    _, first_events = execute_with_enterprise_identity(adapter, first)
+    _, second_events = execute_with_enterprise_identity(adapter, second)
+    first_ids = {event.id for event in first_events}
+    second_ids = {event.id for event in second_events}
+    assert first_ids.isdisjoint(second_ids), "earlier events leaked into the second invocation"
+    assert first_ids | second_ids == {event.id for event in adapter.trace_events()}
+    assert all(event.extensions["enterprise.identity"]["payload"]["organization_id"] == "org_alpha"
+               for event in first_events)
+    assert all(event.extensions["enterprise.identity"]["payload"]["organization_id"] == "org_beta"
+               for event in second_events)
+
+
+def test_er7_reused_adapter_without_identity_does_not_return_previous_events():
+    _, adapter = make_stack()
+    first = _invocation_with_identity({"organization_id": "org_alpha", "user_id": "u1"})
+    second = replace(_invocation_with_identity(None), id="inv_no_identity")
+    _, first_events = execute_with_enterprise_identity(adapter, first)
+    _, second_events = execute_with_enterprise_identity(adapter, second)
+    assert {event.id for event in first_events}.isdisjoint(event.id for event in second_events), \
+        "identity-free invocation returned earlier attributed execution events"
+    assert second_events
+    assert all("enterprise.identity" not in event.extensions for event in second_events)
+
+
 # ---------------------------------------------------------------------------
 # runner
 # ---------------------------------------------------------------------------
@@ -318,6 +351,8 @@ def main() -> None:
         ("ER-3 reference handler preserves identity end-to-end", test_er3_reference_handler_preserves_identity_end_to_end),
         ("ER-4 identical trace identity accepted", test_er4_identical_trace_identity_accepted),
         ("ER-5 conflicting trace identity rejected", test_er5_conflicting_trace_identity_rejected),
+        ("ER-6 reused adapter isolates identity events", test_er6_reused_adapter_returns_only_current_identity_events),
+        ("ER-7 identity-free invocation isolates events", test_er7_reused_adapter_without_identity_does_not_return_previous_events),
     ]
     failed = []
     for name, fn in tests:
@@ -334,7 +369,7 @@ def main() -> None:
     if failed:
         print(f"\n{len(failed)} test(s) failed: {failed}")
         raise SystemExit(1)
-    print("\nALL ENTERPRISE EXTENSION PILOT TESTS PASSED (EE-1..EE-12 + ER-1..ER-5)")
+    print("\nALL ENTERPRISE EXTENSION PILOT TESTS PASSED (EE-1..EE-12 + ER-1..ER-7)")
 
 
 if __name__ == "__main__":

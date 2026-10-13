@@ -147,16 +147,20 @@ def execute_with_enterprise_identity(adapter, invocation: Invocation, *, validat
     -> retrieve trace
     -> apply identity attribution (if identity present)
 
-    Returns `(result, attributed_trace_events)`.
+    Returns `(result, attributed_trace_events)` for this invocation only.
+    The reference adapter is used sequentially; this helper does not add
+    concurrency support. A shared trace_id may group multiple invocations.
     """
     v = validator or PlatformValidator()
     v.validate_invocation(invocation)
     identity = parse_enterprise_identity(invocation)
+    trace_start = len(adapter.trace_events())
     result = adapter.execute(invocation)
+    current_events = tuple(adapter.trace_events())[trace_start:]
     if identity is not None:
-        events = attribute_trace(adapter.trace_events(), identity)
+        events = attribute_trace(current_events, identity)
     else:
-        events = tuple(adapter.trace_events())
+        events = current_events
     return result, events
 
 
