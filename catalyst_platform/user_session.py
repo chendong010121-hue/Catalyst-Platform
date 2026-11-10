@@ -72,7 +72,8 @@ class LocalUserSession:
     browser cannot supply it. Live authorization is intentionally not implemented.
     """
     def __init__(self, workspace, *, backend='json', mode='MOCK', provider=None,
-                 understand_skill_root=None, understand_extraction_mode='single_stage'):
+                 understand_skill_root=None, understand_extraction_mode='single_stage',
+                 chat_context_plugin=None):
         if mode not in {'MOCK','BLOCKED'}:
             raise ValueError('This host only permits offline MOCK or BLOCKED mode')
         self.workspace = Path(workspace).resolve()
@@ -80,7 +81,7 @@ class LocalUserSession:
         self.input_root.mkdir(parents=True, exist_ok=True)
         self.app = CatalystWorkbench(self.workspace, [self.input_root],
             understand_skill_root=understand_skill_root,
-            understand_extraction_mode=understand_extraction_mode)
+            understand_extraction_mode=understand_extraction_mode, chat_context_plugin=chat_context_plugin)
         self.session = self.app.new_session(domain={'id':'local'},enterprise={'id':'synthetic'})
         metadata = self.app.session_dir / 'local-user.json'
         if metadata.exists():

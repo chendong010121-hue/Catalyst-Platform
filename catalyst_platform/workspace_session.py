@@ -22,17 +22,18 @@ from .user_session import LocalUserSession, OrganizationDemoProvider, UserTaskBl
 from .understand_sources import SOURCE_SUFFIXES
 from .wiki import ProjectWiki
 from .workbench import CapabilityCatalog
+from .workspace_context import DEFAULT_CHAT_CONTEXT_PLUGIN
 from .workspace_settings import WorkspaceSettings
 
 
 class WorkspaceUserSession(LocalUserSession):
     """Same Workbench/Runtime/Provider/P0/R4; capture stops before Harvest."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, chat_context_plugin=DEFAULT_CHAT_CONTEXT_PLUGIN, **kwargs):
         ledger_factory = kwargs.pop('ledger_factory', None)
         from .model_qualification import DEFAULT_QUALIFICATION
         qualification_path = kwargs.pop('qualification_path', DEFAULT_QUALIFICATION)
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, chat_context_plugin=chat_context_plugin, **kwargs)
         self.settings = WorkspaceSettings(self.app, allow_live=self.mode != 'BLOCKED', ledger_factory=ledger_factory,
                                           qualification_path=qualification_path)
 

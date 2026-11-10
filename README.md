@@ -52,6 +52,16 @@ Configure DeepSeek under Settings. Model calls and tool access continue to use
 the Workplace authorization and receipt paths. A project source declaration
 may be supplied with `-ProjectConfig` or `--project-config`.
 
+Workplace keeps completed chat turns in the saved run results. The
+`workspace-chat-context` plugin selects recent turns for the current chat
+within the Host's estimated history budget. To try another policy offline,
+pass its `PluginDefinition` as `chat_context_plugin` to
+`create_workspace_server`. The definition provides `context.chat_history`,
+a function that receives the selected chat's completed turns in chronological
+order and an estimated token budget, and returns history messages and their
+source run IDs. Pass `None` to omit saved history from model requests while
+keeping it available in Workplace.
+
 The separate desktop module below remains a narrow runtime acceptance entry.
 Its workspace files use a different format and should not be mixed with
 Workplace data.

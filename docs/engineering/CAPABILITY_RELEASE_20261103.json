@@ -128,7 +128,7 @@
       {
         "path": "catalyst_platform/workspace_ui.py",
         "role": "the local workbench: the Wiki route and the Enterprise routes",
-        "sha256": "b9a7b6cb88e5e207da3814448dbd8c7ed210c2cf89ced7952415ddb767cde01a"
+        "sha256": "3c1c5c6e74f3a53f6d230cb085797cbb42803ca7418f7c97b4a1ad2fcb5c0448"
       },
       {
         "path": "catalyst_platform/review_surface.py",
@@ -176,7 +176,7 @@
         "sha256": "5f8d4b74c837fcc488e33a170c220527fc693719c97d02f2448a310206bfa76a"
       }
     ],
-    "implementation_sha256": "0ed254f6bbf0270b3b8de9e8f1c4aef11e21af8565847310405d4376e7d92576"
+    "implementation_sha256": "85076e75f61438801908119b4dab44605bc790492b492dc288599dd6f38bf154"
   },
   "release": "capability-consolidation-20261103",
   "run_identity_fields": [

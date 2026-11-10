@@ -25,6 +25,7 @@ from .observability import RunRecorder
 from .semantic_wiki import SemanticWiki
 from .semantic_keys import verifier as _key_verifier
 from .understand_wiki import UnderstandWikiAdapter
+from .workspace_context import DEFAULT_CHAT_CONTEXT_PLUGIN
 from .workspace_session import WorkspaceUserSession
 from .knowledge_intake import SUPPORTED_SOURCE_SUFFIXES, KnowledgeIntakeError, intake_source
 from .understand_sources import _MAX_FILE_BYTES as MAX_SOURCE_BYTES
@@ -58,7 +59,8 @@ def _git_identity():
 
 
 def create_workspace_server(workspace, *, port=8792, backend='json', mode='MOCK', ledger_factory=None,
-                            qualification_path=DEFAULT_QUALIFICATION, project_sources=None, project_live_scope=None):
+                            qualification_path=DEFAULT_QUALIFICATION, project_sources=None, project_live_scope=None,
+                            chat_context_plugin=DEFAULT_CHAT_CONTEXT_PLUGIN):
     # Host assembly only. Browser requests select IDs; no browser path can join
     # this admitted table or register a method package.
     sources = {}
@@ -88,7 +90,7 @@ def create_workspace_server(workspace, *, port=8792, backend='json', mode='MOCK'
                 raise ValueError('project_source_configuration_invalid')
             sources[source_id]['entry_source_ids'] = tuple(entries)
     session = WorkspaceUserSession(workspace, backend=backend, mode=mode, ledger_factory=ledger_factory,
-                                    qualification_path=qualification_path)
+                                    qualification_path=qualification_path, chat_context_plugin=chat_context_plugin)
     if project_live_scope is not None:
         from .project_understand import validate_live_project_scope
         sid=project_live_scope.get('source_id')

@@ -8,6 +8,7 @@ import pytest
 
 from catalyst_platform.workspace_session import WorkspaceUserSession
 from catalyst_platform.workspace_settings import WorkspaceSettings
+from catalyst_platform.plugin_composition import PluginDefinition, PluginEffect
 from catalyst_platform.observability import RunRecorder
 from catalyst_platform.trace_log import JsonlTraceStore
 
@@ -38,12 +39,12 @@ def local(tmp_path):
     return session, calls
 
 
-def run(session, message='你能做什么？'):
+def run(session, message='你能做什么？', *, thread_id=None):
     r = RunRecorder(JsonlTraceStore(session.workspace), run_id='run_' + uuid.uuid4().hex,
                     request_id='req_' + uuid.uuid4().hex, invocation_id='inv_' + uuid.uuid4().hex,
                     trace_id=uuid.uuid4().hex)
     r.start(request_kind='natural_language_ask')
-    return session(message, None, r)
+    return session(message, None, r, thread_id=thread_id)
 
 
 def test_no_key_returns_grounded_local_info_without_provider(local):
@@ -107,6 +108,53 @@ def test_daily_chat_reopens_with_context_and_preserves_earlier_turns(local):
     assert third['chat']['thread_id'] != first['chat']['thread_id']
     assert '青桐' not in str(calls[-1]['messages'])
     assert len(session.settings.chat.recent()) == 3
+
+
+@pytest.mark.parametrize('enabled', [False, True])
+def test_chat_context_can_be_removed_or_replaced_without_losing_history(local, enabled):
+    session, calls = local
+    connection = dict(api_key=FAKE_KEY, provider_id='deepseek', model='deepseek-flash', remember=False)
+    session.settings.connect(connection)
+    first = run(session, '当前会话的测试历史')
+    session.settings.chat.new_thread()
+    run(session, '另一个会话的测试历史')
+    seen = []
+
+    def select(turns, budget):
+        seen.append((tuple(turn.run_id for turn in turns), budget))
+        return [{'role': 'user', 'content': '替代策略的摘要'}], [turns[0].run_id]
+
+    service = 'context.chat_history'
+    plugin = PluginDefinition('test-chat-context', '1.0.0', (service,), (),
+                              lambda _: PluginEffect(services={service: select}))
+    reopened = WorkspaceUserSession(session.workspace, chat_context_plugin=plugin if enabled else None)
+    reopened.settings.transport_override = session.settings.transport_override
+    reopened.settings.connect(connection)
+    result = run(reopened, '继续当前会话', thread_id='initial')
+    assert result['state'] == 'CHAT_COMPLETED'
+    assert result['chat']['context_run_ids'] == ([first['run_id']] if enabled else [])
+    assert seen == ([((first['run_id'],), 8192)] if enabled else [])
+    payload = str(calls[-1]['messages'])
+    assert ('替代策略的摘要' in payload) is enabled
+    assert '当前会话的测试历史' not in payload and '另一个会话的测试历史' not in payload
+    assert first['run_id'] in [row['run_id'] for row in reopened.settings.chat.recent(thread='initial')]
+
+
+@pytest.mark.parametrize('invalid_source', [True, False])
+def test_chat_context_rejects_foreign_sources_or_over_budget_output(tmp_path, invalid_source):
+    service = 'context.chat_history'
+
+    def select(turns, budget):
+        if invalid_source:
+            return [], ['foreign-run']
+        return [{'role': 'user', 'content': '长' * budget}], []
+
+    plugin = PluginDefinition('invalid-chat-context', '1.0.0', (service,), (),
+                              lambda _: PluginEffect(services={service: select}))
+    session = WorkspaceUserSession(tmp_path, chat_context_plugin=plugin)
+    error = 'invalid_chat_context_sources' if invalid_source else 'chat_context_budget_exceeded'
+    with pytest.raises(ValueError, match=error):
+        session.settings.chat.context('initial', 1024)
 
 
 @pytest.mark.parametrize('field,value', [('consent',False),('model','deepseek-v3'),
