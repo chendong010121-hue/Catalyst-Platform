@@ -1,6 +1,7 @@
 """Offline HTTP acceptance for the mainline desktop and optional Wiki adapter."""
 
 import json
+import hashlib
 import os
 import tempfile
 import threading
@@ -118,7 +119,12 @@ class DesktopFoundationTest(unittest.TestCase):
     def test_base_chat_and_mount_authorize_unload_and_replace(self):
         with urlopen(self.base, timeout=5) as response:
             self.assertIn(b"/desktop.js", response.read())
-        self.assertEqual(self.get("/api/status")["available_tools"], [])
+        status = self.get("/api/status")
+        self.assertEqual(status["available_tools"], [])
+        repo = Path(__file__).resolve().parents[1]
+        self.assertEqual(status["build"]["source_root_id"], hashlib.sha256(
+            os.path.normcase(str(repo)).encode("utf-8")
+        ).hexdigest())
         plain = self.ask()
         self.assertEqual(plain["state"], "COMPLETED")
         self.assertEqual(plain["visible_tools"], [])

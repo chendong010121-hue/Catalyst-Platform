@@ -223,7 +223,9 @@ def create_server(desktop, port=0):
         "desktop_connection.py", "windows_dpapi.py", "workspace_tools.py",
     ):
         digest.update((root / filename).read_bytes())
-    build = {"commit": commit or None, "desktop_digest": digest.hexdigest()}
+    source_root = root.parent
+    source_root_id = hashlib.sha256(os.path.normcase(str(source_root)).encode("utf-8")).hexdigest()
+    build = {"commit": commit or None, "desktop_digest": digest.hexdigest(), "source_root_id": source_root_id}
     token = secrets.token_urlsafe(32)
 
     class Handler(BaseHTTPRequestHandler):
