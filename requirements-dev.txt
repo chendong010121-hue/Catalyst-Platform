@@ -1,0 +1,6 @@
+# Tools a developer needs beyond what the product itself runs: the test runner and the two
+# checks the fast gate runs. Kept separate from requirements.txt so a deployment installs
+# only what it serves.
+pytest>=8
+ruff>=0.6
+mypy>=1.10

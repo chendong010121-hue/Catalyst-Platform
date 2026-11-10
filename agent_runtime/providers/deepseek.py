@@ -12,17 +12,25 @@
 from __future__ import annotations
 
 import json
+import math
 import urllib.error
 import urllib.request
 from typing import Any, Callable, Mapping
 
 from ..contracts import Message, ModelRequest, ModelResponse, ModelToolCall, ModelUsage
 from ..errors import ModelProviderError
+from ._http import open_single_attempt, guarded_transport_attempt
+from ._errors import (
+    attach_provider_context,
+    http_provider_error,
+    provider_transport_error,
+    validate_status,
+)
 
 # 官方默认 base URL（OpenAI 兼容）：https://api.deepseek.com
 _DEFAULT_BASE_URL = "https://api.deepseek.com"
-# 当前官方主要模型：deepseek-v4-flash / deepseek-v4-pro；v0.1 默认 flash。
-_DEFAULT_MODEL = "deepseek-v4-flash"
+# Current official defaults: deepseek-flash / deepseek-v4-pro.
+_DEFAULT_MODEL = "deepseek-flash"
 
 # 当前 Harness 只使用这三种 message role。
 _ALLOWED_ROLES = ("system", "user", "assistant", "tool")
@@ -36,10 +44,6 @@ _SUPPORTED_FINISH_REASONS = (
     "tool_calls",
     "insufficient_system_resource",
 )
-
-class _NoRedirect(urllib.request.HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None
 
 
 class DeepSeekModelProvider:
@@ -56,39 +60,99 @@ class DeepSeekModelProvider:
         base_url: str = _DEFAULT_BASE_URL,
         timeout: float = 60.0,
         transport: Callable[[str, Mapping[str, str], bytes], tuple[int, Any]] | None = None,
-        *,
-        max_output_tokens: int | None = None,
+        *, output_token_limit: int = 4096, transport_guard: Callable | None = None,
+        model_output_token_limit: int | None = None,
     ) -> None:
-        if max_output_tokens is not None and (type(max_output_tokens) is not int or max_output_tokens < 1):
-            raise ValueError("max_output_tokens must be a positive integer")
+        if not isinstance(api_key, str) or not api_key.strip() or any(
+            character in api_key for character in "\r\n"
+        ):
+            raise ValueError("api_key must be non-empty and contain no line breaks")
+        if not isinstance(model, str) or not model.strip():
+            raise ValueError("model must be non-empty")
+        if not isinstance(base_url, str) or not base_url.strip():
+            raise ValueError("base_url must be non-empty")
+        if not isinstance(timeout, (int, float)) or not math.isfinite(timeout) or timeout <= 0:
+            raise ValueError("timeout must be a positive finite number")
+        capacity=8192 if model_output_token_limit is None else model_output_token_limit
+        if type(capacity) is not int or not 1<=capacity<=1_048_576:
+            raise ValueError("invalid declared model output capacity")
+        if type(output_token_limit) is not int or not 1 <= output_token_limit <= capacity:
+            raise ValueError("output_token_limit exceeds declared model capacity")
+        self._output_token_limit = output_token_limit
         self._api_key = api_key
         self._model = model
         self._base_url = base_url.rstrip("/")
         self._timeout = timeout
         self._transport = transport or self._urllib_transport
-        self._max_output_tokens = max_output_tokens
+        if transport_guard is not None and not callable(transport_guard):
+            raise ValueError('transport_guard must be callable')
+        self._transport_guard = transport_guard
+        self.provider_id = "deepseek"
+        self.model = model
+        self._external_call_observer: Callable[[], None] | None = None
+
+    def set_external_call_observer(self, observer: Callable[[], None]) -> None:
+        """Observe the boundary immediately before one transport attempt begins."""
+
+        self._external_call_observer = observer
 
     def request(self, request: ModelRequest) -> ModelResponse:
-        payload = self._build_request_payload(request)
+        try:
+            payload = self._build_request_payload(request)
+        except ModelProviderError as exc:
+            raise attach_provider_context(exc, self.provider_id, category="invalid_request")
         try:
             body = json.dumps(payload).encode("utf-8")
-        except (TypeError, ValueError) as exc:
-            raise ModelProviderError(f"request serialization failed: {exc}") from exc
-        status, data = self._transport(
-            f"{self._base_url}/chat/completions",
-            self._headers(),
-            body,
-        )
-        return self._parse_response(status, data)
+        except (TypeError, ValueError):
+            raise ModelProviderError(
+                "request serialization failed",
+                provider_id=self.provider_id,
+                category="invalid_request",
+            ) from None
+        if self._external_call_observer is not None:
+            self._external_call_observer()
+        try:
+            transport_result = guarded_transport_attempt(self._transport, self._transport_guard,
+                f"{self._base_url}/chat/completions",
+                self._headers(),
+                body,
+            )
+        except ModelProviderError as exc:
+            raise attach_provider_context(exc, self.provider_id, category="transport")
+        except Exception as exc:
+            raise provider_transport_error(self.provider_id, exc) from None
+
+        status, data, headers = self._unpack_transport_result(transport_result)
+        if status < 200 or 300 <= status < 400:
+            raise ModelProviderError('unexpected HTTP status; redirects are not followed',
+                                     provider_id=self.provider_id, category='protocol', status=status)
+        if status >= 400:
+            raise http_provider_error(
+                provider_id=self.provider_id,
+                status=status,
+                data=data,
+                headers=headers,
+                secret=self._api_key,
+            )
+        try:
+            return self._parse_response(status, data)
+        except ModelProviderError as exc:
+            raise attach_provider_context(exc, self.provider_id, category="protocol")
 
     # -- request mapping ----------------------------------------------------
 
     def _build_request_payload(self, request: ModelRequest) -> dict:
-        # v0.1 不支持 parameters：非空即显式失败，不静默丢弃。
-        if request.parameters:
-            raise ModelProviderError(
-                f"unsupported request parameters: {sorted(request.parameters)}"
-            )
+        allowed = {"max_tokens", "response_format"}
+        unsupported = sorted(set(request.parameters) - allowed)
+        if unsupported:
+            raise ModelProviderError(f"unsupported request parameters: {unsupported}")
+        parameters = dict(request.parameters)
+        if "max_tokens" in parameters and (
+            type(parameters["max_tokens"]) is not int or not 1 <= parameters["max_tokens"] <= self._output_token_limit
+        ):
+            raise ModelProviderError(f"max_tokens must be an integer between 1 and {self._output_token_limit}")
+        if "response_format" in parameters and parameters["response_format"] != {"type": "json_object"}:
+            raise ModelProviderError("only JSON object response_format is supported")
 
         messages = [self._map_message(message) for message in request.messages]
 
@@ -97,9 +161,8 @@ class DeepSeekModelProvider:
             "messages": messages,
             "stream": False,
             "thinking": {"type": "disabled"},
+            **parameters,
         }
-        if self._max_output_tokens is not None:
-            payload["max_tokens"] = self._max_output_tokens
 
         if request.tools:
             payload["tools"] = [self._map_tool(tool) for tool in request.tools]
@@ -182,28 +245,53 @@ class DeepSeekModelProvider:
 
     def _urllib_transport(
         self, url: str, headers: Mapping[str, str], body: bytes
-    ) -> tuple[int, Any]:
+    ) -> tuple[int, Any, Mapping[str, str]]:
         req = urllib.request.Request(url, data=body, headers=dict(headers), method="POST")
-        opener = urllib.request.build_opener(_NoRedirect())
         try:
-            with opener.open(req, timeout=self._timeout) as resp:
+            with open_single_attempt(req, timeout=self._timeout) as resp:
                 status = resp.status
-                raw = resp.read()
+                # Output tokens do not bound malformed response metadata.
+                # Keep the existing one-attempt adapter and fail closed.
+                raw = resp.read(4 * 1024 * 1024 + 1)
+                if len(raw) > 4 * 1024 * 1024:
+                    raise ModelProviderError('provider response exceeded local byte limit',
+                                             provider_id=self.provider_id, category='protocol')
+                response_headers = dict(resp.headers.items())
         except urllib.error.HTTPError as exc:
-            if 300 <= exc.code < 400:
-                exc.close()
-                raise ModelProviderError("provider redirect refused", status=exc.code) from None
-            # 4xx/5xx：读取官方 error body 供后续映射。
             status = exc.code
-            raw = exc.read()
-        except OSError as exc:  # URLError / TimeoutError / socket error 等
-            raise ModelProviderError(f"transport error: {exc}") from exc
+            raw = exc.read(64 * 1024)
+            response_headers = dict(exc.headers.items()) if exc.headers else {}
 
         try:
             data = json.loads(raw.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
-            raise ModelProviderError("malformed provider response (non-JSON)") from exc
-        return status, data
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            if status >= 400:
+                data = {}
+            else:
+                raise ModelProviderError(
+                    "provider returned a non-JSON success response",
+                    provider_id=self.provider_id,
+                    category="protocol",
+                ) from None
+        return status, data, response_headers
+
+    @staticmethod
+    def _unpack_transport_result(result: Any) -> tuple[int, Any, Mapping[str, str]]:
+        if isinstance(result, tuple) and len(result) == 2:
+            status, data = result
+            return validate_status(status, "deepseek"), data, {}
+        if isinstance(result, tuple) and len(result) == 3:
+            status, data, headers = result
+            return (
+                validate_status(status, "deepseek"),
+                data,
+                headers if isinstance(headers, Mapping) else {},
+            )
+        raise ModelProviderError(
+            "transport returned an invalid response envelope",
+            provider_id="deepseek",
+            category="protocol",
+        )
 
     # -- response mapping ---------------------------------------------------
 
@@ -230,7 +318,7 @@ class DeepSeekModelProvider:
         role = message.get("role")
         if role != "assistant":
             raise ModelProviderError(
-                f"malformed provider response: message.role must be 'assistant', got {role!r}"
+                "malformed provider response: message.role must be 'assistant'"
             )
 
         content = message.get("content")
@@ -246,8 +334,7 @@ class DeepSeekModelProvider:
         finish_reason = choice.get("finish_reason")
         if not isinstance(finish_reason, str) or finish_reason not in _SUPPORTED_FINISH_REASONS:
             raise ModelProviderError(
-                f"malformed provider response: finish_reason must be one of "
-                f"{_SUPPORTED_FINISH_REASONS}, got {finish_reason!r}"
+                "malformed provider response: unsupported finish_reason"
             )
 
         usage = self._map_usage(data.get("usage"))
@@ -258,9 +345,9 @@ class DeepSeekModelProvider:
                 finish_reason=finish_reason,
                 usage=usage,
             )
-        except ValueError as exc:
+        except ValueError:
             # provider-neutral value-object 构造失败统一归一化为 provider adapter error
-            raise ModelProviderError(f"malformed provider response: {exc}") from exc
+            raise ModelProviderError("malformed provider response: invalid model response") from None
 
     @staticmethod
     def _map_tool_calls(raw) -> tuple[ModelToolCall, ...]:
@@ -276,7 +363,7 @@ class DeepSeekModelProvider:
                 raise ModelProviderError("malformed provider response: invalid tool_call")
             if item.get("type") != "function":
                 raise ModelProviderError(
-                    f"malformed provider response: unsupported tool_call type {item.get('type')!r}"
+                    "malformed provider response: unsupported tool_call type"
                 )
             fn = item.get("function")
             if not isinstance(fn, dict):
@@ -315,21 +402,36 @@ class DeepSeekModelProvider:
                 "malformed provider response: usage prompt_tokens/completion_tokens "
                 "must be non-negative integers"
             )
-        return ModelUsage(input_tokens=prompt, output_tokens=completion)
+        hit = usage.get("prompt_cache_hit_tokens")
+        miss = usage.get("prompt_cache_miss_tokens")
+        details = usage.get("prompt_tokens_details")
+        if details is not None:
+            if not isinstance(details, dict):
+                raise ModelProviderError("malformed provider response: prompt_tokens_details is not an object")
+            detail_hit = details.get("cached_tokens")
+            if detail_hit is not None:
+                if type(detail_hit) is not int or detail_hit < 0 or detail_hit > prompt:
+                    raise ModelProviderError("malformed provider response: cached_tokens is invalid")
+                if hit is not None and hit != detail_hit:
+                    raise ModelProviderError("malformed provider response: cache hit counts disagree")
+                hit = detail_hit
+        if hit is not None or miss is not None:
+            if hit is None and type(miss) is int:
+                hit = prompt - miss
+            if miss is None and type(hit) is int:
+                miss = prompt - hit
+            if type(hit) is not int or type(miss) is not int or hit < 0 or miss < 0 or hit + miss != prompt:
+                raise ModelProviderError("malformed provider response: cache counts must be non-negative and sum to prompt_tokens")
+        return ModelUsage(input_tokens=prompt, output_tokens=completion,
+                          cache_hit_input_tokens=hit, cache_miss_input_tokens=miss)
 
-    def _to_api_error(self, status: int, data: Any) -> ModelProviderError:
-        message = f"DeepSeek API error (HTTP {status})"
-        code = None
-        request_id = None
-        if isinstance(data, dict):
-            err = data.get("error")
-            if isinstance(err, dict):
-                if isinstance(err.get("message"), str):
-                    message = err["message"]
-                code = err.get("code")
-                request_id = err.get("request_id")
-            if isinstance(data.get("request_id"), str):
-                request_id = data["request_id"]
-        return ModelProviderError(
-            message, status=status, code=code, request_id=request_id
+    def _to_api_error(
+        self, status: int, data: Any, headers: Mapping[str, Any] | None = None
+    ) -> ModelProviderError:
+        return http_provider_error(
+            provider_id=self.provider_id,
+            status=status,
+            data=data,
+            headers=headers,
+            secret=self._api_key,
         )

@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catalyst.local/schemas/understand-handoff-v1.schema.json",
+  "title": "Catalyst Understand Handoff v1",
+  "description": "A loss-preserving, candidate-only UnderstandingResult stored in the existing scoped ProjectWiki semantic candidate ledger. It grants no evaluation, acceptance, activation, or execution authority.",
+  "type": "object",
+  "required": [
+    "candidate_type",
+    "candidate_id",
+    "scope_id",
+    "authority",
+    "status",
+    "mapping_status",
+    "producer_origin",
+    "producer_identity_status",
+    "producer_version",
+    "request_id",
+    "understanding_result_sha256",
+    "understanding_result",
+    "source_bindings",
+    "evidence_mappings"
+  ],
+  "properties": {
+    "candidate_type": {
+      "const": "understand_handoff.v1"
+    },
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority": {
+      "const": "CANDIDATE_ONLY"
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "PROPOSED_NEEDS_MAPPING"
+      ]
+    },
+    "mapping_status": {
+      "enum": [
+        "COMPLETE",
+        "NEEDS_MAPPING"
+      ]
+    },
+    "producer_origin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "producer_identity_status": {
+      "const": "DECLARED_UNVERIFIED"
+    },
+    "producer_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "understanding_result_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "understanding_result": {
+      "type": "object",
+      "required": [
+        "version",
+        "request_id",
+        "intent",
+        "result_type",
+        "status",
+        "source_inventory",
+        "evidence_refs",
+        "semantic_candidate"
+      ],
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "source_inventory": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "semantic_candidate": {
+          "type": "object",
+          "required": [
+            "scope_id",
+            "items",
+            "producer_origin"
+          ],
+          "properties": {
+            "scope_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "producer_origin": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "source_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "producer_source_id",
+          "relative_path",
+          "source_revision",
+          "source_sha256",
+          "wiki_source_id",
+          "current_revision",
+          "status"
+        ],
+        "properties": {
+          "producer_source_id": {
+            "type": "string"
+          },
+          "relative_path": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?![A-Za-z]:)"
+          },
+          "source_revision": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.:-]{1,256}$"
+          },
+          "source_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "wiki_source_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "current_revision": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "STAGED",
+              "SOURCE_UNAVAILABLE",
+              "UNSUPPORTED_SOURCE_TYPE",
+              "SOURCE_REVISION_MISMATCH",
+              "SOURCE_NOT_STAGEABLE"
+            ]
+          },
+          "wiki_source_revision": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "evidence_mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "evidence_id",
+          "producer_source_id",
+          "wiki_source_id",
+          "source_revision",
+          "locator",
+          "span_sha256",
+          "mapping_status",
+          "locator_status"
+        ],
+        "properties": {
+          "evidence_id": {
+            "type": "string"
+          },
+          "producer_source_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "wiki_source_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_revision": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.:-]{1,256}$"
+          },
+          "locator": {
+            "type": "string"
+          },
+          "span_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "mapping_status": {
+            "enum": [
+              "MAPPED",
+              "NEEDS_MAPPING",
+              "SOURCE_REVISION_MISMATCH",
+              "SOURCE_UNAVAILABLE",
+              "UNSUPPORTED_SOURCE_TYPE",
+              "SOURCE_NOT_STAGEABLE",
+              "UNKNOWN_SOURCE_REFERENCE",
+              "SPAN_DIGEST_MISMATCH",
+              "ANCHOR_MISMATCH",
+              "SOURCE_IDENTITY_MISMATCH"
+            ]
+          },
+          "locator_status": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "parent_active_version_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_run_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "latest_evaluation_id": {
+      "type": "null"
+    },
+    "latest_decision_id": {
+      "type": "null"
+    }
+  },
+  "additionalProperties": true
+}

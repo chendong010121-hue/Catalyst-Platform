@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catalyst.local/schemas/external-candidate-submission-v2.schema.json",
+  "title": "Catalyst External Candidate Submission v2",
+  "description": "Typed external semantic candidates anchored to one exact, already staged original UTF-8 Markdown source. Submission is candidate input, not accepted meaning.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "producer_origin",
+    "scope_id",
+    "source_id",
+    "source_revision",
+    "origin_document_sha256",
+    "items"
+  ],
+  "properties": {
+    "schema_version": { "const": "catalyst.external_candidate.v2" },
+    "producer_origin": { "const": "codex_external" },
+    "scope_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "source_id": { "type": "string", "pattern": "^source_[a-f0-9]{24}$" },
+    "source_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "origin_document_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": { "oneOf": [
+        { "$ref": "#/$defs/keyedMeaning" },
+        { "$ref": "#/$defs/mappedEntity" },
+        { "$ref": "#/$defs/relation" }
+      ] }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "required": ["line_start", "line_end", "quote", "span_sha256"],
+      "properties": {
+        "line_start": { "type": "integer", "minimum": 1 },
+        "line_end": { "type": "integer", "minimum": 1, "description": "Must equal line_start in v2." },
+        "quote": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "span_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "evidenceClass": { "enum": ["observed_from_source", "inferred", "unresolved"] },
+    "keyedMeaning": {
+      "type": "object",
+      "required": ["kind", "key", "meaning", "evidence_class", "evidence"],
+      "properties": {
+        "kind": { "enum": ["claim", "unknown", "condition", "exception"] },
+        "key": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]{0,63}$" },
+        "meaning": { "type": "string", "minLength": 1, "maxLength": 1000, "pattern": "^[^\\r\\n]+$" },
+        "evidence_class": { "$ref": "#/$defs/evidenceClass" },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "absence": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[^\\r\\n]+$",
+          "description": "The wording that was looked for and not found: required on an unknown, and refused on every other kind."
+        },
+        "searched": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "items": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "description": "The places the absence searched, each one a locator this source actually has. Required on an unknown."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "unknown" } }, "required": ["kind"] },
+          "then": { "required": ["absence", "searched"] }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "mappedEntity": {
+      "type": "object",
+      "required": ["kind", "canonical_key", "display_name", "evidence_class", "evidence"],
+      "properties": {
+        "kind": { "enum": ["entity", "alias"] },
+        "canonical_key": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]{0,63}$" },
+        "display_name": { "type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$" },
+        "business_type": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9]{0,63}$",
+          "description": "Optional on an entity, refused on an alias: one concept of the concept set of the scope receiving this submission. The store refuses any spelling that set does not hold, so the contract does not name a fixed list."
+        },
+        "evidence_class": { "$ref": "#/$defs/evidenceClass" },
+        "evidence": { "$ref": "#/$defs/evidence" }
+      },
+      "additionalProperties": false
+    },
+    "relation": {
+      "type": "object",
+      "required": ["kind", "subject", "predicate", "object", "evidence_class", "evidence"],
+      "properties": {
+        "kind": { "const": "relation" },
+        "subject": { "type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$" },
+        "predicate": { "type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$" },
+        "object": { "type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\r\\n]+$" },
+        "evidence_class": { "$ref": "#/$defs/evidenceClass" },
+        "evidence": { "$ref": "#/$defs/evidence" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

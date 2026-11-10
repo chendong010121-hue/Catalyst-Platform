@@ -1,0 +1,12 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const source=fs.readFileSync(path.join(__dirname,'../../catalyst_platform/workspace_assets/app.js'),'utf8');
+const block=source.split('// Asset metadata is a projection;')[1].split('// OBSERVABILITY_MODULE_BEGIN')[0];
+const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function setup(){const ctx={S:{},escape,wiki:()=>'<p>original Wiki</p>',agents:()=>'<p>original Agents</p>'};vm.createContext(ctx);vm.runInContext(block.slice(block.indexOf('\n')),ctx);return ctx;}
+test('empty registry shows an explicit empty directory without inventing assets',()=>{const html=setup().assetSection();assert.match(html,/尚未登记资产/);assert.doesNotMatch(html,/data-asset=/);});
+test('asset sections are closed by default and do not create draggable services',()=>{const c=setup();c.S.assets=[{kind:'service',title:'Provider',asset_id:'system.model-provider',version:'0.1.0',integrity:'MATCH',tests:[],limits:[]}];const html=c.assetSection();assert.match(html,/系统组件/);assert.match(html,/未授予执行权限/);assert.doesNotMatch(html,/<details[^>]*\bopen\b|draggable|data-capability/);assert.match(c.wiki(),/original Wiki/);assert.match(c.agents(),/original Agents/);});
+test('all user-facing metadata is escaped, not executed',()=>{const c=setup();c.S.assets=[{kind:'method',title:'<img onerror=evil()>',responsibility:'<script>evil()</script>',version:'0.1.0',integrity:'DRIFT_OR_MISSING',limits:[]}];const html=c.assetSection();assert.doesNotMatch(html,/<script>|<img/);assert.match(html,/&lt;img/);assert.match(html,/需要核对/);});
+test('selected asset refresh adopts drift and never retains an unreadable old MATCH snapshot',()=>{const c=setup();c.S.asset={asset_id:'system.wiki',version:'0.1.0',integrity:'MATCH'};c.S.assets=[{asset_id:'system.wiki',version:'0.1.0',integrity:'DRIFT_OR_MISSING'}];c.syncSelectedAsset();assert.equal(c.S.asset.integrity,'DRIFT_OR_MISSING');c.S.assetError='UNAVAILABLE';c.S.assets=[];c.syncSelectedAsset();assert.equal(c.S.asset,null);assert.equal(c.S.assetUnavailable,true);});
+test('daily settings remove manual asset grants and system projection remains Wiki-only',()=>{const settings=source.slice(source.indexOf('function settingsPage()'),source.indexOf('function bindSettings()'));assert.doesNotMatch(settings,/name="allow_asset_read"/);assert.doesNotMatch(source,/agentsWithoutAssetProjection/);});

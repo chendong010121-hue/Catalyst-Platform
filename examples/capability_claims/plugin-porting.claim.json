@@ -1,0 +1,238 @@
+{
+  "claim_version": 1,
+  "capability": {
+    "id": "plugin-porting",
+    "responsibility_key": "port-external-package",
+    "version": "2026.10.11.2",
+    "kind": "skill",
+    "statement": "把外部插件转成 PenguinHarness 插件包（技能 + MCP 服务器）并安装到服务端插件市场",
+    "evidence": [
+      "e1"
+    ]
+  },
+  "what": {
+    "obligations": [
+      {
+        "statement": "安装前的审阅不可省略，因为装上后技能会成为每个安装它的 Agent 的长期指令",
+        "evidence": [
+          "e3"
+        ],
+        "evidence_class": "EXPLICIT"
+      },
+      {
+        "statement": "只在 scratch 目录构建；写服务端数据目录只能通过 penguin plugin install",
+        "evidence": [
+          "e4"
+        ],
+        "evidence_class": "EXPLICIT"
+      },
+      {
+        "statement": "name 与 version 必需，缺失即拒绝；其余字段缺失就显示为缺失，绝不编造",
+        "evidence": [
+          "e5"
+        ],
+        "evidence_class": "EXPLICIT"
+      },
+      {
+        "statement": "密钥永不进包：用 ${KEY} 占位并在 setup 中列出，由 Agent 的 vault 填充",
+        "evidence": [
+          "e6"
+        ],
+        "evidence_class": "EXPLICIT"
+      },
+      {
+        "statement": "按固定 commit 抓取来源；对不可达主机设 --max-time，避免挂起而不是失败",
+        "evidence": [
+          "e7"
+        ],
+        "evidence_class": "EXPLICIT"
+      }
+    ],
+    "inputs": [
+      {
+        "statement": "GitHub 链接（仓库、文件夹或其内文件）、Codex / Claude Code 插件名、本地文件夹",
+        "evidence": [
+          "e2"
+        ],
+        "evidence_class": "EXPLICIT"
+      }
+    ],
+    "outputs": [
+      {
+        "statement": "可安装的插件包（package.json + skills/ + MCP 服务器配置），经 CLI 安装后出现在插件市场",
+        "evidence": [
+          "e5",
+          "e6"
+        ],
+        "evidence_class": "EXPLICIT"
+      }
+    ],
+    "applicability": {
+      "include": [
+        {
+          "statement": "Codex 插件、Claude Code 插件、skills 仓库、GitHub 仓库中的文件夹",
+          "evidence": [
+            "e1"
+          ],
+          "evidence_class": "EXPLICIT"
+        }
+      ],
+      "exclude": [
+        {
+          "statement": "只给单个 Agent 装几个技能时改用 skill-porting",
+          "evidence": [
+            "e8"
+          ],
+          "evidence_class": "EXPLICIT"
+        }
+      ]
+    },
+    "known_limits": [
+      {
+        "statement": "需要 OAuth 登录的 MCP 服务器本版本不能完成登录，只能停在 sign-in required",
+        "evidence": [
+          "e6"
+        ],
+        "evidence_class": "EXPLICIT"
+      }
+    ],
+    "failure_modes": [
+      {
+        "statement": "主机不可达时必须设 --max-time，否则会挂起而不是失败",
+        "evidence": [
+          "e7"
+        ],
+        "evidence_class": "EXPLICIT"
+      }
+    ]
+  },
+  "how": {
+    "entry": "SKILL.md",
+    "interface": {
+      "id": "agent-skill",
+      "version": "1"
+    },
+    "side_effects": [
+      {
+        "statement": "安装对整个服务端生效；其技能成为每个安装该插件的 Agent 的长期指令",
+        "evidence": [
+          "e3"
+        ],
+        "evidence_class": "EXPLICIT"
+      }
+    ],
+    "permissions": [
+      {
+        "statement": "服务端管理员权限（由 CLI 的本地 token 携带）",
+        "evidence": [
+          "e3"
+        ],
+        "evidence_class": "EXPLICIT"
+      }
+    ]
+  },
+  "why": {
+    "evidence": [
+      {
+        "id": "e1",
+        "source_id": "penguin:plugin-porting",
+        "revision": "2026.10.11.2",
+        "locator": "SKILL.md:L2",
+        "quote": "name: plugin-porting",
+        "span_sha256": "245d211045621e9a1717a89bba866fbb6c8b1cbfc75e9c08444e8e9a5bae2aee",
+        "strength": "DIRECT_QUOTE",
+        "field": "capability.statement"
+      },
+      {
+        "id": "e2",
+        "source_id": "penguin:plugin-porting",
+        "revision": "2026.10.11.2",
+        "locator": "SKILL.md:L15",
+        "quote": "- If the message only names this skill, ask for the source: a GitHub link (a repository, a folder, or a file inside the plugin's folder), a Codex or Claude Code plugin name, or a local folder.",
+        "span_sha256": "d2c3913daef7dfab4ae8e9f774ba60554fb6886c302ae5e5d6a7fa4b806de4fc",
+        "strength": "DIRECT_QUOTE",
+        "field": "what.inputs[0]"
+      },
+      {
+        "id": "e3",
+        "source_id": "penguin:plugin-porting",
+        "revision": "2026.10.11.2",
+        "locator": "SKILL.md:L16",
+        "quote": "- Installing puts the package on the whole server with the administrator's authority that the CLI's local token carries. Its skills become standing instructions for every Agent that installs it, so the review below is not optional.",
+        "span_sha256": "5e6f6fe8bafe8ce21f43a56663e167fab5eb795ed5e81e0e86ae8db2e99e324a",
+        "strength": "DIRECT_QUOTE",
+        "field": "what.obligations[0]"
+      },
+      {
+        "id": "e4",
+        "source_id": "penguin:plugin-porting",
+        "revision": "2026.10.11.2",
+        "locator": "SKILL.md:L17",
+        "quote": "- Work in a scratch folder (`mktemp -d`). Never write into the server's data root by hand: `penguin plugin install` is the only way in.",
+        "span_sha256": "a8289163934e3ad3c758d4ca3fb8461df90c5464eb2ba375cc4a21dafa142039",
+        "strength": "DIRECT_QUOTE",
+        "field": "what.obligations[1]"
+      },
+      {
+        "id": "e5",
+        "source_id": "penguin:plugin-porting",
+        "revision": "2026.10.11.2",
+        "locator": "SKILL.md:L62",
+        "quote": "- `name` (npm name; the part after the scope is the plugin name, `[a-z0-9_-]`) and `version` (semver) are required: without them the package is refused. Everything else is optional, and a missing field is shown as missing (no description, the puzzle-piece icon, the Other group); never invent one.",
+        "span_sha256": "7c2d773ecc031a8f150890d65fda0402786a927c59606422d639f9a90fa269a6",
+        "strength": "DIRECT_QUOTE",
+        "field": "what.obligations[2]"
+      },
+      {
+        "id": "e6",
+        "source_id": "penguin:plugin-porting",
+        "revision": "2026.10.11.2",
+        "locator": "SKILL.md:L66",
+        "quote": "- `penguin.mcp_servers` lists the plugin's MCP servers, each `{ name, config, setup }`; `config` is exactly an Agent's `tools.mcpServers` entry (`transport` `http`, `sse` or `stdio`; `url` and `headers`, or `command`, `args`, `env` and `cwd`). A value the user must supply — a token, a client secret, an API key — is never in the package: write `${KEY}` where it goes and list the key in `setup` (with a `label`, and a `help` link where one says how to get it); the Agent's vault fills it in when the server connects, and until then the server waits as \"needs setup\". `${PLUGIN_ROOT}` is the package's own directory on the server, for a stdio server's files. `config.oauth` (`scopes`, `client_id`, `client_secret`) marks a server that signs in with OAuth, which this version cannot do yet: it is installed and waits as \"sign-in required\" unless an `Authorization` header gives it a token. A package may consist of MCP servers alone, with no `skills/`.",
+        "span_sha256": "ccbc49cda67ded334222b950303e821bbc2e570da47eed33753f9761d9f40a4a",
+        "strength": "DIRECT_QUOTE",
+        "field": "what.obligations[3]"
+      },
+      {
+        "id": "e7",
+        "source_id": "penguin:plugin-porting",
+        "revision": "2026.10.11.2",
+        "locator": "SKILL.md:L83",
+        "quote": "Always pass `--max-time`: a host that is unreachable from this machine hangs instead of failing. When one way does not answer, use another: `git ls-remote https://github.com/<owner>/<repo>.git <ref>`, `gh api repos/<owner>/<repo>/commits/<ref> --jq .sha`, `gh api repos/<owner>/<repo>/tarball/$SHA > \"$WORK/src.tgz\"`. The archive's top folder is `<repo>-<sha>` from codeload and `<owner>-<repo>-<short sha>` from the API, which is why `TOP` is read from the archive. A local folder is copied into `$WORK` first and handled the same way.",
+        "span_sha256": "003ca1ca949c9de72bdc054669d9985ccf5809eafb07e2336b04c3fa4f6c8a35",
+        "strength": "DIRECT_QUOTE",
+        "field": "what.obligations[4]"
+      },
+      {
+        "id": "e8",
+        "source_id": "penguin:plugin-porting",
+        "revision": "2026.10.11.2",
+        "locator": "SKILL.md:L11",
+        "quote": "A PenguinHarness plugin is an npm package installed on the server and shared by every Project: the Plugins page shows its card, and anyone installs it on an Agent from there (\"Manage installs\"), which writes its skills and adds its MCP servers to that Agent's tools. This skill turns a plugin written for another tool into that package: fetch the source at a pinned commit, recognise its layout, build the package in a scratch folder by the rules below, review it, install it with the CLI, verify. To put a few skills into this Agent alone instead, use the `skill-porting` skill.",
+        "span_sha256": "dec5664ffcbf19016cc369f249ef32b36c1da8c0891b0d5ec44a118566317b56",
+        "strength": "DIRECT_QUOTE",
+        "field": "what.applicability.exclude[0]"
+      }
+    ],
+    "unknowns": [
+      {
+        "field": "what.performance",
+        "reason": "源文件没有任何基准、时延或成本声明"
+      },
+      {
+        "field": "capability.license",
+        "reason": "SKILL.md 本身没有许可证声明"
+      },
+      {
+        "field": "how.resources",
+        "reason": "源文件未说明运行所需资源"
+      }
+    ]
+  },
+  "quick_start": {
+    "prompt": "把 https://github.com/<owner>/<repo> 这个 Codex 插件转成插件包并装到本机服务端",
+    "expected": "penguin plugin install 成功，Plugins 页出现卡片；在某个 Agent 上安装后，技能与 MCP 服务器出现在它的工具里",
+    "observable": true,
+    "cost": "network"
+  }
+}

@@ -56,7 +56,7 @@ def test_a_request_mapping():
     assert captured["headers"]["Authorization"] == "Bearer sk-SECRET-123456"
     assert captured["headers"]["Content-Type"] == "application/json"
     body = captured["body"]
-    assert body["model"] == "deepseek-v4-flash"
+    assert body["model"] == "deepseek-flash"
     assert body["thinking"] == {"type": "disabled"}
     assert body["stream"] is False
     assert body["messages"] == [

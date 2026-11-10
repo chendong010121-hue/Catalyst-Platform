@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catalyst.local/schemas/run-event-v1.schema.json",
+  "title": "Catalyst Run Event v1",
+  "description": "Versioned, privacy-first event envelope for one Catalyst run.",
+  "type": "object",
+  "required": [
+    "event_schema_version",
+    "event_id",
+    "run_id",
+    "sequence",
+    "timestamp",
+    "event_type",
+    "request_id",
+    "invocation_id",
+    "trace_id",
+    "redaction_policy_version"
+  ],
+  "properties": {
+    "event_schema_version": {"const": "1.0"},
+    "event_id": {"type": "string", "pattern": "^[a-fA-F0-9]{32}$"},
+    "run_id": {"type": "string", "minLength": 1},
+    "sequence": {"type": "integer", "minimum": 0},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "event_type": {"type": "string", "minLength": 1},
+    "request_id": {"type": "string", "minLength": 1},
+    "invocation_id": {"type": "string", "minLength": 1},
+    "trace_id": {"type": "string", "pattern": "^[a-fA-F0-9]{32}$"},
+    "redaction_policy_version": {"const": "sha256-content-fields-v1"},
+    "session_id": {"type": ["string", "null"]},
+    "span_id": {"type": ["string", "null"], "pattern": "^[a-fA-F0-9]{16}$"},
+    "parent_span_id": {"type": ["string", "null"], "pattern": "^[a-fA-F0-9]{16}$"},
+    "terminal_status": {"type": "string"},
+    "status": {"type": "string"}
+  },
+  "additionalProperties": true
+}

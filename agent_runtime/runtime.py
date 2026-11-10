@@ -25,7 +25,7 @@ recovery 顺序（run / resume / reconcile 共用）：
 from __future__ import annotations
 
 import uuid
-from typing import Mapping
+from typing import Callable, Mapping
 
 from .capability_executor import DefaultCapabilityExecutor
 from .contracts import (
@@ -80,7 +80,7 @@ def _is_terminal(snapshot: SessionSnapshot) -> bool:
 
 
 class Runtime:
-    """组合根：装配 AgentCore 及其依赖，管理 Session 生命周期。"""
+    """Agent Runtime composition root: assemble AgentCore and manage session lifecycle."""
 
     def __init__(
         self,
@@ -90,6 +90,7 @@ class Runtime:
         state_store: StateStore,
         *,
         timeout_config: ExecutionTimeoutConfig | None = None,
+        observation_sink: Callable[[dict], None] | None = None,
     ) -> None:
         self._reasoner = reasoner
         self._capabilities = capabilities
@@ -104,7 +105,13 @@ class Runtime:
             timeout_config=timeout_config,
             control_plane=self._control_plane,
         )
-        self._core = AgentCore(reasoner, executor, policy, self._state_store)
+        self._core = AgentCore(
+            reasoner,
+            executor,
+            policy,
+            self._state_store,
+            observation_sink=observation_sink,
+        )
 
     @property
     def control_plane(self) -> ExecutionControlPlane:
@@ -117,6 +124,18 @@ class Runtime:
     def capability_descriptors(self):
         """Expose capability descriptors through the Runtime/Core owner seam."""
         return self._core.capability_descriptors()
+
+    def can_release_session(self, session_id: str) -> bool:
+        """Qualify a local handle release, never discard recovery evidence.
+
+        The owner must serialize this check with its run/resume operations.
+        This instant local view is not a cross-process exclusivity guarantee.
+        Snapshot errors propagate so the owner retains the handle fail-closed.
+        """
+        snapshot = self._load_snapshot(session_id)
+        if snapshot.pending_execution is not None or self._control_plane.active.get(session_id) is not None:
+            return False
+        return _is_terminal(snapshot)
 
     def _load_snapshot(self, session_id: str) -> SessionSnapshot:
         """Load and validate one authoritative session snapshot."""

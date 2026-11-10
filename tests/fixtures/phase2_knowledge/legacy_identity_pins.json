@@ -1,0 +1,93 @@
+{
+  "fixture_contract": "phase2_legacy_identity_pins_v1",
+  "provenance": {
+    "note": "Values are copied from existing frozen local evidence. This fixture is additive and contains only synthetic content and IDs.",
+    "r6": "evidence/r6/replay_trial9/outputs/r6_alpha_json.json; evidence/r6/replay_trial9/inputs/wiki/alpha.md",
+    "r7": "evidence/r7/local_acceptance_20261017_04/outputs/replay/json/{source_stage,propose_v1,accept_v1,consumer_v1}.json"
+  },
+  "r6": {
+    "claim_ids": [
+      "claim_901c51394b8a822a386b303b",
+      "claim_f1f5be37151608b7969b36b8"
+    ],
+    "relative_path": "alpha.md",
+    "run_id": "run_905c679a077f4498852a3660855898bf",
+    "scope_id": "enterprise:enterprise-local/project:project-alpha",
+    "source_id": "source_eb7d022c2fae3d814df6fa37",
+    "source_revision": "90c103c6b9cb97a2182b1caa3a1b510dce30bdc6d3dc339cb024b410cd813f3e"
+  },
+  "r7": {
+    "accepted_version_id": "version_1be24fc8855e9f001c726c8a",
+    "candidate_id": "candidate_89184d7efcfa651b5d24bd3d",
+    "claim_ids": [
+      "claim_00611a7a276b5709eb2bd4e0",
+      "claim_a7ff46af382a4b9ea0de6f87"
+    ],
+    "consumer_meaning_ids": [
+      "meaning_a82b96931d9accae4d103a17",
+      "meaning_bc0d734450e2d82a04139919"
+    ],
+    "decision_id": "decision_c4373ce215d1eabcd76d5ca7",
+    "meaning_ids": [
+      "meaning_29eca25dc6121b277f697628",
+      "meaning_a82b96931d9accae4d103a17",
+      "meaning_bc0d734450e2d82a04139919"
+    ],
+    "meanings": [
+      {
+        "claim_id": "claim_00611a7a276b5709eb2bd4e0",
+        "evidence": [
+          {
+            "claim_id": "claim_00611a7a276b5709eb2bd4e0",
+            "evidence_class": "observed_from_source",
+            "line_end": 2,
+            "line_start": 2,
+            "source_id": "source_e14c4ed68fa9acae109267d3",
+            "source_revision": "b7bbba5163b86ecdd839525965c2e98384421f34b099323b17fe30778a18766b",
+            "span_sha256": "3bd9f63ca6e6277d55276f2b0d92628fe2889c18e2b6ea7ceb3bd2d821dbb988"
+          }
+        ],
+        "evidence_class": "observed_from_source",
+        "heading": "Quality review handbook",
+        "key": "reviewer retains a source link for each decision",
+        "kind": "claim",
+        "line_end": 2,
+        "line_start": 2,
+        "meaning": "Reviewer retains a source link for each decision",
+        "meaning_id": "meaning_bc0d734450e2d82a04139919",
+        "source_id": "source_e14c4ed68fa9acae109267d3",
+        "source_revision": "b7bbba5163b86ecdd839525965c2e98384421f34b099323b17fe30778a18766b",
+        "span_sha256": "3bd9f63ca6e6277d55276f2b0d92628fe2889c18e2b6ea7ceb3bd2d821dbb988"
+      },
+      {
+        "claim_id": "claim_a7ff46af382a4b9ea0de6f87",
+        "evidence": [
+          {
+            "claim_id": "claim_a7ff46af382a4b9ea0de6f87",
+            "evidence_class": "observed_from_source",
+            "line_end": 4,
+            "line_start": 4,
+            "source_id": "source_e14c4ed68fa9acae109267d3",
+            "source_revision": "b7bbba5163b86ecdd839525965c2e98384421f34b099323b17fe30778a18766b",
+            "span_sha256": "0970237f336e52d05d9d8e32881e675bff38748497ffd211edfa741fedfe6179"
+          }
+        ],
+        "evidence_class": "observed_from_source",
+        "heading": "Quality review handbook",
+        "key": "source_link_required",
+        "kind": "condition",
+        "line_end": 4,
+        "line_start": 4,
+        "meaning": "Reviewer includes a source link",
+        "meaning_id": "meaning_a82b96931d9accae4d103a17",
+        "source_id": "source_e14c4ed68fa9acae109267d3",
+        "source_revision": "b7bbba5163b86ecdd839525965c2e98384421f34b099323b17fe30778a18766b",
+        "span_sha256": "0970237f336e52d05d9d8e32881e675bff38748497ffd211edfa741fedfe6179"
+      }
+    ],
+    "relative_path": "guide.md",
+    "scope_id": "enterprise:review/project:phase2",
+    "source_id": "source_e14c4ed68fa9acae109267d3",
+    "source_revision": "b7bbba5163b86ecdd839525965c2e98384421f34b099323b17fe30778a18766b"
+  }
+}

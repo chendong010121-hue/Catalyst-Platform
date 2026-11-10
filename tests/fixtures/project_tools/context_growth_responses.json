@@ -1,0 +1,50 @@
+{
+  "provenance": "Two frozen real responses, offline replay only; no new LLM output",
+  "run_id": "run_54f38e1aa267428fbb0c1ff6f6a7983c",
+  "responses": [
+    {
+      "content": "I'll start by inspecting the fixed source set for structural evidence about the Skill.",
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        {
+          "arguments": "{\"query\": \"Inspect the Skill's SKILL.md entry: stated purpose, scope/applicability, method steps, dependencies, and limits. Report bounded structural evidence with locators.\", \"source_ids\": [\"src_576a7d7b0c144bfd\"]}",
+          "id": "call_00_So5I6jqL61q854SBr9rF4605",
+          "name": "cap_4cf8fc0feaa5e4db"
+        },
+        {
+          "arguments": "{\"query\": \"Inspect the sibling Skill under the same plugin for contrast of object type, dependency declarations, and stated scope.\", \"source_ids\": [\"src_7b1488062a8c84dd\"]}",
+          "id": "call_01_gmDxb9uGhMt6VdXEel1B2680",
+          "name": "cap_4cf8fc0feaa5e4db"
+        }
+      ],
+      "usage": {
+        "cache_hit_input_tokens": 1408,
+        "cache_miss_input_tokens": 275,
+        "input_tokens": 1683,
+        "output_tokens": 215
+      }
+    },
+    {
+      "content": "Now I'll drill into the target Skill's method steps and dependency/limit sections.",
+      "finish_reason": "tool_calls",
+      "tool_calls": [
+        {
+          "arguments": "{\"query\": \"Within SKILL.md src_576a7d7b0c144bfd: extract the ordered procedure/steps the Skill instructs, including entry conditions, what must be written or created, and any decision points or ordering constraints.\", \"source_ids\": [\"src_576a7d7b0c144bfd\"]}",
+          "id": "call_00_g2q46mefvwomQvd0Aizw4289",
+          "name": "cap_4cf8fc0feaa5e4db"
+        },
+        {
+          "arguments": "{\"query\": \"Within SKILL.md src_576a7d7b0c144bfd: extract explicit limits, prohibitions, permission boundaries, \\\"never/do not/must\\\" statements, and prerequisites or required references to other skills or files.\", \"source_ids\": [\"src_576a7d7b0c144bfd\"]}",
+          "id": "call_01_U0R8U2EfdzFlhKO3oTHZ5032",
+          "name": "cap_4cf8fc0feaa5e4db"
+        }
+      ],
+      "usage": {
+        "cache_hit_input_tokens": 1792,
+        "cache_miss_input_tokens": 1554,
+        "input_tokens": 3346,
+        "output_tokens": 258
+      }
+    }
+  ]
+}

@@ -1,0 +1,298 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catalyst.local/schemas/capability_claim_v1.schema.json",
+  "title": "Catalyst capability claim v1",
+  "description": "A registerable, comparable description of what a capability is responsible for, how it is implemented, and which evidence supports each claim. A field with no evidence must be declared in why.unknowns; it is never silently blank.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["claim_version", "capability", "what", "how", "why", "quick_start"],
+  "properties": {
+    "claim_version": {"const": 1},
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "responsibility_key", "version", "kind", "statement", "evidence"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "description": "Stable name chosen at ingestion, the same shape as a skill directory name. Identity is the name, not an allocated identifier."
+        },
+        "responsibility_key": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "Competing-group key assigned by the reviewer at ingestion. Two capabilities share a key only when they carry the same responsibility."
+        },
+        "version": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["skill", "workflow", "agent", "plugin", "code", "document-set"]},
+        "statement": {"type": "string", "minLength": 1},
+        "evidence": {"$ref": "#/$defs/evidence_ids"},
+        "anchors": {
+          "type": "array",
+          "maxItems": 8,
+          "description": "Business anchors: the object this capability acts on and the action it performs. Reserved for linking a capability to organisation semantics; a claim built without one declares it unknown.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["object", "action", "evidence"],
+            "properties": {
+              "object": {"type": "string", "minLength": 1},
+              "action": {"type": "string", "minLength": 1},
+              "evidence": {"$ref": "#/$defs/evidence_ids"}
+            }
+          }
+        }
+      }
+    },
+    "what": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligations", "inputs", "outputs", "applicability", "known_limits", "failure_modes"],
+      "properties": {
+        "obligations": {"type": "array", "items": {"$ref": "#/$defs/obligation_item"}, "minItems": 1},
+        "inputs": {"type": "array", "items": {"$ref": "#/$defs/io_item"}},
+        "outputs": {"type": "array", "items": {"$ref": "#/$defs/io_item"}},
+        "applicability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["include", "exclude"],
+          "properties": {
+            "include": {"type": "array", "items": {"$ref": "#/$defs/claim_item"}},
+            "exclude": {"type": "array", "items": {"$ref": "#/$defs/claim_item"}}
+          }
+        },
+        "known_limits": {"type": "array", "items": {"$ref": "#/$defs/claim_item"}},
+        "failure_modes": {"type": "array", "items": {"$ref": "#/$defs/claim_item"}}
+      }
+    },
+    "how": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entry", "interface", "side_effects", "permissions"],
+      "properties": {
+        "entry": {"type": "string", "minLength": 1},
+        "interface": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "version"],
+          "properties": {
+            "id": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1}
+          }
+        },
+        "side_effects": {"type": "array", "items": {"$ref": "#/$defs/claim_item"}},
+        "permissions": {"type": "array", "items": {"$ref": "#/$defs/claim_item"}},
+        "invocation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "description": "How one call is made. A prompt-mode capability needs an agent to run it; cli and function can be run by the executor.",
+          "properties": {
+            "mode": {"enum": ["prompt", "cli", "function", "http", "unknown"]},
+            "detail": {"type": "string", "minLength": 1},
+            "evidence": {"$ref": "#/$defs/evidence_ids"}
+          }
+        },
+        "requirements": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "What the capability needs in order to run. Secrets are named, never valued: only the key name is stored.",
+          "properties": {
+            "tools": {"type": "array", "items": {"type": "string", "minLength": 1}, "maxItems": 32},
+            "secrets": {
+              "type": "array",
+              "maxItems": 32,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["key", "purpose"],
+                "properties": {
+                  "key": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+                  "purpose": {"type": "string", "minLength": 1}
+                }
+              }
+            },
+            "network": {"type": ["boolean", "null"]},
+            "writes": {"type": "array", "items": {"type": "string", "minLength": 1}, "maxItems": 16},
+            "runtime": {
+              "oneOf": [
+                {"type": "null"},
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["thinking_level"],
+                  "properties": {"thinking_level": {"enum": ["low", "medium", "high", "xhigh", "max"]}}
+                }
+              ]
+            },
+            "mcp_servers": {
+              "type": "array",
+              "maxItems": 32,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name", "transport"],
+                "properties": {
+                  "name": {"type": "string", "minLength": 1},
+                  "transport": {"enum": ["http", "sse", "stdio"]}
+                }
+              }
+            },
+            "evidence": {"$ref": "#/$defs/evidence_ids"}
+          }
+        }
+      }
+    },
+    "graph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["steps"],
+      "description": "The task sub-graph, when the container states it explicitly: a workflow's steps, or a skill whose procedure was lifted out of prose. Depth L2 is reached only when this block exists.",
+      "properties": {
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "capability", "on_failure"],
+            "properties": {
+              "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+              "capability": {"type": "string", "minLength": 1},
+              "consumes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+              "produces": {"type": "array", "items": {"type": "string", "minLength": 1}},
+              "on_failure": {"enum": ["fail_fast", "skip", "fallback"]}
+            }
+          }
+        }
+      }
+    },
+    "why": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence", "unknowns"],
+      "properties": {
+        "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}, "minItems": 1},
+        "unknowns": {"type": "array", "items": {"$ref": "#/$defs/unknown"}}
+      }
+    },
+    "quick_start": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prompt", "expected", "observable", "cost"],
+      "properties": {
+        "prompt": {"type": "string", "minLength": 1},
+        "expected": {"type": "string", "minLength": 1},
+        "observable": {"type": "boolean"},
+        "limitation": {"type": "string", "minLength": 1},
+        "cost": {
+          "enum": ["none", "local", "network", "model", "unknown"],
+          "description": "How expensive one quick-start run is. \"unknown\" is for a claim built without running it; it is never filled in by guessing."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "evidence_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "claim_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement", "evidence", "evidence_class"],
+      "properties": {
+        "statement": {"type": "string", "minLength": 1},
+        "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "evidence_class": {"enum": ["EXPLICIT", "INFERRED", "PENDING"]}
+      }
+    },
+    "io_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement", "evidence", "evidence_class"],
+      "description": "An input or an output. `form` is the shape one step hands to the next; `required` says whether the step may run without it. null means the source did not say.",
+      "properties": {
+        "statement": {"type": "string", "minLength": 1},
+        "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "evidence_class": {"enum": ["EXPLICIT", "INFERRED", "PENDING"]},
+        "form": {
+          "enum": ["path", "text", "document", "skill-package", "plugin-package", "agent-dir", "claim", "unknown"]
+        },
+        "required": {"type": ["boolean", "null"]}
+      }
+    },
+    "obligation_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement", "evidence", "evidence_class"],
+      "description": "One thing that must hold. `verifier` is how it could be checked, `required_authority` is the weakest evidence that closes it, `next_evidence` is the exact check that would raise its level.",
+      "properties": {
+        "statement": {"type": "string", "minLength": 1},
+        "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "evidence_class": {"enum": ["EXPLICIT", "INFERRED", "PENDING"]},
+        "id": {"type": "string", "pattern": "^ob-[0-9]+$"},
+        "verifier": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": {"enum": ["command", "assertion", "manual", "none"]},
+            "detail": {"type": "string", "minLength": 1}
+          }
+        },
+        "required_authority": {"enum": ["QUOTED", "STRUCTURAL", "EXECUTED", "MEASURED"]},
+        "next_evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operation", "subject_id", "requires_authority"],
+          "properties": {
+            "operation": {"enum": ["read", "run", "measure", "ask"]},
+            "subject_id": {"type": "string", "minLength": 1},
+            "requires_authority": {"enum": ["QUOTED", "STRUCTURAL", "EXECUTED", "MEASURED"]}
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source_id", "revision", "locator", "quote", "span_sha256", "strength", "field"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "source_id": {"type": "string", "minLength": 1},
+        "revision": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1},
+        "quote": {"type": "string", "minLength": 1},
+        "span_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "strength": {"enum": ["DIRECT_QUOTE", "STRUCTURAL", "EXTERNAL_DOC", "EXECUTED", "MEASURED"]},
+        "asserted_by": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Who fixed this evidence's strength when the record was created. A verifier receipt names itself or the run that produced it; nothing may raise it afterwards."
+        },
+        "asserted_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}",
+          "description": "ISO 8601 instant at which the strength was fixed."
+        },
+        "field": {
+          "type": "string",
+          "pattern": "^[a-z_]+(\\.[a-z_]+|\\[[0-9]+\\])*$",
+          "description": "Dotted path inside this claim that the evidence supports."
+        }
+      }
+    },
+    "unknown": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "reason"],
+      "properties": {
+        "field": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

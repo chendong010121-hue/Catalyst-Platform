@@ -1,0 +1,19 @@
+{
+  "base_url": "https://api.deepseek.com",
+  "cache_hit_cny_per_million": "0.30",
+  "input_cny_per_million": "9.0",
+  "input_token_limit": 32000,
+  "max_output_tokens": 384000,
+  "model": "deepseek-v4-pro",
+  "output_cny_per_million": "27.0",
+  "price_reference": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+  "provider_id": "deepseek",
+  "schema_version": 2,
+  "served_models": [
+    "deepseek-v4-pro",
+    "deepseek-v4-pro-0813",
+    "DeepSeek-V4-Pro-0813"
+  ],
+  "valid_until": "2026-10-31T14:26:30.782942+00:00",
+  "verified_at": "2026-10-30T14:26:30.782942+00:00"
+}

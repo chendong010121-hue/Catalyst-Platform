@@ -1,7 +1,7 @@
 param(
-    [int]$Port = 8827,
+    [int]$Port = 8817,
     [string]$Workspace = (Join-Path $env:LOCALAPPDATA 'Catalyst/Desktop'),
-    [string]$WikiExport,
+    [string]$ProjectConfig,
     [switch]$NoOpen
 )
 $ErrorActionPreference = 'Stop'
@@ -17,7 +17,7 @@ function Get-PathIdentity([string]$Path) {
 $workspaceId = Get-PathIdentity $Workspace
 $sourceRootId = Get-PathIdentity $PSScriptRoot
 function Read-Status {
-    try { Invoke-RestMethod "$base/api/status" -TimeoutSec 2 } catch { $null }
+    try { Invoke-RestMethod "$base/api/workspace" -TimeoutSec 2 } catch { $null }
 }
 $status = Read-Status
 if (-not $status) {
@@ -25,10 +25,10 @@ if (-not $status) {
         throw "Port $Port belongs to another service."
     }
     New-Item -ItemType Directory -Path $Workspace -Force | Out-Null
-    $arguments = @('-m','catalyst_platform.desktop','--workspace',('"{0}"' -f $Workspace),'--port',"$Port")
-    if ($WikiExport) {
-        $exportPath = (Resolve-Path -LiteralPath $WikiExport).Path
-        $arguments += @('--wiki-export',('"{0}"' -f $exportPath))
+    $arguments = @('-m','catalyst_platform.workspace_ui','--workspace',('"{0}"' -f $Workspace),'--port',"$Port")
+    if ($ProjectConfig) {
+        $configPath = (Resolve-Path -LiteralPath $ProjectConfig).Path
+        $arguments += @('--project-config',('"{0}"' -f $configPath))
     }
     $env:PYTHONUTF8 = '1'
     $process = Start-Process -FilePath $python -ArgumentList $arguments -WorkingDirectory $PSScriptRoot -WindowStyle Hidden -PassThru
@@ -39,11 +39,8 @@ if (-not $status) {
         Start-Sleep -Milliseconds 250
     }
 }
-if (-not $status -or $status.build.commit -ne $commit -or $status.build.source_root_id -ne $sourceRootId -or $status.workspace_id -ne $workspaceId -or -not $status.connection) {
+if (-not $status -or $status.source_identity.commit -ne $commit -or $status.source_root_id -ne $sourceRootId -or $status.workspace_id -ne $workspaceId) {
     throw "Port $Port did not return the expected Catalyst build and workspace. No existing process was stopped."
-}
-if ([bool]$WikiExport -ne ($status.available_tools -contains 'wiki_search')) {
-    throw 'The existing service has a different Wiki configuration. Use another port or restart that service explicitly.'
 }
 if (-not $NoOpen) { Start-Process "$base/" }
 Write-Output "CATALYST_READY $base/ $commit"

@@ -1,0 +1,11 @@
+{
+ "schema_version": 1,
+ "model": "deepseek-flash",
+ "base_url": "https://api.deepseek.com",
+ "probed_at": "2026-10-31T12:17:21Z",
+ "prompt": "图中白色方块在哪个角？只回答方位词：左上、右上、左下、右下。",
+ "answer_expected": "右下",
+ "answer": "右下",
+ "passed": true,
+ "total_tokens": 209
+}

@@ -120,7 +120,9 @@ def snapshot_model_usage(usage):
         raise CapabilityContractError(
             f"usage must be None or ModelUsage, got {type(usage).__name__}"
         )
-    return ModelUsage(input_tokens=usage.input_tokens, output_tokens=usage.output_tokens)
+    return ModelUsage(input_tokens=usage.input_tokens, output_tokens=usage.output_tokens,
+                      cache_hit_input_tokens=usage.cache_hit_input_tokens,
+                      cache_miss_input_tokens=usage.cache_miss_input_tokens)
 
 
 def snapshot_model_call(model_call):

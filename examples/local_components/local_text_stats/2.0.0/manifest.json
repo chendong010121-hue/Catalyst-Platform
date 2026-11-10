@@ -1,0 +1,62 @@
+{
+  "binding": {
+    "capability_id": "local_text_stats",
+    "capability_version": "2.0.0",
+    "description": "Count lines, words, and characters in the explicitly selected local text file.",
+    "execution": {
+      "side_effect": "none"
+    },
+    "input_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "name": "Local text statistics",
+    "output_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "character_count": {
+          "type": "integer"
+        },
+        "line_count": {
+          "type": "integer"
+        },
+        "source_sha256": {
+          "type": "string"
+        },
+        "word_count": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "line_count",
+        "word_count",
+        "character_count",
+        "source_sha256"
+      ],
+      "type": "object"
+    }
+  },
+  "component_id": "local_text_stats",
+  "llm_visibility": "explicit",
+  "manifest_version": 1,
+  "model_policy": {
+    "max_calls": 1,
+    "mode": "selected_file_path",
+    "path_parameter": "path"
+  },
+  "resource_type": "tool",
+  "source": {
+    "entrypoint": "tool.py:LocalTextStatsTool",
+    "kind": "local_python",
+    "sha256": "862afb291ce07d203f18ed16035431fc076e3816b611f47d1843262c9a5b248b"
+  },
+  "version": "2.0.0"
+}

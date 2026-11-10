@@ -1,0 +1,52 @@
+{
+  "component_id": "enterprise-ontology",
+  "evaluation_refs": [
+    "check8/score_candidate.py (286 frozen questions, question/expectation set sha256 ce3bdd4401a3e2d6)",
+    "candidate-v15/live46/entries.json (sha256 65295b22ab963d82)",
+    "N9-LOCAL-BINDING-FIELD-CONSUMPTION-20261101.md",
+    "semantic quality NOT_EVALUATED; evaluation status PENDING_INDEPENDENT_REVIEW"
+  ],
+  "files": {
+    "SKILL.md": "b566362e8b05cb8af7f2942590a0bccf0363080537c94e758cdeb3764f658ac3",
+    "references/ontology-catalog-relations-v2.md": "2b6e210413e1abebd77f09aafc819608a85d3f4025bfcef6129e7709ccf8ed60",
+    "references/ontology-catalog-relations.md": "dc23ae168948f9bf90c29a4a910c10f00c6c7caed4da692e20420eb73df534fc",
+    "references/ontology-evolver.md": "bce3858cfd8b9d33de26a1a21791e0c8e17c1ba902838406414222d415c51987",
+    "references/ontology-generator.md": "f329ad3d924678d34b71afd9be936347711100a0a217ffd3497f826363062a39",
+    "references/ontology-inventory-binding.md": "1dd7e9da17b10c48ec3336d92f58e116c1701a6d90ce114eebc08890bd702397",
+    "references/ontology-object-catalog-v2.md": "b69c52583ef18ab87a02a26eb544a9fbe9efa40e87fe84593de4ff15bf5e842f",
+    "references/ontology-object-catalog.md": "697ad3b3983643d5808b56ae2483a54f38bcff4026f2d2378802c8e37cf029ee",
+    "references/ontology-verifier.md": "d5b4397ea012ed5c5211ad6a0ca03b3feb27ba75f389709c8644df8afe8bb11e"
+  },
+  "license_sources": [
+    {
+      "adaptation": "method text adapted in references/ontology-generator.md and ontology-verifier.md; no upstream code, dependency or runtime copied",
+      "license": "Apache-2.0 (github.com/openbkn-ai/bkn-engineering, LICENSE blob 261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64 reproduced 2026-11-01)",
+      "name": "OpenBKN bkn-engineering (ontology-builder)",
+      "revision": "f74439286e5850ecf3efdd5a0aa2a3e2b9bbc989"
+    },
+    {
+      "adaptation": "method text adapted in references/ontology-evolver.md; no upstream code, dependency or runtime copied",
+      "license": "MIT (github.com/ruc-datalab/EvoOntology, LICENSE blob 82585264b891df63670694fb26cc4b21e6cac1bd reproduced 2026-11-01)",
+      "name": "EvoOntology (ruc-datalab)",
+      "revision": "c94389b764394379086ff25e50d0e0f4396167b4"
+    },
+    {
+      "adaptation": "one rule adapted in references/ontology-catalog-relations-v2.md and ontology-inventory-binding.md; no upstream code copied",
+      "license": "Apache-2.0 (github.com/OpenSPG/KAG default branch, LICENSE blob 261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64 reproduced 2026-11-01)",
+      "name": "KAG (OpenSPG), entity-list dependency",
+      "revision": "fdab15b3 as named by the method text; the revision itself was not re-checked"
+    }
+  ],
+  "llm_visibility": "explicit",
+  "manifest_version": 1,
+  "provides": [
+    "enterprise-ontology"
+  ],
+  "required_product_interface": "semantic-proposal.v1",
+  "requires": [
+    "semantic_submit_candidate"
+  ],
+  "resource_type": "method_data",
+  "skill_name": "understand-enterprise-semantics",
+  "version": "0.1.0"
+}

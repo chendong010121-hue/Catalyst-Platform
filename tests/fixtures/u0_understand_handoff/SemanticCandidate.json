@@ -1,0 +1,611 @@
+{
+  "version": "0.1.0",
+  "request_id": "sample_semantic",
+  "intent": "KNOWLEDGE_PROPOSE",
+  "result_type": "SemanticCandidate",
+  "status": "PARTIAL",
+  "route": {
+    "intent": "KNOWLEDGE_PROPOSE",
+    "target": "SEMANTIC_CANDIDATE",
+    "reason": "host_requested_intent",
+    "requested_depth": "grounded_semantic",
+    "budget_steps": 6,
+    "stopping_reason": "bounded_default"
+  },
+  "source_inventory": [
+    {
+      "source_id": "src_dc07c3d3dbb74aafc38b",
+      "relative_path": "monthly_rules.md",
+      "media_type": "markdown",
+      "source_revision": "973aeb6bf19b9129c49fdb93fde672ba43265d27427861660cf46d749940798d",
+      "source_sha256": "973aeb6bf19b9129c49fdb93fde672ba43265d27427861660cf46d749940798d",
+      "byte_size": 142,
+      "extracted_text_sha256": "2b2fe8c8153993efabd6e5e3a9e7de35410a89797e2147b206f9abfd3564a281",
+      "locator_count": 2,
+      "extraction_status": "COMPLETE"
+    },
+    {
+      "source_id": "src_7353abdaf7e0721297b0",
+      "relative_path": "org_policy.md",
+      "media_type": "markdown",
+      "source_revision": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "source_sha256": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "byte_size": 300,
+      "extracted_text_sha256": "9993e4987468d11f84a21ea9e0fe0615886ebd5d8f95fa64f849f6e21d601b67",
+      "locator_count": 5,
+      "extraction_status": "COMPLETE"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "evidence_id": "ev_e745993d3b7a33dfd41fd564",
+      "source_id": "src_dc07c3d3dbb74aafc38b",
+      "relative_path": "monthly_rules.md",
+      "source_revision": "973aeb6bf19b9129c49fdb93fde672ba43265d27427861660cf46d749940798d",
+      "source_sha256": "973aeb6bf19b9129c49fdb93fde672ba43265d27427861660cf46d749940798d",
+      "locator": "line:1",
+      "quote": "Exception: missing_source | 缺少源数据时保留未知，不估算",
+      "span_sha256": "9f0c581c2a1eaef8b1199c337bfc9ca64d7e3b04e40983b15db5e1292850666e",
+      "evidence_class": "observed_from_source"
+    },
+    {
+      "evidence_id": "ev_b53f8466a757650dfdcf6f1d",
+      "source_id": "src_dc07c3d3dbb74aafc38b",
+      "relative_path": "monthly_rules.md",
+      "source_revision": "973aeb6bf19b9129c49fdb93fde672ba43265d27427861660cf46d749940798d",
+      "source_sha256": "973aeb6bf19b9129c49fdb93fde672ba43265d27427861660cf46d749940798d",
+      "locator": "line:2",
+      "quote": "Claim: duty | 经营分析部负责月度经营分析并审批付款",
+      "span_sha256": "9801c0052f9ce0e7341a4bb51b7869a73ea3bdb25546f10621c17e5009580e59",
+      "evidence_class": "observed_from_source"
+    },
+    {
+      "evidence_id": "ev_25b5a0d31d30081a8233b0f1",
+      "source_id": "src_7353abdaf7e0721297b0",
+      "relative_path": "org_policy.md",
+      "source_revision": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "source_sha256": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "locator": "line:1",
+      "quote": "Entity: department:经营分析部 | 经营分析部",
+      "span_sha256": "27061face2057afdd0f6719b7fef77aefed0bca679c40603292a08bafeda8aa1",
+      "evidence_class": "observed_from_source"
+    },
+    {
+      "evidence_id": "ev_60a48a97e4e6ba69bfffce14",
+      "source_id": "src_7353abdaf7e0721297b0",
+      "relative_path": "org_policy.md",
+      "source_revision": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "source_sha256": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "locator": "line:2",
+      "quote": "Claim: duty | 经营分析部负责月度经营分析",
+      "span_sha256": "a0484fdac48215d8b41f496f82a2d6e35175fd56341bdeb1b8dda595496fca4c",
+      "evidence_class": "observed_from_source"
+    },
+    {
+      "evidence_id": "ev_db1a54d8ebd27a7a20048b62",
+      "source_id": "src_7353abdaf7e0721297b0",
+      "relative_path": "org_policy.md",
+      "source_revision": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "source_sha256": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "locator": "line:3",
+      "quote": "Relation: 经营分析部 -> requests_data_from -> 财务部",
+      "span_sha256": "2d0936df50fd32d81148b39dc09665c72e85cc9d8043be83cfc797e423e7694a",
+      "evidence_class": "observed_from_source"
+    },
+    {
+      "evidence_id": "ev_1df4b99626359028bceea0c4",
+      "source_id": "src_7353abdaf7e0721297b0",
+      "relative_path": "org_policy.md",
+      "source_revision": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "source_sha256": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "locator": "line:4",
+      "quote": "Condition: closed_period | 财务结账完成后生成月报",
+      "span_sha256": "1c6e7a986fb9c5d1d2b4ae4018b6a945def79ab6dcee620a422c45d58117b70a",
+      "evidence_class": "observed_from_source"
+    },
+    {
+      "evidence_id": "ev_22e8ab10da6bd43e4b29ab8f",
+      "source_id": "src_7353abdaf7e0721297b0",
+      "relative_path": "org_policy.md",
+      "source_revision": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "source_sha256": "dd22a8adf74e37a54212127724637dc684cc5ecbaf255b9b06f05de95ef1666d",
+      "locator": "line:5",
+      "quote": "Negative: payment_approval | 经营分析部不负责付款审批",
+      "span_sha256": "dc58f96dabfae170bef6f0907dfbdb5812b04c20a7c1212a8839404e32adb3f6",
+      "evidence_class": "observed_from_source"
+    }
+  ],
+  "extracted_facts": [
+    {
+      "item_id": "item_7ccf3c6b297fd11fe62ca335",
+      "kind": "exception",
+      "key": "missing_source",
+      "meaning": "缺少源数据时保留未知，不估算",
+      "evidence_refs": [
+        "ev_e745993d3b7a33dfd41fd564"
+      ],
+      "evidence_class": "observed_from_source",
+      "confidence": "source_anchored_not_truth",
+      "uncertainty": null,
+      "subject": null,
+      "predicate": null,
+      "object": null
+    },
+    {
+      "item_id": "item_4ccdd6cc3a856369f65af6f0",
+      "kind": "claim",
+      "key": "duty",
+      "meaning": "经营分析部负责月度经营分析并审批付款",
+      "evidence_refs": [
+        "ev_b53f8466a757650dfdcf6f1d"
+      ],
+      "evidence_class": "observed_from_source",
+      "confidence": "source_anchored_not_truth",
+      "uncertainty": null,
+      "subject": null,
+      "predicate": null,
+      "object": null
+    },
+    {
+      "item_id": "item_259b7af70d1b719a8652b267",
+      "kind": "entity",
+      "key": "department:经营分析部",
+      "meaning": "经营分析部",
+      "evidence_refs": [
+        "ev_25b5a0d31d30081a8233b0f1"
+      ],
+      "evidence_class": "observed_from_source",
+      "confidence": "source_anchored_not_truth",
+      "uncertainty": null,
+      "subject": null,
+      "predicate": null,
+      "object": null
+    },
+    {
+      "item_id": "item_93ea716d9392febeb22014af",
+      "kind": "claim",
+      "key": "duty",
+      "meaning": "经营分析部负责月度经营分析",
+      "evidence_refs": [
+        "ev_60a48a97e4e6ba69bfffce14"
+      ],
+      "evidence_class": "observed_from_source",
+      "confidence": "source_anchored_not_truth",
+      "uncertainty": null,
+      "subject": null,
+      "predicate": null,
+      "object": null
+    },
+    {
+      "item_id": "item_5245e7ce662aa4aba66a33e7",
+      "kind": "relation",
+      "key": "经营分析部:requests_data_from:财务部",
+      "meaning": "Relation: 经营分析部 -> requests_data_from -> 财务部",
+      "evidence_refs": [
+        "ev_db1a54d8ebd27a7a20048b62"
+      ],
+      "evidence_class": "observed_from_source",
+      "confidence": "source_anchored_not_truth",
+      "uncertainty": null,
+      "subject": "经营分析部",
+      "predicate": "requests_data_from",
+      "object": "财务部"
+    },
+    {
+      "item_id": "item_28075b4ce41c30d7d8ed75d1",
+      "kind": "condition",
+      "key": "closed_period",
+      "meaning": "财务结账完成后生成月报",
+      "evidence_refs": [
+        "ev_1df4b99626359028bceea0c4"
+      ],
+      "evidence_class": "observed_from_source",
+      "confidence": "source_anchored_not_truth",
+      "uncertainty": null,
+      "subject": null,
+      "predicate": null,
+      "object": null
+    },
+    {
+      "item_id": "item_747fecb02a544f0e5ebfb8d8",
+      "kind": "negative_claim",
+      "key": "payment_approval",
+      "meaning": "经营分析部不负责付款审批",
+      "evidence_refs": [
+        "ev_22e8ab10da6bd43e4b29ab8f"
+      ],
+      "evidence_class": "observed_from_source",
+      "confidence": "source_anchored_not_truth",
+      "uncertainty": null,
+      "subject": null,
+      "predicate": null,
+      "object": null
+    }
+  ],
+  "inferred_items": [
+    {
+      "item_id": "item_37aba50f90cbb4ebd06c6352",
+      "kind": "entity",
+      "key": "经营分析部",
+      "meaning": "经营分析部 appears as a relation endpoint; entity identity was inferred from the relation only.",
+      "evidence_refs": [
+        "ev_db1a54d8ebd27a7a20048b62"
+      ],
+      "evidence_class": "inferred",
+      "confidence": "not_calibrated",
+      "uncertainty": "entity type and official identity are unresolved",
+      "subject": null,
+      "predicate": null,
+      "object": null
+    },
+    {
+      "item_id": "item_ef6f08e4f7d558e75ca1a594",
+      "kind": "entity",
+      "key": "财务部",
+      "meaning": "财务部 appears as a relation endpoint; entity identity was inferred from the relation only.",
+      "evidence_refs": [
+        "ev_db1a54d8ebd27a7a20048b62"
+      ],
+      "evidence_class": "inferred",
+      "confidence": "not_calibrated",
+      "uncertainty": "entity type and official identity are unresolved",
+      "subject": null,
+      "predicate": null,
+      "object": null
+    }
+  ],
+  "unknowns": [
+    {
+      "item_id": "item_8419aa2b592f6c2ea1e22c8c",
+      "kind": "unknown",
+      "key": "duty",
+      "meaning": "Conflicting source statements: 经营分析部负责月度经营分析 | 经营分析部负责月度经营分析并审批付款",
+      "evidence_refs": [
+        "ev_b53f8466a757650dfdcf6f1d",
+        "ev_60a48a97e4e6ba69bfffce14"
+      ],
+      "evidence_class": "unresolved",
+      "confidence": "source_anchored_not_truth",
+      "uncertainty": "source conflict requires owner review",
+      "subject": null,
+      "predicate": null,
+      "object": null
+    },
+    {
+      "item_id": "item_f74744f1db3235de43bf4f73",
+      "kind": "unknown",
+      "key": "approval",
+      "meaning": "正式审批授权不由本次文本理解授予或证明。",
+      "evidence_refs": [],
+      "evidence_class": "unresolved",
+      "confidence": "source_anchored_not_truth",
+      "uncertainty": "requires trusted host policy and owner context",
+      "subject": null,
+      "predicate": null,
+      "object": null
+    },
+    {
+      "item_id": "item_76f970d61e5ceadf0b52d715",
+      "kind": "unknown",
+      "key": "binding",
+      "meaning": "真实工具绑定不由本次文本理解授予或证明。",
+      "evidence_refs": [],
+      "evidence_class": "unresolved",
+      "confidence": "source_anchored_not_truth",
+      "uncertainty": "requires trusted host policy and owner context",
+      "subject": null,
+      "predicate": null,
+      "object": null
+    }
+  ],
+  "task_context": null,
+  "document_knowledge": null,
+  "semantic_candidate": {
+    "scope_id": "enterprise:synthetic/project:monthly",
+    "items": [
+      {
+        "item_id": "item_7ccf3c6b297fd11fe62ca335",
+        "kind": "exception",
+        "key": "missing_source",
+        "meaning": "缺少源数据时保留未知，不估算",
+        "evidence_refs": [
+          "ev_e745993d3b7a33dfd41fd564"
+        ],
+        "evidence_class": "observed_from_source",
+        "confidence": "source_anchored_not_truth",
+        "uncertainty": null,
+        "subject": null,
+        "predicate": null,
+        "object": null
+      },
+      {
+        "item_id": "item_4ccdd6cc3a856369f65af6f0",
+        "kind": "claim",
+        "key": "duty",
+        "meaning": "经营分析部负责月度经营分析并审批付款",
+        "evidence_refs": [
+          "ev_b53f8466a757650dfdcf6f1d"
+        ],
+        "evidence_class": "observed_from_source",
+        "confidence": "source_anchored_not_truth",
+        "uncertainty": null,
+        "subject": null,
+        "predicate": null,
+        "object": null
+      },
+      {
+        "item_id": "item_259b7af70d1b719a8652b267",
+        "kind": "entity",
+        "key": "department:经营分析部",
+        "meaning": "经营分析部",
+        "evidence_refs": [
+          "ev_25b5a0d31d30081a8233b0f1"
+        ],
+        "evidence_class": "observed_from_source",
+        "confidence": "source_anchored_not_truth",
+        "uncertainty": null,
+        "subject": null,
+        "predicate": null,
+        "object": null
+      },
+      {
+        "item_id": "item_93ea716d9392febeb22014af",
+        "kind": "claim",
+        "key": "duty",
+        "meaning": "经营分析部负责月度经营分析",
+        "evidence_refs": [
+          "ev_60a48a97e4e6ba69bfffce14"
+        ],
+        "evidence_class": "observed_from_source",
+        "confidence": "source_anchored_not_truth",
+        "uncertainty": null,
+        "subject": null,
+        "predicate": null,
+        "object": null
+      },
+      {
+        "item_id": "item_5245e7ce662aa4aba66a33e7",
+        "kind": "relation",
+        "key": "经营分析部:requests_data_from:财务部",
+        "meaning": "Relation: 经营分析部 -> requests_data_from -> 财务部",
+        "evidence_refs": [
+          "ev_db1a54d8ebd27a7a20048b62"
+        ],
+        "evidence_class": "observed_from_source",
+        "confidence": "source_anchored_not_truth",
+        "uncertainty": null,
+        "subject": "经营分析部",
+        "predicate": "requests_data_from",
+        "object": "财务部"
+      },
+      {
+        "item_id": "item_28075b4ce41c30d7d8ed75d1",
+        "kind": "condition",
+        "key": "closed_period",
+        "meaning": "财务结账完成后生成月报",
+        "evidence_refs": [
+          "ev_1df4b99626359028bceea0c4"
+        ],
+        "evidence_class": "observed_from_source",
+        "confidence": "source_anchored_not_truth",
+        "uncertainty": null,
+        "subject": null,
+        "predicate": null,
+        "object": null
+      },
+      {
+        "item_id": "item_747fecb02a544f0e5ebfb8d8",
+        "kind": "negative_claim",
+        "key": "payment_approval",
+        "meaning": "经营分析部不负责付款审批",
+        "evidence_refs": [
+          "ev_22e8ab10da6bd43e4b29ab8f"
+        ],
+        "evidence_class": "observed_from_source",
+        "confidence": "source_anchored_not_truth",
+        "uncertainty": null,
+        "subject": null,
+        "predicate": null,
+        "object": null
+      },
+      {
+        "item_id": "item_37aba50f90cbb4ebd06c6352",
+        "kind": "entity",
+        "key": "经营分析部",
+        "meaning": "经营分析部 appears as a relation endpoint; entity identity was inferred from the relation only.",
+        "evidence_refs": [
+          "ev_db1a54d8ebd27a7a20048b62"
+        ],
+        "evidence_class": "inferred",
+        "confidence": "not_calibrated",
+        "uncertainty": "entity type and official identity are unresolved",
+        "subject": null,
+        "predicate": null,
+        "object": null
+      },
+      {
+        "item_id": "item_ef6f08e4f7d558e75ca1a594",
+        "kind": "entity",
+        "key": "财务部",
+        "meaning": "财务部 appears as a relation endpoint; entity identity was inferred from the relation only.",
+        "evidence_refs": [
+          "ev_db1a54d8ebd27a7a20048b62"
+        ],
+        "evidence_class": "inferred",
+        "confidence": "not_calibrated",
+        "uncertainty": "entity type and official identity are unresolved",
+        "subject": null,
+        "predicate": null,
+        "object": null
+      },
+      {
+        "item_id": "item_8419aa2b592f6c2ea1e22c8c",
+        "kind": "unknown",
+        "key": "duty",
+        "meaning": "Conflicting source statements: 经营分析部负责月度经营分析 | 经营分析部负责月度经营分析并审批付款",
+        "evidence_refs": [
+          "ev_b53f8466a757650dfdcf6f1d",
+          "ev_60a48a97e4e6ba69bfffce14"
+        ],
+        "evidence_class": "unresolved",
+        "confidence": "source_anchored_not_truth",
+        "uncertainty": "source conflict requires owner review",
+        "subject": null,
+        "predicate": null,
+        "object": null
+      },
+      {
+        "item_id": "item_f74744f1db3235de43bf4f73",
+        "kind": "unknown",
+        "key": "approval",
+        "meaning": "正式审批授权不由本次文本理解授予或证明。",
+        "evidence_refs": [],
+        "evidence_class": "unresolved",
+        "confidence": "source_anchored_not_truth",
+        "uncertainty": "requires trusted host policy and owner context",
+        "subject": null,
+        "predicate": null,
+        "object": null
+      },
+      {
+        "item_id": "item_76f970d61e5ceadf0b52d715",
+        "kind": "unknown",
+        "key": "binding",
+        "meaning": "真实工具绑定不由本次文本理解授予或证明。",
+        "evidence_refs": [],
+        "evidence_class": "unresolved",
+        "confidence": "source_anchored_not_truth",
+        "uncertainty": "requires trusted host policy and owner context",
+        "subject": null,
+        "predicate": null,
+        "object": null
+      }
+    ],
+    "producer_origin": "catalyst_deterministic",
+    "persistence_status": "NOT_PERSISTED"
+  },
+  "asset_candidate": null,
+  "selected_skills": [
+    {
+      "skill_id": "understand-source-inventory",
+      "version": "0.1.0",
+      "skill_sha256": "fac6cf3408332f5509c054caaae5755b4d3ad7257b5dc814fb832399e448339f",
+      "instruction_sha256": "78fb908e50b959b516dd94d51c1f1fde28faaecb485afd762fb08aad986d47f8",
+      "loaded_reference_paths": [],
+      "strategy_id": "source_inventory",
+      "status": "SELECTED"
+    },
+    {
+      "skill_id": "understand-enterprise-semantics",
+      "version": "0.1.0",
+      "skill_sha256": "b566362e8b05cb8af7f2942590a0bccf0363080537c94e758cdeb3764f658ac3",
+      "instruction_sha256": "f03dbc2b4898d323a3a2b498f8e4d5b493a5c4a3bba5087d3b416e2613aa78d6",
+      "loaded_reference_paths": [],
+      "strategy_id": "business_semantics",
+      "status": "SELECTED"
+    },
+    {
+      "skill_id": "understand-evidence-coverage",
+      "version": "0.1.0",
+      "skill_sha256": "fab8c40bfcf19de55fd1867fdf811dc3b79fe1b1155ea27df74b468b215d6178",
+      "instruction_sha256": "1e5c079ae8ddff298616fb8472919ac6dc687d803a64821795fc125f4b1d04af",
+      "loaded_reference_paths": [],
+      "strategy_id": "coverage_check",
+      "status": "SELECTED"
+    }
+  ],
+  "coverage_receipt": [
+    {
+      "question_id": "responsibility",
+      "status": "ANSWERED",
+      "evidence_ids": [
+        "item_4ccdd6cc3a856369f65af6f0",
+        "item_259b7af70d1b719a8652b267",
+        "item_93ea716d9392febeb22014af"
+      ],
+      "reason": null
+    },
+    {
+      "question_id": "dependency",
+      "status": "ANSWERED",
+      "evidence_ids": [
+        "item_5245e7ce662aa4aba66a33e7"
+      ],
+      "reason": null
+    },
+    {
+      "question_id": "conditions",
+      "status": "ANSWERED",
+      "evidence_ids": [
+        "item_28075b4ce41c30d7d8ed75d1"
+      ],
+      "reason": null
+    },
+    {
+      "question_id": "negative_and_exception",
+      "status": "ANSWERED",
+      "evidence_ids": [
+        "item_7ccf3c6b297fd11fe62ca335",
+        "item_747fecb02a544f0e5ebfb8d8"
+      ],
+      "reason": null
+    },
+    {
+      "question_id": "tool_limits",
+      "status": "EXPLICITLY_UNRESOLVED",
+      "evidence_ids": [],
+      "reason": "not established by inspected source"
+    },
+    {
+      "question_id": "status",
+      "status": "EXPLICITLY_UNRESOLVED",
+      "evidence_ids": [],
+      "reason": "not established by inspected source"
+    },
+    {
+      "question_id": "failure",
+      "status": "EXPLICITLY_UNRESOLVED",
+      "evidence_ids": [],
+      "reason": "not established by inspected source"
+    },
+    {
+      "question_id": "side_effects",
+      "status": "EXPLICITLY_UNRESOLVED",
+      "evidence_ids": [],
+      "reason": "not established by inspected source"
+    }
+  ],
+  "strategy_run_receipt": [
+    {
+      "skill_id": "understand-source-inventory",
+      "version": "0.1.0",
+      "digest": "fac6cf3408332f5509c054caaae5755b4d3ad7257b5dc814fb832399e448339f",
+      "strategy_id": "source_inventory",
+      "status": "COMPLETED",
+      "output_count": 2,
+      "exit_reason": "bounded_inventory_complete"
+    },
+    {
+      "skill_id": "understand-enterprise-semantics",
+      "version": "0.1.0",
+      "digest": "b566362e8b05cb8af7f2942590a0bccf0363080537c94e758cdeb3764f658ac3",
+      "strategy_id": "business_semantics",
+      "status": "COMPLETED",
+      "output_count": 12,
+      "exit_reason": "bounded_target_complete"
+    },
+    {
+      "skill_id": "understand-evidence-coverage",
+      "version": "0.1.0",
+      "digest": "fab8c40bfcf19de55fd1867fdf811dc3b79fe1b1155ea27df74b468b215d6178",
+      "strategy_id": "coverage_check",
+      "status": "COMPLETED",
+      "output_count": 8,
+      "exit_reason": "bounded_coverage_complete"
+    }
+  ],
+  "stopping_reason": "source_budget_or_coverage_boundary",
+  "wiki_handoff": "HANDOFF_BLOCKED_BY_PRODUCER_SCHEMA",
+  "source_warnings": [],
+  "handoff_receipt": null
+}

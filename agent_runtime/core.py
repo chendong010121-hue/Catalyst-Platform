@@ -21,8 +21,11 @@ validation、不解析模型协议（tool_call_id / ModelToolCall / DeepSeek）�
 
 from __future__ import annotations
 
+import hashlib
+import json
 import uuid
 from dataclasses import replace
+from typing import Callable
 
 from .contracts import (
     Act,
@@ -43,6 +46,7 @@ from .contracts import (
     StateStore,
     StepRecord,
     Stop,
+    Success,
 )
 from .errors import PolicyContractError, ReasonerContractError, UnresolvedExecutionError
 from .snapshot import (
@@ -81,7 +85,7 @@ def resolve_step_termination(policy, snapshot, step):
 
 
 class AgentCore:
-    """驱动 Agent Loop 的最小核心，依赖全部构造注入。"""
+    """Run the injected Agent Loop control flow; capability lookup and invocation stay in collaborators."""
 
     def __init__(
         self,
@@ -90,12 +94,26 @@ class AgentCore:
         policy: Policy,
         state_store: StateStore,
         execution_id_factory=None,
+        observation_sink: Callable[[dict], None] | None = None,
     ) -> None:
         self._reasoner = reasoner
         self._capability_executor = capability_executor
         self._policy = policy
         self._state_store = state_store
         self._execution_id_factory = execution_id_factory or (lambda: uuid.uuid4().hex)
+        self._observation_sink = observation_sink
+
+    def _observe(self, event_type: str, **fields) -> None:
+        """Publish runtime facts at the point where the decision/execution occurs."""
+        if self._observation_sink is not None:
+            self._observation_sink({"event_type": event_type, **fields})
+
+    @staticmethod
+    def _tool_call_id(model_call, action) -> str | None:
+        if model_call is None or len(model_call.tool_calls) != 1:
+            return None
+        call = model_call.tool_calls[0]
+        return call.id if call.name == action.capability_id else None
 
     def capability_descriptors(self):
         """Return the executor's public capability descriptor seam."""
@@ -169,6 +187,30 @@ class AgentCore:
             )
             self._validate_reasoning_result(result)
             decision = result.decision
+            model_call = result.model_call
+            safe_tool_calls = []
+            if model_call is not None:
+                for call in model_call.tool_calls:
+                    safe_tool_calls.append(
+                        {
+                            "tool_call_id": call.id,
+                            "tool_name": call.name,
+                            "arguments_sha256": hashlib.sha256(
+                                call.arguments.encode("utf-8", "replace")
+                            ).hexdigest(),
+                        }
+                    )
+            self._observe(
+                "reasoning.completed",
+                step_index=len(snapshot.history),
+                decision_type=type(decision).__name__,
+                model_call_present=model_call is not None,
+                tool_calls=safe_tool_calls,
+                input_tokens=(model_call.usage.input_tokens if model_call and model_call.usage else None),
+                output_tokens=(model_call.usage.output_tokens if model_call and model_call.usage else None),
+                finish_reason=(model_call.finish_reason if model_call else None),
+                answer=(decision.reason if isinstance(decision, Complete) else None),
+            )
 
             if isinstance(decision, Act):
                 snapshot = self._advance(snapshot, decision, result.model_call)
@@ -218,6 +260,21 @@ class AgentCore:
         """执行一次 Act：Policy 校验 → (Allow) prepare → execute → settle。"""
         canonical_action = snapshot_action(decision.action)
         index = len(snapshot.history)
+        tool_call_id = self._tool_call_id(model_call, canonical_action)
+        parameters_body = json.dumps(
+            canonical_action.parameters,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+        self._observe(
+            "tool.requested",
+            step_index=index,
+            capability_internal_id=canonical_action.capability_id,
+            tool_call_id=tool_call_id,
+            arguments_sha256=hashlib.sha256(parameters_body).hexdigest(),
+        )
         verdict = (
             prechecked_verdict
             if prechecked_verdict is not None
@@ -228,6 +285,19 @@ class AgentCore:
         )
 
         if isinstance(verdict, Deny):
+            self._observe(
+                "authorization.decided",
+                step_index=index,
+                decision="deny",
+                reason_sha256=hashlib.sha256(verdict.reason.encode("utf-8", "replace")).hexdigest(),
+                tool_call_id=tool_call_id,
+            )
+            self._observe(
+                "capability.execution.denied",
+                step_index=index,
+                capability_internal_id=canonical_action.capability_id,
+                tool_call_id=tool_call_id,
+            )
             # 不执行能力；Deny 不创建 pending / execution_id。
             step = StepRecord(
                 index=index,
@@ -238,6 +308,12 @@ class AgentCore:
             return self._finalize(snapshot, step)
 
         if isinstance(verdict, Allow):
+            self._observe(
+                "authorization.decided",
+                step_index=index,
+                decision="allow",
+                tool_call_id=tool_call_id,
+            )
             execution_id = execution_id or self._execution_id_factory()
             self._validate_execution_id(snapshot, execution_id)
             pending = PendingExecution(
@@ -250,10 +326,49 @@ class AgentCore:
             self._commit_snapshot(self._with_pending(snapshot, pending))
 
             # execute（execution_id 来自 durable PendingExecution identity；session_id 用于 registry）
-            observation = self._capability_executor.execute(
-                canonical_action,
-                execution_id=execution_id,
+            self._observe(
+                "capability.execution.started",
+                step_index=index,
                 session_id=snapshot.session_id,
+                execution_id=execution_id,
+                capability_internal_id=canonical_action.capability_id,
+                tool_call_id=tool_call_id,
+            )
+            try:
+                observation = self._capability_executor.execute(
+                    canonical_action,
+                    execution_id=execution_id,
+                    session_id=snapshot.session_id,
+                )
+            except Exception as exc:
+                self._observe(
+                    "capability.execution.unresolved",
+                    step_index=index,
+                    execution_id=execution_id,
+                    capability_internal_id=canonical_action.capability_id,
+                    tool_call_id=tool_call_id,
+                    error_type=type(exc).__name__,
+                    effect_certainty="unknown",
+                )
+                raise
+
+            output_value = observation.data if isinstance(observation, Success) else observation.error
+            output_bytes = json.dumps(
+                output_value,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                default=str,
+            ).encode("utf-8")
+            self._observe(
+                "capability.execution.completed",
+                step_index=index,
+                execution_id=execution_id,
+                capability_internal_id=canonical_action.capability_id,
+                tool_call_id=tool_call_id,
+                status="success" if isinstance(observation, Success) else "failure",
+                result_sha256=hashlib.sha256(output_bytes).hexdigest(),
+                effect_certainty="reported_by_capability",
             )
 
             # settle：单次 snapshot commit（history += step，pending=None）

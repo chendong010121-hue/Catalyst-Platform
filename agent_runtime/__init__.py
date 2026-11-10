@@ -10,7 +10,7 @@
 - execution          —— cooperative cancellation / timeout 执行控制（runtime-only，不 durable）
 - policies           —— 生产级安全 Policy（StepLimitPolicy / TokenBudgetPolicy）
 - snapshot           —— Durable Fact Boundary（JsonValue strict snapshot）
-- providers          —— DeepSeekModelProvider（deepseek-v4-flash，one-attempt，non-thinking）
+- providers          —— DeepSeekModelProvider（deepseek-flash，one-attempt，non-thinking）
 - errors             —— 最小异常类型（契约违反 / 生命周期 / 恢复 / 执行确定性）
 
 尚未接入任何其它真实模型 Provider（GPT / 本地）。

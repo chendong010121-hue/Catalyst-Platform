@@ -1,0 +1,36 @@
+// UI revision acceptance: real read interfaces plus isolated browser-only SSE fixture.
+const {chromium}=require('C:/Users/13752/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const fs=require('node:fs'),path=require('node:path');
+const out=path.resolve(process.argv[2]),base='http://127.0.0.1:8802';
+if(fs.existsSync(out))throw Error('Fresh output required');fs.mkdirSync(out,{recursive:true});
+const assert=(v,m)=>{if(!v)throw Error(m)};let browser,page;const errors=[],external=[],posts=[],geometry=[];
+async function go(r){await page.goto(base+'/?revision='+r+'#'+r,{waitUntil:'networkidle'});await page.locator('h1').first().waitFor()}
+(async()=>{try{
+ browser=await chromium.launch({headless:true});page=await browser.newPage({viewport:{width:1800,height:850},reducedMotion:'reduce'});
+ page.on('pageerror',e=>errors.push(e.message));await page.route('**/*',async r=>{const q=r.request();if(!q.url().startsWith(base+'/')){external.push(q.url());await r.abort()}else if(q.method()!=='GET'){posts.push(q.url());await r.abort()}else await r.continue()});
+ for(const route of ['home','agents','runs','wiki','enterprise']){await go(route);const g=await page.evaluate(()=>{const w=document.querySelector('.workspace').getBoundingClientRect(),s=document.querySelector('.sidebar').getBoundingClientRect();return {gutter:getComputedStyle(document.documentElement).scrollbarGutter,x:w.x,width:w.width,sidebarX:s.x,sidebarWidth:s.width}});geometry.push({route,...g});}
+ const a=geometry[0];assert(geometry.every(x=>x.x===a.x&&x.width===a.width&&x.sidebarX===a.sidebarX&&x.sidebarWidth===a.sidebarWidth),'Shell shifts between routes');assert(a.gutter==='stable','Scrollbar gutter not reserved');
+ const tabs=page.locator('[aria-label="本体视图"] button');assert(await tabs.nth(0).innerText()==='候选本体','Candidate is not left');assert(await tabs.nth(1).innerText()==='正式本体','Accepted is not right');assert(await tabs.nth(0).isEnabled()&&await tabs.nth(1).isEnabled(),'Ontology tab disabled');
+ await tabs.nth(0).click();await page.getByText('暂无候选本体',{exact:true}).waitFor();assert(await page.locator('#candidate-graph').getAttribute('aria-pressed')==='true','Candidate selection missing');await page.screenshot({path:path.join(out,'enterprise-candidate.png'),fullPage:true});
+ await page.locator('#accepted-graph').click();await page.locator('#accepted-graph[aria-pressed="true"]').waitFor();assert(!await page.getByText('暂无候选本体',{exact:true}).count(),'Candidate empty leaked into accepted');
+ await go('runs');const first=page.locator('[data-obs-run]').first();const id=await first.getAttribute('data-obs-run');
+ const row=page.locator('[data-obs-row="'+id+'"]');await page.locator('h1').hover();
+ const normal=await row.locator('td').first().evaluate(e=>getComputedStyle(e).backgroundColor);await row.hover();await page.waitForTimeout(160);
+ const hovered=await row.locator('td').first().evaluate(e=>getComputedStyle(e).backgroundColor);assert(normal!==hovered,'Whole record lacks hover feedback');
+ await row.locator('td').nth(2).click();await page.locator('#obs-detail').waitFor();
+ assert(!await page.locator('#obs-close,.obs-disclosure-arrow').count(),'Redundant disclosure controls remain');
+ assert(await page.locator('#obs-detail').evaluate(e=>e.closest('tr').previousElementSibling.querySelector('[data-obs-run]').dataset.obsRun)===id,'Detail is not directly below selected row');assert(await page.locator('.obs-run-row.selected').count()===1,'Selection not highlighted');
+ await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:path.join(out,'observability-inline.png'),fullPage:true});await page.locator('.obs-run-row.selected>td').last().click();assert(!await page.locator('#obs-detail').count(),'Clicking the record background did not close');
+ await go('agents');assert(!await page.getByText('关联工作',{exact:false}).count(),'Agent association notice remains');await page.screenshot({path:path.join(out,'agents.png'),fullPage:true});
+ // Synthetic R4 stream only: exercises the existing EventSource/render path, no run or API dispatch.
+ const live={run_id:'run_ui_synthetic_live',request_kind:'natural_language_ask',status:'running',last_sequence:0,started_at:'2026-10-26T00:00:00Z',events:[{event_type:'request.started',sequence:0,run_id:'run_ui_synthetic_live'}]};
+ const next={...live,run_id:'run_ui_synthetic_next',status:'success',events:[{event_type:'request.started',sequence:0,run_id:'run_ui_synthetic_next'},{event_type:'request.terminal',sequence:1,terminal_status:'success'}],last_sequence:1};
+ await page.route('**/api/runs?*',r=>r.fulfill({json:[live,next]}));
+ await page.route('**/api/runs/run_ui_synthetic_**',async r=>{const u=r.request().url();if(u.endsWith('/result'))return r.fulfill({status:404,json:{error:{code:'not_ready'}}});if(u.includes('/stream?'))return r.fulfill({contentType:'text/event-stream',body:'event: run.event\ndata: '+JSON.stringify({event_type:'span.started',run_id:live.run_id,sequence:1,span_id:'ui_live_span',span_name:'UI_SYNTHETIC_STREAM_UPDATE'})+'\n\n'});return r.fulfill({json:u.endsWith(next.run_id)?next:live})});
+ await go('runs');await page.locator('[data-obs-run="'+live.run_id+'"]').click();await page.getByText('UI_SYNTHETIC_STREAM_UPDATE',{exact:true}).waitFor();assert(await page.locator('.obs-run-row.selected.is-running').count()===1,'Running row not highlighted');
+ assert(await page.locator('#obs-detail').evaluate(e=>e.closest('tr').nextElementSibling.querySelector('[data-obs-run]').dataset.obsRun)===next.run_id,'Live detail moved past next record');
+ await page.screenshot({path:path.join(out,'synthetic-inline-live.png'),fullPage:true});await page.locator('[data-obs-row="'+next.run_id+'"]>td').nth(3).click();await page.waitForFunction(id=>document.querySelector('.obs-run-row.selected [data-obs-run]')?.dataset.obsRun===id,next.run_id);assert(await page.locator('#obs-detail').evaluate(e=>e.closest('tr').previousElementSibling.querySelector('[data-obs-run]').dataset.obsRun)===next.run_id,'Changing selection leaves stale detail');
+ await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(out,'mobile-inline.png'),fullPage:true});assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),'Mobile shell overflow');
+ assert(!errors.length&&!external.length&&!posts.length,JSON.stringify({errors,external,posts}));
+ const source=await page.evaluate(async()=>await(await fetch('/api/workspace')).json());fs.writeFileSync(path.join(out,'RECEIPT.json'),JSON.stringify({verdict:'PASS_UI_REVISION',source_identity:source.source_identity,geometry,errors,external,posts,paid_api_calls:0,real_key_reads:0,stream_test:'BROWSER_ONLY_SYNTHETIC_R4_NOT_REAL_MODEL_OR_RUN',limitations:['Classic scrollbar shift not directly reproduced under overlay-scrollbar browser; stable gutter and geometry validated']},null,2));console.log('UI_REVISION_PASS');
+}catch(e){if(page)await page.screenshot({path:path.join(out,'failure.png'),fullPage:true}).catch(()=>{});fs.writeFileSync(path.join(out,'FAILURE.json'),JSON.stringify({error:e.message,errors,posts},null,2));throw e}finally{if(browser)await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});
