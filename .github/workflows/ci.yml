@@ -33,7 +33,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          python -m compileall -q agent_runtime platform_standard enterprise_extensions examples tests 2>&1 | tee audit_artifacts/compile.log
+          python -m compileall -q agent_runtime platform_standard enterprise_extensions catalyst_platform examples tests 2>&1 | tee audit_artifacts/compile.log
 
       - name: Minimal loop
         shell: bash

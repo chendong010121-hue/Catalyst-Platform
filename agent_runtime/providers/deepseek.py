@@ -37,6 +37,10 @@ _SUPPORTED_FINISH_REASONS = (
     "insufficient_system_resource",
 )
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
 
 class DeepSeekModelProvider:
     """把 provider-neutral ModelRequest 映射为一次 DeepSeek chat/completions 请求。
@@ -52,12 +56,17 @@ class DeepSeekModelProvider:
         base_url: str = _DEFAULT_BASE_URL,
         timeout: float = 60.0,
         transport: Callable[[str, Mapping[str, str], bytes], tuple[int, Any]] | None = None,
+        *,
+        max_output_tokens: int | None = None,
     ) -> None:
+        if max_output_tokens is not None and (type(max_output_tokens) is not int or max_output_tokens < 1):
+            raise ValueError("max_output_tokens must be a positive integer")
         self._api_key = api_key
         self._model = model
         self._base_url = base_url.rstrip("/")
         self._timeout = timeout
         self._transport = transport or self._urllib_transport
+        self._max_output_tokens = max_output_tokens
 
     def request(self, request: ModelRequest) -> ModelResponse:
         payload = self._build_request_payload(request)
@@ -89,6 +98,8 @@ class DeepSeekModelProvider:
             "stream": False,
             "thinking": {"type": "disabled"},
         }
+        if self._max_output_tokens is not None:
+            payload["max_tokens"] = self._max_output_tokens
 
         if request.tools:
             payload["tools"] = [self._map_tool(tool) for tool in request.tools]
@@ -173,11 +184,15 @@ class DeepSeekModelProvider:
         self, url: str, headers: Mapping[str, str], body: bytes
     ) -> tuple[int, Any]:
         req = urllib.request.Request(url, data=body, headers=dict(headers), method="POST")
+        opener = urllib.request.build_opener(_NoRedirect())
         try:
-            with urllib.request.urlopen(req, timeout=self._timeout) as resp:
+            with opener.open(req, timeout=self._timeout) as resp:
                 status = resp.status
                 raw = resp.read()
         except urllib.error.HTTPError as exc:
+            if 300 <= exc.code < 400:
+                exc.close()
+                raise ModelProviderError("provider redirect refused", status=exc.code) from None
             # 4xx/5xx：读取官方 error body 供后续映射。
             status = exc.code
             raw = exc.read()
