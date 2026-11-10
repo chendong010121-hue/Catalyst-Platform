@@ -4,6 +4,7 @@ import json
 import tempfile
 import threading
 import unittest
+import uuid
 from dataclasses import replace
 from pathlib import Path
 from urllib.error import HTTPError
@@ -79,15 +80,17 @@ class DesktopFoundationTest(unittest.TestCase):
             return json.load(response)
 
     def ask(self, allow_wiki=False, *, csrf=None, origin=None):
+        return self.post("/api/chat", {"message": "North Wing", "allow_wiki": allow_wiki},
+                         csrf=csrf, origin=origin)
+
+    def post(self, path, data, *, csrf=None, origin=None):
         headers = {
             "Content-Type": "application/json",
             "X-Catalyst-CSRF": self.csrf if csrf is None else csrf,
         }
         if origin:
             headers["Origin"] = origin
-        request = Request(self.base + "/api/chat", headers=headers, data=json.dumps({
-            "message": "North Wing", "allow_wiki": allow_wiki,
-        }).encode())
+        request = Request(self.base + path, headers=headers, data=json.dumps(data).encode())
         with urlopen(request, timeout=5) as response:
             return json.load(response)
 
@@ -147,6 +150,49 @@ class DesktopFoundationTest(unittest.TestCase):
         with self.assertRaises(HTTPError) as error:
             self.ask()
         self.assertEqual(error.exception.code, 409)
+        self.assertEqual(self.requests, [])
+
+    def test_conversations_project_ordered_context_and_replay_receipts(self):
+        first = self.post("/api/conversations", {})["id"]
+        second = self.post("/api/conversations", {})["id"]
+
+        def turn(conversation_id, message):
+            return {"conversation_id": conversation_id, "request_id": uuid.uuid4().hex,
+                    "message": message, "allow_wiki": False}
+
+        a = turn(first, "青桐项目")
+        result = self.post("/api/chat", a)
+        self.assertEqual(result["context_run_ids"], [])
+        self.assertEqual(self.post("/api/chat", a), result)
+        self.assertEqual(len(self.requests), 1)
+        with self.assertRaises(HTTPError) as error:
+            self.post("/api/chat", {**a, "conversation_id": second})
+        self.assertEqual(error.exception.code, 409)
+        self.assertEqual(len(self.requests), 1)
+
+        b = self.post("/api/chat", turn(second, "海岸项目"))
+        self.assertEqual(b["context_run_ids"], [])
+        c = self.post("/api/chat", turn(first, "接着说"))
+        self.assertEqual(c["context_run_ids"], [a["request_id"]])
+        self.assertEqual([(m["role"], m["content"]) for m in self.requests[-1]["messages"][1:]], [
+            ("user", "青桐项目"), ("assistant", "Scripted model reply"), ("user", "接着说"),
+        ])
+        self.assertEqual([row["id"] for row in self.get("/api/conversations")["items"]], [second, first])
+        self.assertEqual([row["run_id"] for row in self.get("/api/conversations/" + first)["turns"]],
+                         [a["request_id"], c["run_id"]])
+
+    def test_missing_receipt_is_visible_and_same_request_is_not_replayed(self):
+        conversation = self.post("/api/conversations", {})["id"]
+        run_id = uuid.uuid4().hex
+        self.desktop.conversations.reserve(conversation, run_id, "中断的请求", False)
+        recovered = Desktop(self.root, composer=self.composer, provider=self.desktop.provider,
+                            provider_mode=self.desktop.provider_mode)
+        self.assertEqual(recovered.conversation(conversation)["turns"][0]["state"], "UNRESOLVED")
+        with self.assertRaises(HTTPError) as error:
+            self.post("/api/chat", {"conversation_id": conversation, "request_id": run_id,
+                                    "message": "中断的请求", "allow_wiki": False})
+        self.assertEqual(error.exception.code, 409)
+        self.assertEqual(json.load(error.exception)["error"], "request_unresolved")
         self.assertEqual(self.requests, [])
 
 

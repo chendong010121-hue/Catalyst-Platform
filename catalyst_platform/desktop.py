@@ -8,15 +8,16 @@ import re
 import secrets
 import subprocess
 import uuid
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
-from agent_runtime.contracts import Complete, Goal, ModelResponse, ModelToolCall
+from agent_runtime.contracts import Complete, Goal, Message, ModelResponse, ModelToolCall
 from agent_runtime.native_tools_v2 import NativeToolsV2Reasoner, NativeToolsV2Runtime
 from agent_runtime.policies import StepLimitPolicy
 
 from . import wiki_search
+from .conversations import Conversations
 from .plugin_composition import PluginComposer
 
 
@@ -30,9 +31,22 @@ class _RunSnapshots:
         self.snapshot = snapshot
 
 
+class _ConversationProvider:
+    def __init__(self, provider, history):
+        self.provider = provider
+        self.history = history
+
+    def request(self, request):
+        # Preserve role and turn order without changing Runtime's native tool protocol.
+        messages = [request.messages[0], *self.history, *request.messages[1:]]
+        return self.provider.request(replace(request, messages=messages))
+
+
 class Desktop:
     def __init__(self, workspace, *, composer, provider, provider_mode):
-        self.runs = Path(workspace).resolve() / ".catalyst" / "desktop-runs"
+        state_root = Path(workspace).resolve() / ".catalyst"
+        self.runs = state_root / "desktop-runs"
+        self.conversations = Conversations(state_root)
         self.composer = composer
         self.provider = provider
         self.provider_mode = provider_mode
@@ -45,21 +59,74 @@ class Desktop:
             "available_tools": [wiki_search.TOOL_ID] if self.composer.service(wiki_search.SERVICE) else [],
         }
 
-    def chat(self, message, *, allow_wiki):
+    def read_run(self, run_id):
+        try:
+            return json.loads((self.runs / (run_id + ".json")).read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            return None
+
+    def conversation(self, conversation_id):
+        turns = []
+        for run_id, message in self.conversations.turns(conversation_id):
+            receipt = self.read_run(run_id)
+            turns.append({
+                "run_id": run_id,
+                "message": message,
+                "state": receipt["state"] if receipt else "UNRESOLVED",
+                "answer": receipt["answer"] if receipt else None,
+                "error": receipt["error"] if receipt else "run_receipt_missing",
+                "has_receipt": receipt is not None,
+            })
+        return {"id": conversation_id, "turns": turns}
+
+    def _recent_context(self, conversation_id, run_id):
+        recent = []
+        for previous_id, message in reversed(self.conversations.turns(conversation_id, before=run_id)):
+            receipt = self.read_run(previous_id)
+            if receipt and receipt["state"] == "COMPLETED":
+                recent.append((previous_id, message, receipt["answer"]))
+            if len(recent) == 3:
+                break
+        messages, ids = [], []
+        for previous_id, message, answer in reversed(recent):
+            ids.append(previous_id)
+            messages.extend([Message("user", message), Message("assistant", answer[:2000])])
+        return messages, ids
+
+    def chat(self, message, *, allow_wiki, conversation_id=None, request_id=None):
+        if request_id is not None:
+            existing = self.read_run(request_id)
+            if existing is not None:
+                if (
+                    existing.get("conversation_id") != conversation_id or existing["message"] != message
+                    or bool(existing["visible_tools"]) != allow_wiki
+                ):
+                    raise ValueError("request_identity_conflict")
+                return existing
         if self.provider is None:
             raise ValueError("model_not_configured")
         wiki = self.composer.service(wiki_search.SERVICE)
         if allow_wiki and wiki is None:
             raise ValueError("wiki_not_mounted")
+        run_id = request_id or uuid.uuid4().hex
+        provider = self.provider
+        context_run_ids = []
+        if conversation_id is not None:
+            if not self.conversations.reserve(conversation_id, run_id, message, allow_wiki):
+                receipt = self.read_run(run_id)
+                if receipt is None:
+                    raise ValueError("request_unresolved")
+                return receipt
+            history, context_run_ids = self._recent_context(conversation_id, run_id)
+            provider = _ConversationProvider(provider, history)
         capabilities = {wiki_search.TOOL_ID: wiki} if allow_wiki else {}
         snapshots = _RunSnapshots()
         runtime = NativeToolsV2Runtime(
-            reasoner=NativeToolsV2Reasoner(self.provider),
+            reasoner=NativeToolsV2Reasoner(provider),
             capabilities=capabilities,
             policy=StepLimitPolicy(4),
             state_store=snapshots,
         )
-        run_id = uuid.uuid4().hex
         snapshot = runtime.create(Goal(message))
         error = None
         try:
@@ -95,6 +162,9 @@ class Desktop:
                 for turn in snapshot.native_tools_v2_turns for call in turn.calls
             ],
         }
+        if conversation_id is not None:
+            receipt["conversation_id"] = conversation_id
+            receipt["context_run_ids"] = context_run_ids
         self.runs.mkdir(parents=True, exist_ok=True)
         destination = self.runs / (run_id + ".json")
         temporary = destination.with_suffix(".tmp")
@@ -119,7 +189,7 @@ def create_server(desktop, port=0):
         ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=False
     ).stdout.strip()
     digest = hashlib.sha256()
-    for filename in ("desktop.py", "desktop.html", "desktop.js", "plugin_composition.py", "wiki_search.py"):
+    for filename in ("desktop.py", "desktop.html", "desktop.js", "plugin_composition.py", "wiki_search.py", "conversations.py"):
         digest.update((root / filename).read_bytes())
     build = {"commit": commit or None, "desktop_digest": digest.hexdigest()}
     token = secrets.token_urlsafe(32)
@@ -155,10 +225,19 @@ def create_server(desktop, port=0):
                 self.reply(200, data, media)
             elif self.path == "/api/status":
                 self.reply(200, {**desktop.status(), "build": build, "csrf_token": token})
+            elif self.path == "/api/conversations":
+                self.reply(200, {"items": desktop.conversations.list()})
+            elif match := re.fullmatch(r"/api/conversations/([0-9a-f]{32})", self.path):
+                try:
+                    conversation = desktop.conversation(match[1])
+                except KeyError:
+                    self.reply(404, {"error": "conversation_not_found"})
+                else:
+                    self.reply(200, conversation)
             elif match := re.fullmatch(r"/api/runs/([0-9a-f]{32})", self.path):
-                path = desktop.runs / (match[1] + ".json")
-                if path.is_file():
-                    self.reply(200, path.read_bytes())
+                receipt = desktop.read_run(match[1])
+                if receipt is not None:
+                    self.reply(200, receipt)
                 else:
                     self.reply(404, {"error": "run_not_found"})
             else:
@@ -167,7 +246,7 @@ def create_server(desktop, port=0):
         def do_POST(self):
             if not self.local():
                 return
-            if self.path != "/api/chat":
+            if self.path not in ("/api/chat", "/api/conversations"):
                 self.reply(404, {"error": "not_found"})
                 return
             if not secrets.compare_digest(self.headers.get("X-Catalyst-CSRF", ""), token):
@@ -178,17 +257,34 @@ def create_server(desktop, port=0):
                 if not 0 < size <= 16000 or self.headers.get_content_type() != "application/json":
                     raise ValueError
                 body = json.loads(self.rfile.read(size))
-                if (
-                    not isinstance(body, dict) or set(body) != {"message", "allow_wiki"}
-                    or not isinstance(body["message"], str) or not 1 <= len(body["message"].strip()) <= 2000
-                    or type(body["allow_wiki"]) is not bool
-                ):
-                    raise ValueError
             except (ValueError, UnicodeError):
+                self.reply(400, {"error": "invalid_request"})
+                return
+            if self.path == "/api/conversations":
+                if body != {}:
+                    self.reply(400, {"error": "invalid_conversation_request"})
+                    return
+                self.reply(201, {"id": desktop.conversations.create()})
+                return
+            basic = {"message", "allow_wiki"}
+            identities = {"conversation_id", "request_id"}
+            if (
+                not isinstance(body, dict) or set(body) not in (basic, basic | identities)
+                or not isinstance(body["message"], str) or not 1 <= len(body["message"].strip()) <= 2000
+                or type(body["allow_wiki"]) is not bool
+                or any(not isinstance(body[key], str) or not re.fullmatch(r"[0-9a-f]{32}", body[key])
+                       for key in identities if key in body)
+            ):
                 self.reply(400, {"error": "invalid_chat_request"})
                 return
             try:
-                receipt = desktop.chat(body["message"].strip(), allow_wiki=body["allow_wiki"])
+                receipt = desktop.chat(
+                    body["message"].strip(), allow_wiki=body["allow_wiki"],
+                    conversation_id=body.get("conversation_id"), request_id=body.get("request_id"),
+                )
+            except KeyError:
+                self.reply(404, {"error": "conversation_not_found"})
+                return
             except ValueError as exc:
                 self.reply(409, {"error": str(exc)})
                 return

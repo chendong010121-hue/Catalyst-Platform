@@ -36,9 +36,16 @@ python -m catalyst_platform.desktop --workspace ./desktop-preview --demo
 ```
 
 Open the printed address. The demo replies locally through the same native-tools
-Runtime as the HTTP acceptance test. Each submission has its own run receipt
-under the workspace's `.catalyst/desktop-runs/`. This preview has no live key
-entry or persistent conversation context.
+Runtime as the HTTP acceptance test. Create or switch chats above the message box.
+Restart with the same workspace to reopen them. Each submission has its own run
+receipt under the workspace's `.catalyst/desktop-runs/`. The conversation order
+and run links live in `.catalyst/desktop-conversations.sqlite`.
+
+The model receives the last three completed turns of the selected chat, with
+each prior answer capped at 2,000 characters for model input. The original
+messages and receipts remain available in the UI. A recorded turn without a
+receipt is shown as unresolved. Resending the same request ID does not dispatch
+it again. Live key entry and token-based context compaction are later steps.
 
 To mount the optional read-only Wiki adapter, add `--wiki-export <file.json>`
 at startup. The file is a UTF-8 array of entries like:
@@ -55,7 +62,8 @@ the export entry. The adapter does not open that path. Restart without
 The zero-network acceptance test runs with
 `python -m examples.test_desktop_foundation`. It exercises the HTTP entry,
 existing DeepSeek adapter with scripted transport, Runtime, Wiki mount and
-withdrawal, per-turn authorization, replacement and restoration.
+withdrawal, per-turn authorization, replacement and restoration, conversation
+isolation and duplicate submission handling.
 
 ---
 
