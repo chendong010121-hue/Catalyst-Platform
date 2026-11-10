@@ -29,6 +29,13 @@ No reuse license has yet been granted for this public repository.
 
 ## Catalyst Desktop
 
+The source of the desktop build is the accepted `main` branch. Use a single
+clean installation checkout for its launcher. The launcher checks the running
+commit, source directory identity, and workspace identity before reusing a
+process. Update the checkout by fast-forwarding to accepted `main` and restart
+the desktop when idle. Keep workspace data separate from Git so a code update
+or rollback does not move conversations or credentials.
+
 On Windows, run `./Start-Catalyst.ps1` to open the workbench. Its default
 workspace is `%LOCALAPPDATA%/Catalyst/Desktop`, separate from older desktop
 builds. To start directly on another platform:
@@ -47,6 +54,8 @@ Create or switch chats above the message box. Restart with the same workspace
 to reopen them. Each submission has its own run
 receipt under the workspace's `.catalyst/desktop-runs/`. The conversation order
 and run links live in `.catalyst/desktop-conversations.sqlite`.
+Context selection and excerpts are recorded in the run receipts. Cross-session
+personal memory is not implemented by this entry.
 
 The default `context-window` plugin fits completed turns into the request
 budget. It keeps a recent suffix verbatim, can include source-linked excerpts

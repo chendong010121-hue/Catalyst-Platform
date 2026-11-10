@@ -11,7 +11,11 @@ $commit = (git -C $PSScriptRoot rev-parse HEAD).Trim()
 if (git -C $PSScriptRoot status --porcelain --untracked-files=no) {
     throw 'The desktop launcher requires a clean committed checkout.'
 }
-$workspaceId = (& $python -c 'import hashlib,os,sys; from pathlib import Path; print(hashlib.sha256(os.path.normcase(str(Path(sys.argv[1]).resolve())).encode()).hexdigest())' $Workspace).Trim()
+function Get-PathIdentity([string]$Path) {
+    (& $python -c 'import hashlib,os,sys; from pathlib import Path; print(hashlib.sha256(os.path.normcase(str(Path(sys.argv[1]).resolve())).encode()).hexdigest())' $Path).Trim()
+}
+$workspaceId = Get-PathIdentity $Workspace
+$sourceRootId = Get-PathIdentity $PSScriptRoot
 function Read-Status {
     try { Invoke-RestMethod "$base/api/status" -TimeoutSec 2 } catch { $null }
 }
@@ -35,7 +39,7 @@ if (-not $status) {
         Start-Sleep -Milliseconds 250
     }
 }
-if (-not $status -or $status.build.commit -ne $commit -or $status.workspace_id -ne $workspaceId -or -not $status.connection) {
+if (-not $status -or $status.build.commit -ne $commit -or $status.build.source_root_id -ne $sourceRootId -or $status.workspace_id -ne $workspaceId -or -not $status.connection) {
     throw "Port $Port did not return the expected Catalyst build and workspace. No existing process was stopped."
 }
 if ([bool]$WikiExport -ne ($status.available_tools -contains 'wiki_search')) {
