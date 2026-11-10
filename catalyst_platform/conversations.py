@@ -19,10 +19,13 @@ class Conversations:
                     run_id TEXT NOT NULL UNIQUE,
                     conversation_id TEXT NOT NULL REFERENCES conversation(id),
                     message TEXT NOT NULL,
-                    allow_wiki INTEGER NOT NULL
+                    allow_wiki INTEGER NOT NULL,
+                    allow_note INTEGER NOT NULL DEFAULT 0
                 );
                 CREATE INDEX IF NOT EXISTS turn_conversation ON turn(conversation_id, ordinal);
             """)
+            if not any(row[1] == "allow_note" for row in db.execute("PRAGMA table_info(turn)")):
+                db.execute("ALTER TABLE turn ADD COLUMN allow_note INTEGER NOT NULL DEFAULT 0")
 
     def connect(self):
         db = sqlite3.connect(self.path)
@@ -62,20 +65,20 @@ class Conversations:
                 ORDER BY ordinal
             """, (conversation_id, before, before)).fetchall()
 
-    def reserve(self, conversation_id, run_id, message, allow_wiki):
+    def reserve(self, conversation_id, run_id, message, allow_wiki, allow_note=False):
         with closing(self.connect()) as db, db:
             db.execute("BEGIN IMMEDIATE")
             self._require(db, conversation_id)
-            values = (conversation_id, message, allow_wiki)
+            values = (conversation_id, message, allow_wiki, allow_note)
             row = db.execute(
-                "SELECT conversation_id, message, allow_wiki FROM turn WHERE run_id = ?", (run_id,)
+                "SELECT conversation_id, message, allow_wiki, allow_note FROM turn WHERE run_id = ?", (run_id,)
             ).fetchone()
             if row is not None:
                 if row != values:
                     raise ValueError("request_identity_conflict")
                 return False
             db.execute(
-                "INSERT INTO turn(run_id, conversation_id, message, allow_wiki) VALUES (?, ?, ?, ?)",
+                "INSERT INTO turn(run_id, conversation_id, message, allow_wiki, allow_note) VALUES (?, ?, ?, ?, ?)",
                 (run_id, *values),
             )
             return True

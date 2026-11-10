@@ -52,11 +52,14 @@ class ContextLimitExceeded(ValueError):
 
 
 class BoundedProvider:
-    def __init__(self, provider, strategy, turns, input_budget):
+    def __init__(self, provider, strategy, turns, input_budget, max_requests=4, max_output_tokens=None):
         self.provider = provider
         self.strategy = strategy
         self.turns = tuple(turns)
         self.input_budget = input_budget
+        self.max_requests = max_requests
+        self.max_output_tokens = max_output_tokens
+        self.attempts = 0
         self.calls = []
 
     def request(self, request):
@@ -70,6 +73,10 @@ class BoundedProvider:
             raise ValueError("invalid_context_sources")
         projected = apply_projection(request, plan)
         estimated = estimate(projected)
+        blocked = (
+            "BLOCKED_INPUT_LIMIT" if estimated > self.input_budget else
+            "BLOCKED_REQUEST_LIMIT" if self.attempts >= self.max_requests else None
+        )
         evidence = {
             "input_budget": self.input_budget,
             "estimated_input": estimated,
@@ -80,13 +87,19 @@ class BoundedProvider:
                 m.tool_call_id for m, revised in zip(request.messages[1:], projected.messages[1 + len(plan.history):])
                 if m.role == "tool" and m.content != revised.content
             ],
-            "dispatch": "BLOCKED_INPUT_LIMIT" if estimated > self.input_budget else "PROVIDER_ATTEMPT",
+            "dispatch": blocked or "PROVIDER_ATTEMPT",
         }
         if plan.checkpoint_ids:
             evidence["checkpoint"] = plan.history[0].content
         self.calls.append(evidence)
-        if estimated > self.input_budget:
-            raise ContextLimitExceeded("context_input_limit")
+        if blocked:
+            raise ContextLimitExceeded("context_input_limit" if blocked == "BLOCKED_INPUT_LIMIT" else "model_request_limit")
+        self.attempts += 1
         response = self.provider.request(projected)
         evidence["reported_usage"] = asdict(response.usage) if response.usage is not None else None
+        if self.max_output_tokens is not None:
+            if response.usage is None:
+                raise ContextLimitExceeded("model_usage_missing")
+            if response.usage.input_tokens > self.input_budget or response.usage.output_tokens > self.max_output_tokens:
+                raise ContextLimitExceeded("model_usage_exceeded_limit")
         return response

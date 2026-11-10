@@ -27,17 +27,24 @@ The visible `live-capability-eval.yml` workflow and `platform-harness/live_eval/
 
 No reuse license has yet been granted for this public repository.
 
-## Desktop foundation preview
+## Catalyst Desktop
 
-Start a loopback-only preview in a separate workspace:
+On Windows, run `./Start-Catalyst.ps1` to open the workbench. Its default
+workspace is `%LOCALAPPDATA%/Catalyst/Desktop`, separate from older desktop
+builds. To start directly on another platform:
 
 ```sh
-python -m catalyst_platform.desktop --workspace ./desktop-preview --demo
+python -m catalyst_platform.desktop --workspace ./desktop-workspace
 ```
 
-Open the printed address. The demo replies locally through the same native-tools
-Runtime as the HTTP acceptance test. Create or switch chats above the message box.
-Restart with the same workspace to reopen them. Each submission has its own run
+Open the printed loopback address and enter a DeepSeek API key in **Model
+connection and local tools**. Connection setup sends no model request. Sending
+a chat message calls DeepSeek and may incur provider charges. Windows users can
+opt in to DPAPI-protected key storage and explicitly reconnect with the saved
+key after restarting.
+
+Create or switch chats above the message box. Restart with the same workspace
+to reopen them. Each submission has its own run
 receipt under the workspace's `.catalyst/desktop-runs/`. The conversation order
 and run links live in `.catalyst/desktop-conversations.sqlite`.
 
@@ -53,8 +60,15 @@ uses serialized UTF-8 bytes plus framing as a conservative token proxy.
 Restart with `--no-context` to remove projection without losing history. The
 Host input guard still applies. A recorded turn without a receipt is shown as
 unresolved, and resending the same request ID does not dispatch it again.
-Checkpoint excerpts are deterministic. This preview does not configure a
-live API key, call a separate model for summarization, or enforce an output cap.
+Checkpoint excerpts are deterministic. A live turn is bounded to four model
+requests, and each request sends a maximum output of 2,048 tokens to DeepSeek.
+Actual reported usage is included in the receipt. The input limit is a local
+estimate, and these limits are not a currency cap.
+
+Ask which tools are available to query the actual workspace tool catalog. To
+allow the model to save a single Markdown note, check that option for the turn.
+The workbench chooses the filename in `.catalyst/desktop-artifacts/` and
+links it from the run evidence.
 
 To mount the optional read-only Wiki adapter, add `--wiki-export <file.json>`
 at startup. The file is a UTF-8 array of entries like:
@@ -67,12 +81,14 @@ Check the Wiki option for one turn and enter a term such as `North Wing`.
 Open that turn's evidence to see the tool result. The source locator labels
 the export entry. The adapter does not open that path. Restart without
 `--wiki-export` to disable the adapter and keep the workspace's receipts.
+The Windows launcher accepts the same export with `-WikiExport <file.json>`.
 
 The zero-network acceptance test runs with
 `python -m examples.test_desktop_foundation`. It exercises the HTTP entry,
 existing DeepSeek adapter with scripted transport, Runtime, Wiki mount and
 withdrawal, per-turn authorization, replacement and restoration, conversation
 isolation, duplicate submission handling and the context plugin lifecycle.
+The explicit `--demo` switch remains available for offline development.
 
 ---
 

@@ -1,6 +1,7 @@
 """Offline HTTP acceptance for the mainline desktop and optional Wiki adapter."""
 
 import json
+import os
 import tempfile
 import threading
 import unittest
@@ -14,6 +15,7 @@ from agent_runtime.providers.deepseek import DeepSeekModelProvider
 from catalyst_platform.context import SERVICE, Projection
 from catalyst_platform.context_window import definition as context_definition
 from catalyst_platform.desktop import Desktop, create_server
+from catalyst_platform.desktop_connection import DesktopConnection
 from catalyst_platform.plugin_composition import PluginComposer, PluginEffect
 from catalyst_platform.wiki_search import definition, load_export
 
@@ -26,6 +28,7 @@ class DesktopFoundationTest(unittest.TestCase):
         self.requests = []
         self.searches = []
         self.force_wiki = False
+        self.requested_tool = None
         self.alternate_result = {"status": "FOUND", "matches": [{"source": "alternate.md:4"}]}
         source = self.root / "export.json"
         source.write_text(json.dumps([{
@@ -76,11 +79,12 @@ class DesktopFoundationTest(unittest.TestCase):
         self.requests.append(request)
         message = request["messages"][-1]
         if message["role"] == "user" and (request.get("tools") or self.force_wiki):
+            name, arguments = self.requested_tool or ("wiki_search", '{"query":"North Wing"}')
             reply = {
                 "role": "assistant", "content": None,
                 "tool_calls": [{
                     "id": "wiki-1", "type": "function",
-                    "function": {"name": "wiki_search", "arguments": '{"query":"North Wing"}'},
+                    "function": {"name": name, "arguments": arguments},
                 }],
             }
             finish = "tool_calls"
@@ -268,6 +272,49 @@ class DesktopFoundationTest(unittest.TestCase):
         self.assertEqual(result["context"]["requests"][0]["dispatch"], "BLOCKED_INPUT_LIMIT")
         self.assertEqual(result["recorded_model_calls"], [])
         self.assertEqual(self.requests, [])
+
+    def test_live_connection_route_and_local_tools_use_same_runtime(self):
+        connection = DesktopConnection(self.root, transport=self.transport)
+        self.desktop.connection = connection
+        self.composer.compose("both")
+        key = "OFFLINE-FIXTURE-KEY-NEVER-USE"
+        self.assertFalse(self.get("/api/status")["can_chat"])
+        with self.assertRaises(HTTPError) as rejected:
+            self.post("/api/connection", {"action": "connect", "api_key": key, "remember": False}, csrf="wrong")
+        self.assertEqual(rejected.exception.code, 403)
+        state = self.post("/api/connection", {"action": "connect", "api_key": key, "remember": os.name == "nt"})
+        self.assertFalse(state["connection"]["model_verified"])
+        self.assertNotIn(key, json.dumps(state))
+        self.assertEqual(self.requests, [])
+
+        self.requested_tool = ("list_workspace_tools", "{}")
+        first = self.ask()
+        self.assertEqual(first["state"], "COMPLETED")
+        self.assertEqual(first["provider_attempts"], 2)
+        self.assertEqual(self.requests[0]["max_tokens"], 2048)
+        entries = first["tool_calls"][0]["result"]["data"]["tools"]
+        self.assertEqual({entry["id"]: entry["granted_this_turn"] for entry in entries}, {
+            "list_workspace_tools": True, "wiki_search": False, "write_workspace_note": False,
+        })
+        self.assertTrue(self.get("/api/status")["connection"]["model_verified"])
+
+        self.requested_tool = ("write_workspace_note", '{"title":"Next steps","text":"Review the agenda."}')
+        denied = self.ask()
+        self.assertNotEqual(denied["state"], "COMPLETED")
+        self.assertFalse(self.desktop.artifacts.exists())
+        note = self.post("/api/chat", {"message": "Save a note", "allow_wiki": False, "allow_note": True})
+        self.assertEqual(note["state"], "COMPLETED")
+        link = "/api/artifacts/" + note["tool_calls"][0]["result"]["data"]["artifact_id"]
+        with urlopen(self.base + link, timeout=5) as response:
+            self.assertEqual(response.read().decode(), "# Next steps\n\nReview the agenda.\n")
+        self.assertNotIn(key, json.dumps(note))
+        self.assertFalse(self.post("/api/connection", {"action": "disconnect"})["can_chat"])
+        if os.name == "nt":
+            self.assertNotIn(key, connection.path.read_text(encoding="utf-8"))
+            self.desktop.connection = DesktopConnection(self.root, transport=self.transport)
+            self.assertFalse(self.get("/api/status")["can_chat"])
+            self.assertTrue(self.post("/api/connection", {"action": "use_saved"})["can_chat"])
+            self.assertFalse(self.post("/api/connection", {"action": "forget"})["connection"]["has_saved_key"])
 
 
 if __name__ == "__main__":

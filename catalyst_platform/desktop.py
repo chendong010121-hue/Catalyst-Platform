@@ -13,12 +13,14 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
 from agent_runtime.contracts import Complete, Goal, ModelResponse, ModelToolCall
+from agent_runtime.errors import ModelProviderError
 from agent_runtime.native_tools_v2 import NativeToolsV2Reasoner, NativeToolsV2Runtime
 from agent_runtime.policies import StepLimitPolicy
 
-from . import context_window, wiki_search
+from . import context_window, wiki_search, workspace_tools
 from .context import SERVICE as CONTEXT_SERVICE, BoundedProvider, ContextLimitExceeded, Turn
 from .conversations import Conversations
+from .desktop_connection import DesktopConnection
 from .plugin_composition import PluginComposer
 
 
@@ -33,26 +35,35 @@ class _RunSnapshots:
 
 
 class Desktop:
-    def __init__(self, workspace, *, composer, provider, provider_mode, input_budget=16384):
+    def __init__(self, workspace, *, composer, provider, provider_mode, input_budget=16384, connection=None):
         if type(input_budget) is not int or input_budget < 1024:
             raise ValueError("input_budget_too_small")
-        state_root = Path(workspace).resolve() / ".catalyst"
+        workspace = Path(workspace).resolve()
+        self.workspace_id = hashlib.sha256(os.path.normcase(str(workspace)).encode("utf-8")).hexdigest()
+        state_root = workspace / ".catalyst"
         self.runs = state_root / "desktop-runs"
+        self.artifacts = state_root / "desktop-artifacts"
         self.conversations = Conversations(state_root)
         self.composer = composer
         self.provider = provider
         self.provider_mode = provider_mode
         self.input_budget = input_budget
+        self.connection = connection
 
     def status(self):
         strategy = self.composer.service(CONTEXT_SERVICE)
+        provider = self.connection.provider if self.connection is not None else self.provider
         return {
-            "provider_mode": self.provider_mode,
-            "can_chat": self.provider is not None,
+            "provider_mode": self.connection.mode if self.connection is not None else self.provider_mode,
+            "can_chat": provider is not None,
             "plugins": self.composer.active_plugins,
             "available_tools": [wiki_search.TOOL_ID] if self.composer.service(wiki_search.SERVICE) else [],
             "context_strategy": strategy.version if strategy is not None else None,
             "input_budget": self.input_budget,
+            "workspace_id": self.workspace_id,
+            "connection": self.connection.status() if self.connection is not None else None,
+            "local_tools": [workspace_tools.CATALOG, workspace_tools.WRITE_NOTE]
+            if self.connection is not None else [workspace_tools.WRITE_NOTE],
         }
 
     def read_run(self, run_id):
@@ -83,32 +94,43 @@ class Desktop:
                 turns.append(Turn(previous_id, message, receipt["answer"]))
         return turns
 
-    def chat(self, message, *, allow_wiki, conversation_id=None, request_id=None):
+    def chat(self, message, *, allow_wiki, allow_note=False, conversation_id=None, request_id=None):
         if request_id is not None:
             existing = self.read_run(request_id)
             if existing is not None:
                 if (
                     existing.get("conversation_id") != conversation_id or existing["message"] != message
-                    or bool(existing["visible_tools"]) != allow_wiki
+                    or (wiki_search.TOOL_ID in existing["visible_tools"]) != allow_wiki
+                    or (workspace_tools.WRITE_NOTE in existing["visible_tools"]) != allow_note
                 ):
                     raise ValueError("request_identity_conflict")
                 return existing
-        if self.provider is None:
+        model_provider = self.connection.provider if self.connection is not None else self.provider
+        if model_provider is None:
             raise ValueError("model_not_configured")
         wiki = self.composer.service(wiki_search.SERVICE)
         if allow_wiki and wiki is None:
             raise ValueError("wiki_not_mounted")
         run_id = request_id or uuid.uuid4().hex
         if conversation_id is not None:
-            if not self.conversations.reserve(conversation_id, run_id, message, allow_wiki):
+            if not self.conversations.reserve(conversation_id, run_id, message, allow_wiki, allow_note):
                 receipt = self.read_run(run_id)
                 if receipt is None:
                     raise ValueError("request_unresolved")
                 return receipt
         strategy = self.composer.service(CONTEXT_SERVICE)
         turns = self._context_turns(conversation_id, run_id) if strategy is not None and conversation_id is not None else ()
-        provider = BoundedProvider(self.provider, strategy, turns, self.input_budget)
+        max_requests = self.connection.max_requests if self.connection is not None else 4
+        max_output = self.connection.max_output_tokens if self.connection is not None else None
+        provider = BoundedProvider(model_provider, strategy, turns, self.input_budget,
+                                   max_requests=max_requests, max_output_tokens=max_output)
         capabilities = {wiki_search.TOOL_ID: wiki} if allow_wiki else {}
+        if allow_note:
+            capabilities[workspace_tools.WRITE_NOTE] = workspace_tools.WriteNote(self.artifacts, run_id)
+        if self.connection is not None:
+            catalog = workspace_tools.CATALOG
+            available = (catalog, workspace_tools.WRITE_NOTE, *((wiki_search.TOOL_ID,) if wiki is not None else ()))
+            capabilities[catalog] = workspace_tools.ToolCatalog(available, {catalog, *capabilities})
         snapshots = _RunSnapshots()
         runtime = NativeToolsV2Runtime(
             reasoner=NativeToolsV2Reasoner(provider),
@@ -118,11 +140,20 @@ class Desktop:
         )
         snapshot = runtime.create(Goal(message))
         error = None
+        auth_failure = False
         try:
             snapshot = runtime.run(snapshot.session_id)
         except Exception as exc:
             snapshot = snapshots.load(snapshot.session_id)
-            error = "context_input_limit" if isinstance(exc, ContextLimitExceeded) else type(exc).__name__
+            error = str(exc) if isinstance(exc, ContextLimitExceeded) else type(exc).__name__
+            if isinstance(exc, ModelProviderError) and exc.status in (401, 403):
+                error = "deepseek_key_rejected"
+                auth_failure = True
+        if self.connection is not None:
+            if auth_failure:
+                self.connection.verified = False
+            elif any("reported_usage" in call for call in provider.calls):
+                self.connection.verified = True
         last = snapshot.history[-1] if snapshot.history else None
         decision = last.decision if last else None
         complete = error is None and isinstance(decision, Complete)
@@ -133,7 +164,7 @@ class Desktop:
             "run_id": run_id,
             "runtime_session_id": snapshot.session_id,
             "state": "COMPLETED" if complete else "UNRESOLVED" if snapshot.pending_execution else "STOPPED",
-            "provider_mode": self.provider_mode,
+            "provider_mode": self.connection.mode if self.connection is not None else self.provider_mode,
             "message": message,
             "answer": decision.reason if complete else None,
             "error": error or (None if complete else getattr(decision, "reason", "run_stopped")),
@@ -143,6 +174,9 @@ class Desktop:
                 "strategy": strategy.version if strategy is not None else None,
                 "requests": provider.calls,
             },
+            "provider_attempts": provider.attempts,
+            "max_provider_requests": max_requests,
+            "max_output_tokens": max_output,
             "recorded_model_calls": [
                 {"finish_reason": call.finish_reason, "usage": asdict(call.usage) if call.usage else None}
                 for call in calls
@@ -186,6 +220,7 @@ def create_server(desktop, port=0):
     for filename in (
         "desktop.py", "desktop.html", "desktop.js", "plugin_composition.py",
         "wiki_search.py", "conversations.py", "context.py", "context_window.py",
+        "desktop_connection.py", "windows_dpapi.py", "workspace_tools.py",
     ):
         digest.update((root / filename).read_bytes())
     build = {"commit": commit or None, "desktop_digest": digest.hexdigest()}
@@ -237,13 +272,19 @@ def create_server(desktop, port=0):
                     self.reply(200, receipt)
                 else:
                     self.reply(404, {"error": "run_not_found"})
+            elif match := re.fullmatch(r"/api/artifacts/([0-9a-f]{32})", self.path):
+                path = desktop.artifacts / (match[1] + ".md")
+                if path.resolve() == path and path.is_file():
+                    self.reply(200, path.read_bytes(), "text/plain; charset=utf-8")
+                else:
+                    self.reply(404, {"error": "artifact_not_found"})
             else:
                 self.reply(404, {"error": "not_found"})
 
         def do_POST(self):
             if not self.local():
                 return
-            if self.path not in ("/api/chat", "/api/conversations"):
+            if self.path not in ("/api/chat", "/api/conversations", "/api/connection"):
                 self.reply(404, {"error": "not_found"})
                 return
             if not secrets.compare_digest(self.headers.get("X-Catalyst-CSRF", ""), token):
@@ -257,6 +298,19 @@ def create_server(desktop, port=0):
             except (ValueError, UnicodeError):
                 self.reply(400, {"error": "invalid_request"})
                 return
+            if self.path == "/api/connection":
+                if desktop.connection is None:
+                    self.reply(409, {"error": "connection_unavailable"})
+                    return
+                try:
+                    desktop.connection.configure(body)
+                except ValueError as exc:
+                    self.reply(400, {"error": str(exc)})
+                except OSError:
+                    self.reply(500, {"error": "credential_store_unavailable"})
+                else:
+                    self.reply(200, {**desktop.status(), "build": build, "csrf_token": token})
+                return
             if self.path == "/api/conversations":
                 if body != {}:
                     self.reply(400, {"error": "invalid_conversation_request"})
@@ -266,9 +320,10 @@ def create_server(desktop, port=0):
             basic = {"message", "allow_wiki"}
             identities = {"conversation_id", "request_id"}
             if (
-                not isinstance(body, dict) or set(body) not in (basic, basic | identities)
+                not isinstance(body, dict) or set(body) - {"allow_note"} not in (basic, basic | identities)
                 or not isinstance(body["message"], str) or not 1 <= len(body["message"].strip()) <= 2000
                 or type(body["allow_wiki"]) is not bool
+                or type(body.get("allow_note", False)) is not bool
                 or any(not isinstance(body[key], str) or not re.fullmatch(r"[0-9a-f]{32}", body[key])
                        for key in identities if key in body)
             ):
@@ -277,6 +332,7 @@ def create_server(desktop, port=0):
             try:
                 receipt = desktop.chat(
                     body["message"].strip(), allow_wiki=body["allow_wiki"],
+                    allow_note=body.get("allow_note", False),
                     conversation_id=body.get("conversation_id"), request_id=body.get("request_id"),
                 )
             except KeyError:
@@ -326,6 +382,7 @@ def main():
     composer.compose("desktop")
     desktop = Desktop(args.workspace, composer=composer, provider=_DemoProvider() if args.demo else None,
                       provider_mode="OFFLINE_DEMO" if args.demo else "UNCONFIGURED",
+                      connection=None if args.demo else DesktopConnection(args.workspace),
                       input_budget=args.input_budget)
     try:
         with create_server(desktop, args.port) as server:

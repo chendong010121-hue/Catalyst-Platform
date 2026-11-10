@@ -21,6 +21,20 @@
   <h1>Catalyst 工作台</h1>
   <p id="status" role="status">正在读取启动状态…</p>
   <small id="build"></small>
+  <details id="connection" hidden>
+    <summary>模型连接与本地工具</summary>
+    <form id="connect">
+      <label for="api-key">DeepSeek API Key</label>
+      <input type="password" id="api-key" autocomplete="off" maxlength="512" required>
+      <label><input type="checkbox" id="remember">记住 Key（Windows 加密）</label>
+      <button type="submit">连接</button>
+    </form>
+    <button type="button" id="use-saved">使用已保存的 Key</button>
+    <button type="button" id="disconnect">断开</button>
+    <button type="button" id="forget-key">移除已保存的 Key</button>
+    <p id="connection-limits"></p>
+    <p id="tools"></p>
+  </details>
   <div class="conversation-picker">
     <label for="conversations">聊天</label>
     <select id="conversations" disabled></select>
@@ -31,6 +45,7 @@
     <label for="message">消息</label>
     <textarea id="message" maxlength="2000" rows="3" required></textarea>
     <label><input type="checkbox" id="wiki" disabled>允许本轮查询已装配的 Wiki 导出</label>
+    <label id="note-label" hidden><input type="checkbox" id="allow-note">允许本轮保存一份本地工作笔记</label>
     <button type="submit" disabled>发送</button>
   </form>
   <p id="feedback" role="status"></p>
