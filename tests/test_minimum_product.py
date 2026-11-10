@@ -7,7 +7,25 @@ import urllib.request
 import urllib.error
 from contextlib import contextmanager
 import pytest
-from catalyst_platform.monitor import create_monitor_server
+from catalyst_platform.monitor import _read_saved_result, create_monitor_server
+
+
+def test_result_read_retries_a_transient_file_lock(tmp_path, monkeypatch):
+    path = tmp_path / "result.json"
+    path.write_text('{"state":"FINISHED"}', encoding="utf-8")
+    read_text = type(path).read_text
+    attempts = []
+
+    def read(candidate, *args, **kwargs):
+        if candidate == path:
+            attempts.append(candidate)
+            if len(attempts) == 1:
+                raise PermissionError("temporarily locked")
+        return read_text(candidate, *args, **kwargs)
+
+    monkeypatch.setattr(type(path), "read_text", read)
+    assert _read_saved_result(path) == {"state": "FINISHED"}
+    assert len(attempts) == 2
 
 @contextmanager
 def serving(workspace, runner, inputs):

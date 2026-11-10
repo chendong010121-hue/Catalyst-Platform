@@ -26,6 +26,21 @@ _MAX_MESSAGE_CHARS = 20_000
 _MAX_PATH_CHARS = 4_096
 
 
+def _read_saved_result(path: Path | None):
+    if path is None:
+        return None
+    # On Windows the reader can briefly race the writer's atomic replacement.
+    for attempt in range(3):
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            return None
+        except PermissionError:
+            if attempt == 2:
+                raise
+            time.sleep(0.02)
+
+
 _PAGE = r"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -268,8 +283,11 @@ def create_monitor_server(
                     self._error("run_not_found", "No local run has this Run ID.", status=404)
                     return
                 if len(parts) == 4 and parts[3] == "export" and inputs is not None:
-                    path = result_path(run_id)
-                    saved = json.loads(path.read_text(encoding="utf-8")) if path and path.is_file() else {}
+                    try:
+                        saved = _read_saved_result(result_path(run_id)) or {}
+                    except PermissionError:
+                        self._error("result_busy", "The saved result is temporarily unavailable.", status=503)
+                        return
                     if inspected["terminal_status"] is None:
                         saved = {**saved,"state":"INCOMPLETE","status":"incomplete"}
                     self._json({"run_id":run_id, "session_id":saved.get("session_id"),
@@ -285,8 +303,12 @@ def create_monitor_server(
                     with self.server.results_lock:
                         result = self.server.results.get(run_id)
                     path = result_path(run_id) if inputs is not None else None
-                    if result is None and path is not None and path.is_file():
-                        result = json.loads(path.read_text(encoding="utf-8"))
+                    if result is None:
+                        try:
+                            result = _read_saved_result(path)
+                        except PermissionError:
+                            self._error("result_busy", "The saved result is temporarily unavailable.", status=503)
+                            return
                     if result is not None and inputs is not None and inspected["terminal_status"] is None:
                         pending = getattr(run_request, "is_pending", lambda _: False)(run_id)
                         # Result is durably written before the terminal; do not expose
