@@ -41,11 +41,20 @@ Restart with the same workspace to reopen them. Each submission has its own run
 receipt under the workspace's `.catalyst/desktop-runs/`. The conversation order
 and run links live in `.catalyst/desktop-conversations.sqlite`.
 
-The model receives the last three completed turns of the selected chat, with
-each prior answer capped at 2,000 characters for model input. The original
-messages and receipts remain available in the UI. A recorded turn without a
-receipt is shown as unresolved. Resending the same request ID does not dispatch
-it again. Live key entry and token-based context compaction are later steps.
+The default `context-window` plugin fits completed turns into the request
+budget. It keeps a recent suffix verbatim, can include source-linked excerpts
+from older turns, and can shorten large tool results for model input. Original
+messages and tool results remain available in the UI. Per-request receipts
+show selected run IDs, checkpoint excerpts, tool excerpt IDs, and reported
+model usage when supplied by the provider.
+
+Use `--input-budget 16384` to set the local input estimate limit. The estimate
+uses serialized UTF-8 bytes plus framing as a conservative token proxy.
+Restart with `--no-context` to remove projection without losing history. The
+Host input guard still applies. A recorded turn without a receipt is shown as
+unresolved, and resending the same request ID does not dispatch it again.
+Checkpoint excerpts are deterministic. This preview does not configure a
+live API key, call a separate model for summarization, or enforce an output cap.
 
 To mount the optional read-only Wiki adapter, add `--wiki-export <file.json>`
 at startup. The file is a UTF-8 array of entries like:
@@ -63,7 +72,7 @@ The zero-network acceptance test runs with
 `python -m examples.test_desktop_foundation`. It exercises the HTTP entry,
 existing DeepSeek adapter with scripted transport, Runtime, Wiki mount and
 withdrawal, per-turn authorization, replacement and restoration, conversation
-isolation and duplicate submission handling.
+isolation, duplicate submission handling and the context plugin lifecycle.
 
 ---
 

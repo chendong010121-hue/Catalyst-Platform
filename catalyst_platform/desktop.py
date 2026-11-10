@@ -8,15 +8,16 @@ import re
 import secrets
 import subprocess
 import uuid
-from dataclasses import asdict, replace
+from dataclasses import asdict
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
-from agent_runtime.contracts import Complete, Goal, Message, ModelResponse, ModelToolCall
+from agent_runtime.contracts import Complete, Goal, ModelResponse, ModelToolCall
 from agent_runtime.native_tools_v2 import NativeToolsV2Reasoner, NativeToolsV2Runtime
 from agent_runtime.policies import StepLimitPolicy
 
-from . import wiki_search
+from . import context_window, wiki_search
+from .context import SERVICE as CONTEXT_SERVICE, BoundedProvider, ContextLimitExceeded, Turn
 from .conversations import Conversations
 from .plugin_composition import PluginComposer
 
@@ -31,32 +32,27 @@ class _RunSnapshots:
         self.snapshot = snapshot
 
 
-class _ConversationProvider:
-    def __init__(self, provider, history):
-        self.provider = provider
-        self.history = history
-
-    def request(self, request):
-        # Preserve role and turn order without changing Runtime's native tool protocol.
-        messages = [request.messages[0], *self.history, *request.messages[1:]]
-        return self.provider.request(replace(request, messages=messages))
-
-
 class Desktop:
-    def __init__(self, workspace, *, composer, provider, provider_mode):
+    def __init__(self, workspace, *, composer, provider, provider_mode, input_budget=16384):
+        if type(input_budget) is not int or input_budget < 1024:
+            raise ValueError("input_budget_too_small")
         state_root = Path(workspace).resolve() / ".catalyst"
         self.runs = state_root / "desktop-runs"
         self.conversations = Conversations(state_root)
         self.composer = composer
         self.provider = provider
         self.provider_mode = provider_mode
+        self.input_budget = input_budget
 
     def status(self):
+        strategy = self.composer.service(CONTEXT_SERVICE)
         return {
             "provider_mode": self.provider_mode,
             "can_chat": self.provider is not None,
             "plugins": self.composer.active_plugins,
             "available_tools": [wiki_search.TOOL_ID] if self.composer.service(wiki_search.SERVICE) else [],
+            "context_strategy": strategy.version if strategy is not None else None,
+            "input_budget": self.input_budget,
         }
 
     def read_run(self, run_id):
@@ -79,19 +75,13 @@ class Desktop:
             })
         return {"id": conversation_id, "turns": turns}
 
-    def _recent_context(self, conversation_id, run_id):
-        recent = []
-        for previous_id, message in reversed(self.conversations.turns(conversation_id, before=run_id)):
+    def _context_turns(self, conversation_id, run_id):
+        turns = []
+        for previous_id, message in self.conversations.turns(conversation_id, before=run_id):
             receipt = self.read_run(previous_id)
             if receipt and receipt["state"] == "COMPLETED":
-                recent.append((previous_id, message, receipt["answer"]))
-            if len(recent) == 3:
-                break
-        messages, ids = [], []
-        for previous_id, message, answer in reversed(recent):
-            ids.append(previous_id)
-            messages.extend([Message("user", message), Message("assistant", answer[:2000])])
-        return messages, ids
+                turns.append(Turn(previous_id, message, receipt["answer"]))
+        return turns
 
     def chat(self, message, *, allow_wiki, conversation_id=None, request_id=None):
         if request_id is not None:
@@ -109,16 +99,15 @@ class Desktop:
         if allow_wiki and wiki is None:
             raise ValueError("wiki_not_mounted")
         run_id = request_id or uuid.uuid4().hex
-        provider = self.provider
-        context_run_ids = []
         if conversation_id is not None:
             if not self.conversations.reserve(conversation_id, run_id, message, allow_wiki):
                 receipt = self.read_run(run_id)
                 if receipt is None:
                     raise ValueError("request_unresolved")
                 return receipt
-            history, context_run_ids = self._recent_context(conversation_id, run_id)
-            provider = _ConversationProvider(provider, history)
+        strategy = self.composer.service(CONTEXT_SERVICE)
+        turns = self._context_turns(conversation_id, run_id) if strategy is not None and conversation_id is not None else ()
+        provider = BoundedProvider(self.provider, strategy, turns, self.input_budget)
         capabilities = {wiki_search.TOOL_ID: wiki} if allow_wiki else {}
         snapshots = _RunSnapshots()
         runtime = NativeToolsV2Runtime(
@@ -133,7 +122,7 @@ class Desktop:
             snapshot = runtime.run(snapshot.session_id)
         except Exception as exc:
             snapshot = snapshots.load(snapshot.session_id)
-            error = type(exc).__name__
+            error = "context_input_limit" if isinstance(exc, ContextLimitExceeded) else type(exc).__name__
         last = snapshot.history[-1] if snapshot.history else None
         decision = last.decision if last else None
         complete = error is None and isinstance(decision, Complete)
@@ -150,6 +139,10 @@ class Desktop:
             "error": error or (None if complete else getattr(decision, "reason", "run_stopped")),
             "plugins": self.composer.active_plugins,
             "visible_tools": list(capabilities),
+            "context": {
+                "strategy": strategy.version if strategy is not None else None,
+                "requests": provider.calls,
+            },
             "recorded_model_calls": [
                 {"finish_reason": call.finish_reason, "usage": asdict(call.usage) if call.usage else None}
                 for call in calls
@@ -164,7 +157,8 @@ class Desktop:
         }
         if conversation_id is not None:
             receipt["conversation_id"] = conversation_id
-            receipt["context_run_ids"] = context_run_ids
+            first = provider.calls[0] if provider.calls else {}
+            receipt["context_run_ids"] = first.get("checkpoint_run_ids", []) + first.get("recent_run_ids", [])
         self.runs.mkdir(parents=True, exist_ok=True)
         destination = self.runs / (run_id + ".json")
         temporary = destination.with_suffix(".tmp")
@@ -189,7 +183,10 @@ def create_server(desktop, port=0):
         ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=False
     ).stdout.strip()
     digest = hashlib.sha256()
-    for filename in ("desktop.py", "desktop.html", "desktop.js", "plugin_composition.py", "wiki_search.py", "conversations.py"):
+    for filename in (
+        "desktop.py", "desktop.html", "desktop.js", "plugin_composition.py",
+        "wiki_search.py", "conversations.py", "context.py", "context_window.py",
+    ):
         digest.update((root / filename).read_bytes())
     build = {"commit": commit or None, "desktop_digest": digest.hexdigest()}
     token = secrets.token_urlsafe(32)
@@ -300,7 +297,12 @@ class _DemoProvider:
     def request(self, request):
         message = request.messages[-1].content
         if request.messages[-1].role == "tool":
-            result = json.loads(message)
+            try:
+                result = json.loads(message)
+            except json.JSONDecodeError:
+                return ModelResponse(content="离线演示 · 模型收到 Wiki 结果节选，请在本轮证据查看完整返回。")
+            if not isinstance(result, dict) or "matches" not in result:
+                return ModelResponse(content="离线演示 · Wiki 查询未完成，请查看本轮证据。")
             return ModelResponse(content=f"离线演示 · Wiki 返回 {len(result['matches'])} 条结果。请打开本轮证据查看。")
         if request.tools:
             call = ModelToolCall("demo-wiki", wiki_search.TOOL_ID, json.dumps({"query": message[:200]}))
@@ -313,13 +315,18 @@ def main():
     parser.add_argument("--workspace", type=Path, required=True)
     parser.add_argument("--port", type=int, default=0)
     parser.add_argument("--wiki-export", type=Path)
+    parser.add_argument("--input-budget", type=int, default=16384, help="Local input estimate limit, minimum 1024.")
+    parser.add_argument("--no-context", action="store_true", help="Disable history projection and tool excerpts.")
     parser.add_argument("--demo", action="store_true", help="Use a local demonstration provider with no network.")
     args = parser.parse_args()
     definitions = [wiki_search.definition(wiki_search.load_export(args.wiki_export))] if args.wiki_export else []
+    if not args.no_context:
+        definitions.append(context_window.definition())
     composer = PluginComposer(definitions=definitions, profiles={"desktop": [item.plugin_id for item in definitions]})
     composer.compose("desktop")
     desktop = Desktop(args.workspace, composer=composer, provider=_DemoProvider() if args.demo else None,
-                      provider_mode="OFFLINE_DEMO" if args.demo else "UNCONFIGURED")
+                      provider_mode="OFFLINE_DEMO" if args.demo else "UNCONFIGURED",
+                      input_budget=args.input_budget)
     try:
         with create_server(desktop, args.port) as server:
             print(f"http://127.0.0.1:{server.server_port}/", flush=True)

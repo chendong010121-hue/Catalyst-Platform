@@ -11,8 +11,10 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from agent_runtime.providers.deepseek import DeepSeekModelProvider
+from catalyst_platform.context import SERVICE, Projection
+from catalyst_platform.context_window import definition as context_definition
 from catalyst_platform.desktop import Desktop, create_server
-from catalyst_platform.plugin_composition import PluginComposer
+from catalyst_platform.plugin_composition import PluginComposer, PluginEffect
 from catalyst_platform.wiki_search import definition, load_export
 
 
@@ -24,6 +26,7 @@ class DesktopFoundationTest(unittest.TestCase):
         self.requests = []
         self.searches = []
         self.force_wiki = False
+        self.alternate_result = {"status": "FOUND", "matches": [{"source": "alternate.md:4"}]}
         source = self.root / "export.json"
         source.write_text(json.dumps([{
             "title": "North Wing", "excerpt": "The North Wing is closed on Friday.",
@@ -33,12 +36,26 @@ class DesktopFoundationTest(unittest.TestCase):
 
         def alternate(query):
             self.searches.append(query)
-            return {"status": "FOUND", "matches": [{"source": "alternate.md:4"}]}
+            return self.alternate_result
 
         test_adapter = replace(definition(alternate), plugin_id="test-wiki")
+        context = context_definition()
+
+        class EmptyContext:
+            version = "empty-test/1.0.0"
+
+            def project(self, request, turns, budget):
+                return Projection()
+
+        empty = replace(context, plugin_id="test-context",
+                        apply=lambda ctx: PluginEffect(services={SERVICE: EmptyContext()}))
         self.composer = PluginComposer(
-            definitions=[real, test_adapter],
-            profiles={"enabled": [real.plugin_id], "replacement": [test_adapter.plugin_id]},
+            definitions=[real, test_adapter, context, empty],
+            profiles={
+                "enabled": [real.plugin_id], "replacement": [test_adapter.plugin_id],
+                "context": [context.plugin_id], "context-replacement": [empty.plugin_id],
+                "both": [test_adapter.plugin_id, context.plugin_id],
+            },
         )
         self.addCleanup(self.composer.close)
         provider = DeepSeekModelProvider(api_key="unused-offline", transport=self.transport)
@@ -153,6 +170,7 @@ class DesktopFoundationTest(unittest.TestCase):
         self.assertEqual(self.requests, [])
 
     def test_conversations_project_ordered_context_and_replay_receipts(self):
+        self.composer.compose("context")
         first = self.post("/api/conversations", {})["id"]
         second = self.post("/api/conversations", {})["id"]
 
@@ -193,6 +211,62 @@ class DesktopFoundationTest(unittest.TestCase):
                                     "message": "中断的请求", "allow_wiki": False})
         self.assertEqual(error.exception.code, 409)
         self.assertEqual(json.load(error.exception)["error"], "request_unresolved")
+        self.assertEqual(self.requests, [])
+
+    def test_context_compacts_then_unloads_replaces_and_restores(self):
+        self.composer.compose("context")
+        self.desktop.input_budget = 3200
+        conversation = self.post("/api/conversations", {})["id"]
+
+        def turn(message):
+            return self.post("/api/chat", {
+                "conversation_id": conversation, "request_id": uuid.uuid4().hex,
+                "message": message, "allow_wiki": False,
+            })
+
+        originals = [turn(f"task {i} " + "x" * 720) for i in range(10)]
+        compacted = turn("continue")
+        view = compacted["context"]["requests"][0]
+        self.assertLessEqual(view["estimated_input"], view["input_budget"])
+        self.assertTrue(view["checkpoint_run_ids"])
+        self.assertTrue(view["recent_run_ids"])
+        self.assertGreater(view["omitted_run_count"], 0)
+        self.assertIn(view["checkpoint"], [m["content"] for m in self.requests[-1]["messages"]])
+        self.assertEqual(self.get("/api/runs/" + originals[0]["run_id"]), originals[0])
+
+        self.composer.unload("context-window")
+        bare = turn("context disabled")
+        self.assertEqual(bare["state"], "COMPLETED")
+        self.assertIsNone(bare["context"]["strategy"])
+        self.assertEqual(bare["context_run_ids"], [])
+        self.composer.compose("context-replacement")
+        replaced = turn("replacement")
+        self.assertEqual(replaced["context"]["strategy"], "empty-test/1.0.0")
+        self.assertEqual(replaced["context_run_ids"], [])
+        self.composer.unload("test-context")
+        self.composer.compose("context")
+        self.assertIn(replaced["run_id"], turn("restored")["context_run_ids"])
+        self.assertEqual(len(self.get("/api/conversations/" + conversation)["turns"]), 14)
+
+    def test_tool_result_excerpt_preserves_original_and_call_identity(self):
+        self.composer.compose("both")
+        original = {"status": "FOUND", "matches": [{"excerpt": "q" * 3600, "source": "doc.md:1"}]}
+        self.alternate_result = original
+        result = self.ask(True)
+        self.assertEqual(result["state"], "COMPLETED")
+        sent = self.requests[-1]["messages"][-1]
+        self.assertEqual(sent["tool_call_id"], "wiki-1")
+        self.assertIn("Tool result excerpt", sent["content"])
+        self.assertLess(len(sent["content"]), 3600)
+        self.assertEqual(result["tool_calls"][0]["result"]["data"], original)
+        self.assertEqual(result["context"]["requests"][-1]["excerpted_tool_call_ids"], ["wiki-1"])
+
+    def test_host_blocks_oversize_input_even_without_context_plugin(self):
+        self.desktop.input_budget = 1024
+        result = self.post("/api/chat", {"message": "大" * 1000, "allow_wiki": False})
+        self.assertEqual(result["error"], "context_input_limit")
+        self.assertEqual(result["context"]["requests"][0]["dispatch"], "BLOCKED_INPUT_LIMIT")
+        self.assertEqual(result["recorded_model_calls"], [])
         self.assertEqual(self.requests, [])
 
 

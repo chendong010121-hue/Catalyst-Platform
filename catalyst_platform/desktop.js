@@ -76,6 +76,7 @@ async function initialize() {
     get("status").textContent = [
       status.can_chat ? provider : "未配置模型",
       status.available_tools.includes("wiki_search") ? "Wiki 已装配" : "Wiki 未装配",
+      status.context_strategy ? "上下文已启用" : "上下文已停用",
     ].join(" · ");
     get("build").textContent = "构建 " + (status.build.commit?.slice(0, 12) || "无 Git 身份")
       + " · 桌面摘要 " + status.build.desktop_digest.slice(0, 12);
