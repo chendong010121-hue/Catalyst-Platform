@@ -74,12 +74,6 @@ jobs:
           set -o pipefail
           python tests/test_enterprise_extension_pilot.py 2>&1 | tee audit_artifacts/enterprise_extension.log
 
-      - name: Check Workplace chat, tools and project test boundaries
-        shell: bash
-        run: |
-          set -o pipefail
-          python -m pytest -q tests/test_workspace_model_settings.py tests/test_workspace_settings_http.py tests/test_daily_connection_http.py tests/test_wiki_asset_chat.py tests/test_minimum_product.py tests/test_test_infrastructure_http.py 2>&1 | tee audit_artifacts/workplace.log
-
       - name: Upload CI evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -87,3 +81,18 @@ jobs:
           name: catalyst-platform-ci-evidence
           path: audit_artifacts/
           if-no-files-found: error
+
+  workplace-windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Workplace dependencies
+        run: python -m pip install -r requirements.txt pytest
+      - name: Check Workplace chat, tools and project test boundaries
+        env:
+          PYTHONUTF8: "1"
+        run: python -m pytest -q tests/test_workspace_model_settings.py tests/test_workspace_settings_http.py tests/test_daily_connection_http.py tests/test_wiki_asset_chat.py tests/test_minimum_product.py tests/test_test_infrastructure_http.py tests/test_capability_release.py
