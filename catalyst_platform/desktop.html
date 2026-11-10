@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Catalyst 工作台</title>
+<style>
+  body{font:16px/1.6 system-ui,sans-serif;color:#17273a;background:#f4f7fa;margin:0;padding:2rem 1rem}
+  main{max-width:46rem;margin:auto}h1{margin-bottom:.25rem}small{color:#495d70}
+  form,article{padding:1rem;margin:1rem 0;background:white;border:1px solid #d4e0ea;border-radius:.5rem}
+  textarea{box-sizing:border-box;width:100%;font:inherit;margin:.35rem 0;resize:vertical;padding:.5rem}
+  button{font:inherit;margin-left:.5rem;padding:.25rem .8rem}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+  #result{white-space:pre-wrap}
+</style>
+<script src="/desktop.js" defer></script>
+</head>
+<body>
+<main>
+  <h1>Catalyst 工作台</h1>
+  <p id="status" role="status">正在读取启动状态…</p>
+  <small id="build"></small>
+  <form id="chat">
+    <label for="message">消息</label>
+    <textarea id="message" maxlength="2000" rows="3" required></textarea>
+    <label><input type="checkbox" id="wiki" disabled>允许本轮查询已装配的 Wiki 导出</label>
+    <button type="submit" disabled>发送</button>
+  </form>
+  <article id="turn" hidden>
+    <p id="question"></p>
+    <p id="result" role="status"></p>
+    <details id="evidence" hidden>
+      <summary>本轮调用与证据</summary>
+      <a id="receipt">打开落盘记录</a>
+      <pre id="details"></pre>
+    </details>
+  </article>
+</main>
+</body>
+</html>

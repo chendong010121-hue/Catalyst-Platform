@@ -27,6 +27,36 @@ The visible `live-capability-eval.yml` workflow and `platform-harness/live_eval/
 
 No reuse license has yet been granted for this public repository.
 
+## Desktop foundation preview
+
+Start a loopback-only preview in a separate workspace:
+
+```sh
+python -m catalyst_platform.desktop --workspace ./desktop-preview --demo
+```
+
+Open the printed address. The demo replies locally through the same native-tools
+Runtime as the HTTP acceptance test. Each submission has its own run receipt
+under the workspace's `.catalyst/desktop-runs/`. This preview has no live key
+entry or persistent conversation context.
+
+To mount the optional read-only Wiki adapter, add `--wiki-export <file.json>`
+at startup. The file is a UTF-8 array of entries like:
+
+```json
+[{"title":"North Wing","excerpt":"Closed on Friday.","source":"operations.md:12"}]
+```
+
+Check the Wiki option for one turn and enter a term such as `North Wing`.
+Open that turn's evidence to see the tool result. The source locator labels
+the export entry. The adapter does not open that path. Restart without
+`--wiki-export` to disable the adapter and keep the workspace's receipts.
+
+The zero-network acceptance test runs with
+`python -m examples.test_desktop_foundation`. It exercises the HTTP entry,
+existing DeepSeek adapter with scripted transport, Runtime, Wiki mount and
+withdrawal, per-turn authorization, replacement and restoration.
+
 ---
 
 ## Why Catalyst exists
