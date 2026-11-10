@@ -52,7 +52,7 @@ def main() -> None:
         return
 
     provider = DeepSeekModelProvider(
-        api_key=api_key, model=os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash")
+        api_key=api_key, model=os.environ.get("DEEPSEEK_MODEL", "deepseek-flash")
     )
     runtime = Runtime(reasoner=LLMReasoner(provider), capabilities={"add": AddCapability()}, policy=StepLimitPolicy(max_steps=8), state_store=MemStore())
 

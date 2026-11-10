@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catalyst.local/schemas/external-candidate-submission-v1.schema.json",
+  "title": "Catalyst External Candidate Submission v1",
+  "description": "A bounded external semantic candidate anchored to one exact, already staged original UTF-8 Markdown source. This is candidate input, not accepted meaning.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "producer_origin",
+    "scope_id",
+    "source_id",
+    "source_revision",
+    "origin_document_sha256",
+    "items"
+  ],
+  "properties": {
+    "schema_version": { "const": "catalyst.external_candidate.v1" },
+    "producer_origin": { "const": "codex_external" },
+    "scope_id": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "source_id": { "type": "string", "pattern": "^source_[a-f0-9]{24}$" },
+    "source_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "origin_document_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "required": ["kind", "key", "meaning", "evidence_class", "evidence"],
+        "properties": {
+          "kind": { "enum": ["claim", "unknown"] },
+          "key": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]{0,63}$" },
+          "meaning": { "type": "string", "minLength": 1, "maxLength": 1000, "pattern": "^[^\\r\\n]+$" },
+          "evidence_class": { "enum": ["observed_from_source", "inferred", "unresolved"] },
+          "evidence": {
+            "type": "object",
+            "description": "One exact line from the original staged Markdown. line_start and line_end must match; the runtime checks equality and verifies quote and span_sha256 against the original bytes' decoded line.",
+            "required": ["line_start", "line_end", "quote", "span_sha256"],
+            "properties": {
+              "line_start": { "type": "integer", "minimum": 1 },
+              "line_end": { "type": "integer", "minimum": 1, "description": "Must equal line_start in v1." },
+              "quote": { "type": "string", "minLength": 1, "maxLength": 2000 },
+              "span_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

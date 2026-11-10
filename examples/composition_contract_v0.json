@@ -1,0 +1,102 @@
+{
+  "status": "DRAFT_NOT_INSTALLABLE_NOT_PLATFORM_STANDARD",
+  "purpose": "Common metadata with typed profiles; not an executable loader manifest",
+  "records": [
+    {
+      "asset_ref": "draft.system.model-provider",
+      "kind": "service",
+      "interface_ref": "existing.ModelProvider.request",
+      "implementation_ref": "catalyst_platform.llm_provider:configured_model_provider",
+      "provides": [
+        "existing.ModelProvider.request"
+      ],
+      "requires": [
+        "existing.ModelTask",
+        "existing.HostScope"
+      ],
+      "qualification": "SOURCE_INTERFACE_REVIEW_ONLY",
+      "scope_authority": "DESCRIPTOR_DOES_NOT_GRANT_EXECUTION_OR_EGRESS",
+      "evidence_basis": "a6a635a28138893f75d50adb734b608aca55f872",
+      "owner_status": "DESIGN_PENDING_OWNER",
+      "license_status": "REQUIRES_ARTIFACT_SPECIFIC_REVIEW"
+    },
+    {
+      "asset_ref": "draft.capability.source-reference-read",
+      "kind": "action",
+      "interface_ref": "existing.Capability.describe.invoke",
+      "implementation_ref": "examples.composition_contract_pilot:_SourceAction",
+      "provides": [
+        "existing.Capability.describe.invoke"
+      ],
+      "requires": [
+        "pilot.wiki.read/1"
+      ],
+      "qualification": "OFFLINE_SYNTHETIC_TEST_ONLY",
+      "scope_authority": "DESCRIPTOR_DOES_NOT_GRANT_EXECUTION_OR_EGRESS",
+      "evidence_basis": "a6a635a28138893f75d50adb734b608aca55f872",
+      "owner_status": "DESIGN_PENDING_OWNER",
+      "license_status": "REQUIRES_ARTIFACT_SPECIFIC_REVIEW"
+    },
+    {
+      "asset_ref": "draft.method.enterprise-understand",
+      "kind": "method",
+      "interface_ref": "existing.UnderstandPort.understand",
+      "implementation_ref": "platform-harness/skills/understand-enterprise-semantics/SKILL.md",
+      "provides": [
+        "existing.UnderstandPort.understand"
+      ],
+      "requires": [
+        "existing.ModelProvider",
+        "authorized.sources"
+      ],
+      "qualification": "EXISTING_METHOD_NOT_CHANGED_OR_EVALUATED_HERE",
+      "scope_authority": "DESCRIPTOR_DOES_NOT_GRANT_EXECUTION_OR_EGRESS",
+      "evidence_basis": "a6a635a28138893f75d50adb734b608aca55f872",
+      "owner_status": "DESIGN_PENDING_OWNER",
+      "license_status": "REQUIRES_ARTIFACT_SPECIFIC_REVIEW"
+    },
+    {
+      "asset_ref": "draft.agent.task-delegation",
+      "kind": "agent",
+      "interface_ref": "PROPOSED.AgentTask.Artifact",
+      "implementation_ref": "NOT_IMPLEMENTED",
+      "provides": [
+        "PROPOSED.AgentTask.Artifact"
+      ],
+      "requires": [
+        "task.scope",
+        "authorized.tools",
+        "approved.definition"
+      ],
+      "qualification": "NOT_IMPLEMENTED",
+      "scope_authority": "DESCRIPTOR_DOES_NOT_GRANT_EXECUTION_OR_EGRESS",
+      "evidence_basis": "a6a635a28138893f75d50adb734b608aca55f872",
+      "owner_status": "DESIGN_PENDING_OWNER",
+      "license_status": "REQUIRES_ARTIFACT_SPECIFIC_REVIEW"
+    }
+  ],
+  "recipe": {
+    "status": "TEST_ONLY_FIXED_TWO_ACTION_CONSUMER_NOT_AUTONOMOUS_AGENT",
+    "steps": [
+      {
+        "capability": "pilot_reference_lookup",
+        "version": "1.0.0"
+      },
+      {
+        "capability": "pilot_evidence_read",
+        "version": "1.0.0"
+      }
+    ],
+    "mapping": "examples.composition_contract_pilot:bind_receipt_reference",
+    "mapping_expectation": "INDEPENDENT_SYNTHETIC_FIXTURE_NOT_UPSTREAM_AUTHORITY",
+    "evaluation": "MECHANISM_ONLY_BUSINESS_NOT_EVALUATED",
+    "automatic_activation": false,
+    "failure_policy": "STOP_ON_REJECT_UNKNOWN_SOURCE_DRIFT_OR_PERMISSION_DENY"
+  },
+  "harvest": {
+    "status": "PROPOSED_ONLY",
+    "runtime_package_created": false,
+    "formal_wiki_write": false,
+    "automatic_install": false
+  }
+}

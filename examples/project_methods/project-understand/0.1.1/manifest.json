@@ -1,0 +1,40 @@
+{
+  "component_id": "project-understand",
+  "evaluation_refs": [
+    "tests/project_understand/test_method_lifecycle.py",
+    "offline mechanism fixture; semantic quality NOT_PROVEN"
+  ],
+  "files": {
+    "SKILL.md": "9f0a68d45201209a3da94577bdf05fa7d852d52a46be7182fc1d3a6613070c82",
+    "references/depth-and-evidence.md": "3dbf16db227fca56f60e12c404cbdc1be1fa0b8232333d35897babade560d74c",
+    "references/object-completion.md": "26a6102e16f878df14802a6d08b34a60c7f6ad1af108ee0b93d5f715f35e8e51"
+  },
+  "license_sources": [
+    {
+      "adaptation": "ADAPT approved D0-D3, object responsibility and evidence rules; no upstream code copied",
+      "license": "original Catalyst method",
+      "name": "Catalyst approved Project Understand V0 plan",
+      "revision": "20261026-understand-v0"
+    },
+    {
+      "adaptation": "ADAPT bounded data selection and version/state separation; no dependencies or code copied",
+      "license": "Apache-2.0",
+      "name": "Penguin directory-skills and snapshot-service",
+      "revision": "2b8116ce278656cbc184f7c40ceff1d358a87394"
+    }
+  ],
+  "llm_visibility": "explicit",
+  "manifest_version": 1,
+  "provides": [
+    "understand-project"
+  ],
+  "required_product_interface": "project-analysis.v1",
+  "requires": [
+    "project_inspect",
+    "project_expand_evidence",
+    "project_submit_analysis"
+  ],
+  "resource_type": "method_data",
+  "skill_name": "understand-project",
+  "version": "0.1.1"
+}

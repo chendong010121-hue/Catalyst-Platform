@@ -27,7 +27,7 @@ The visible `live-capability-eval.yml` workflow and `platform-harness/live_eval/
 
 No reuse license has yet been granted for this public repository.
 
-## Catalyst Desktop
+## Catalyst Workplace
 
 The source of the desktop build is the accepted `main` branch. Use a single
 clean installation checkout for its launcher. The launcher checks the running
@@ -36,19 +36,30 @@ process. Update the checkout by fast-forwarding to accepted `main` and restart
 the desktop when idle. Keep workspace data separate from Git so a code update
 or rollback does not move conversations or credentials.
 
-On Windows, run `./Start-Catalyst.ps1` to open the workbench. Its default
-workspace is `%LOCALAPPDATA%/Catalyst/Desktop`, separate from older desktop
-builds. To start directly on another platform:
+On Windows, run `./Start-Catalyst.ps1` from the installation checkout to open
+Workplace. Its default data directory is `%LOCALAPPDATA%/Catalyst/Desktop`.
+To keep using an existing Workplace, pass its existing data directory with
+`-Workspace`. Only one process should open that data directory for use.
+Install the dependencies in `requirements.txt` before starting.
 
 ```sh
-python -m catalyst_platform.desktop --workspace ./desktop-workspace
+python -m catalyst_platform.workspace_ui --workspace /path/to/workspace --port 8817
 ```
 
-Open the printed loopback address and enter a DeepSeek API key in **Model
-connection and local tools**. Connection setup sends no model request. Sending
-a chat message calls DeepSeek and may incur provider charges. Windows users can
-opt in to DPAPI-protected key storage and explicitly reconnect with the saved
-key after restarting.
+Use the Home chat to create or reopen conversations. Wiki, Agents, Enterprise,
+Reviews, Development and Observability are available in the same Workplace.
+Configure DeepSeek under Settings. Model calls and tool access continue to use
+the Workplace authorization and receipt paths. A project source declaration
+may be supplied with `-ProjectConfig` or `--project-config`.
+
+The separate desktop module below remains a narrow runtime acceptance entry.
+Its workspace files use a different format and should not be mixed with
+Workplace data.
+
+### Standalone runtime acceptance entry
+
+Run `python -m catalyst_platform.desktop --workspace /path/to/test-workspace --demo`
+to exercise the smaller runtime entry with offline replies.
 
 Create or switch chats above the message box. Restart with the same workspace
 to reopen them. Each submission has its own run

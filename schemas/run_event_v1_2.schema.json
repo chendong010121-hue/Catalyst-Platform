@@ -1,0 +1,7662 @@
+{
+  "title": "Catalyst Run Event v1.2",
+  "description": "Allowlisted, privacy-first event envelope with additive project Wiki evidence events. Unknown event types and fields are rejected or omitted before persistence.",
+  "type": "object",
+  "required": [
+    "event_schema_version",
+    "event_id",
+    "run_id",
+    "sequence",
+    "timestamp",
+    "event_type",
+    "request_id",
+    "invocation_id",
+    "trace_id",
+    "redaction_policy_version"
+  ],
+  "properties": {
+    "source_worktree_dirty": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "request_kind": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "actor": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "capability_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "selected_file": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "input_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "source_revision_ref": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "component": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "owner_process_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "capability_version": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "manifest_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "model": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "tool_choice": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "component_version": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "configuration_source": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "implementation_class": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "binding_digest": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "execution_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "component_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "capability_internal_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "source_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "span_name": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "request_attempt": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "provider_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "model_call_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "openinference.span.kind": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "exposed_tool_count": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "package_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "span_kind": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "span_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-fA-F0-9]{16}$"
+    },
+    "side_effect": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "parent_span_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-fA-F0-9]{16}$"
+    },
+    "tool_call_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "status": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "duration_ms": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "runtime_session_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "provider_requests": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "model_calls": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "error_owner": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "session_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "error_type": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "terminal_status": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "external_calls": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "native_trace_path": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "effect_certainty": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "error_message": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "arguments_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "extraction_method": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "result_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "source_line": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "error_code": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "result_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "authorization": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "capability_count": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "catalog_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "catalog_scope": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "active_version": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "resource_type": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "in_flight_policy": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "llm_visibility": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "active": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "cleanup_status": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "previous_version": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "transition": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "action": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "model_call_present": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "output_tokens": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "input_tokens": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "decision_type": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "finish_reason": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "answer_status": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "answer": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "tool_name": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "decision": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "reason_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "retryable": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "provider_request_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "http_status": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "error_stage": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "error_category": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "response_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "response_received": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "tool_id": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "title": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "tool_version": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "source_path": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "requested_path": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "attributes": {
+      "type": "object",
+      "properties": {
+        "binding_digest": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_internal_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "catalyst.binding_digest": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "catalyst.capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "catalyst.configuration_source": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "catalyst.error.code": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "catalyst.execution_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "effect_certainty": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error.type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "execution_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "implementation_class": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "llm.finish_reason": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "llm.model_name": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "llm.system": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "llm.token_count.completion": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "llm.token_count.prompt": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "manifest_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "openinference.span.kind": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "package_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "result_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "side_effect": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool.call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool.name": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "usage.input_tokens": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "usage.output_tokens": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "arguments_sha256": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "tool_call_id": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "tool_name": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "exposed_tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "binding_digest": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "capability_id": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "capability_version": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "component_id": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "component_version": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "implementation_class": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "manifest_sha256": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "package_sha256": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "parameters_schema_sha256": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "side_effect": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "source_sha256": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "tool_name": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "capability_version": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "descriptor_sha256": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "id": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "side_effect": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "invocation_routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "capability_id": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "capability_version": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "command": {
+            "type": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "token_usage": {
+      "type": "object",
+      "properties": {
+        "input_tokens": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "output_tokens": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "source_evidence": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "extraction_method": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "line": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "byte_length": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "extraction_method": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "line": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "path_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "event_schema_version": {
+      "const": "1.2"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{32}$"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "agent.decision",
+        "assistant.final_answer",
+        "authorization.decided",
+        "binding.resolution_failed",
+        "binding.resolved",
+        "capabilities.discovered",
+        "capabilities.discovery.failed",
+        "capability.invoke.requested",
+        "component.binding.failed",
+        "component.cleanup.failed",
+        "component.lifecycle.changed",
+        "component.lifecycle.failed",
+        "knowledge.claim.retrieved",
+        "knowledge.claim.used_for_decision",
+        "knowledge.query.returned",
+        "knowledge.source.staged",
+        "knowledge.source.staging_failed",
+        "llm.request.failed",
+        "llm.request.started",
+        "llm.response.received",
+        "request.failed",
+        "request.interrupted",
+        "request.started",
+        "request.terminal",
+        "result.emitted",
+        "session.bound",
+        "source.read.completed",
+        "source.read.failed",
+        "source.read.started",
+        "span.ended",
+        "span.started",
+        "tool.call.requested",
+        "tool.execution.denied",
+        "tool.execution.started",
+        "tool.execution.unresolved",
+        "tool.result"
+      ]
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "invocation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{32}$"
+    },
+    "redaction_policy_version": {
+      "const": "allowlisted-content-v2"
+    },
+    "selected_file_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "native_trace_ref_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "error_message_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "answer_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "title_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "source_path_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "requested_path_sha256": {
+      "type": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "scope_id": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_revision": {
+      "type": "string"
+    },
+    "claim_count": {
+      "type": "integer"
+    },
+    "query_sha256": {
+      "type": "string"
+    },
+    "source_count": {
+      "type": "integer"
+    },
+    "claim_id": {
+      "type": "string"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "line_start": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "line_end": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "outcome": {
+      "type": "string"
+    },
+    "applicability_status": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catalyst.local/schemas/run-event-v1.2.schema.json",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "decision_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "agent.decision"
+        },
+        "finish_reason": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "input_tokens": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_present": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "output_tokens": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "parent_span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "arguments_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "tool_call_id": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "tool_name": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "answer": {
+          "type": "null"
+        },
+        "answer_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "answer_status": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "assistant.final_answer"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "parent_span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "binding_digest": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_internal_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "decision": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "authorization.decided"
+        },
+        "implementation_class": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "package_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "parent_span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "reason_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side_effect": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "capability_internal_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_code": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "binding.resolution_failed"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "binding_digest": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_internal_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "binding.resolved"
+        },
+        "implementation_class": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "package_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "parent_span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side_effect": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "authorization": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "capability_version": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "descriptor_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "id": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "side_effect": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "capability_count": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "catalog_scope": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "catalog_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "capabilities.discovered"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "invocation_routes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "capability_id": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "capability_version": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "command": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "error_message": {
+          "type": "null"
+        },
+        "error_message_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "capabilities.discovery.failed"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "arguments_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "capability.invoke.requested"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_code": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "component.binding.failed"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "component.cleanup.failed"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "action": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "active": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "active_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "cleanup_status": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "component.lifecycle.changed"
+        },
+        "in_flight_policy": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "llm_visibility": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "manifest_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "package_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "previous_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resource_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "transition": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "action": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_code": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "component.lifecycle.failed"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "error_category": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_code": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_stage": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "llm.request.failed"
+        },
+        "http_status": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "provider_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "provider_request_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retryable": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "configuration_source": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "llm.request.started"
+        },
+        "exposed_tool_count": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "exposed_tools": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "binding_digest": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "capability_id": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "capability_version": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "component_id": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "component_version": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "implementation_class": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "manifest_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "package_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "parameters_schema_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "side_effect": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "source_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "tool_name": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "provider_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_attempt": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_choice": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "llm.response.received"
+        },
+        "finish_reason": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "input_tokens": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "output_tokens": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "provider_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "response_received": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "response_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "arguments_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "tool_call_id": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "tool_name": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "error_message": {
+          "type": "null"
+        },
+        "error_message_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "request.failed"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "effect_certainty": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "request.interrupted"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "actor": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "request.started"
+        },
+        "input_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner_process_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "request_kind": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selected_file": {
+          "type": "null"
+        },
+        "selected_file_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_revision_ref": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_worktree_dirty": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "duration_ms": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_owner": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "request.terminal"
+        },
+        "external_calls": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_calls": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "native_trace_path": {
+          "type": "null"
+        },
+        "native_trace_ref_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "provider_requests": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "terminal_status": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "token_usage": {
+          "type": "object",
+          "properties": {
+            "input_tokens": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "output_tokens": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "error_code": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "result.emitted"
+        },
+        "extraction_method": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "result_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_evidence": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "extraction_method": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "line": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "source_line": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "session.bound"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runtime_session_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "error_code": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_message": {
+          "type": "null"
+        },
+        "error_message_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "source.read.completed"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requested_path": {
+          "type": "null"
+        },
+        "requested_path_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "byte_length": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "extraction_method": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "line": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "path_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "source_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "source_path": {
+          "type": "null"
+        },
+        "source_path_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "title": {
+          "type": "null"
+        },
+        "title_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "error_code": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_message": {
+          "type": "null"
+        },
+        "error_message_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "source.read.failed"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requested_path": {
+          "type": "null"
+        },
+        "requested_path_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "byte_length": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "extraction_method": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "line": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "path_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "source_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "source_path": {
+          "type": "null"
+        },
+        "source_path_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "title": {
+          "type": "null"
+        },
+        "title_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "error_code": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_message": {
+          "type": "null"
+        },
+        "error_message_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "source.read.started"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requested_path": {
+          "type": "null"
+        },
+        "requested_path_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "byte_length": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "extraction_method": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "line": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "path_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "source_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "source_path": {
+          "type": "null"
+        },
+        "source_path_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "title": {
+          "type": "null"
+        },
+        "title_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "binding_digest": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "capability_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "capability_internal_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "capability_version": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "catalyst.binding_digest": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "catalyst.capability_version": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "catalyst.configuration_source": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "catalyst.error.code": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "catalyst.execution_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "component_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "component_version": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "effect_certainty": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "error.type": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "execution_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "implementation_class": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "llm.finish_reason": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "llm.model_name": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "llm.system": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "llm.token_count.completion": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "llm.token_count.prompt": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "manifest_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "model_call_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "openinference.span.kind": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "package_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "result_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "side_effect": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "source_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "status": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "tool.call_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "tool.name": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "tool_call_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "usage.input_tokens": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "usage.output_tokens": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "duration_ms": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "span.ended"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "status": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "binding_digest": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "capability_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "capability_internal_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "capability_version": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "catalyst.binding_digest": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "catalyst.capability_version": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "catalyst.configuration_source": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "catalyst.error.code": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "catalyst.execution_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "component_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "component_version": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "effect_certainty": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "error.type": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "execution_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "implementation_class": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "llm.finish_reason": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "llm.model_name": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "llm.system": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "llm.token_count.completion": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "llm.token_count.prompt": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "manifest_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "model_call_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "openinference.span.kind": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "package_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "result_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "side_effect": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "source_sha256": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "status": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "tool.call_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "tool.name": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "tool_call_id": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "usage.input_tokens": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            "usage.output_tokens": {
+              "type": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "binding_digest": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_internal_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "configuration_source": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "span.started"
+        },
+        "execution_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "exposed_tool_count": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "exposed_tools": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "binding_digest": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "capability_id": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "capability_version": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "component_id": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "component_version": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "implementation_class": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "manifest_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "package_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "parameters_schema_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "side_effect": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "source_sha256": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "tool_name": {
+                "type": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "implementation_class": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "openinference.span.kind": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "package_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "parent_span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "provider_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_attempt": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side_effect": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "span_kind": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "span_name": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool_choice": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "arguments_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "binding_digest": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_internal_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "tool.call.requested"
+        },
+        "implementation_class": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "package_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "parent_span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side_effect": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "tool_name": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "binding_digest": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_internal_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "tool.execution.denied"
+        },
+        "implementation_class": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "package_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "parent_span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side_effect": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "binding_digest": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_internal_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "tool.execution.started"
+        },
+        "execution_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "implementation_class": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "package_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "parent_span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side_effect": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "binding_digest": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_internal_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "effect_certainty": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_type": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "tool.execution.unresolved"
+        },
+        "execution_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "implementation_class": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "package_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side_effect": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "status": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "properties": {
+        "binding_digest": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_internal_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "capability_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "component_version": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "effect_certainty": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "error_code": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "tool.result"
+        },
+        "execution_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "implementation_class": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "model_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "package_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "parent_span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side_effect": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "source_sha256": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "span_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{16}$"
+        },
+        "status": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tool_call_id": {
+          "type": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "claim_count": {
+          "type": "integer"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "knowledge.source.staged",
+          "type": "string"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope_id": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "source_revision": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "error_code": {
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "knowledge.source.staging_failed",
+          "type": "string"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope_id": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "capability_count": {
+          "type": "integer"
+        },
+        "claim_count": {
+          "type": "integer"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "knowledge.query.returned",
+          "type": "string"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "query_sha256": {
+          "type": "string"
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope_id": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_count": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "applicability_status": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "capability_id": {
+          "type": "string"
+        },
+        "capability_version": {
+          "type": "string"
+        },
+        "claim_id": {
+          "type": "string"
+        },
+        "claim_status": {
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "knowledge.claim.retrieved",
+          "type": "string"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "line_end": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "line_start": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope_id": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "source_revision": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        }
+      },
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "capability_id": {
+          "type": "string"
+        },
+        "capability_version": {
+          "type": "string"
+        },
+        "claim_id": {
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "event_schema_version": {
+          "const": "1.2"
+        },
+        "event_type": {
+          "const": "knowledge.claim.used_for_decision",
+          "type": "string"
+        },
+        "invocation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outcome": {
+          "type": "string"
+        },
+        "redaction_policy_version": {
+          "const": "allowlisted-content-v2"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope_id": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "session_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "source_revision": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "tool_call_id": {
+          "type": "string"
+        },
+        "binding_digest": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_schema_version",
+        "event_id",
+        "run_id",
+        "sequence",
+        "timestamp",
+        "event_type",
+        "request_id",
+        "invocation_id",
+        "trace_id",
+        "redaction_policy_version"
+      ],
+      "type": "object"
+    }
+  ]
+}

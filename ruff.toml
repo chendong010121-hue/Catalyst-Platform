@@ -1,0 +1,26 @@
+# Lint the modules this iteration owns.
+#
+# The repository still carries several thousand findings outside these files (E701/E702 -
+# semicolons and one-line blocks - are most of them), so this list is a ratchet rather than a
+# verdict: a module joins when it is clean, and the next module joins the next time. Widening
+# it is a one-line change; it must never be done by adding ignores.
+target-version = "py312"
+line-length = 120
+
+include = [
+    "catalyst_platform/ontology_concepts.py",
+    "catalyst_platform/ontology_types.py",
+    "catalyst_platform/semantic_score.py",
+    "catalyst_platform/wiki.py",
+    "catalyst_platform/wiki_cold_read.py",
+    "catalyst_platform/wiki_pages.py",
+    "tests/test_concept_declarations.py",
+    "tests/test_r7_semantic_lifecycle.py",
+    "tests/test_wiki_pages.py",
+    "tests/test_wiki_store_artifacts.py",
+]
+
+[lint]
+# Pyflakes (F) and the error-level pycodestyle rules: the defects that break a run, not
+# the layout of code that already works.
+select = ["E4", "E7", "E9", "F"]

@@ -79,7 +79,7 @@ class DesktopConnection:
         else:
             raise ValueError("invalid_connection_request")
         self.provider = DeepSeekModelProvider(
-            api_key=key, transport=self.transport, max_output_tokens=self.max_output_tokens,
+            api_key=key, model="deepseek-v4-flash", transport=self.transport, output_token_limit=self.max_output_tokens,
         )
         self.verified = False
 

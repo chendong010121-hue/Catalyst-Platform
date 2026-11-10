@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Catalyst Workspace · 本机接入</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f4f4f2'/%3E%3Ctext x='7' y='24' font-size='24' fill='%23252525'%3EC%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <button id="skip-to-main" class="skip-link" type="button">跳到主要内容</button>
+  <div class="workspace">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="Catalyst 首页"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m4 9 4-5h8l4 5v2H4zM4 15h16M6 19h12"/></svg><span>Catalyst <span class="brand-tail">Workspace</span></span></a>
+      <div class="top-meta"><span>Local workspace</span><span class="demo-dot"></span><button id="about" class="text-button">本机接入</button></div>
+    </header>
+    <div class="workspace-body">
+      <aside class="sidebar">
+        <nav id="nav" aria-label="主导航"></nav>
+        <div class="sidebar-bottom"><div class="workspace-person"><span class="avatar">C</span><span>本地工作空间<small>真实后端 · 付费调用关闭</small></span></div></div>
+      </aside>
+      <main id="main" tabindex="-1"></main>
+    </div>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="info-dialog" aria-labelledby="info-title"><div class="dialog-header"><h2 id="info-title">关于当前接入</h2><button id="close-info" class="icon-button" aria-label="关闭">×</button></div><p>当前界面连接独立本机工作区的真实 Catalyst Catalog、Wiki 和 R4。任务执行调用统一 HarnessSession.capture_execution，当前仅支持有界 MOCK 企业语义流程。</p><p>资料上传到本机独立输入目录，不发送到外部模型。模型密钥仅在你明确配置后保存在本机服务内存中；不会自动读取其他项目凭证或历史实验资料。默认不会自动启动任务。</p><p>Agent 组合仅为浏览器内存草案，不注册、不激活。正式本体接纳仍需要原外部评价与 Owner Gate。没有安装正式审批凭证。</p><p class="muted" id="source-identity">正在读取后端身份…</p></dialog>
+  <script src="/wiki-contract.js"></script>
+  <script src="/business-graph.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

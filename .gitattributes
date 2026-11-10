@@ -1,0 +1,67 @@
+evidence/r5/post_acceptance_20261017/** -text whitespace=-trailing-space,cr-at-eol
+examples/local_components/local_text_stats/1.0.0/tool.py text eol=lf
+examples/local_components/local_text_stats/2.0.0/tool.py text eol=lf
+catalyst_platform/understand_only.py text eol=lf
+catalyst_platform/workbench.py text eol=lf
+platform-harness/skills/understand-asset-inspector/SKILL.md text eol=lf
+platform-harness/skills/understand-document/SKILL.md text eol=lf
+platform-harness/skills/understand-enterprise-semantics/SKILL.md text eol=lf
+platform-harness/skills/understand-evidence-coverage/SKILL.md text eol=lf
+platform-harness/skills/understand-repository-map/SKILL.md text eol=lf
+platform-harness/skills/understand-source-inventory/SKILL.md text eol=lf
+catalyst_platform/__main__.py text eol=lf
+catalyst_platform/gateway.py text eol=lf
+catalyst_platform/observability.py text eol=crlf
+catalyst_platform/semantic_wiki.py text eol=crlf
+catalyst_platform/trace_log.py text eol=crlf
+catalyst_platform/understand_wiki.py text eol=crlf
+catalyst_platform/wiki.py text eol=crlf
+schemas/run_event_v1_5.schema.json text eol=crlf
+schemas/run_event_v1_6.schema.json text eol=crlf
+schemas/understand_handoff_v1.schema.json text eol=crlf
+tests/fixtures/u0_understand_handoff/SemanticCandidate.json text eol=crlf
+tests/fixtures/u0_understand_handoff/inputs/monthly_rules.md text eol=crlf
+tests/fixtures/u0_understand_handoff/inputs/org_policy.md text eol=crlf
+tests/fixtures/phase2_knowledge/quality_review_v1.md -text
+tests/p0_test_authority.py text eol=crlf
+tests/test_c0_c5_campaign.py text eol=crlf
+tests/test_p0_admission_identity.py text eol=crlf
+tests/test_understand_wiki_u0.py text eol=crlf
+
+catalyst_platform/_vendor/** -text
+platform-harness/evaluation/vendor/** -text
+tests/upstream_skillopt/test_gate.py -text
+
+# Hashed method packages must remain byte-reproducible on Windows.
+examples/project_methods/** -text
+examples/development_methods/** -text
+
+# Pinned third-party skill documents retain original bytes and source hashes.
+.agents/skills/** -text
+catalyst_platform/understand_models.py text eol=lf
+catalyst_platform/understand_sources.py text eol=lf
+catalyst_platform/understand_manifest.py text eol=lf
+catalyst_platform/understand_assets.py text eol=lf
+catalyst_platform/understand_semantic.py text eol=lf
+catalyst_platform/understand_verify.py text eol=lf
+methods/enterprise-ontology/0.1.0/** -text
+catalyst_platform/workspace_assets/app.js text eol=lf
+catalyst_platform/workspace_assets/styles.css text eol=lf
+catalyst_platform/workspace_assets/wiki-contract.js text eol=lf
+catalyst_platform/workspace_assets/business-graph.js text eol=lf
+catalyst_platform/workspace_assets/wiki.js text eol=lf
+catalyst_platform/workspace_assets/wiki.html text eol=lf
+catalyst_platform/workspace_assets/wiki.css text eol=lf
+catalyst_platform/workspace_assets/index.html text eol=lf
+catalyst_platform/knowledge_intake.py text eol=lf
+catalyst_platform/semantic_method.py text eol=lf
+catalyst_platform/components.py text eol=lf
+catalyst_platform/method_bundle.py text eol=lf
+catalyst_platform/ontology_types.py text eol=lf
+catalyst_platform/workspace_ui.py text eol=lf
+docs/engineering/CAPABILITY_RELEASE_20261103.json text eol=lf
+catalyst_platform/review_surface.py text eol=lf
+catalyst_platform/object_view.py text eol=lf
+catalyst_platform/wiki_pages.py text eol=lf
+
+# Release entry points must have stable bytes across checkout platforms.

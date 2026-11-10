@@ -18,7 +18,7 @@ def main() -> None:
         print("SKIPPED: DEEPSEEK_API_KEY not set")
         return
 
-    model = os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash")
+    model = os.environ.get("DEEPSEEK_MODEL", "deepseek-flash")
     base_url = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
 
     provider = DeepSeekModelProvider(api_key=api_key, model=model, base_url=base_url)

@@ -394,7 +394,7 @@ def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     api_key = os.getenv("CATALYST_LIVE_API_KEY", "").strip()
     base_url = os.getenv("CATALYST_LIVE_BASE_URL", "https://api.deepseek.com").strip()
-    model = os.getenv("CATALYST_LIVE_MODEL", "deepseek-v4-flash").strip()
+    model = os.getenv("CATALYST_LIVE_MODEL", "deepseek-flash").strip()
     github_token = os.getenv("GITHUB_TOKEN", "").strip()
 
     if not api_key or not github_token:

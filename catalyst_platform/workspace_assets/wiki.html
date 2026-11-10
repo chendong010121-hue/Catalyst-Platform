@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Wiki · 知识页面</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f4f4f2'/%3E%3Ctext x='7' y='24' font-size='24' fill='%23252525'%3EC%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/wiki.css">
+</head>
+<body>
+  <a class="skip-link" href="#wk-article">跳到知识正文</a>
+  <div class="workspace">
+    <header class="topbar">
+      <a class="brand" href="/#wiki" aria-label="Catalyst 工作区"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m4 9 4-5h8l4 5v2H4zM4 15h16M6 19h12"/></svg><span>Catalyst <span class="brand-tail">Wiki</span></span></a>
+      <div class="top-meta"><span id="wk-scope" class="wk-scope">正在读取本机 Wiki…</span><a id="wk-back" class="text-button wk-back" href="/#wiki">返回工作区</a></div>
+    </header>
+    <div class="workspace-body">
+      <aside class="sidebar wk-sidebar">
+        <label class="wk-sr" for="wk-q">搜索页面</label>
+        <input class="search" id="wk-q" placeholder="搜索页面（按 / 聚焦）" autocomplete="off">
+        <p class="wk-hint">标题、路径与正文；只在本页集内检索。</p>
+        <nav id="wk-nav" class="wk-nav" aria-label="知识页面导航"></nav>
+      </aside>
+      <main class="wk-main">
+        <div id="wk-status" class="wk-status" role="status">正在读取本机 Wiki 投影…</div>
+        <div class="wk-layout" id="wk-layout" hidden>
+          <article class="wk-article" id="wk-article" tabindex="-1">
+            <div class="wk-crumb" id="wk-crumb"></div>
+            <h1 id="wk-title"></h1>
+            <div class="wk-meta" id="wk-meta"></div>
+            <div id="wk-banner"></div>
+            <div id="wk-body"></div>
+            <section class="wk-backlinks" id="wk-backlinks-wrap" hidden>
+              <h2 class="wk-eyebrow">谁指向这里</h2>
+              <div class="wk-backlinks-list" id="wk-backlinks"></div>
+            </section>
+          </article>
+          <aside class="wk-rail" aria-label="证据与体检">
+            <div id="wk-evidence"></div>
+            <section class="wk-card">
+              <h2 class="wk-eyebrow">本页目录</h2>
+              <div class="wk-toc" id="wk-toc"></div>
+            </section>
+            <section class="wk-card">
+              <h2 class="wk-eyebrow">体检</h2>
+              <dl class="wk-facts" id="wk-health"></dl>
+            </section>
+            <section class="wk-card">
+              <h2 class="wk-eyebrow">证据面</h2>
+              <dl class="wk-facts" id="wk-surface"></dl>
+              <p class="wk-note" id="wk-surface-note"></p>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="/wiki-contract.js"></script>
+  <script src="/wiki.js"></script>
+</body>
+</html>

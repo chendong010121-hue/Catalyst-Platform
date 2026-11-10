@@ -119,7 +119,9 @@ class Policy(Protocol):
 
 
 class StateStore(Protocol):
-    """状态与执行历史的持久化。只存数据，不含逻辑。
+    """持久化 Agent Runtime 的 SessionSnapshot；Run Observability 事件另行记录。
+
+    只存数据，不含执行或事件逻辑。
 
     以 SessionSnapshot 为读写单位。durability contract：
 

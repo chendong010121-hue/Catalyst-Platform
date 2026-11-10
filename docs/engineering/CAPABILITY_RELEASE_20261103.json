@@ -1,0 +1,195 @@
+{
+  "concepts": {
+    "count": 11,
+    "digest": "290e51e251ac115b48958a1f281bf69c2ce33f5842fb2621c286012396abfe22",
+    "origin": "starter_pack",
+    "version": "starter-1"
+  },
+  "enable": [
+    "PYTHONUTF8=1 python -m catalyst_platform component admit --workspace <workspace> --source methods/enterprise-ontology/0.1.0 --expected-sha256 <package_sha256 from this file>",
+    "PYTHONUTF8=1 python -m catalyst_platform component activate --workspace <workspace> --component-id enterprise-ontology --version 0.1.0"
+  ],
+  "extraction_modes": [
+    "single_stage",
+    "source_local_two_stage"
+  ],
+  "interface": "semantic-proposal.v1",
+  "limits": [
+    "A candidate is a reading. It is not an accepted fact, and `CANDIDATE_ONLY` says so on the record.",
+    "`authority_class=test_only` is a test admission inside a synthetic scope; it is never a business acceptance.",
+    "The method package does not carry every rule that ran. Holder and type hints and the mechanical checks live in product code, so `package_sha256` alone is not a run identity; the release names both halves.",
+    "The package's own `evaluation_refs` are v15-era. They are not evidence for this release, and no score in this line is a measurement of this build.",
+    "A row the card marks unresolved stays in the card and is not carried into the candidate; it is still a question for a person, not a dropped fact.",
+    "A graph is read with a limit (100 accepted objects, 500 candidate nodes). A larger graph is truncated and the reading says how many it kept.",
+    "The starter concept set holds eleven types. A name with no concept is a gap in expression, not a zero, and `business_type` may stay empty while the entity is kept."
+  ],
+  "method": {
+    "component_id": "enterprise-ontology",
+    "files": {
+      "SKILL.md": "b566362e8b05cb8af7f2942590a0bccf0363080537c94e758cdeb3764f658ac3",
+      "references/ontology-catalog-relations-v2.md": "2b6e210413e1abebd77f09aafc819608a85d3f4025bfcef6129e7709ccf8ed60",
+      "references/ontology-catalog-relations.md": "dc23ae168948f9bf90c29a4a910c10f00c6c7caed4da692e20420eb73df534fc",
+      "references/ontology-evolver.md": "bce3858cfd8b9d33de26a1a21791e0c8e17c1ba902838406414222d415c51987",
+      "references/ontology-generator.md": "f329ad3d924678d34b71afd9be936347711100a0a217ffd3497f826363062a39",
+      "references/ontology-inventory-binding.md": "1dd7e9da17b10c48ec3336d92f58e116c1701a6d90ce114eebc08890bd702397",
+      "references/ontology-object-catalog-v2.md": "b69c52583ef18ab87a02a26eb544a9fbe9efa40e87fe84593de4ff15bf5e842f",
+      "references/ontology-object-catalog.md": "697ad3b3983643d5808b56ae2483a54f38bcff4026f2d2378802c8e37cf029ee",
+      "references/ontology-verifier.md": "d5b4397ea012ed5c5211ad6a0ca03b3feb27ba75f389709c8644df8afe8bb11e"
+    },
+    "interface": "semantic-proposal.v1",
+    "manifest_sha256": "8b59225cba032016ee55a078199368737988b71077d7320bd2e6e7384cbbad98",
+    "package_sha256": "7d20ba4e905e1457f885deea3964926a1da43a607e834a30d604b68607cea8c7",
+    "path": "methods/enterprise-ontology/0.1.0",
+    "provides": [
+      "enterprise-ontology"
+    ],
+    "skill_name": "understand-enterprise-semantics",
+    "source_sha256": "4ac926ab8da66f3b084096584ef7bfbceb2a6eb5ef05f9c9ac4e45d9894e53f2",
+    "version": "0.1.0"
+  },
+  "not_shipped": [
+    {
+      "path": "p1-run-1/host",
+      "what": "the diagnosis host, per-card repairs and the delivery scripts"
+    },
+    {
+      "path": "p1-run-1/adapt",
+      "what": "adapters written to read one frozen card's answers"
+    },
+    {
+      "path": "p1-run-1/deliver",
+      "what": "candidate snapshots, receipts and review pages of past cards"
+    },
+    {
+      "path": "p1-run-1/m1-live2*",
+      "what": "the live cards and their captures"
+    },
+    {
+      "path": "p1-run-1/joint-handoff-20261103",
+      "what": "one joint hand-off's inputs, records and Wiki copy"
+    },
+    {
+      "path": "p1-run-1/methods/enterprise-ontology/build-0.1.0.py",
+      "what": "the builder that reproduced the package bytes from the live46 run snapshot"
+    }
+  ],
+  "product": {
+    "entry_points": [
+      {
+        "path": "catalyst_platform/knowledge_intake.py",
+        "role": "one explicit document enters Wiki as a candidate; the daily entry",
+        "sha256": "d2594430ab3d9bc2ad51c47909a202d35675f0df1c9266a3c9a53a01e687d192"
+      },
+      {
+        "path": "catalyst_platform/semantic_method.py",
+        "role": "the registered-method seam: acquire the lease, materialise the frozen files, run the port, record the run's identity, release the lease",
+        "sha256": "6207cedadeedb5693aabbca957c7b4f93bba2c485f17270c22b5a31dc9d2f368"
+      },
+      {
+        "path": "catalyst_platform/understand_wiki.py",
+        "role": "an Understand result submitted as one Wiki candidate",
+        "sha256": "9f83b0d73583fb7abed3ac98c48760db808aaf184f22481b1851f286176fea6b"
+      },
+      {
+        "path": "catalyst_platform/semantic_wiki.py",
+        "role": "evaluate, decide and activate one candidate; read one version",
+        "sha256": "3f8aa961e9cdc86772eb31d034eed54328b63c2ece34b431060604cc930cca7f"
+      },
+      {
+        "path": "catalyst_platform/wiki.py",
+        "role": "the project Wiki store: sources, concepts, candidates, decisions, versions",
+        "sha256": "013d7f908191a95304b9124d7b6e9bd84028a79545579c99d5a2587700454da3"
+      },
+      {
+        "path": "catalyst_platform/components.py",
+        "role": "admit one package by SHA-256 and freeze it for the length of a run",
+        "sha256": "a433e1f2bd8b9fba8f4d36ef6e94f01cedd8de3668e8615480629a90b97f2aaf"
+      },
+      {
+        "path": "catalyst_platform/method_bundle.py",
+        "role": "the data-only method contract (semantic-proposal.v1)",
+        "sha256": "cabf23c76c7e2808123cfef2bb6b57880e20257618ceb8cda157f849ee42cf78"
+      },
+      {
+        "path": "catalyst_platform/ontology_types.py",
+        "role": "the concept set a scope extracts with, and how a spelling resolves to one type",
+        "sha256": "bfd096090c9696f6061c295ffa3469f1b94bea420c9481a6ac90f63ed24a219b"
+      },
+      {
+        "path": "catalyst_platform/object_view.py",
+        "role": "one duty, event or condition read the same way from a candidate entry or an accepted one",
+        "sha256": "c20ef27e07a416b9c8a553207fb5cd2034e84914a6a39787521156080a086581"
+      },
+      {
+        "path": "catalyst_platform/wiki_pages.py",
+        "role": "the page projection: what an entity page promises, including its object sections",
+        "sha256": "8b4e9cf2e4d90c87022ed24c14adaacfac9997df76b63be1b16b4e470a3feeb9"
+      },
+      {
+        "path": "catalyst_platform/workspace_ui.py",
+        "role": "the local workbench: the Wiki route and the Enterprise routes",
+        "sha256": "b9a7b6cb88e5e207da3814448dbd8c7ed210c2cf89ced7952415ddb767cde01a"
+      },
+      {
+        "path": "catalyst_platform/review_surface.py",
+        "role": "the declared knowledge scopes, a run product read as it ran, and the review ledger",
+        "sha256": "3086169e26cac5c46a0f42a660a5f088db7a6dd94e8cbb91d3de72f477fa185c"
+      },
+      {
+        "path": "catalyst_platform/workspace_assets/app.js",
+        "role": "the pages themselves: the Wiki entry, the Enterprise candidate picker and its tiers",
+        "sha256": "493d6607ef760add67479a2c9636d058976c99c7a02684cc4891e283ffa8856c"
+      },
+      {
+        "path": "catalyst_platform/workspace_assets/styles.css",
+        "role": "how those pages lay out, including the bounded box a graph is browsed inside",
+        "sha256": "4b97346fc908b30ce004217391af48db73aade19e32e8de5820665f96c4ed174"
+      },
+      {
+        "path": "catalyst_platform/workspace_assets/index.html",
+        "role": "the workbench shell that loads the entry",
+        "sha256": "69bfb3afea4835545576b3ab871363b0039c1163989eafbe5eb3917ca53cefea"
+      },
+      {
+        "path": "catalyst_platform/workspace_assets/wiki-contract.js",
+        "role": "the one reading contract: an address, a page, a version, a refusal, shared by both entries",
+        "sha256": "c301ef8043441e55c88d73ed075c0e107498e45e5ddd7a34893bdb506ca7e090"
+      },
+      {
+        "path": "catalyst_platform/workspace_assets/business-graph.js",
+        "role": "the candidate's business picture: objects first, one-hop focus, evidence only on request",
+        "sha256": "8e512636abc7ef6d779a0983fd707c77074fe3af21e2e646d077f9a14e106af0"
+      },
+      {
+        "path": "catalyst_platform/workspace_assets/wiki.html",
+        "role": "the standalone reading page's shell",
+        "sha256": "37c6db5303e55fcda2b5ee8f91a9c13a4dd2dab1dfeba5b586342a8d6cfb6d95"
+      },
+      {
+        "path": "catalyst_platform/workspace_assets/wiki.js",
+        "role": "the standalone reading page: pages, evidence, backlinks, scope and version in the address",
+        "sha256": "afdb4f459b616910758047cd7912856ce49fc7d8a9721b9ba80514add3b82e5b"
+      },
+      {
+        "path": "catalyst_platform/workspace_assets/wiki.css",
+        "role": "how the standalone reading page lays out",
+        "sha256": "5f8d4b74c837fcc488e33a170c220527fc693719c97d02f2448a310206bfa76a"
+      }
+    ],
+    "implementation_sha256": "0ed254f6bbf0270b3b8de9e8f1c4aef11e21af8565847310405d4376e7d92576"
+  },
+  "release": "capability-consolidation-20261103",
+  "run_identity_fields": [
+    "method",
+    "implementation",
+    "concepts",
+    "extraction_mode",
+    "repairs",
+    "sources"
+  ],
+  "schema_version": 1,
+  "verify": [
+    "PYTHONUTF8=1 python scripts/release_manifest.py --check",
+    "PYTHONUTF8=1 python -m pytest tests/test_capability_release.py -q"
+  ]
+}

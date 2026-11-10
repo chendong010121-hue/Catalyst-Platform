@@ -72,6 +72,8 @@ class BoundedProvider:
         if not selected <= all_ids or set(plan.recent_ids) & set(plan.checkpoint_ids):
             raise ValueError("invalid_context_sources")
         projected = apply_projection(request, plan)
+        if self.max_output_tokens is not None:
+            projected = replace(projected, parameters={**projected.parameters, "max_tokens": self.max_output_tokens})
         estimated = estimate(projected)
         blocked = (
             "BLOCKED_INPUT_LIMIT" if estimated > self.input_budget else

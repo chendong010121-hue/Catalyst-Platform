@@ -7,6 +7,7 @@ the existing AgentCore single-action lifecycle; v0.1 is not widened here.
 from __future__ import annotations
 
 import json
+import hashlib
 import uuid
 from dataclasses import dataclass, replace
 from typing import Sequence
@@ -51,7 +52,7 @@ _NATIVE_SYSTEM_PROMPT = (
 
 
 def _render_json(value) -> str:
-    return json.dumps(value, ensure_ascii=False, sort_keys=True)
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",",":"))
 
 
 def _is_terminal(snapshot: SessionSnapshot) -> bool:
@@ -88,9 +89,10 @@ class NativeToolsV2TurnResult:
 class NativeToolsV2ProtocolError(Exception):
     """Provider/model turn cannot be represented or safely executed by v2."""
 
-    def __init__(self, message: str, attribution: NativeToolsV2FailureAttribution):
+    def __init__(self, message: str, attribution: NativeToolsV2FailureAttribution, model_call=None):
         super().__init__(message)
         self.attribution = attribution
+        self.model_call = model_call
 
 
 class NativeToolsV2Reasoner:
@@ -115,19 +117,25 @@ class NativeToolsV2Reasoner:
             if response.finish_reason == "tool_calls":
                 raise self._protocol_error(
                     "finish_reason 'tool_calls' but no tool_calls",
-                    "empty tool-call set with tool_calls finish reason",
+                    "empty tool-call set with tool_calls finish reason",model_call,
                 )
             if not response.content or not response.content.strip():
                 raise self._protocol_error(
                     "empty model response (no content and no tool calls)",
-                    "provider completed without content or tool calls",
+                    "provider completed without content or tool calls",model_call,
                 )
             if response.finish_reason not in (None, "stop"):
                 raise self._protocol_error(
                     f"final text requires finish_reason 'stop' or None, got {response.finish_reason!r}",
-                    f"final text with finish_reason={response.finish_reason!r}",
+                    f"final text with finish_reason={response.finish_reason!r}",model_call,
                 )
             return NativeToolsV2TurnResult(model_call=model_call, decision=Complete(response.content))
+
+        if response.finish_reason != "tool_calls":
+            raise self._protocol_error(
+                f"tool calls require finish_reason 'tool_calls', got {response.finish_reason!r}",
+                f"tool_calls with finish_reason={response.finish_reason!r}",model_call,
+            )
 
         calls: list[NativeToolsV2Call] = []
         invalid: list[str] = []
@@ -245,7 +253,7 @@ class NativeToolsV2Reasoner:
         )
 
     @staticmethod
-    def _protocol_error(message: str, observed_fact: str) -> NativeToolsV2ProtocolError:
+    def _protocol_error(message: str, observed_fact: str, model_call=None) -> NativeToolsV2ProtocolError:
         attribution = NativeToolsV2FailureAttribution(
             stage="native_model_interaction",
             owner="Harness native-tools v2 interaction",
@@ -256,23 +264,38 @@ class NativeToolsV2Reasoner:
             side_effect_certainty="none",
             unproven_downstream_boundary="Capability execution",
         )
-        return NativeToolsV2ProtocolError(message, attribution)
+        return NativeToolsV2ProtocolError(message, attribution,model_call)
 
 
 class NativeToolsV2Runtime(Runtime):
     """Runtime host for v2 model-turn batches; v0.1 Runtime path remains selectable."""
 
-    def __init__(self, reasoner, capabilities, policy, state_store, *, timeout_config=None):
+    def __init__(self, reasoner, capabilities, policy, state_store, *, timeout_config=None, observation_sink=None):
         if not isinstance(reasoner, NativeToolsV2Reasoner):
             raise TypeError("NativeToolsV2Runtime requires NativeToolsV2Reasoner")
+        self._v2_sink=observation_sink
+        self._v2_observation_context=None
+        def observe(fact):
+            if self._v2_sink is None:return
+            context=self._v2_observation_context
+            if context is not None:
+                turn_index,call=context
+                fact={**fact,"step_index":turn_index,"tool_call_id":call.tool_call_id,"capability_internal_id":call.name}
+            self._v2_sink(fact)
         super().__init__(
             reasoner=reasoner,
             capabilities=capabilities,
             policy=policy,
             state_store=state_store,
             timeout_config=timeout_config,
+            observation_sink=observe,
         )
         self._v2_reasoner = reasoner
+
+    def _execute_observed_action(self,snapshot,call,turn,**kwargs):
+        self._v2_observation_context=(next(i for i,t in enumerate(snapshot.native_tools_v2_turns) if t.turn_id==turn.turn_id),call)
+        try:return self._core.execute_action(snapshot,call.action,**kwargs)
+        finally:self._v2_observation_context=None
 
     def run(self, session_id: str) -> SessionSnapshot:
         snapshot = self._load_snapshot(session_id)
@@ -343,6 +366,9 @@ class NativeToolsV2Runtime(Runtime):
                 self.capability_descriptors(),
                 snapshot.native_tools_v2_turns,
             )
+            if self._v2_sink is not None:
+                call=result.model_call
+                self._v2_sink({"event_type":"reasoning.completed","step_index":len(snapshot.native_tools_v2_turns),"decision_type":"Act" if result.turn else "Complete","model_call_present":True,"tool_calls":[{"tool_call_id":c.id,"tool_name":c.name,"arguments_sha256":hashlib.sha256(c.arguments.encode()).hexdigest()} for c in call.tool_calls],"input_tokens":call.usage.input_tokens if call.usage else None,"output_tokens":call.usage.output_tokens if call.usage else None,"finish_reason":call.finish_reason,"answer":result.decision.reason if result.decision else None})
             if result.turn is not None:
                 snapshot = replace(
                     snapshot,
@@ -454,9 +480,8 @@ class NativeToolsV2Runtime(Runtime):
             prepared_call = replace(call, policy_verdict=Allow(), execution_id=execution_id)
             prepared_turn = self._replace_call(turn, index, prepared_call)
             prepared_snapshot = self._commit(self._replace_turn(snapshot, prepared_turn))
-            settled_snapshot = self._core.execute_action(
-                prepared_snapshot,
-                call.action,
+            settled_snapshot = self._execute_observed_action(
+                prepared_snapshot,call,turn,
                 policy_verdict=Allow(),
                 execution_id=execution_id,
             )
@@ -485,9 +510,8 @@ class NativeToolsV2Runtime(Runtime):
             denied_call = replace(call, status="denied", policy_verdict=Deny(verdict.reason))
             denied_turn = self._replace_call(turn, index, denied_call)
             denied_snapshot = self._commit(self._replace_turn(snapshot, denied_turn))
-            settled_snapshot = self._core.execute_action(
-                denied_snapshot,
-                call.action,
+            settled_snapshot = self._execute_observed_action(
+                denied_snapshot,call,turn,
                 policy_verdict=Deny(verdict.reason),
             )
             return self._halt_batch(

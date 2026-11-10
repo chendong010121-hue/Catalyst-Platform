@@ -1,0 +1,36 @@
+{
+  "manifest_version": 1,
+  "component_id": "development-workflow",
+  "resource_type": "method_data",
+  "version": "0.1.0",
+  "skill_name": "development-workflow",
+  "required_product_interface": "evaluation-workflow.v1",
+  "provides": [
+    "development-workflow"
+  ],
+  "requires": [
+    "prepare_evaluation_workflow"
+  ],
+  "files": {
+    "references/boundaries.md": "d4dda0b14239c1966e3283d08da5f5ce7af71a863475446e4b0ae534310cdd71",
+    "references/build-eval.md": "9d1d0be5069c2ccb0b93e65f93180e3ff4b1ab1f5bf88005d3de9fa80dee317b",
+    "references/eval-audit.md": "315dc97b237e3c8ab15c0f6cb12cfc5690609c5e5f0003ced5fab925889b1b4d",
+    "references/hillclimb.md": "b1bb95eb2f588d72dc9a5fdbdb588621a19185ef994c3a1e792d0c84e46c93d0",
+    "references/LICENSE.md": "52b223c318576d65c32f70cb745f31352730e9f4c2c2c2570a66ce700f4f5a64",
+    "references/provenance.md": "cfedd8cf6b43d9dde4ff2ee844efc6ef8f128153573901625b203ba4212f655c",
+    "SKILL.md": "67565b0041b58116c6702e699c8140f3e5a9f3bc66a7c4969b4d88e1ac90881c"
+  },
+  "license_sources": [
+    {
+      "name": "Catalyst evaluation workflow",
+      "revision": "724945544988cd619ee533c5042f25cf0bf0948d",
+      "license": "see references/LICENSE.md and references/provenance.md",
+      "adaptation": "Catalyst original workflow and referenced third-party adaptations; Penguin principles, no upstream code copied"
+    }
+  ],
+  "evaluation_refs": [
+    "tests/test_development_method_lifecycle.py",
+    "tests/test_development_offline_checks.py"
+  ],
+  "llm_visibility": "explicit"
+}

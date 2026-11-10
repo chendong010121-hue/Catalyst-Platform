@@ -84,9 +84,11 @@ class RuntimeExecutionError(RuntimeError):
 
 
 class ModelProviderError(RuntimeError):
-    """ModelProvider 失败（HTTP/API/transport/protocol），不泄露 secret。
+    """Model provider failure with safe, provider-neutral diagnostic fields.
 
-    只保存官方实际提供的可审计字段：HTTP status、provider error code、request id。
+    The original provider message/body is intentionally never required here: upstream
+    error bodies can echo prompts, credentials, or other request data. ``code`` and
+    ``request_id`` are accepted only after adapter-side allowlist validation.
     """
 
     def __init__(
@@ -96,11 +98,59 @@ class ModelProviderError(RuntimeError):
         status: int | None = None,
         code: str | None = None,
         request_id: str | None = None,
+        provider_id: str | None = None,
+        category: str = "unknown",
+        retryable: bool = False,
     ) -> None:
         super().__init__(message)
         self.status = status
         self.code = code
         self.request_id = request_id
+        self.provider_id = provider_id
+        self.category = category
+        self.retryable = retryable
+
+    @property
+    def public_code(self) -> str:
+        return f"llm_provider_{self.category}"
+
+    @property
+    def safe_message(self) -> str:
+        summaries = {
+            "authentication": "Provider rejected the API key. Check the API key is valid for this provider.",
+            "billing": "Provider account balance or quota is insufficient. Check the provider account; this request was not retried.",
+            "permission": "Provider denied access to this model or account. Check the account permissions.",
+            "not_found": "Provider did not find the model or endpoint. Check the model ID and base URL.",
+            "invalid_request": "Provider rejected the request. Check that the selected model supports this request.",
+            "request_too_large": "The request exceeds provider limits. Reduce the input size and try again.",
+            "timeout": "Provider did not respond before the timeout. Check connectivity; the request may have reached the provider.",
+            "rate_limit": "Provider rate limit reached. Wait or check the account limits; this request was not retried.",
+            "provider_unavailable": "Provider is temporarily unavailable. Try again later; this request was not retried.",
+            "transport": "Could not connect to the provider. Check network access and the configured base URL.",
+            "protocol": "Provider returned an invalid response. Check that the endpoint supports chat completions.",
+            "unknown": "Provider request failed. No answer was returned.",
+        }
+        parts = [summaries.get(self.category, summaries["unknown"])]
+        if self.provider_id:
+            parts.append(f"provider={self.provider_id}")
+        if self.status is not None:
+            parts.append(f"HTTP {self.status}")
+        if self.code:
+            parts.append(f"code={self.code}")
+        if self.request_id:
+            parts.append(f"request_id={self.request_id}")
+        return " ".join(parts)
+
+    @property
+    def safe_details(self) -> dict[str, object]:
+        return {
+            "provider_id": self.provider_id,
+            "category": self.category,
+            "status": self.status,
+            "provider_code": self.code,
+            "request_id": self.request_id,
+            "retryable": self.retryable,
+        }
 
 
 class UnresolvedExecutionError(RuntimeError):

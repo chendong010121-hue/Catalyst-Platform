@@ -1,0 +1,3 @@
+interface:
+  display_name: "Catalyst Evaluation Lifecycle"
+  short_description: "Separate product use, evaluation and bounded iteration"

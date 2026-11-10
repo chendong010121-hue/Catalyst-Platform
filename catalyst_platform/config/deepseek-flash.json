@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "provider_id": "deepseek",
+  "model": "deepseek-flash",
+  "base_url": "https://api.deepseek.com",
+  "served_models": ["deepseek-flash", "deepseek-v4.1-flash-1017", "DeepSeek-V4.1-Flash-1017"],
+  "price_reference": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+  "verified_at": "2026-10-25T08:09:28Z",
+  "valid_until": "2026-10-26T00:00:00Z",
+  "input_cny_per_million": "2",
+  "output_cny_per_million": "8",
+  "cache_hit_cny_per_million": "0.04",
+  "input_token_limit": 32000,
+  "max_output_tokens": 4096
+}

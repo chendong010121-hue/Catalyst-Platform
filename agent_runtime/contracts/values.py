@@ -263,12 +263,21 @@ class ModelUsage:
 
     input_tokens: int
     output_tokens: int
+    cache_hit_input_tokens: int | None = None
+    cache_miss_input_tokens: int | None = None
 
     def __post_init__(self) -> None:
-        for name in ("input_tokens", "output_tokens"):
+        for name in ("input_tokens", "output_tokens", "cache_hit_input_tokens", "cache_miss_input_tokens"):
             value = getattr(self, name)
+            if value is None and name.startswith("cache_"):
+                continue
             if type(value) is not int or value < 0:
-                raise ValueError(f"ModelUsage.{name} must be a non-negative int, got {value!r}")
+                raise ValueError(f"ModelUsage.{name} must be a non-negative int or None, got {value!r}")
+        hit, miss = self.cache_hit_input_tokens, self.cache_miss_input_tokens
+        if (hit is None) != (miss is None):
+            raise ValueError("ModelUsage cache hit/miss counts must either both be present or both be absent")
+        if hit is not None and hit + miss != self.input_tokens:
+            raise ValueError("ModelUsage cache hit/miss counts must sum to input_tokens")
 
     @property
     def total_tokens(self) -> int:

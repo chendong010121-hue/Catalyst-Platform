@@ -1,0 +1,26 @@
+{
+  "fixture_kind": "FROZEN_REAL_RESPONSE_REPLAY_NOT_NEW_MODEL_RESULT",
+  "source_run": "run_41fe1c81fb214880ad2b38a91ea6c881",
+  "response": {
+    "content": "I'll start by inspecting the primary SKILL.md sources and their references.",
+    "finish_reason": "tool_calls",
+    "tool_calls": [
+      {
+        "arguments": "{\"query\": \"Inspect the two SKILL.md files (agent-initialization, penguin-sdk): purpose, applicability, method steps, dependencies, limitations. Also report what reference files exist and their declared roles.\", \"source_ids\": [\"src_576a7d7b0c144bfd\", \"src_7b1488062a8c84dd\"]}",
+        "id": "call_00_3mQWZ1twz3grZ0gsD9Fy6175",
+        "name": "cap_4cf8fc0feaa5e4db"
+      },
+      {
+        "arguments": "{\"query\": \"Expand evidence gap: read references/hooks.md and references/agent-api.md to determine runtime hooks contract, SDK API surface, version constraints, and any stated limits.\", \"source_ids\": [\"src_770d603a2af2c5e0\", \"src_cb94f06a8562e791\"], \"references\": [\"references/depth-and-evidence.md\", \"references/object-completion.md\"]}",
+        "id": "call_01_ElVAC4Rop4mmRzE2m1Qw7389",
+        "name": "cap_2c40697707a2842b"
+      }
+    ],
+    "usage": {
+      "cache_hit_input_tokens": 0,
+      "cache_miss_input_tokens": 1681,
+      "input_tokens": 1681,
+      "output_tokens": 290
+    }
+  }
+}

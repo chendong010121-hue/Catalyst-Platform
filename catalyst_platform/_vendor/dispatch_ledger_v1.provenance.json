@@ -1,0 +1,9 @@
+{
+  "implementation": "existing qualified Catalyst durable Ledger, byte-for-byte",
+  "version": "qualified-host-v1",
+  "sha256": "e8ab364abe523e91144649bae11bdde7b32b4c2812d6c6bdee6d1a1c20444df3",
+  "source_host_commit": "ac775219a16eab7bd11ea9ccf37503422750e667",
+  "source_path": "durable.py",
+  "scope": "Windows local runtime dependency; original msvcrt lock and persisted protocol",
+  "migration": "No historical policy, request slot, ledger, credentials or run state copied. Explicit old-path relocation remains supported under the same hash."
+}
