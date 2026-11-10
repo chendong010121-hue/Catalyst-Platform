@@ -998,6 +998,7 @@ class _WorkbenchCore:
         wiki_search_adapter: Callable[[str, str | None], dict[str, Any]] | None = None,
         understand_skill_root: Path | str | None = None,
         understand_extraction_mode: str = "single_stage",
+        chat_context_plugin=None,
     ) -> None:
         self.workspace = Path(workspace).resolve()
         self.workspace.mkdir(parents=True, exist_ok=True)
@@ -1040,6 +1041,7 @@ class _WorkbenchCore:
             wiki_source_search=self.wiki_search_adapter or self._search_wiki,
             understand_skill_root=Path(understand_skill_root) if understand_skill_root is not None else None,
             understand_extraction_mode=understand_extraction_mode,
+            chat_context_plugin=chat_context_plugin,
         )
         self.plugins.compose("default")
         self._load_acquired_capabilities()

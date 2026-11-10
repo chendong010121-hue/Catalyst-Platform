@@ -245,6 +245,7 @@ def create_harness_plugin_composer(
     wiki_source_search: Callable[[str, str | None], dict[str, Any]],
     understand_skill_root=None,
     understand_extraction_mode="single_stage",
+    chat_context_plugin=None,
 ) -> PluginComposer:
     """Create the one source-controlled plugin profile supported by this Harness."""
 
@@ -264,9 +265,11 @@ def create_harness_plugin_composer(
             apply=lambda context: _apply_understand(context, skill_root=understand_skill_root, extraction_mode=understand_extraction_mode),
         ),
     )
+    if chat_context_plugin is not None:
+        definitions += (chat_context_plugin,)
     return PluginComposer(
         definitions=definitions,
-        profiles={PLUGIN_PROFILE: (EVO_WIKI_PLUGIN_ID, UNDERSTAND_PLUGIN_ID)},
+        profiles={PLUGIN_PROFILE: tuple(plugin.plugin_id for plugin in definitions)},
         host_services={
             "capability.catalog": capability_catalog,
             "wiki.source_search": wiki_source_search,

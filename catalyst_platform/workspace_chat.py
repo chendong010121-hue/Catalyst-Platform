@@ -4,6 +4,10 @@ import json
 import re
 import uuid
 
+from .context import Turn
+from .llm_controls import input_token_envelope
+from .workspace_context import CHAT_HISTORY_SERVICE
+
 
 class WorkspaceChat:
     def __init__(self, app):
@@ -68,18 +72,14 @@ class WorkspaceChat:
         return list(reversed(rows))
 
     def context(self, thread, budget):
-        from .llm_controls import input_token_envelope
-
-        messages = []
-        run_ids = []
-        for row in reversed(self.recent(100, thread=thread, context_only=True)):
-            candidate = [
-                {"role": "user", "content": row["message"]},
-                {"role": "assistant", "content": row["answer"]},
-                *messages,
-            ]
-            if input_token_envelope(json.dumps(candidate, ensure_ascii=False)) > budget:
-                break
-            messages = candidate
-            run_ids.insert(0, row["run_id"])
+        select = self.app.plugins.service(CHAT_HISTORY_SERVICE)
+        if select is None or budget <= 0:
+            return [], []
+        turns = tuple(Turn(row["run_id"], row["message"], row["answer"])
+                      for row in self.recent(thread=thread, context_only=True))
+        messages, run_ids = select(turns, budget)
+        if not set(run_ids) <= {turn.run_id for turn in turns}:
+            raise ValueError("invalid_chat_context_sources")
+        if messages and input_token_envelope(json.dumps(messages, ensure_ascii=False)) > budget:
+            raise ValueError("chat_context_budget_exceeded")
         return messages, run_ids
