@@ -25,32 +25,49 @@ async function boot(){
  await page.locator('[name=api_key]').fill('OFFLINE-SYNTHETIC-PERSISTENCE-KEY');await page.locator('[name=remember_key]').check();
  const saved=page.waitForResponse(r=>r.url()===base+'/api/settings'&&r.request().method()==='POST');await page.locator('#daily-connection-form [type=submit]').click();check((await saved).ok(),'Connect refused');
  let state=await(await fetch(base+'/api/settings')).json();check(state.saved_credential_available&&state.connection_available&&state.connection_mode==='daily','Daily connection not saved');
- async function chat(message){await page.goto(base+'/?chat='+Date.now()+'#home',{waitUntil:'networkidle'});await page.locator('#message-input').fill(message);const pending=page.waitForResponse(r=>r.url()===base+'/api/ask'&&r.request().method()==='POST');await page.locator('#composer [type=submit]').click();const response=await pending;check(response.status()===202,'Chat not dispatched');const {run_id}=await response.json();let result;for(let i=0;i<100;i++){const r=await fetch(base+'/api/runs/'+run_id+'/result');if(r.ok){result=await r.json();break}await new Promise(r=>setTimeout(r,100))}check(result?.status==='success',JSON.stringify(result));return result;}
- const chats=[await chat('你好，请简短介绍自己。'),await chat('请用一句话说明如何开始日常工作。')];
- const beforeRestart=await(await fetch(base+'/api/settings')).json();
- await stop();await boot();await page.reload({waitUntil:'networkidle'});
- state=await(await fetch(base+'/api/settings')).json();check(state.saved_credential_available&&!state.configured,'GET restored a model task or lost saved Key');
+ async function chat(message){await page.locator('#message-input').waitFor();await page.locator('#message-input').fill(message);const pending=page.waitForResponse(r=>r.url()===base+'/api/ask'&&r.request().method()==='POST');await page.locator('#composer [type=submit]').click();const response=await pending;check(response.status()===202,'Chat not dispatched');const {run_id}=await response.json();let result;for(let i=0;i<100;i++){const r=await fetch(base+'/api/runs/'+run_id+'/result');if(r.ok){result=await r.json();break}await new Promise(r=>setTimeout(r,100))}check(result?.status==='success',JSON.stringify(result));return result;}
  await page.goto(base+'/#home',{waitUntil:'networkidle'});
+ check(await page.locator('#chat-thread-select,#new-chat,#load-example').count()===0,'Redundant homepage controls');
+ await page.getByText('上下文', {exact:true}).waitFor();
+ await page.getByText('访问权限', {exact:true}).click();
+ await page.getByRole('paragraph').filter({hasText:/^仅对话$/}).waitFor();
+ await page.getByText('deepseek-flash', {exact:true}).waitFor();
+ await page.locator('#file-input').setInputFiles({name:'offline-note.txt',mimeType:'text/plain',buffer:Buffer.from('Synthetic local attachment')});
+ check(await page.locator('.chip').filter({hasText:'offline-note.txt'}).count()===1,'Attachment selector missing');
+ await page.locator('#clear-file').click();
+ await page.setViewportSize({width:390,height:844});
+ check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Mobile homepage overflows');
+ await page.screenshot({path:path.join(out,'mobile-home.png'),fullPage:true});
+ await page.setViewportSize({width:1280,height:960});
+ const first=await chat('你好，请简短介绍自己。');
+ await page.locator('.chat-turn').first().waitFor();
+ const second=await chat('请用一句话说明如何开始日常工作。');
  await page.locator('.chat-turn').nth(1).waitFor();
- check((await page.locator('.chat-panel').innerText()).includes('你好，请简短介绍自己。'),'Prior question was lost on restart');
- await page.goto(base+'/#settings',{waitUntil:'networkidle'});check(await page.locator('[name=api_key]').inputValue()==='','Key was returned to browser');
+ check(first.chat.thread_id===second.chat.thread_id&&second.chat.context_run_ids.includes(first.run_id),'Follow-up did not continue the same chat');
+ await page.locator('.context-meter summary span').filter({hasText:/%/}).waitFor();
+ await page.screenshot({path:path.join(out,'conversation.png'),fullPage:true});
+ const chats=[first,second];
+ const beforeRestart=await(await fetch(base+'/api/settings')).json();
+ await stop();await boot();
+ await page.goto(base+'/?resume='+Date.now()+'#home',{waitUntil:'networkidle'});
+ state=await(await fetch(base+'/api/settings')).json();check(state.saved_credential_available&&!state.configured,'GET restored a model task or lost saved Key');
+ check(await page.locator('[data-work-thread]').count()===1,'Recent work did not group the conversation');
+ await page.screenshot({path:path.join(out,'home.png'),fullPage:true});
+ await page.locator('[data-work-thread]').click();
+ await page.locator('.chat-turn').nth(1).waitFor();
  const resumed=await chat('继续我们的日常工作。');
- state=await(await fetch(base+'/api/settings')).json();check(state.configured&&state.connection_mode==='daily','User task failed lazy daily reconnect');
- await page.goto(base+'/#home',{waitUntil:'networkidle'});
  await page.locator('.chat-turn').nth(2).waitFor();
  await page.locator('[data-chat-run="'+resumed.run_id+'"]').click();
  await page.locator('[data-obs-run="'+resumed.run_id+'"][aria-expanded="true"]').waitFor();
  await page.goto(base+'/#home',{waitUntil:'networkidle'});
- await page.locator('#new-chat').click();
- await page.waitForFunction(()=>document.querySelector('#chat-thread-select')?.value!=='initial');
- check(await page.locator('.chat-panel > .chat-turn').count()===0,'New conversation inherited visible turns');
+ check(await page.locator('.chat-turn').count()===0,'Home inherited the conversation');
  const separate=await chat('请解释如何验证项目。');
- check(separate.chat.thread_id!=='initial'&&separate.chat.context_run_ids.length===0,'New conversation received previous context');
- await page.locator('#chat-thread-select').selectOption('initial');
+ check(separate.chat.thread_id!==first.chat.thread_id&&separate.chat.context_run_ids.length===0,'New conversation received previous context');
+ await page.goto(base+'/#home',{waitUntil:'networkidle'});
+ await page.locator('[data-work-thread="'+first.chat.thread_id+'"]').click();
  await page.locator('.chat-turn').nth(2).waitFor();
- check(await page.locator('.chat-panel .chat-turn').count()===3,'Could not reopen prior conversation');
  const continued=await chat('回到这条对话继续。');
- check(continued.chat.thread_id==='initial'&&continued.chat.context_run_ids.includes(resumed.run_id)
+ check(continued.chat.thread_id===first.chat.thread_id&&continued.chat.context_run_ids.includes(resumed.run_id)
    &&!continued.chat.context_run_ids.includes(separate.run_id),'Reopened conversation used the wrong context');
  const dailyBeforeExperiment=await(await fetch(base+'/api/settings')).json();
  async function settingsAction(action,data={}){return page.evaluate(async({action,data})=>{const config=await(await fetch('/api/config')).json();const r=await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json','X-Catalyst-CSRF':config.csrf_token},body:JSON.stringify({action,data})});const result=await r.json();if(!r.ok)throw Error(JSON.stringify(result));return result;},{action,data})}

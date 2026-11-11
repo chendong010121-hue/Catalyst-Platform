@@ -36,6 +36,9 @@ class WorkspaceChat:
             thread_id = turn["thread_id"]
             if thread_id not in rows or rows[thread_id]["title"] == "新对话":
                 rows[thread_id] = {"id": thread_id, "title": turn["message"][:48]}
+            rows[thread_id].setdefault("run_ids", []).append(turn["run_id"])
+            rows[thread_id]["last_run_id"] = turn["run_id"]
+            rows[thread_id]["state"] = turn["state"]
         return list(rows.values())
 
     def exists(self, thread_id):
@@ -66,6 +69,7 @@ class WorkspaceChat:
                 "provider": record.get("provider"), "model": record.get("model"),
                 "external_calls": record["external_calls"],
                 "context_run_ids": chat.get("context_run_ids", []),
+                "context_usage": chat.get("context_usage"),
             })
             if len(rows) >= limit:
                 break

@@ -95,6 +95,10 @@ def test_daily_chat_reopens_with_context_and_preserves_earlier_turns(local):
     assert first['mode'] == 'LIVE_CHAT'
     assert '本轮回答由 Host 通过 DeepSeek 模型 API 生成' in str(calls[-1]['messages'])
     assert first['chat']['thread_id'] == 'initial'
+    usage = first['chat']['context_usage']
+    assert usage['input_tokens'] == first['budget']['input_tokens'] == 100
+    assert usage['input_limit'] == session.settings.snapshot()['input_token_limit']
+    assert usage['history_budget'] == 8192
     transport = session.settings.transport_override
     session.settings = WorkspaceSettings(session.app, transport=transport)
     session.settings.connect(connection)
@@ -108,6 +112,11 @@ def test_daily_chat_reopens_with_context_and_preserves_earlier_turns(local):
     assert third['chat']['thread_id'] != first['chat']['thread_id']
     assert '青桐' not in str(calls[-1]['messages'])
     assert len(session.settings.chat.recent()) == 3
+    threads = {row['id']: row for row in session.settings.chat.threads()}
+    assert threads['initial']['run_ids'] == [first['run_id'], second['run_id']]
+    assert threads['initial']['last_run_id'] == second['run_id']
+    assert threads[third['chat']['thread_id']]['run_ids'] == [third['run_id']]
+    assert session.settings.chat.recent(thread='initial')[-1]['context_usage'] == second['chat']['context_usage']
 
 
 @pytest.mark.parametrize('enabled', [False, True])
