@@ -45,6 +45,12 @@ async function boot(){
  await page.locator('.chat-turn').nth(1).waitFor();
  check(first.chat.thread_id===second.chat.thread_id&&second.chat.context_run_ids.includes(first.run_id),'Follow-up did not continue the same chat');
  await page.locator('.context-meter summary span').filter({hasText:/%/}).waitFor();
+ await page.locator('.chat-stats').nth(1).waitFor();
+ await page.waitForFunction(()=>{const t=[...document.querySelectorAll('.chat-stats')].at(-1)?.innerText||'';return t.includes('↑ 100')&&t.includes('↓ 20')&&t.includes('tok/s')});
+ await page.context().grantPermissions(['clipboard-read','clipboard-write'],{origin:base});
+ await page.locator('[data-copy-answer]').last().click();
+ check(await page.evaluate(()=>navigator.clipboard.readText())===second.result.output.answer,'Copy changed reply text');
+ await page.waitForFunction(()=>!document.querySelector('.chat-panel')?.getAnimations({subtree:true}).some(a=>a.playState==='running'));
  await page.screenshot({path:path.join(out,'conversation.png'),fullPage:true});
  const chats=[first,second];
  const beforeRestart=await(await fetch(base+'/api/settings')).json();
@@ -59,6 +65,15 @@ async function boot(){
  await page.locator('.chat-turn').nth(2).waitFor();
  await page.locator('[data-chat-run="'+resumed.run_id+'"]').click();
  await page.locator('[data-obs-run="'+resumed.run_id+'"][aria-expanded="true"]').waitFor();
+ check(await page.locator('[data-obs-thread]').count()===1,'Observability did not group the conversation');
+ check(await page.locator('[data-obs-thread-row]').innerText().then(t=>t.includes('3 轮')),'Conversation summary lost a turn');
+ await page.reload({waitUntil:'networkidle'});
+ await page.locator('[data-obs-run="'+resumed.run_id+'"][aria-expanded="true"]').waitFor();
+ await page.screenshot({path:path.join(out,'conversation-observability.png'),fullPage:true});
+ await page.locator('[data-obs-thread]').click();
+ await page.locator('[data-obs-run="'+resumed.run_id+'"]').waitFor({state:'detached'});
+ await page.locator('[data-obs-thread]').click();
+ await page.locator('[data-obs-run="'+resumed.run_id+'"]').waitFor();
  await page.goto(base+'/#home',{waitUntil:'networkidle'});
  check(await page.locator('.chat-turn').count()===0,'Home inherited the conversation');
  const separate=await chat('请解释如何验证项目。');
@@ -69,6 +84,11 @@ async function boot(){
  const continued=await chat('回到这条对话继续。');
  check(continued.chat.thread_id===first.chat.thread_id&&continued.chat.context_run_ids.includes(resumed.run_id)
    &&!continued.chat.context_run_ids.includes(separate.run_id),'Reopened conversation used the wrong context');
+ await page.goto(base+'/#runs',{waitUntil:'networkidle'});
+ await page.locator('[data-obs-thread]').nth(1).waitFor();
+ check(await page.locator('[data-obs-thread]').count()===2,'Independent conversations merged');
+ check(await page.locator('[data-obs-thread][aria-expanded="true"]').count()===0,'Overview did not default to collapsed conversations');
+ check(await page.locator('[data-obs-run="'+continued.run_id+'"]').count()===0,'Overview still lists individual chat turns by default');
  const dailyBeforeExperiment=await(await fetch(base+'/api/settings')).json();
  async function settingsAction(action,data={}){return page.evaluate(async({action,data})=>{const config=await(await fetch('/api/config')).json();const r=await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json','X-Catalyst-CSRF':config.csrf_token},body:JSON.stringify({action,data})});const result=await r.json();if(!r.ok)throw Error(JSON.stringify(result));return result;},{action,data})}
  const reviewed=await settingsAction('qualification_check');check(reviewed.qualification_review,'Metadata check produced no review proposal');

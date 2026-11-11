@@ -14,6 +14,27 @@ const nav = [['home','Home'],['agents','Agents'],['wiki','Wiki'],['enterprise','
 // Real local reads. There is deliberately no demo-data fallback on failure.
 const S={planningAllowance:null,testPlans:[],qualificationCheckedFor:null,qualificationChecking:false,offlineCheck:null,offlineBusy:false,workflowGuide:null,workflows:[],projectTests:[],projectTestDraft:{objective:"",max_depth:1,source_id:"",max_requests:8,max_output_tokens:4096},projectSources:[],route:'home',meta:null,csrf:null,caps:[],runs:[],docs:[],imports:[],reviews:[],run:null,result:null,events:[],source:null,graph:null,graphTier:'accepted',wikiTab:'read',wikiModel:null,wikiPage:null,wikiError:null,wikiEv:null,graphError:null,semanticCandidates:null,candidateId:null,candidateError:null,files:[],selected:[],capOpen:false,detail:false,draftMessages:[],draftSaved:false,workText:{},error:null,ready:false,sending:false,settings:null,settingsTab:'models',scope:null,scopes:null,loadedScope:null,wikiScope:null,runProducts:null,dispositions:null};
 let stream=null,toastTimer,readGeneration=0,runReadGeneration=0;
+const chatMotionStarts=new Map();
+function chatViewport(){const panel=document.querySelector('.chat-panel');return panel?{thread:panel.dataset.thread,y:scrollY,bottom:innerHeight+scrollY>=document.documentElement.scrollHeight-100}:null;}
+function restoreChatViewport(previous){
+ const panel=document.querySelector('.chat-panel');if(!panel)return;
+ const thread=panel.dataset.thread;
+ requestAnimationFrame(()=>{if(S.route!=='work'||document.querySelector('.chat-panel')?.dataset.thread!==thread)return;
+  if(previous?.thread===thread&&!previous.bottom)window.scrollTo({top:previous.y,behavior:'instant'});
+  else window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'});
+ });
+}
+function animateChatTurns(){
+ if(S.route!=='work'||!S.chatPending||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ document.querySelectorAll('[data-bubble-key]').forEach(bubble=>{
+  const key=bubble.dataset.bubbleKey;if(!key.startsWith(S.chatPending+':'))return;
+  if(!chatMotionStarts.has(key))chatMotionStarts.set(key,performance.now());
+  const elapsed=performance.now()-chatMotionStarts.get(key);if(elapsed>=560)return;
+  const motion=bubble.animate([{opacity:0,transform:'translateY(12px) scale(.98)',backdropFilter:'blur(0px)'},{opacity:1,transform:'translateY(0) scale(1)',backdropFilter:'blur(26px)'}],{duration:560,easing:'cubic-bezier(.22,1,.36,1)'});
+  motion.currentTime=elapsed;
+ });
+ if(chatMotionStarts.size>200){for(const key of [...chatMotionStarts.keys()].slice(0,100))chatMotionStarts.delete(key);}
+}
 function toast(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),3500)}
 async function api(path,body){for(let attempt=0;;attempt++){const response=await fetch(path,{method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json','X-Catalyst-CSRF':S.csrf},body:body===undefined?undefined:JSON.stringify(body)});const data=await response.json();if(!response.ok){if(body===undefined&&response.status===409&&data.error?.code==='workspace_busy'&&attempt<3){await new Promise(resolve=>setTimeout(resolve,100*(2**attempt)));continue}const error=new Error(data.error?.code||`HTTP_${response.status}`);error.status=response.status;throw error}return data}}
 const go=r=>{if(location.hash===`#${r}`){render();loadRoute()}else location.hash=r};
@@ -61,6 +82,7 @@ async function loadChat(){
     try{S.chat=await api('/api/chat'+(selected?'?thread='+encodeURIComponent(selected):''));}
     catch(error){if(error.status!==404||!selected)throw error;S.chat=await api('/api/chat');}
     S.chatError=null;
+    if(S.route==='work')Observability.loadTurns(S.chat.turns||[]);
   }catch(error){if(error.status===404)S.chat=null;else if(error.status!==409)S.chatError='聊天历史暂时无法读取。'}
 }
 function chatTurn(turn){
@@ -69,10 +91,10 @@ function chatTurn(turn){
       ?(turn.external_calls>0?'模型已回复 · '+turn.model:'模型回复 · 本地验证')
       :'模型对话未完成')
     :'本机说明';
-  return `<article class="chat-turn">
-    <div class="message user-message"><div class="speaker">你</div><div class="message-text">${escape(turn.message)}</div></div>
-    <div class="message"><div class="speaker">Catalyst <small>${escape(status)}</small></div><div class="message-text">${escape(turn.answer)}</div></div>
-    <button class="quiet-link" data-chat-run="${escape(turn.run_id)}">查看本轮调用与证据</button>
+  return `<article class="chat-turn" data-chat-turn="${escape(turn.run_id)}">
+    <div class="message user-message"><div class="speaker">你</div><div class="message-text" data-bubble-key="${escape(turn.run_id)}:user">${escape(turn.message)}</div></div>
+    <div class="message assistant-message"><div class="speaker">Catalyst <small>${escape(status)}</small></div><div class="message-text" data-bubble-key="${escape(turn.run_id)}:assistant">${escape(turn.answer)}</div></div>
+    <div class="chat-turn-footer"><div class="chat-metrics" data-chat-metrics="${escape(turn.run_id)}">${Observability.chatSummary(turn.run_id)}</div><button class="quiet-link" data-copy-answer>复制回复</button><button class="quiet-link" data-chat-run="${escape(turn.run_id)}" data-chat-thread="${escape(turn.thread_id||S.routeParams?.thread||'')}">调用详情 ↗</button></div>
   </article>`;
 }
 function composerControls(){
@@ -103,11 +125,11 @@ function chatPanel(current=null){
  if(current?.chat?.thread_id===thread&&!active.some(turn=>turn.run_id===current.run_id)){
    active.push({...current,message:current.chat.message,answer:current.result?.output?.answer||current.error?.code||''});
  }
- const pending=!current&&S.chatPending===S.run?.run_id;
- return `<section class="chat-panel" aria-label="对话">
+ const pending=!current&&S.chatPending===S.run?.run_id&&!active.some(turn=>turn.run_id===S.chatPending);
+ return `<section class="chat-panel" data-thread="${escape(thread||'')}" aria-label="对话">
    ${S.chatError?`<p class="note">${escape(S.chatError)}</p>`:''}
    ${active.map(chatTurn).join('')}
-   ${pending?`<article class="message user-message"><div class="speaker">你</div><div class="message-text">${escape(S.workText[S.run.run_id]||'')}</div></article><p role="status">正在等待回复…</p><button id="cancel" class="secondary">停止后续步骤</button>`:''}
+   ${pending?`<article class="message user-message"><div class="speaker">你</div><div class="message-text" data-bubble-key="${escape(S.run.run_id)}:user">${escape(S.workText[S.run.run_id]||'')}</div></article><p role="status">正在等待回复…</p><button id="cancel" class="secondary">停止后续步骤</button>`:''}
    ${compose()}
  </section>`;
 }
@@ -244,9 +266,9 @@ function assetDocument(a){
 
 // OBSERVABILITY_MODULE_BEGIN — read-only presentation over existing R4 interfaces.
 const Observability = (() => {
- const revision='OBS-20261024-1';
+ const revision='OBS-20261111-conversations';
  const labelKind=k=>({natural_language_ask:'工作任务',workspace_ontology_read:'本体查询',workspace_asset_read:'资产查询'}[k]||k||'运行');
- const cache=new Map(),rawRecords=new Map(),openKeys=new Set(); let busy=false,loadError='',target=12,activeReads=0; const readQueue=[];
+ const cache=new Map(),rawRecords=new Map(),openKeys=new Set(),openThreads=new Set(),inflight=new Map(); let busy=false,loadError='',target=12,activeReads=0; const readQueue=[];
  const read=path=>new Promise((resolve,reject)=>{readQueue.push({path,resolve,reject});pump();});
  function pump(){while(activeReads<2&&readQueue.length){const job=readQueue.shift();activeReads++;api(job.path).then(job.resolve,job.reject).finally(()=>{activeReads--;pump();});}}
  function remember(run,result){const row=S.runs.find(r=>r.run_id===run.run_id);cache.set(run.run_id,{run,result,sequence:run.events?.at(-1)?.sequence??row?.last_sequence});}
@@ -282,13 +304,60 @@ const Observability = (() => {
     receipt?.usage?.prompt_tokens===calls[0].input&&receipt?.usage?.completion_tokens===calls[0].output&&
     typeof rawCost==='string'&&/^\d+(\.\d+)?$/.test(rawCost)&&Number.isFinite(Number(rawCost)))?Number(rawCost):null;
   const tools=events.filter(e=>['authorization.decided','tool.execution.started','tool.execution.denied','tool.execution.unresolved','tool.result'].includes(e.event_type));
-  return {run,result,events,calls,mode,known:known.length,input,output,cost,tools,
+  const generationMs=calls.length&&calls.every(c=>c.response&&c.input!==null&&c.output!==null&&c.ms!==null&&c.ms>0)?calls.reduce((n,c)=>n+c.ms,0):null;
+  const root=events.find(e=>e.event_type==='span.started'&&e.span_name==='catalyst.run'&&!e.parent_span_id);
+  const elapsed=number(terminal?.duration_ms)??number(ended.get(root?.span_id)?.duration_ms);
+  return {run,result,events,calls,mode,known:known.length,input,output,cost,tools,generationMs,
+   outputPerSecond:generationMs===null?null:output/(generationMs/1000),
    completeUsage:calls.length>0&&known.length===calls.length,
-   status:terminal?.terminal_status||run?.status||'incomplete',ms:number(terminal?.duration_ms),
+   status:terminal?.terminal_status||run?.status||'incomplete',ms:elapsed,
    started:run?.started_at||events.find(e=>e.event_type==='request.started')?.timestamp,
    external:count(result?.external_calls),models:[...new Set(calls.map(c=>c.model))].join(' · ')||'无模型记录'};
  }
  function selected(){return S.run?project(S.run,S.result):null;}
+ function forRun(id){if(S.run?.run_id===id)return selected();const row=cache.get(id);return row?project(row.run,row.result):null;}
+ async function hydrate(row){
+  if(inflight.has(row.run_id))return inflight.get(row.run_id);
+  const job=(async()=>{const run=await read('/api/runs/'+encodeURIComponent(row.run_id));let result=null;
+   try{result=await read('/api/runs/'+encodeURIComponent(row.run_id)+'/result');}catch(e){if(e.status!==404)throw e;}
+   const sequence=run.events?.at(-1)?.sequence??row.last_sequence;
+   cache.set(row.run_id,{run,result,sequence});
+  })();inflight.set(row.run_id,job);
+  try{await job;}finally{inflight.delete(row.run_id);}
+ }
+ async function loadTurns(turns){
+  const pending=turns.filter(turn=>!cache.get(turn.run_id)?.result&&S.run?.run_id!==turn.run_id);
+  if(!pending.length)return;
+  await Promise.allSettled(pending.map(turn=>hydrate(S.runs.find(row=>row.run_id===turn.run_id)||turn)));
+  if(S.route!=='work')return;
+  const updated=new Set(pending.map(turn=>turn.run_id));
+  for(const node of document.querySelectorAll('[data-chat-metrics]')){
+   if(updated.has(node.dataset.chatMetrics))node.innerHTML=chatSummary(node.dataset.chatMetrics);
+  }
+ }
+ function chatSummary(id){
+  const p=forRun(id);
+  if(!p)return '<span class="chat-stat muted">指标暂未载入</span>';
+  const speed=p.outputPerSecond===null?'速度未记录':`≈ ${p.outputPerSecond.toFixed(1)} tok/s`;
+  return `<div class="chat-stats" aria-label="本轮调用摘要"><time>${escape(date(p.started))}</time><span title="输入 Token，包含本次携带的历史">↑ ${p.completeUsage?fmt(p.input):'未记录'}</span><span title="输出 Token">↓ ${p.completeUsage?fmt(p.output):'未记录'}</span><span title="平均输出速度：输出 Token / 模型请求完整耗时，含等待，非纯解码速度">${speed}</span><span title="本轮可归属的费用回执估算，非账单">${p.cost===null?'费用未记录':money(p.cost)+' 估算'}</span><span title="本轮执行耗时">${p.ms===null?'耗时未记录':duration(p.ms)}</span></div>`;
+ }
+ function totals(members){
+  const measured=members.filter(p=>p.completeUsage),costs=members.filter(p=>p.cost!==null),timed=members.filter(p=>p.ms!==null);
+  return {totalRuns:members.length,usageRuns:measured.length,costRuns:costs.length,timeRuns:timed.length,
+   input:measured.reduce((n,p)=>n+p.input,0),output:measured.reduce((n,p)=>n+p.output,0),
+   cost:costs.reduce((n,p)=>n+p.cost,0),ms:timed.reduce((n,p)=>n+p.ms,0)};
+ }
+ function conversations(rows){
+  const groups=new Map();for(const p of rows){
+   const thread=p.result?.task_type==='basic_chat'?p.result?.chat?.thread_id:null;
+   const key=thread?'thread:'+thread:'run:'+p.run.run_id;
+   if(!groups.has(key))groups.set(key,{key,thread,members:[]});groups.get(key).members.push(p);
+  }const result=[...groups.values()];
+  for(const group of result)group.members.sort((a,b)=>(Date.parse(b.started)||0)-(Date.parse(a.started)||0));
+  return result.sort((a,b)=>(Date.parse(b.members[0].started)||0)-(Date.parse(a.members[0].started)||0));
+ }
+ function openThread(id){if(id)openThreads.add(id);}
+ function collapseThreads(){openThreads.clear();}
  function entries(){const rows=S.runs.filter(r=>cache.has(r.run_id)&&cache.get(r.run_id).sequence===r.last_sequence).map(r=>{
   if(S.run?.run_id===r.run_id)return project(S.run,S.result);
   const c=cache.get(r.run_id);return project({...r,...c.run,status:r.status},c.result);
@@ -296,15 +365,13 @@ const Observability = (() => {
  function filtered(rows){const needle=view.q.trim().toLowerCase();return rows.filter(p=>{
   const inRange=view.days==='all'||(Number.isFinite(Date.parse(p.started))&&Date.parse(p.started)>=Date.now()-Number(view.days)*86400000);
   return inRange&&(view.status==='all'||p.status===view.status)&&(view.mode==='all'||p.mode===view.mode)&&
-   (!needle||[p.run.run_id,p.run.request_kind,p.models,S.workText[p.run.run_id]||''].join(' ').toLowerCase().includes(needle));
+   (!needle||[p.run.run_id,p.run.request_kind,p.models,p.result?.chat?.thread_id,p.result?.chat?.message,S.workText[p.run.run_id]||''].join(' ').toLowerCase().includes(needle));
  });}
  async function load(more=false){
   if(busy)return;if(more)target=Math.min(100,target+12);busy=true;loadError='';if(S.route==='runs')render();
   const queue=S.runs.slice(0,target).filter(r=>{const c=cache.get(r.run_id);return !c||!c.result||c.sequence!==r.last_sequence||r.status==='running';});
   async function worker(){while(queue.length){const row=queue.shift();try{
-   const run=await read('/api/runs/'+encodeURIComponent(row.run_id));let result=null;
-   try{result=await read('/api/runs/'+encodeURIComponent(row.run_id)+'/result');}catch(e){if(e.status!==404)throw e;}
-   cache.set(row.run_id,{run,result,sequence:row.last_sequence});
+   await hydrate(row);
   }catch(e){cache.delete(row.run_id);loadError='部分运行读取失败；未计入统计，可手动刷新。';}}}
   try{await Promise.all([worker(),worker()]);}finally{busy=false;if(S.route==='runs')render();}
  }
@@ -334,17 +401,29 @@ const Observability = (() => {
   function depth(s){let n=0,seen=new Set([s.span_id]);while(s.parent_span_id&&byId.has(s.parent_span_id)&&n<8&&!seen.has(s.parent_span_id)){seen.add(s.parent_span_id);s=byId.get(s.parent_span_id);n++;}return n;}
   return `<p class="note">按原始记录展示调用层级与已记录耗时。</p><div class="obs-flow">${spans.map(s=>{const end=ends.get(s.span_id),ms=number(end?.duration_ms);return `<details class="obs-span obs-depth-${depth(s)}" data-obs-span="${escape((S.run?.run_id||'')+':'+s.span_id)}" ${openKeys.has((S.run?.run_id||'')+':'+s.span_id)?'open':''}><summary><span class="obs-span-name">${escape(s.span_name||'span')}</span><svg class="obs-span-bar" width="100" height="6" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true"><rect class="track" width="100" height="6" rx="3"></rect><rect class="fill" width="${ms===null?0:Math.max(1,ms/max*100)}" height="6" rx="3"></rect></svg><span class="obs-span-time">${duration(ms)} · ${escape(end?.status||'无结束事件')}</span></summary><div class="obs-span-details"><small>Span ${escape(s.span_id)} · Parent ${escape(s.parent_span_id||'无')}</small>${raw(p.events.filter(e=>e.span_id===s.span_id&&e.event_type!=='span.started'))}</div></details>`;}).join('')||empty('没有 span 记录','可在原始 R4 标签查看已存在的事件。')}</div>${p.tools.length?`<h3>工具与权限决定</h3>${raw(p.tools)}`:''}`;
  }
- function calls(p){return `<p class="note">请求开始事件不等于已发送 HTTP。真实外发以原结果/账本资格为准；模型推理内容未在此自动展示。</p><div class="obs-scroll"><table class="obs-table"><thead><tr><th>请求 / 模型</th><th>状态</th><th>输入 / 输出</th><th>缓存命中</th><th>耗时</th></tr></thead><tbody>${p.calls.map((c,i)=>`<tr><td><strong>#${i+1} ${escape(c.model)}</strong><small>${escape(c.provider)} · ${escape(c.id)}</small></td><td>${escape(c.status)}<small>${escape(c.failure?.error_code||c.response?.finish_reason||'')}</small></td><td>${fmt(c.input)} / ${fmt(c.output)}</td><td>${fmt(c.hit)}</td><td>${duration(c.ms)}</td></tr>`).join('')}</tbody></table></div>${!p.calls.length?empty('本次没有模型请求记录','LOCAL_INFO 不调用模型；旧记录也可能尚未采集。'):''}<div class="inline-notice">精确上下文组成、角色 Token 分解、压缩和剪枝历史：未采集。当前聊天“最近6条文本/无工具”的配置说明，不冒充该次请求内容的观测证明。</div>`;}
+ function calls(p){return `<p class="note">请求开始事件不等于已发送 HTTP。真实外发以原结果/账本资格为准；模型推理内容未在此自动展示。</p><div class="obs-scroll"><table class="obs-table"><thead><tr><th>请求 / 模型</th><th>状态</th><th>输入 / 输出</th><th>缓存命中</th><th>耗时</th></tr></thead><tbody>${p.calls.map((c,i)=>`<tr><td><strong>#${i+1} ${escape(c.model)}</strong><small>${escape(c.provider)} · ${escape(c.id)}</small></td><td>${escape(c.status)}<small>${escape(c.failure?.error_code||c.response?.finish_reason||'')}</small></td><td>${fmt(c.input)} / ${fmt(c.output)}</td><td>${fmt(c.hit)}</td><td>${duration(c.ms)}</td></tr>`).join('')}</tbody></table></div>${!p.calls.length?empty('本次没有模型请求记录','LOCAL_INFO 不调用模型；旧记录也可能尚未采集。'):''}<div class="inline-notice">精确上下文组成、角色 Token 分解、压缩和剪枝历史：未采集。聊天历史按已注册的上下文策略和预算选取；这里仅展示本轮真实记录。</div>`;}
  function detail(p){
-  const task=S.workText[p.run.run_id]||labelKind(p.run.request_kind);
+  const task=S.workText[p.run.run_id]||p.result?.chat?.message||labelKind(p.run.request_kind);
   const mode={LIVE_CHAT:'模型对话',MOCK:'本地模拟',LOCAL_INFO:'本机说明',UNKNOWN:'类型未记录'}[p.mode]||p.mode;
   const identityKey=p.run.run_id+':identity';
   return `<section class="obs-detail" id="obs-detail" aria-label="运行详情"><div class="panel-heading"><div><p class="obs-eyebrow">运行详情</p><h2>${escape(task)}</h2><p class="obs-detail-caption">${escape(mode)} · ${date(p.started)}</p></div></div>${stages(p)}<dl class="obs-facts"><div><dt>模型</dt><dd>${escape(p.models)}</dd></div><div><dt>耗时</dt><dd>${duration(p.ms)}</dd></div><div><dt>回执估算</dt><dd>${money(p.cost)}</dd></div></dl><div class="ontology-tabs" role="group" aria-label="运行详情视图">${[['flow','执行链'],['calls','模型调用'],['raw','证据与 R4']].map(([id,t])=>`<button aria-pressed="${view.tab===id}" class="${view.tab===id?'selected':''}" data-obs-tab="${id}">${t}</button>`).join('')}</div>${view.tab==='flow'?flow(p):view.tab==='calls'?calls(p):`<label class="obs-event-filter">事件类别<select id="obs-event">${[['all','全部'],['llm.','模型'],['tool.','工具'],['authorization.','权限'],['span.','Span'],['request.','请求']].map(([v,l])=>`<option value="${v}" ${view.event===v?'selected':''}>${l}</option>`).join('')}</select></label>${raw(p.events.filter(e=>view.event==='all'||e.event_type.startsWith(view.event)))}`}<details class="disclosure obs-identity" data-obs-section="${escape(identityKey)}" ${openKeys.has(identityKey)?'open':''}><summary>运行身份与数据边界</summary><div class="obs-identity-body"><p class="break-id">Run：${escape(p.run.run_id)}<br>请求：${escape(p.result?.request_id||p.events[0]?.request_id||'未记录')}<br>会话：${escape(p.result?.session_id||p.events.find(e=>e.session_id)?.session_id||'未记录')}</p><p>原始类型：${escape(p.mode)} · 结果记录外发 ${fmt(p.external)} 次<br>Runtime：${escape(p.result?.capture?.runtime_terminal||p.result?.status||'未记录')} · 结构验证：${escape(p.result?.capture?.typed_capture??'未记录')}<br>业务语义：未评价 · 正式 Wiki 版本：${escape(p.result?.version_id||'无已记录版本')}</p><p>缺失记录不等于零。耗时按已记录的 span 展示，不将嵌套耗时相加；估算不是账单。结构通过不代表业务语义已通过。原始正文仅在展开相应事件后显示，页面不会外发事件。</p></div></details></section>`;
  }
+ function runRowsHtml(rows,nested=false){return rows.map(p=>`<tr data-obs-row="${escape(p.run.run_id)}" class="obs-run-row${nested?' obs-chat-run':''} ${S.run?.run_id===p.run.run_id?'selected':''} ${p.status==='running'?'is-running':''}"><td><button data-obs-run="${escape(p.run.run_id)}" aria-expanded="${S.run?.run_id===p.run.run_id}" ${S.run?.run_id===p.run.run_id?'aria-controls="obs-detail"':''}>${escape(S.workText[p.run.run_id]||p.result?.chat?.message||labelKind(p.run.request_kind))}</button><small>${date(p.started)}</small><small class="break-id">${escape(p.run.run_id)}</small></td><td>${escape(statusText(p.status))}<small>${escape(p.mode)}</small></td><td>${escape(p.models)}</td><td>${duration(p.ms)}</td><td>${p.completeUsage?`${fmt(p.input)} / ${fmt(p.output)}`:'未完整记录'}</td><td>${money(p.cost)}</td></tr>${S.run?.run_id===p.run.run_id?`<tr class="obs-detail-row"><td colspan="6">${detail(p)}</td></tr>`:''}`).join('');}
+
+ function conversationRows(groups){return groups.map(group=>{
+  if(!group.thread)return runRowsHtml(group.members);
+  const members=group.members,t=totals(members),latest=members[0],oldest=members.at(-1);
+  const title=(S.chat?.threads||[]).find(row=>row.id===group.thread)?.title||oldest.result.chat.message||'对话';
+  const opened=openThreads.has(group.thread)||members.some(p=>p.run.run_id===S.run?.run_id);
+  const failed=members.filter(p=>['failure','incomplete','interrupted'].includes(p.status)).length;
+  const status=members.some(p=>p.status==='running')?'运行中':failed?`${failed} 轮需查看`:'对话记录';
+  const coverage=(n,label)=>`${label} ${n}/${t.totalRuns} 轮`;
+  return `<tr class="obs-conversation-row" data-obs-thread-row="${escape(group.thread)}"><td><button data-obs-thread="${escape(group.thread)}" aria-expanded="${opened}">${escape(title)}</button><small>已载入 ${members.length} 轮 · ${date(latest.started)}</small></td><td>${status}<small>同一对话</small></td><td>${escape([...new Set(members.map(p=>p.models))].join(' · '))}</td><td title="各轮执行耗时合计，不含轮间等待">${t.timeRuns?duration(t.ms):'未记录'}<small>${coverage(t.timeRuns,'已记录')}</small></td><td>${t.usageRuns?fmt(t.input)+' / '+fmt(t.output):'未记录'}<small>${coverage(t.usageRuns,'已记录')}</small></td><td>${t.costRuns?money(t.cost):'未记录'}<small>${coverage(t.costRuns,'估算覆盖')}</small></td></tr>${opened?runRowsHtml(members,true):''}`;
+ }).join('');}
  function page(){
-  rawRecords.clear();const all=entries(),rows=filtered(all),eligible=rows.filter(p=>p.mode==='LIVE_CHAT'),measured=eligible.filter(p=>p.completeUsage);
+  rawRecords.clear();const all=entries(),groups=conversations(all).filter(group=>filtered(group.members).length),rows=groups.flatMap(group=>group.members),eligible=rows.filter(p=>p.mode==='LIVE_CHAT'),measured=eligible.filter(p=>p.completeUsage);
   const costs=eligible.filter(p=>p.cost!==null);const callsCount=eligible.reduce((n,p)=>n+p.calls.length,0);
-  return `${head('Observability','先看发生了什么，再展开调用与证据。',`<button id="refresh" class="secondary">刷新</button>`)}<div class="obs-toolbar"><input id="obs-search" class="search" placeholder="搜索 Run、任务类型、模型…" aria-label="搜索运行" value="${escape(view.q)}"><select id="obs-status" aria-label="运行状态">${[['all','全部状态'],['success','完成'],['failure','失败'],['running','运行中'],['interrupted','中断'],['incomplete','不完整']].map(([v,t])=>`<option value="${v}" ${view.status===v?'selected':''}>${t}</option>`).join('')}</select><select id="obs-mode" aria-label="运行类型">${[['all','全部类型'],['LIVE_CHAT','模型聊天'],['MOCK','MOCK'],['LOCAL_INFO','本地说明'],['UNKNOWN','类型未记录']].map(([v,t])=>`<option value="${v}" ${view.mode===v?'selected':''}>${t}</option>`).join('')}</select><select id="obs-days" aria-label="时间范围">${[['all','已载入全部'],['7','近7天'],['30','近30天']].map(([v,t])=>`<option value="${v}" ${view.days===v?'selected':''}>${t}</option>`).join('')}</select></div><p class="obs-coverage">当前工作区：索引 ${S.runs.length} 条，已载入 ${all.length} 条，筛选 ${rows.length} 条${busy?' · 正在只读载入…':''}。${loadError?escape(loadError):'未载入记录不计入统计，不扫描外部实验。'}</p><div class="obs-metrics"><div><small>筛选内运行</small><strong>${rows.length}</strong><span>失败 ${rows.filter(p=>p.status==='failure').length} · 不完整 ${rows.filter(p=>p.status==='incomplete').length}</span></div><div><small>已分类聊天请求记录</small><strong>${callsCount}</strong><span>开始事件，不冒充 HTTP 发送数</span></div><div><small>已报告 Token</small><strong>${measured.length?fmt(measured.reduce((n,p)=>n+p.input+p.output,0)):'未记录'}</strong><span>完整用量 ${measured.length}/${eligible.filter(p=>p.calls.length).length} 条模型运行</span></div><div><small>可归属回执估算</small><strong>${costs.length?money(costs.reduce((n,p)=>n+p.cost,0)):'未记录'}</strong><span>覆盖 ${costs.length} 条；非账单，不叠加 scope 累计</span></div></div>${chart(rows)}<div class="obs-scroll"><table class="obs-table"><thead><tr><th>运行 / 时间</th><th>状态 / 类型</th><th>模型</th><th>耗时</th><th>输入 / 输出</th><th>回执估算</th></tr></thead><tbody>${rows.map(p=>`<tr data-obs-row="${escape(p.run.run_id)}" class="obs-run-row ${S.run?.run_id===p.run.run_id?'selected':''} ${p.status==='running'?'is-running':''}"><td><button data-obs-run="${escape(p.run.run_id)}" aria-expanded="${S.run?.run_id===p.run.run_id}" ${S.run?.run_id===p.run.run_id?'aria-controls="obs-detail"':''}>${escape(S.workText[p.run.run_id]||labelKind(p.run.request_kind))}</button><small>${date(p.started)}</small><small class="break-id">${escape(p.run.run_id)}</small></td><td>${escape(statusText(p.status))}<small>${escape(p.mode)}</small></td><td>${escape(p.models)}</td><td>${duration(p.ms)}</td><td>${p.completeUsage?`${fmt(p.input)} / ${fmt(p.output)}`:'未完整记录'}</td><td>${money(p.cost)}</td></tr>${S.run?.run_id===p.run.run_id?`<tr class="obs-detail-row"><td colspan="6">${detail(p)}</td></tr>`:''}`).join('')}</tbody></table></div>${!rows.length?empty(busy?'正在载入运行':'没有匹配记录',loadError||'可调整筛选；不会切换为演示数据。'):''}${all.length<S.runs.length?`<button class="secondary obs-more" id="obs-more" ${busy?'disabled':''}>${busy?'正在载入…':'再载入12条记录'}</button>`:''}${!rows.some(p=>p.run.run_id===S.run?.run_id)?'<p class="obs-select-hint">选择一条运行，在该条目下方展开执行链、模型调用与原始 R4。</p>':''}<p class="footer-note">界面构建 ${revision} · 后端启动身份 ${escape(S.meta?.source_identity?.commit?.slice(0,12))}（启动时快照）。展示缺失不是零，结构通过不是业务语义通过。</p>${note()}`;
+  return `${head('Observability','按对话汇总，展开后查看每轮调用与证据。',`<button id="refresh" class="secondary">刷新</button>`)}<div class="obs-toolbar"><input id="obs-search" class="search" placeholder="搜索对话、消息、Run、模型…" aria-label="搜索运行" value="${escape(view.q)}"><select id="obs-status" aria-label="运行状态">${[['all','全部状态'],['success','完成'],['failure','失败'],['running','运行中'],['interrupted','中断'],['incomplete','不完整']].map(([v,t])=>`<option value="${v}" ${view.status===v?'selected':''}>${t}</option>`).join('')}</select><select id="obs-mode" aria-label="运行类型">${[['all','全部类型'],['LIVE_CHAT','模型聊天'],['MOCK','MOCK'],['LOCAL_INFO','本地说明'],['UNKNOWN','类型未记录']].map(([v,t])=>`<option value="${v}" ${view.mode===v?'selected':''}>${t}</option>`).join('')}</select><select id="obs-days" aria-label="时间范围">${[['all','已载入全部'],['7','近7天'],['30','近30天']].map(([v,t])=>`<option value="${v}" ${view.days===v?'selected':''}>${t}</option>`).join('')}</select></div><p class="obs-coverage">当前工作区：索引 ${S.runs.length} 条，已载入 ${all.length} 条，筛选 ${rows.length} 条 · ${groups.length} 项对话或任务${busy?' · 正在只读载入…':''}。${loadError?escape(loadError):'未载入记录不计入统计，不扫描外部实验。'}</p><div class="obs-metrics"><div><small>筛选内运行</small><strong>${rows.length}</strong><span>失败 ${rows.filter(p=>p.status==='failure').length} · 不完整 ${rows.filter(p=>p.status==='incomplete').length}</span></div><div><small>已分类聊天请求记录</small><strong>${callsCount}</strong><span>开始事件，不冒充 HTTP 发送数</span></div><div><small>已报告 Token</small><strong>${measured.length?fmt(measured.reduce((n,p)=>n+p.input+p.output,0)):'未记录'}</strong><span>完整用量 ${measured.length}/${eligible.filter(p=>p.calls.length).length} 条模型运行</span></div><div><small>可归属回执估算</small><strong>${costs.length?money(costs.reduce((n,p)=>n+p.cost,0)):'未记录'}</strong><span>覆盖 ${costs.length} 条；非账单，不叠加 scope 累计</span></div></div>${chart(rows)}<div class="obs-scroll"><table class="obs-table"><thead><tr><th>对话或任务 / 时间</th><th>状态 / 类型</th><th>模型</th><th>耗时</th><th>输入 / 输出</th><th>回执估算</th></tr></thead><tbody>${conversationRows(groups)}</tbody></table></div>${!rows.length?empty(busy?'正在载入运行':'没有匹配记录',loadError||'可调整筛选；不会切换为演示数据。'):''}${all.length<S.runs.length?`<button class="secondary obs-more" id="obs-more" ${busy?'disabled':''}>${busy?'正在载入…':'再载入12条记录'}</button>`:''}${!rows.some(p=>p.run.run_id===S.run?.run_id)?'<p class="obs-select-hint">选择一条运行，在该条目下方展开执行链、模型调用与原始 R4。</p>':''}<p class="footer-note">界面构建 ${revision} · 后端启动身份 ${escape(S.meta?.source_identity?.commit?.slice(0,12))}（启动时快照）。展示缺失不是零，结构通过不是业务语义通过。</p>${note()}`;
  }
  async function closeDetail(event){
   const generation=++runReadGeneration,id=S.run?.run_id;stream?.close();stream=null;
@@ -391,6 +470,13 @@ const Observability = (() => {
   const search=$('#obs-search');if(search)search.oninput=e=>{view.q=e.target.value;const pos=e.target.selectionStart;render();const next=$('#obs-search');next.focus();next.setSelectionRange(pos,pos);};
   for(const [id,key] of [['obs-status','status'],['obs-mode','mode'],['obs-days','days'],['obs-event','event']])if($('#'+id))$('#'+id).onchange=e=>{view[key]=e.target.value;render();$('#'+id)?.focus();};
   document.querySelectorAll('[data-obs-tab]').forEach(b=>b.onclick=()=>{view.tab=b.dataset.obsTab;render();document.querySelector(`[data-obs-tab="${view.tab}"]`)?.focus();});
+  document.querySelectorAll('[data-obs-thread]').forEach(button=>button.onclick=async event=>{
+   const id=button.dataset.obsThread;
+   if(button.getAttribute('aria-expanded')==='true'){
+    openThreads.delete(id);if(S.result?.chat?.thread_id===id)await closeDetail(event);else render();
+   }else{openThreads.add(id);render();}
+   document.querySelectorAll('[data-obs-thread]').forEach(next=>{if(next.dataset.obsThread===id)next.focus({preventScroll:true});});
+  });
   async function toggleRun(id,event){
    if(S.run?.run_id===id){await closeDetail(event);return;}
    await readRun(id,true);
@@ -408,7 +494,7 @@ const Observability = (() => {
   });
   if($('#obs-more'))$('#obs-more').onclick=()=>load(true);
  }
- return {revision,project,stages,page,bind,load,remember,read,labelKind,focusKeeper};
+ return {revision,project,stages,page,bind,load,loadTurns,chatSummary,remember,read,labelKind,focusKeeper,entries,conversations,totals,openThread,collapseThreads};
 })();
 // OBSERVABILITY_MODULE_END
 
@@ -433,9 +519,9 @@ function offlineCheckPanel(){const r=S.offlineCheck;return `<section class="run-
 function experiments(){return `${head('Development','说说你想验证或改进什么，先准备方案，再确认执行。')}<section class="development-composer"><form id="development-form" class="settings-form"><label for="development-request">希望完成什么？</label><textarea id="development-request" name="request" rows="4" maxlength="2000" required placeholder="例如：帮我验证这个项目的职责、接口和复用方式">${escape(S.projectTestDraft.objective)}</textarea><p class="note">AI 会从本机已有配置中选择合适的来源与方法。准备方案需要一次模型请求，最高预约 ¥${escape(S.planningAllowance?.budget_cny||"待核验")}；仅发送你的需求与配置说明，不会自动执行测试。</p><button id="development-prepare" class="primary" type="submit" ${!(S.settings?.connection_available||S.settings?.test_connection_available)||!S.planningAllowance?'disabled':''}>让 AI 准备方案</button>${!(S.settings?.connection_available||S.settings?.test_connection_available)?'<p class="note"><a href="#settings">先连接模型</a></p>':''}</form></section><details class="disclosure"><summary>模型与费用信息</summary><p class="note">开发测试使用已核验的模型与价格；日常连接可继续使用，测试前需完成必要核验。</p><p role="status">当前状态：${escape(S.settings?.qualification_status||'未读取')} · ${escape(S.settings?.qualification_error||'')}<br>价格日期：${escape(S.settings?.price_verified_date||'未核验')}</p><button type="button" class="secondary" id="qualification-check" ${S.qualificationChecking?'disabled':''}>检查官方模型与费用信息</button>${S.settings?.qualification_review?.status==='REVIEW_REQUIRED'?`<p class="note">发现官方信息变化，请审阅后确认。</p><pre class="raw-json">${escape(JSON.stringify(S.settings.qualification_review,null,2))}</pre><button type="button" class="secondary" id="qualification-approve" data-sha="${escape(S.settings.qualification_review.proposal_sha256)}">确认采用已审阅的信息</button>`:''}</details>${S.developmentContext?.files?.length||S.developmentContext?.run_id?`<aside class="inline-notice"><strong>随需求保留的上下文 · 待处理</strong>${S.developmentContext.files.map(f=>`<p>${escape(f.name)} · 尚未上传，未用于方案准备</p>`).join('')}${S.developmentContext.run_id?`<p class="break-id">关联运行 ${escape(S.developmentContext.run_id)} · 仅保留引用，未发送记录正文</p>`:''}<p>当前方案只使用需求文本与本机已准入配置；附件不会自动成为测试来源。</p></aside>`:''}<h2>任务与历史</h2>${projectTestPanel()}${S.workflows.map(w=>`<article class="run-card"><h3>${escape(w.mode)}</h3><p>${escape(w.request)}</p>${badge('待审 · 未执行')}<details><summary>方案详情</summary><pre class="raw-json">${escape(JSON.stringify(w,null,2))}</pre></details></article>`).join('')}`;}
 function rememberTestDraft(form){if(!form)return;const f=new FormData(form);S.projectTestDraft={source_id:f.get('source_id'),objective:f.get('objective'),max_depth:Number(f.get('max_depth')),max_requests:Number(f.get('max_requests')),max_output_tokens:Number(f.get('max_output_tokens')),advanced:!!form.querySelector('details')?.open};}
 function preserveTestDraft(){const form=$('#project-test-form');if(!form)return null;rememberTestDraft(form);const active=document.activeElement;const name=form.contains(active)?active.name:null;const start=active?.selectionStart,end=active?.selectionEnd;return ()=>{const next=name?$('#project-test-form')?.elements.namedItem(name):null;if(next){next.focus({preventScroll:true});if(typeof start==='number'&&next.setSelectionRange)next.setSelectionRange(start,end);}};}
-function render(){const restoreTest=preserveTestDraft();const restoreFocus=S.route==='runs'?Observability.focusKeeper():null;const addressed=WikiContract.parseHash(location.hash);S.route=addressed.route;S.routeParams=addressed.params||{};if(!addressed.known)S.routeUnknown=addressed.name;else S.routeUnknown=null;if(S.route==='wiki'&&S.routeParams.scope&&S.routeParams.scope!==S.scope){S.scope=S.routeParams.scope}if(S.route==='wiki'&&S.routeParams.page&&S.routeParams.page!==S.wikiPage){S.wikiPage=S.routeParams.page}S.wikiVersion=(S.route==='wiki'?(S.routeParams.version||null):S.wikiVersion);$('#nav').innerHTML=nav.map(([id,label])=>`<a class="nav-link ${S.route===id||S.route==='work'&&id==='home'?'active':''}" href="#${id}" title="${label}" ${S.route===id||S.route==='work'&&id==='home'?'aria-current="page"':''}>${icon(id)}<span class="nav-name">${label}</span></a>`).join('');$('#main').innerHTML=(!S.ready?empty('连接本机工作区','正在读取后端身份与配置。'):(S.error?`<div class="inline-notice">实际接口返回：${escape(S.error)}。没有切回演示数据。</div>`:'')+({home,work,agents,wiki,enterprise,runs,reviews,experiments,settings:settingsPage}[S.route])());bind();restoreFocus?.();restoreTest?.();}
+function render(){const chatView=chatViewport();const restoreTest=preserveTestDraft();const restoreFocus=S.route==='runs'?Observability.focusKeeper():null;const addressed=WikiContract.parseHash(location.hash);S.route=addressed.route;S.routeParams=addressed.params||{};if(!addressed.known)S.routeUnknown=addressed.name;else S.routeUnknown=null;if(S.route==='wiki'&&S.routeParams.scope&&S.routeParams.scope!==S.scope){S.scope=S.routeParams.scope}if(S.route==='wiki'&&S.routeParams.page&&S.routeParams.page!==S.wikiPage){S.wikiPage=S.routeParams.page}S.wikiVersion=(S.route==='wiki'?(S.routeParams.version||null):S.wikiVersion);$('#nav').innerHTML=nav.map(([id,label])=>`<a class="nav-link ${S.route===id||S.route==='work'&&id==='home'?'active':''}" href="#${id}" title="${label}" ${S.route===id||S.route==='work'&&id==='home'?'aria-current="page"':''}>${icon(id)}<span class="nav-name">${label}</span></a>`).join('');$('#main').innerHTML=(!S.ready?empty('连接本机工作区','正在读取后端身份与配置。'):(S.error?`<div class="inline-notice">实际接口返回：${escape(S.error)}。没有切回演示数据。</div>`:'')+({home,work,agents,wiki,enterprise,runs,reviews,experiments,settings:settingsPage}[S.route])());bind();animateChatTurns();restoreChatViewport(chatView);restoreFocus?.();restoreTest?.();}
 async function refresh(){try{const assets=await api('/api/assets');S.assets=assets.items||[];S.assetError=assets.error||null}catch(e){S.assetError='ASSET_METADATA_UNAVAILABLE'}syncSelectedAsset();S.settings=await api('/api/settings');accountMenu();const rs=await api('/api/runs?limit=100');S.runs=rs;if(S.route==='wiki'){try{S.assetGraph=await api('/api/asset-connections');S.assetGraphError=null}catch(e){S.assetGraph=null;S.assetGraphError='连接说明暂不可读'}const ds=await api('/api/knowledge');const imports=await api('/api/imports');S.docs=ds.items;S.imports=imports.items}if(S.route==='experiments'){S.workflows=(await api('/api/evaluation-workflows')).items;const tests=await api('/api/project-tests');S.projectTests=tests.items;S.planningAllowance=tests.planning_allowance;S.testPlans=tests.plans||[];}if(S.route==='reviews'){S.reviews=(await api('/api/reviews')).items;try{S.maintenance=await api('/api/maintenance')}catch(e){S.maintenance={items:[],error:e.message}}try{S.capabilityReview=await api('/api/capability-review')}catch(e){S.capabilityReview={items:[],claims:[],errors:[{file:'',violation:e.message}],source:'unknown',write_enabled:false}}}render()}
-async function loadRoute(){const generation=++readGeneration;try{S.error=null;if(S.route==='settings'){S.settings=await api('/api/settings');accountMenu();render();}if(['wiki','reviews','home','runs','experiments'].includes(S.route))await refresh();if(['home','work'].includes(S.route)&&!S.projectLiveScope){await loadChat();render();}if(S.route==='runs')await Observability.load();if(S.route==='wiki'&&(!S.wikiModel||S.wikiScope!==S.scope)){const scopeQuery=S.scope?'?scope='+encodeURIComponent(S.scope):'';try{S.wikiModel=await api('/api/wiki/model'+scopeQuery);S.wikiScope=S.scope;S.wikiError=null}catch(e){S.wikiModel=null;S.wikiScope=S.scope;S.wikiError=e.message}if(S.route==='wiki')render();}if(S.route==='enterprise'){if(S.routeParams?.candidate)S.graphTier='candidate';if(S.routeParams?.scope&&S.routeParams.scope!==S.scope){S.scope=S.routeParams.scope;S.wikiModel=null;S.semanticCandidates=null;S.graph=null;S.graphFocus=null;S.graphEvidence=false}const scopeQuery=S.scope?'?scope='+encodeURIComponent(S.scope):'';
+async function loadRoute(){const generation=++readGeneration;try{S.error=null;if(S.route==='settings'){S.settings=await api('/api/settings');accountMenu();render();}if(['wiki','reviews','home','runs','experiments'].includes(S.route))await refresh();if(['home','work'].includes(S.route)&&!S.projectLiveScope){await loadChat();render();}if(S.route==='runs'){Observability.openThread(S.routeParams?.thread);await Observability.load();if(S.routeParams?.run&&S.run?.run_id!==S.routeParams.run)await readRun(S.routeParams.run,true);}if(S.route==='wiki'&&(!S.wikiModel||S.wikiScope!==S.scope)){const scopeQuery=S.scope?'?scope='+encodeURIComponent(S.scope):'';try{S.wikiModel=await api('/api/wiki/model'+scopeQuery);S.wikiScope=S.scope;S.wikiError=null}catch(e){S.wikiModel=null;S.wikiScope=S.scope;S.wikiError=e.message}if(S.route==='wiki')render();}if(S.route==='enterprise'){if(S.routeParams?.candidate)S.graphTier='candidate';if(S.routeParams?.scope&&S.routeParams.scope!==S.scope){S.scope=S.routeParams.scope;S.wikiModel=null;S.semanticCandidates=null;S.graph=null;S.graphFocus=null;S.graphEvidence=false}const scopeQuery=S.scope?'?scope='+encodeURIComponent(S.scope):'';
   if(!S.wikiModel||S.wikiScope!==S.scope){try{S.wikiModel=await api('/api/wiki/model'+scopeQuery);S.wikiScope=S.scope;S.wikiError=null}catch(e){S.wikiModel=null;S.wikiScope=S.scope;S.wikiError=e.message}}if(!S.semanticCandidates||S.loadedScope!==S.scope){try{S.semanticCandidates=await api('/api/semantic/candidates'+scopeQuery);S.candidateError=null}catch(e){S.semanticCandidates=null;S.candidateError=e.message}try{S.runProducts=await api('/api/run-products'+scopeQuery)}catch(e){S.runProducts={items:[],error:e.message}}try{S.dispositions=await api('/api/review-dispositions'+scopeQuery)}catch(e){S.dispositions={items:[],effective:[]}}S.candidateId=null;S.loadedScope=S.scope}if(S.routeParams?.candidate)S.candidateId=S.routeParams.candidate;S.graphFocus=S.routeParams?.object||null;S.graphEvidence=S.routeParams?.evidence==='1';adjustCandidate();
   const ledgerCandidate=S.candidateId||S.result?.candidate_id;
   if(ledgerCandidate){const opinionQuery=new URLSearchParams({scope:S.scope||'',candidate_id:ledgerCandidate});try{S.opinions=await api('/api/review-item-opinions?'+opinionQuery.toString())}catch(e){S.opinions=null}}else{S.opinions=null}
@@ -498,7 +584,8 @@ function bind(){
  if($('#refresh'))$('#refresh').onclick=async()=>{try{if(S.run)await readRun(S.run.run_id);await refresh();if(S.route==='runs')await Observability.load()}catch(e){S.error=e.message;render()}};
  if($('#new-draft'))$('#new-draft').onclick=()=>{S.capOpen=true;go('agents')};if($('#to-agent'))$('#to-agent').onclick=()=>{S.capOpen=true;go('agents')};
  if($('#toggle-caps'))$('#toggle-caps').onclick=()=>{const value=$('#message-input').value;S.capOpen=!S.capOpen;render();$('#message-input').value=value};
- document.querySelectorAll('[data-chat-run]').forEach(el=>el.onclick=async()=>{go('runs');await readRun(el.dataset.chatRun);});
+ document.querySelectorAll('[data-chat-run]').forEach(el=>el.onclick=()=>{Observability.openThread(el.dataset.chatThread);go('runs?thread='+encodeURIComponent(el.dataset.chatThread||'')+'&run='+encodeURIComponent(el.dataset.chatRun));});
+ document.querySelectorAll('[data-copy-answer]').forEach(el=>el.onclick=async()=>{try{await navigator.clipboard.writeText(el.closest('.chat-turn').querySelector('.assistant-message .message-text').textContent);toast('已复制回复')}catch(e){toast('复制失败，请选择文字复制')}});
  document.querySelectorAll('[data-work-thread]').forEach(el=>el.onclick=()=>{S.result=null;S.chatPending=null;go('work?thread='+encodeURIComponent(el.dataset.workThread));});
  document.querySelectorAll('[data-model-settings]').forEach(el=>el.onclick=()=>go('settings'));
  if($('#all-recent-work'))$('#all-recent-work').onclick=()=>{S.showAllWork=!S.showAllWork;render();};
@@ -530,7 +617,7 @@ async function maintenanceAction(action,rid,target){
 }
 function bindMaintenance(){document.querySelectorAll('[data-maintenance]').forEach(b=>b.onclick=()=>maintenanceAction(b.dataset.maintenance,b.dataset.review,b.dataset.target));}
 $('#skip-to-main').onclick=()=>$('#main').focus();
-$('#about').onclick=()=>$('#info-dialog').showModal();$('#close-info').onclick=()=>$('#info-dialog').close();window.addEventListener('hashchange',()=>{render();loadRoute();window.scrollTo(0,0)});
+$('#about').onclick=()=>$('#info-dialog').showModal();$('#close-info').onclick=()=>$('#info-dialog').close();window.addEventListener('hashchange',()=>{const next=WikiContract.parseHash(location.hash);if(next.route==='runs'&&!next.params?.run){stream?.close();stream=null;S.run=null;S.result=null;S.events=[];Observability.collapseThreads();}render();loadRoute();window.scrollTo(0,0)});
 // Native account disclosure: dismiss locally without changing route or task state.
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){const menu=document.querySelector('.account-menu[open]');if(menu){menu.open=false;menu.querySelector('summary').focus()}}});
 document.addEventListener('pointerdown',event=>{const menu=document.querySelector('.account-menu[open]');if(menu&&!menu.contains(event.target))menu.open=false;});

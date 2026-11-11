@@ -455,8 +455,33 @@ dialog::backdrop{background:#182c4433;backdrop-filter:blur(2px)}
 .composer-popover select,.composer-popover meter{width:100%;margin-top:.5rem}
 .composer-model{padding:.5rem 0;white-space:nowrap;color:var(--ink)}
 .attachment-note{font-size:.75rem;color:var(--muted);padding:0 1rem 1rem;margin:0}
+/* Cirrus-inspired retrofit: quiet frosted surfaces inside the existing white Workplace. */
+.chat-panel{--chat-frost:blur(26px) saturate(130%);--chat-user-tint:rgb(46 128 232 / .075);--chat-ai-tint:rgb(104 134 168 / .045);max-width:900px;margin-inline:auto}
+.chat-panel .chat-turn{padding:12px 0 22px;border:0}
+.chat-panel .message{max-width:680px;margin:16px 0;min-width:0}
+.chat-panel .user-message{margin-left:auto;text-align:right}
+.chat-panel .user-message .speaker{justify-content:flex-end}
+.chat-panel .speaker{margin-bottom:8px;color:var(--muted);font-weight:500}
+.chat-panel .speaker small{font-size:11px;line-height:1.5}
+.chat-panel .message-text{display:inline-block;max-width:100%;padding:16px 22px;border:1px solid rgb(104 134 168 / .08);border-radius:22px;background:var(--chat-ai-tint);backdrop-filter:var(--chat-frost);box-shadow:none;font-size:16px;line-height:1.85;letter-spacing:-.01em;text-align:left;transform-origin:top left;transition:border-radius 200ms ease}
+.chat-panel .user-message .message-text{background:var(--chat-user-tint);border-color:transparent;transform-origin:top right}
+.chat-turn-footer{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin-top:12px;color:var(--muted);font-size:12px}
+.chat-stats{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-variant-numeric:tabular-nums}
+.chat-stats span,.chat-stats time{white-space:nowrap}
+.chat-turn-footer .quiet-link{font-size:12px;padding:4px 0}
+.obs-conversation-row{background:#f6f8fb}
+.obs-conversation-row td{border-top:1px solid var(--line)}
+.obs-conversation-row button{font-weight:600;text-align:left;max-width:300px;overflow-wrap:anywhere}
+.obs-conversation-row button::before{content:'▸';display:inline-block;width:18px;color:var(--muted)}
+.obs-conversation-row button[aria-expanded=true]::before{content:'▾'}
+.obs-chat-run td:first-child{padding-left:24px}
+@media(prefers-reduced-motion:reduce){.chat-panel .message-text{transition:none}}
 @media(max-width:600px){
+ .chat-panel .message{max-width:96%}
+ .chat-panel .message-text{font-size:15px;padding:14px 17px;border-radius:18px}
+ .chat-stats{gap:6px 10px}
  .composer-bottom{flex-wrap:wrap}
  .composer-controls{gap:.65rem}
  .composer-popover{position:fixed;bottom:1rem;left:1rem;right:1rem;width:auto;max-width:none}
 }
+.chat-metrics{display:contents}

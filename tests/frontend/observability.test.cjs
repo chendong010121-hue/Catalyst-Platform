@@ -19,9 +19,46 @@ function trace(overrides={}){return {run_id:'offline-run',status:'success',event
  {event_type:'request.terminal',sequence:5,terminal_status:'success',duration_ms:250}],...overrides};}
 function receipt(){return {mode:'LIVE_CHAT',external_calls:1,status:'success',budget:{charged_cny:'7.99'},model_receipt:{peak_rate_estimated_cny:'0.00036',usage:{prompt_tokens:100,completion_tokens:20}}};}
 test('projects actual response and span duration, not cumulative task spending',()=>{const {O}=setup();const p=O.project(trace(),receipt());assert.equal(p.cost,0.00036);assert.equal(p.input,100);assert.equal(p.output,20);assert.equal(p.calls[0].ms,230);assert.equal(p.ms,250);});
-test('missing usage remains unknown, not zero',()=>{const t=trace();delete t.events[3].input_tokens;const p=setup().O.project(t,receipt());assert.equal(p.calls[0].input,null);assert.equal(p.completeUsage,false);assert.equal(p.cost,null);});
+test('missing usage remains unknown, not zero',()=>{const t=trace();delete t.events[3].input_tokens;const p=setup().O.project(t,receipt());assert.equal(p.calls[0].input,null);assert.equal(p.completeUsage,false);assert.equal(p.cost,null);assert.equal(p.outputPerSecond,null);});
 test('malformed negative, string, fractional token values are not usage',()=>{for(const input of [-1,'100',1.5,Infinity]){const t=trace();t.events[3].input_tokens=input;assert.equal(setup().O.project(t).calls[0].input,null);}});
 test('MOCK cannot produce a genuine cost receipt',()=>{const r=receipt();r.mode='MOCK';assert.equal(setup().O.project(trace(),r).cost,null);});
+
+test('conversation list folds turns by persisted thread id without merging other tasks',()=>{
+ const {O,S}=setup();
+ const a=trace({run_id:'turn-a'}),b=trace({run_id:'turn-b'}),other=trace({run_id:'task'});
+ S.runs=[b,a,other].map(r=>({run_id:r.run_id,last_sequence:5,status:'success'}));
+ O.remember(a,{...receipt(),task_type:'basic_chat',chat:{thread_id:'thread-one',message:'安排今天的工作'}});
+ O.remember(b,{...receipt(),task_type:'basic_chat',chat:{thread_id:'thread-one',message:'再补充一下'}});
+ O.remember(other,receipt());
+ const groups=O.conversations(O.entries());
+ assert.equal(groups.length,2);assert.equal(groups[0].members.length,2);
+ const html=O.page();assert.equal((html.match(/data-obs-thread="thread-one"/g)||[]).length,1);
+ assert.doesNotMatch(html,/data-obs-run="turn-a"/);assert.match(html,/data-obs-run="task"/);
+ O.openThread('thread-one');const opened=O.page();
+ assert.match(opened,/data-obs-run="turn-a"/);assert.match(opened,/data-obs-run="turn-b"/);
+});
+
+test('conversation totals retain partial coverage and never count cumulative scope cost',()=>{
+ const {O}=setup();const a=O.project(trace(),receipt());
+ const missing=O.project(trace({run_id:'missing',events:[]}),{mode:'LIVE_CHAT',budget:{charged_cny:'99'}});
+ const total=O.totals([a,missing]);
+ assert.equal(total.input,100);assert.equal(total.output,20);assert.equal(total.usageRuns,1);
+ assert.equal(total.cost,0.00036);assert.equal(total.costRuns,1);assert.equal(total.totalRuns,2);
+});
+
+test('turn summary uses actual per-call timing and preserves unknown speed',()=>{
+ const {O}=setup();const p=O.project(trace(),receipt());
+ assert.equal(p.generationMs,230);assert.equal(p.outputPerSecond,20/0.23);
+ const missing=trace();missing.events=missing.events.filter(e=>e.event_type!=='span.ended');
+ assert.equal(O.project(missing,receipt()).outputPerSecond,null);
+});
+
+test('run duration falls back to the actual root span without summing nested spans',()=>{
+ const {O}=setup();const t=trace();delete t.events.at(-1).duration_ms;
+ t.events.push({event_type:'span.started',span_id:'root',span_name:'catalyst.run',parent_span_id:null});
+ t.events.push({event_type:'span.ended',span_id:'root',duration_ms:310});
+ assert.equal(O.project(t,receipt()).ms,310);
+});
 test('receipt token mismatch cannot qualify cost',()=>{const r=receipt();r.model_receipt.usage.prompt_tokens=999;assert.equal(setup().O.project(trace(),r).cost,null);});
 test('scope cumulative-only amount is never used as run cost',()=>{const r=receipt();delete r.model_receipt;assert.equal(setup().O.project(trace(),r).cost,null);});
 test('multi-call receipt is not attributed to the whole run',()=>{const t=trace();t.events.push({event_type:'llm.request.started',model_call_id:'m2'});assert.equal(setup().O.project(t,receipt()).cost,null);});
