@@ -443,3 +443,20 @@ dialog::backdrop{background:#182c4433;backdrop-filter:blur(2px)}
 .chat-turn .message{margin-bottom:.75rem}
 .chat-turn .speaker small{margin-left:.5rem;font-weight:400;color:var(--muted)}
 .chat-panel .composer{margin-top:1rem}
+
+.composer-controls{display:flex;align-items:center;justify-content:flex-end;gap:.75rem;margin-left:auto;font-size:.75rem;color:var(--muted)}
+.composer-control{position:relative}
+.composer-control summary{display:flex;align-items:center;gap:.35rem;cursor:pointer;list-style:none;white-space:nowrap;padding:.5rem 0}
+.composer-control summary::-webkit-details-marker{display:none}
+.composer-control[open] summary{color:var(--ink)}
+.composer-popover{position:absolute;bottom:calc(100% + .5rem);right:0;width:19rem;max-width:calc(100vw - 3rem);padding:1rem;background:var(--paper);border:1px solid var(--line);border-radius:.75rem;box-shadow:0 8px 28px #15203016;z-index:5;line-height:1.7}
+.composer-popover p{margin:.5rem 0}
+.composer-popover label{display:block}
+.composer-popover select,.composer-popover meter{width:100%;margin-top:.5rem}
+.composer-model{padding:.5rem 0;white-space:nowrap;color:var(--ink)}
+.attachment-note{font-size:.75rem;color:var(--muted);padding:0 1rem 1rem;margin:0}
+@media(max-width:600px){
+ .composer-bottom{flex-wrap:wrap}
+ .composer-controls{gap:.65rem}
+ .composer-popover{position:fixed;bottom:1rem;left:1rem;right:1rem;width:auto;max-width:none}
+}

@@ -138,12 +138,12 @@
       {
         "path": "catalyst_platform/workspace_assets/app.js",
         "role": "the pages themselves: the Wiki entry, the Enterprise candidate picker and its tiers",
-        "sha256": "493d6607ef760add67479a2c9636d058976c99c7a02684cc4891e283ffa8856c"
+        "sha256": "4d94cc937cf6171c1e2badb783729039d8367ab5a56010961e9f156df0f83295"
       },
       {
         "path": "catalyst_platform/workspace_assets/styles.css",
         "role": "how those pages lay out, including the bounded box a graph is browsed inside",
-        "sha256": "4b97346fc908b30ce004217391af48db73aade19e32e8de5820665f96c4ed174"
+        "sha256": "d5def6e36778b58c512730ed3c22744b3eaebb6c10703d39bee471f5e9ef694a"
       },
       {
         "path": "catalyst_platform/workspace_assets/index.html",
@@ -176,7 +176,7 @@
         "sha256": "5f8d4b74c837fcc488e33a170c220527fc693719c97d02f2448a310206bfa76a"
       }
     ],
-    "implementation_sha256": "85076e75f61438801908119b4dab44605bc790492b492dc288599dd6f38bf154"
+    "implementation_sha256": "bc581031a611703e7719fcdadab25554764b730912aac7532b3c43c6ed457c37"
   },
   "release": "capability-consolidation-20261103",
   "run_identity_fields": [

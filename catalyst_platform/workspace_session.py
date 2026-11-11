@@ -148,6 +148,10 @@ class WorkspaceUserSession(LocalUserSession):
                         budget = min(8192, (metadata.get('input_token_limit') or 0) - input_token_envelope(base) - 4096)
                         history, run_ids = settings.chat.context(thread, budget)
                         output['chat']['context_run_ids'] = run_ids
+                        output['chat']['context_usage'] = {
+                            'input_limit': metadata.get('input_token_limit'),
+                            'history_budget': max(0, budget),
+                        }
                     else:
                         history = settings.history[-6:]
                     contextual = settings.context(caps, model=model, history=history) + '\n当前用户消息：\n' + message
@@ -162,6 +166,11 @@ class WorkspaceUserSession(LocalUserSession):
                                   external_calls=settings.network_attempts - before,
                                   budget=provider.budget_snapshot, model_receipt=settings.last_model_receipt,
                                   scope_id=settings.task.task_id)
+                    usage = output['chat'].setdefault('context_usage', {
+                        'input_limit': metadata.get('input_token_limit'),
+                    })
+                    if output['budget'].get('last_status') == 'metered':
+                        usage['input_tokens'] = output['budget'].get('input_tokens')
                     events=recorder.store.inspect_run(recorder.run_id)['events']
                     output['asset_read_verified']=any(e['event_type']=='tool.result' and
                         e.get('capability_id')=='wiki_assets' and e.get('status')=='success' for e in events)
