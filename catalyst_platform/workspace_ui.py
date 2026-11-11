@@ -183,6 +183,8 @@ def create_workspace_server(workspace, *, port=8792, backend='json', mode='MOCK'
         raise
     original_handler = server.RequestHandlerClass
     identity = _git_identity()
+    # The status tool reads the same startup identity this process serves.
+    session.source_identity = dict(identity)
 
     def asset_projection():
         try:return {'items':session.app.components.assets.list(),'error':None}
@@ -409,7 +411,7 @@ def create_workspace_server(workspace, *, port=8792, backend='json', mode='MOCK'
                 self._json({'csrf_token': self.server.local_csrf_token, 'mode': session.mode,
                             'session_id': session.session_id,
                             'paid_calls_enabled': session.settings.snapshot()['enabled'],
-                            'live_scope': 'TEXT_CHAT_ONLY', 'file_extraction': 'MOCK'})
+                            'live_scope': 'TEXT_CHAT_AND_LOCAL_STATUS', 'file_extraction': 'MOCK'})
                 return
             static = {'/': ('index.html', 'text/html'), '/app.js': ('app.js', 'text/javascript'),
                       '/styles.css': ('styles.css', 'text/css'),

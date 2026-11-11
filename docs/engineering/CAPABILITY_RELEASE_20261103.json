@@ -128,7 +128,7 @@
       {
         "path": "catalyst_platform/workspace_ui.py",
         "role": "the local workbench: the Wiki route and the Enterprise routes",
-        "sha256": "3c1c5c6e74f3a53f6d230cb085797cbb42803ca7418f7c97b4a1ad2fcb5c0448"
+        "sha256": "6623c8adb27b8cba4a1a923794e12f32090e5d0f1301f9417cbf379e2c9f6c1f"
       },
       {
         "path": "catalyst_platform/review_surface.py",
@@ -138,7 +138,7 @@
       {
         "path": "catalyst_platform/workspace_assets/app.js",
         "role": "the pages themselves: the Wiki entry, the Enterprise candidate picker and its tiers",
-        "sha256": "9df8688bbb2bae05a7a862fd60bb24b2735c7cdfd7a2a2c37c622c22d489b9cf"
+        "sha256": "4cb0cd78368b5fade1fc13e5126aded7ff2a134f7225c2485f991ebb7830fcf4"
       },
       {
         "path": "catalyst_platform/workspace_assets/styles.css",
@@ -176,7 +176,7 @@
         "sha256": "5f8d4b74c837fcc488e33a170c220527fc693719c97d02f2448a310206bfa76a"
       }
     ],
-    "implementation_sha256": "bf93d3563345ff5fed3fa6f7ba10a2d24b1b394904c5e706c6b66e86d3cf9884"
+    "implementation_sha256": "f9b05de3698b712f2f379e66c12f02f112bfcc3f2b13b8e93a2b4d9903626a70"
   },
   "release": "capability-consolidation-20261103",
   "run_identity_fields": [

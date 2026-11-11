@@ -72,7 +72,7 @@ def main():
             if args.infrastructure and 'Prepare a test configuration' in p['messages'][-1]['content']:
                 result=packet(json.dumps(dict(source_id='synthetic-documents',objective='理解组织职责，形成有来源的候选',
                     max_depth=1,max_requests=4,max_output_tokens=16384,evaluation_mode='mechanical_plus_independent_review')))
-            elif args.daily_replies and not p.get('tools') and not p.get('response_format'):
+            elif args.daily_replies and not p.get('response_format'):
                 result=packet('这是本地合成日常回复，可以继续工作。')
             elif p.get('response_format'):
                 evidence=json.loads(p['messages'][-1]['content'])['evidence']
