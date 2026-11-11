@@ -18,15 +18,12 @@ def sample(name):
     return json.loads((SAMPLES / f"{name}.claim.json").read_text(encoding="utf-8"))
 
 
-def test_empty_workspace_falls_back_to_the_shipped_examples(tmp_path):
+def test_empty_workspace_reviews_nothing_instead_of_shipped_examples(tmp_path):
     result = review.review(tmp_path)
-    assert result["source"] == "examples"
+    assert result["source"] == "workspace"
+    assert result["items"] == [] and result["claims"] == []
     assert result["write_enabled"] is False
     assert result["scope"] == "READ_ONLY_COMPARISON_NO_WIKI_WRITE"
-    assert [item["relation"] for item in result["items"]] == ["COMPLEMENTARY"]
-    pair = result["items"][0]
-    assert {pair["left"]["id"], pair["right"]["id"]} == {"skill-porting", "plugin-porting"}
-    assert pair["coverage"]["matched"] >= 0
 
 
 def test_workspace_claims_take_precedence_over_examples(tmp_path):

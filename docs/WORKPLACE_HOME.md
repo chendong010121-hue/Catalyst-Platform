@@ -8,7 +8,7 @@
 - 访问权限：展示现有授权状态与预留的策略选项。切换尚未接入，选项禁用，不扩大工具或文件权限。
 - 模型：显示当前配置的模型，点击打开既有设置页。保存的凭证与活动连接的状态放在提示中。
 
-历史选取仍通过已注册的 `context.chat_history` 服务。默认按预算选择近期完整轮次，历史预算最多 8192 个估算 tokens，必要时减少；没有启用自动摘要压缩。省略旧轮次不会删除其运行记录。本批没有修改上下文策略或模型调用权限。
+历史选取仍通过已注册的 `context.chat_history` 服务。默认按预算选择近期完整轮次，历史预算最多 8192 个估算 tokens，必要时减少；没有启用自动摘要压缩。省略旧轮次不会删除其运行记录。
 
 ## 消息与可观测性
 
@@ -24,9 +24,13 @@
 
 前端投影回归：`node --test tests/frontend/observability.test.cjs`。浏览器回归另外验证对话展开/收起、详情跳转、独立对话隔离和复制内容一致性，使用脚本化模型，不作为真实模型性能测量。
 
+## 本机状态
+
+对话中的“系统状态”问题提示要求调用只读工具 `workspace_status` 回答。它读取本工作区的运行结果与终态、R4 事件日志（含 Token 与缓存命中）、配置文件是否存在、能力目录、模型 scope 与费用账本，实际调用成功时，Host 记录为运行结果里的 `workspace_status_read_verified`。发送给模型的是状态元数据，不含其他对话原文或主机绝对路径。提示只保留登记索引，不再附带产品功能说明或 Catalog 描述；没有模型连接时，首页返回的本机说明由同一份读取生成，不使用固定文案。能力比对只读取本工作区 `.catalyst/capability-claims`，没有声明时保持为空，不回退到产品样例。
+
 验证使用本地 HTTP 工作台、脚本化 Provider 和合成凭证，包含进程重启后恢复、对话隔离、从最近工作续聊、实际用量读回、七个页面和手机宽度检查。不会调用真实模型，也不会读取正式凭证。
 
 ```powershell
-python -m pytest -q tests/test_workspace_model_settings.py tests/test_workspace_settings_http.py tests/test_daily_connection_http.py tests/test_wiki_asset_chat.py tests/test_minimum_product.py tests/test_test_infrastructure_http.py tests/test_capability_release.py tests/test_plugin_composition.py
+python -m pytest -q tests/test_workspace_model_settings.py tests/test_workspace_status.py tests/test_workspace_settings_http.py tests/test_daily_connection_http.py tests/test_wiki_asset_chat.py tests/test_minimum_product.py tests/test_test_infrastructure_http.py tests/test_capability_release.py tests/test_plugin_composition.py
 node tests/browser/daily_development_infrastructure.cjs <全新证据目录> <全新测试工作区>
 ```

@@ -25,13 +25,9 @@ def get(base, path):
         return json.load(response)
 
 
-def test_capability_review_is_read_only_and_uses_shipped_samples(service):
+def test_capability_review_is_read_only_and_empty_without_declarations(service):
     value = get(service, '/api/capability-review')
     assert value['write_enabled'] is False
     assert value['scope'] == 'READ_ONLY_COMPARISON_NO_WIKI_WRITE'
-    assert value['source'] == 'examples'
-    (pair,) = value['items']
-    assert pair['relation'] == 'COMPLEMENTARY'
-    assert pair['action'] == 'KEEP_BOTH'
-    assert pair['input_digest']
-    assert {claim['id'] for claim in value['claims']} == {'skill-porting', 'plugin-porting'}
+    assert value['source'] == 'workspace'
+    assert value['items'] == [] and value['claims'] == []

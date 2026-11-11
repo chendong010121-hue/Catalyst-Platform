@@ -13,7 +13,7 @@ def frozen_workspace_tariff_clock(request, monkeypatch):
     if request.node.path.name not in {
         'test_workspace_model_settings.py', 'test_workspace_settings_http.py',
         'test_workspace_ledger_seam.py', 'test_provider_transport_seam.py',
-        'test_wiki_asset_chat.py', 'test_provider_lifecycle.py',
+        'test_wiki_asset_chat.py', 'test_provider_lifecycle.py', 'test_workspace_status.py',
     }:
         return
     import catalyst_platform.workspace_settings as settings

@@ -103,15 +103,29 @@ class WorkspaceUserSession(LocalUserSession):
                             settings.active_run_id = recorder.run_id
                             self._capture_providers = getattr(self, '_capture_providers', {})
                             self._capture_providers[recorder.run_id] = provider
-                caps = [{'id': d.id, 'version': d.capability_version, 'description': d.description}
+                # The Catalog is an index, not a description to answer from: only
+                # the id and version travel in the text, and status questions must
+                # read this Workspace through the tool below.
+                caps = [{'id': d.id, 'version': d.capability_version}
                         for d in self.session.discover()]
                 if provider is None:
-                    # A factual local help response, explicitly not an LLM or semantic inference.
-                    answer = ('我是 Catalyst 本地工作平台。当前可以查看运行记录、资料来源、能力目录，并准备 Agent 草案。'
-                              '可在已授权项目中准备只读项目理解；需单独授权来源并配置模型。附件企业资料提取仍为 MOCK，正式 Wiki 接纳和自动构建 Agent 尚未开放。'
-                              '点击左下角用户入口，在模型设置中连接 DeepSeek 后，可以开启真实文本对话。Development 用于独立测试与迭代。')
+                    # Read the same local files the product reads; never describe a
+                    # system this process has not looked at.
+                    from .workspace_status import collect, render_text
+                    try:
+                        snapshot = collect(self)
+                        answer = render_text(snapshot)
+                        status = {'generated_at': snapshot['generated_at'],
+                                  'runs_total': snapshot['runs']['total'],
+                                  'event_lines_read': snapshot['logs']['event_lines_read'],
+                                  'config_present': snapshot['config']['present'],
+                                  'config_total': snapshot['config']['total']}
+                    except (OSError, ValueError, RuntimeError):
+                        answer = '本机状态读取失败：没有生成推断性说明。请查看 Observability 或设置页。'
+                        status = {'error': 'workspace_status_unavailable'}
                     output.update(mode='LOCAL_INFO', state='LOCAL_INFO', status='success',
-                                  execution_entry='Workspace product information (no model)',
+                                  execution_entry='Workspace local status read (no model)',
+                                  local_status=status,
                                   result={'output': {'answer': answer}})
                     span = recorder.start_span('workspace.local_help', kind='CHAIN')
                     recorder.end_span(span, status='success')
@@ -121,7 +135,25 @@ class WorkspaceUserSession(LocalUserSession):
                     before = settings.network_attempts
                     # The original Harness is the only Agent loop. Context is
                     # explicit application information; no file roots/content.
-                    visible=()
+                    # Status questions read this Workspace through a local,
+                    # read-only tool instead of the prompt's own description.
+                    from .workspace_status import (CAPABILITY_ID as STATUS_ID,
+                        CAPABILITY_VERSION as STATUS_VERSION, WorkspaceStatusCapability)
+                    existing=self.app._catalog.get(STATUS_ID,STATUS_VERSION)
+                    if existing is not None and (type(existing.implementation) is not WorkspaceStatusCapability
+                        or getattr(existing.implementation,'session',None) is not self
+                        or existing.metadata.get('component_id')!='workspace-status'
+                        or existing.metadata.get('component_version')!='0.1.0'
+                        or existing.metadata.get('llm_visibility')!='explicit'
+                        or existing.metadata.get('model_policy')!={'mode':'workspace_scoped_query','max_calls':1}
+                        or existing.descriptor.execution.get('side_effect')!='none'):
+                        raise UserTaskBlocked('STATUS_TOOL_BINDING_CONFLICT')
+                    if existing is None:
+                        self.app._catalog.register(WorkspaceStatusCapability(self),
+                            capability_version=STATUS_VERSION,execution={'side_effect':'none'},metadata={
+                            'component_id':'workspace-status','component_version':'0.1.0',
+                            'llm_visibility':'explicit','model_policy':{'mode':'workspace_scoped_query','max_calls':1}})
+                    visible=((STATUS_ID,STATUS_VERSION),)
                     if settings.allow_asset_read:
                         from .harness_plugins import WikiAssetQueryCapability
                         existing=self.app._catalog.get('wiki_assets','1.0.0')
@@ -138,13 +170,16 @@ class WorkspaceUserSession(LocalUserSession):
                                 capability_version='1.0.0',execution={'side_effect':'none'},metadata={
                                 'component_id':'wiki-product-assets','component_version':'0.1.0',
                                 'llm_visibility':'explicit','model_policy':{'mode':'workspace_scoped_query','max_calls':1}})
-                        visible=(('wiki_assets','1.0.0'),)
+                        visible=visible+(('wiki_assets','1.0.0'),)
+                    # The model sees the wire name (the Catalog's internal key), not
+                    # the capability id; the prompt names both so selection is unambiguous.
+                    tool_index=tuple((cid,ver,self.app._catalog.internal_key(cid,ver)) for cid,ver in visible)
                     daily = metadata['connection_mode'] == 'daily'
                     output['chat']['daily'] = daily
                     model = metadata['model']
                     if daily or thread_id is not None:
                         from .llm_controls import input_token_envelope
-                        base = settings.context(caps, model=model, history=[]) + '\n当前用户消息：\n' + message
+                        base = settings.context(caps, model=model, history=[], tools=tool_index) + '\n当前用户消息：\n' + message
                         budget = min(8192, (metadata.get('input_token_limit') or 0) - input_token_envelope(base) - 4096)
                         history, run_ids = settings.chat.context(thread, budget)
                         output['chat']['context_run_ids'] = run_ids
@@ -154,12 +189,12 @@ class WorkspaceUserSession(LocalUserSession):
                         }
                     else:
                         history = settings.history[-6:]
-                    contextual = settings.context(caps, model=model, history=history) + '\n当前用户消息：\n' + message
+                    contextual = settings.context(caps, model=model, history=history, tools=tool_index) + '\n当前用户消息：\n' + message
                     run = self.session.ask(contextual, provider=provider, visible_capabilities=visible,
                                            execution_mode='agent', recorder=recorder)
                     output.update(mode='LIVE_CHAT', state='CHAT_COMPLETED' if run.result.status == 'success' else 'FAILED',
                                   status=run.result.status, session_id=run.session_id,
-                                  execution_entry='HarnessSession.ask(agent, tools=[wiki_assets])' if visible else 'HarnessSession.ask(agent, tools=[])',
+                                  execution_entry='HarnessSession.ask(agent, tools=['+','.join(name for name,_v in visible)+'])',
                                   result=run.result.to_dict(), provider='deepseek',
                                   model=model,
                                   error=run.result.to_dict().get('error'),
@@ -174,6 +209,8 @@ class WorkspaceUserSession(LocalUserSession):
                     events=recorder.store.inspect_run(recorder.run_id)['events']
                     output['asset_read_verified']=any(e['event_type']=='tool.result' and
                         e.get('capability_id')=='wiki_assets' and e.get('status')=='success' for e in events)
+                    output['workspace_status_read_verified']=any(e['event_type']=='tool.result' and
+                        e.get('capability_id')==STATUS_ID and e.get('status')=='success' for e in events)
                     if run.result.status == 'success' and not self._pending[recorder.run_id].is_set():
                         answer = run.result.output.get('answer', '')
                         settings.history.extend([{'role': 'user', 'content': message},

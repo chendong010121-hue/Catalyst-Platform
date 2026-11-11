@@ -68,8 +68,14 @@ def test_actual_harness_chat_context_scope_and_receipt(local):
     result = run(session)
     assert result['state'] == 'CHAT_COMPLETED' and 'Catalyst' in result['result']['output']['answer']
     assert len(calls) == 1 and calls[0]['model'] == 'deepseek-flash'
-    assert calls[0]['thinking'] == {'type': 'disabled'} and not calls[0].get('tools')
-    assert 'Catalyst Workspace' in str(calls[0]['messages'])
+    assert calls[0]['thinking'] == {'type': 'disabled'}
+    from catalyst_platform.workbench import CapabilityCatalog
+    tool_names = {tool['function']['name'] for tool in calls[0]['tools']}
+    assert tool_names == {CapabilityCatalog.internal_key('workspace_status', '1.0.0')}
+    prompt = str(calls[0]['messages'])
+    assert 'Catalyst Workspace' in prompt and '必须先调用 workspace_status' in prompt
+    # The fixed product brochure is gone: status comes from the tool, not the prompt.
+    assert '长期职责有 Harness' not in prompt and '当前 Catalog 描述' not in prompt
     assert result['external_calls'] == 0  # injected transport is not network
     rows = session.settings.ledger.read()
     assert [r['event'] for r in rows] == ['RESERVED_BEFORE_SEND', 'METERED']

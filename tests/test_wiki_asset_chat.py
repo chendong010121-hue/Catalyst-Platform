@@ -5,6 +5,7 @@ import pytest
 from catalyst_platform.asset_records import builtin_assets
 from catalyst_platform.workspace_session import WorkspaceUserSession
 from catalyst_platform.workspace_settings import WorkspaceSettings
+from catalyst_platform.workbench import CapabilityCatalog
 from tests.test_workspace_model_settings import configuration,packet,run
 
 
@@ -21,8 +22,11 @@ def test_model_selects_real_asset_tool_and_consumes_registered_records(tmp_path)
     def transport(url,headers,body):
         request=json.loads(body);requests.append(request)
         if len(requests)==1:
-            assert len(request['tools'])==1
-            tool_name=request['tools'][0]['function']['name']
+            # Status reading is always available; the asset tool needs explicit authority.
+            assert len(request['tools'])==2
+            names={t['function']['name'] for t in request['tools']}
+            tool_name=CapabilityCatalog.internal_key('wiki_assets','1.0.0')
+            assert tool_name in names
             # The actual records are not hardcoded into model's first input.
             assert 'system.dispatch-ledger' not in json.dumps(request['messages'])
             response=packet();response['choices'][0]['message']={'role':'assistant','content':None,
@@ -51,7 +55,9 @@ def test_text_only_authorization_never_exposes_asset_tool(tmp_path):
     session.settings=WorkspaceSettings(session.app,transport=transport)
     session.settings.configure(configuration())
     result=run(session,'有什么资产？')
-    assert result['state']=='CHAT_COMPLETED' and not requests[0].get('tools')
+    names={t['function']['name'] for t in requests[0]['tools']}
+    assert CapabilityCatalog.internal_key('workspace_status','1.0.0') in names
+    assert CapabilityCatalog.internal_key('wiki_assets','1.0.0') not in names
     assert not result.get('asset_read_verified')
 
 
@@ -90,7 +96,9 @@ def test_model_answer_without_tool_is_not_presented_as_verified_asset_read(tmp_p
 def test_two_request_budget_cannot_silently_expand_for_asset_tool(tmp_path):
     session=WorkspaceUserSession(tmp_path/'one-request');calls=[]
     def transport(*args):
-        calls.append(1);request=json.loads(args[2]);name=request['tools'][0]['function']['name']
+        calls.append(1);request=json.loads(args[2])
+        name=CapabilityCatalog.internal_key('wiki_assets','1.0.0')
+        assert name in {t['function']['name'] for t in request['tools']}
         result=packet();result['choices'][0]['message']={'role':'assistant','content':None,'tool_calls':[
             {'id':'asset-one','type':'function','function':{'name':name,'arguments':'{"query":"*"}'}}]}
         result['choices'][0]['finish_reason']='tool_calls';return 200,result

@@ -16,7 +16,6 @@ from .capability_compare import compare_claims
 
 MAX_CLAIMS = 50
 MAX_PAIRS = 200
-EXAMPLES = Path(__file__).resolve().parent.parent / "examples" / "capability_claims"
 CLAIMS_SUBDIR = Path(".catalyst") / "capability-claims"
 
 
@@ -63,16 +62,16 @@ def _coverage(result: dict[str, Any]) -> dict[str, int]:
     }
 
 
-def review(workspace: str | Path, *, examples_root: str | Path = EXAMPLES) -> dict[str, Any]:
-    """Return every comparison the library would surface for these claims."""
+def review(workspace: str | Path) -> dict[str, Any]:
+    """Return every comparison this workspace's own claims would surface.
+
+    An empty directory is an empty review. The product never substitutes shipped
+    example claims for a workspace that has not declared any.
+    """
     root = Path(workspace)
     claims_dir = root / CLAIMS_SUBDIR
     files = _claim_files(claims_dir)
     source = "workspace"
-    if not files:
-        claims_dir = Path(examples_root)
-        files = _claim_files(claims_dir)
-        source = "examples"
 
     claims, errors = _load(files[:MAX_CLAIMS])
     claims.sort(key=lambda claim: (claim["capability"]["id"], claim["capability"]["version"]))
