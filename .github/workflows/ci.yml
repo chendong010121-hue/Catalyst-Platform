@@ -44,6 +44,9 @@ jobs:
           set -o pipefail
           python -m examples.run_minimal_loop 2>&1 | tee audit_artifacts/minimal_loop.log
 
+      - name: Check conversation observability projections
+        run: node --test tests/frontend/observability.test.cjs
+
       - name: Run all offline test modules
         shell: bash
         run: |
